@@ -43,15 +43,16 @@ install (FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
 # does the application run
 add_test (TutorialRuns Tutorial 25)
 
-# does it sqrt of 25
-add_test (TutorialComp25 Turorial 25)
-set_tests_properties (TutorialComp25
-	PROPERTIES PASS_REGULAR_EXPRESSION "25 is 5")
+# define a macro to simplify adding tests, the use it
+macro (do_test arg result)
+	add_test (TutorialComp${arg} Tutorial ${arg})
+	set_tests_properties (TutorialComp${arg}
+		PROPERTIES PASS_REGULAR_EXPRESSION ${result})
+endmacro (do_test)
 
-# does it handle negative values
-add_test (TutorialNegative Tutorial -25)
-set_tests_properties (TutorialNegative
-	PROPERTIES PASS_REGULAR_EXPRESSION "-25 is 0")
+# do a bunch of result based tests
+do_test (25 "25 is 5")
+do_test (-25 "-25 is 0")
 
 # does it handle small numbers
 add_test (TutorialSmall Tutorial 0.0001)
