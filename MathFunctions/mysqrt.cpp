@@ -2,5 +2,8 @@
 
 double mysqrt(const double a)
 {
-	return sqrt(a);
+	double result = 0.;
+	if (a >= 0)
+		result = sqrt(a);
+	return result;
 }
