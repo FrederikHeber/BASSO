@@ -5,8 +5,10 @@ project (Tutorial)
 set (Tutorial_VERSION_MAJOR 1)
 set (Tutorial_VERSION_MINOR 0)
 
-# use correct eclipse number
-set (CMAKE_ECLIPSE_VERSION 3.7)
+# does the system provide the log and exp functions?
+include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
+check_function_exists (log HAVE_LOG)
+check_function_exists (exp HAVE_EXP)
 
 # configure a header file to pass some CMake settings
 # to the source code
