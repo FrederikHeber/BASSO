@@ -12,7 +12,7 @@ add_custom_command (
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (MathFunctions mysqrt.cpp ${CMAKE_CURRENT_BINARY_DIR}/Table.h)
+add_library (Minimizations mysqrt.cpp ${CMAKE_CURRENT_BINARY_DIR}/Table.h)
 
-install (TARGETS MathFunctions DESTINATION bin)
-install (FILES MathFunctions.h DESTINATION include)
+install (TARGETS Minimizations DESTINATION bin)
+install (FILES Minimizations.h DESTINATION include)

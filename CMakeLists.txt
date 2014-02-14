@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
-project (Tutorial)
+project (Basso)
 
 # The version number.
-set (Tutorial_VERSION_MAJOR 1)
-set (Tutorial_VERSION_MINOR 0)
+set (Basso_VERSION_MAJOR 1)
+set (Basso_VERSION_MINOR 0)
 
 # does the system provide the log and exp functions?
 include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
@@ -13,49 +13,49 @@ check_function_exists (exp HAVE_EXP)
 # configure a header file to pass some CMake settings
 # to the source code
 configure_file (
-	"${PROJECT_SOURCE_DIR}/TutorialConfig.h.in"
-	"${PROJECT_BINARY_DIR}/TutorialConfig.h"
+	"${PROJECT_SOURCE_DIR}/BassoConfig.h.in"
+	"${PROJECT_BINARY_DIR}/BassoConfig.h"
 )
 
 # add the binary tree to the search path for include files
-# so that we will find TutorialConfig.h
+# so that we will find BassoConfig.h
 include_directories ("${PROJECT_BINARY_DIR}")
 
 # should we use our own math functions?
 option (USE_MYMATH 
 	"Use tutorial provided math implementation" ON) 
 
-# add the MathFunctions library?
+# add the Minimizations library?
 #
 if (USE_MYMATH)
-  include_directories ("${PROJECT_SOURCE_DIR}/MathFunctions")
-  add_subdirectory (MathFunctions)
-  set (EXTRA_LIBS ${EXTRA_LIBS} MathFunctions)
+  include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
+  add_subdirectory (Minimizations)
+  set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
 endif (USE_MYMATH)
 
 # add the executable
-add_executable (Tutorial tutorial.cpp)
-target_link_libraries (Tutorial ${EXTRA_LIBS})
+add_executable (Basso Basso.cpp)
+target_link_libraries (Basso ${EXTRA_LIBS})
 
 # add the install targets
-install (TARGETS Tutorial DESTINATION bin)
-install (FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
+install (TARGETS Basso DESTINATION bin)
+install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 
 ### TESTS ###
 enable_testing ()
 
 # does the application run
-add_test (TutorialRuns Tutorial 25)
+add_test (BassoRuns Basso 25)
 
 # does the usage message work?
-add_test (TutorialUsage Tutorial)
-set_tests_properties (TutorialUsage
+add_test (BassoUsage Basso)
+set_tests_properties (BassoUsage
 	PROPERTIES PASS_REGULAR_EXPRESSION "Usage:.*number")
 
 # define a macro to simplify adding tests, the use it
 macro (do_test arg result)
-	add_test (TutorialComp${arg} Tutorial ${arg})
-	set_tests_properties (TutorialComp${arg}
+	add_test (BassoComp${arg} Basso ${arg})
+	set_tests_properties (BassoComp${arg}
 		PROPERTIES PASS_REGULAR_EXPRESSION ${result})
 endmacro (do_test)
 
@@ -72,6 +72,6 @@ do_test (0.0001 "0.0001 is 0.01")
 include (InstallRequiredSystemLibraries)
 set (CPACK_RESOURCE_FILE_LICENSE
 	"${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
-set (CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
-set (CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_MAJOR "${Basso_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${Basso_VERSION_MINOR}")
 include (CPack)

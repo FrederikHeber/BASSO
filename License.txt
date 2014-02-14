@@ -1,7 +1,6 @@
 #
-# Tutorial (CMake)
-# Copyright (C) 2014 Frederik Heber (invalid as copyright is by tutorial
-#    maker)
+# Basso - Banach sequential subspace optimization
+# Copyright (C) 2014 Frederik Heber
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

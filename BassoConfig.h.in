@@ -1,6 +1,6 @@
-// the configured options and settings for Tutorial
-#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
-#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
+// the configured options and settings for Basso
+#define Basso_VERSION_MAJOR @Basso_VERSION_MAJOR@
+#define Basso_VERSION_MINOR @Basso_VERSION_MINOR@
 
 // transmit optional usage of math library
 #cmakedefine USE_MYMATH

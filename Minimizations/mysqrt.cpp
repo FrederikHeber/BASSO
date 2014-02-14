@@ -1,4 +1,4 @@
-#include "MathFunctions.h"
+#include "Minimizations.h"
 #include "Table.h"
 
 double mysqrt(const double a)
