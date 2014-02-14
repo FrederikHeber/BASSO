@@ -4,7 +4,7 @@
 #include <math.h>
 #include "BassoConfig.h"
 #ifdef USE_MYMATH
-#include "Minimizations.h"
+#include "Minimizations/Minimizations.h"
 #endif
 
 int main (int argc, char *argv[])
