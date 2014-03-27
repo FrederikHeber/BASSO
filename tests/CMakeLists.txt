@@ -1,6 +1,6 @@
 ### TESTS ###
-#add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
-#                  DEPENDS Basso)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+                  DEPENDS Basso)
 
 
 # does the application run
