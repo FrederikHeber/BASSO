@@ -25,6 +25,11 @@ include_directories ("${PROJECT_BINARY_DIR}")
 option (USE_MYMATH 
 	"Use tutorial provided math implementation" ON) 
 
+# find eigen3 package for linear algebra routines
+set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+FIND_PACKAGE(Eigen3 REQUIRED)
+include_directories( "${EIGEN3_INCLUDE_DIR}" )
+
 # add the Minimizations library?
 #
 if (USE_MYMATH)

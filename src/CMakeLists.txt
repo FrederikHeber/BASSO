@@ -8,3 +8,5 @@ include_directories ("${PROJECT_SOURCE_DIR}/src")
 # add the install targets
 install (TARGETS Basso DESTINATION bin)
 
+# add test program to check that eigen-headers are found and compile
+add_executable (EigenTest EigenTest.cpp)
