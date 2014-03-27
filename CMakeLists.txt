@@ -38,6 +38,10 @@ if (USE_MYMATH)
   set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
 endif (USE_MYMATH)
 
+# add the Math library
+add_subdirectory (src/Math)
+set (EXTRA_LIBS ${EXTRA_LIBS} Math)
+
 # install targets for config
 install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 
