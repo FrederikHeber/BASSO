@@ -1,4 +1,10 @@
 .cproject
 .project
 TutorialConfig.h
+
+# build directories
 build64/
+debug64/
+
+# eclipse stuff
+.settings
