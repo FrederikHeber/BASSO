@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <Eigen/Dense>
 
+#include "Minimizations/DualityMapping.hpp"
+
 int main()
 {
 	Eigen::MatrixXd m(2,2);
@@ -26,4 +28,53 @@ int main()
 	std::cout << "Norms of v, L2: " << v.norm()
 			<< ", L1: " << v.lpNorm<1>()
 			<< ", l_infty: " << v.lpNorm<Eigen::Infinity>() << std::endl;
+
+	// testing of DualityMapping
+	{
+		DualityMapping<2> J_2(2);
+		std::cout << "DualityMapping J_2 with weight 2 of v is ("
+				<< J_2(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<2> J_2(1);
+		std::cout << "DualityMapping J_2 with weight 1 of v is ("
+				<< J_2(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<2> J_2(4);
+		std::cout << "DualityMapping J_2 with weight 4 of v is ("
+				<< J_2(v).transpose() << ")" << std::endl;
+	}
+
+	{
+		DualityMapping<1> J_1(1);
+		std::cout << "DualityMapping J_1 with weight 1 of v is ("
+				<< J_1(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<1> J_1(2);
+		std::cout << "DualityMapping J_1 with weight 2 of v is ("
+				<< J_1(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<1> J_1(3);
+		std::cout << "DualityMapping J_1 with weight 3 of v is ("
+				<< J_1(v).transpose() << ")" << std::endl;
+	}
+
+	{
+		DualityMapping<Eigen::Infinity> J_infty(1);
+		std::cout << "DualityMapping J_infty with weight 1 of v is ("
+				<< J_infty(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<Eigen::Infinity> J_infty(2);
+		std::cout << "DualityMapping J_infty with weight 2 of v is ("
+				<< J_infty(v).transpose() << ")" << std::endl;
+	}
+	{
+		DualityMapping<Eigen::Infinity> J_infty(3);
+		std::cout << "DualityMapping J_infty with weight 3 of v is ("
+				<< J_infty(v).transpose() << ")" << std::endl;
+	}
 }
