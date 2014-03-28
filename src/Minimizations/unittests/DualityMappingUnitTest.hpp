@@ -13,14 +13,18 @@
 class DualityMappingUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( DualityMappingUnitTest );
-  CPPUNIT_TEST( testNorm );
+  CPPUNIT_TEST( oneNorm );
+  CPPUNIT_TEST( twoNorm );
+  CPPUNIT_TEST( inftyNorm );
   CPPUNIT_TEST_SUITE_END();
 
 public:
   void setUp();
   void tearDown();
 
-  void testNorm();
+  void oneNorm();
+  void twoNorm();
+  void inftyNorm();
 };
 
 
