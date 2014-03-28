@@ -33,7 +33,7 @@ public:
 	 * \param _alpha
 	 * \param _q power of the weight of the duality mapping
 	 */
-	std::pair<double,Eigen::VectorXd> operator()(
+	double operator()(
 			const Eigen::VectorXd &_t,
 			const Eigen::VectorXd &_x,
 			const Eigen::MatrixXd &_U,
@@ -47,14 +47,33 @@ public:
 		const double fval =
 				1./(double)_q * ::pow(resx.lpNorm<p>(), _q)
 				+ _alpha.transpose() * _t;
-		// gval=alpha-U'*DualityMapping(x,p,q,Tol);
+		return fval;
+	}
+
+	/** Implements BregmanFunctional functional.
+	 *
+	 * \param _t
+	 * \param _x vector
+	 * \param _U
+	 * \param _alpha
+	 * \param _q power of the weight of the duality mapping
+	 */
+	Eigen::VectorXd gradient(
+			const Eigen::VectorXd &_t,
+			const Eigen::VectorXd &_x,
+			const Eigen::MatrixXd &_U,
+			const Eigen::VectorXd &_alpha,
+			const unsigned int _q
+			)
+	{
+		const double fval = operator()(_t,_x,_U_alpha,_q);
 		const DualityMapping<p> J_p(_q);
 		J_p.setTolerance(tolerance);
 		const Eigen::VectorXd gval =
 				_alpha -
 				_U.transpose() * J_p(resx);
 
-		return std::make_pair( fval, gval );
+		return gval;
 	}
 
 private:

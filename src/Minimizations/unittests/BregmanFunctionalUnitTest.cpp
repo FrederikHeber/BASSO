@@ -36,11 +36,10 @@ void BregmanFunctionalUnitTest::oneNorm()
 	Eigen::VectorXd alpha(2);
 	alpha << 1,0;
 	const unsigned int q = 2; 		// power of weight of duality mapping
-	std::pair<double, Eigen::VectorXd> vals = d_1(t,x,U,alpha,q);
 	Eigen::VectorXd compare(2);
 	compare << 1, 0;
-	CPPUNIT_ASSERT_EQUAL( 4., vals.first );
-	CPPUNIT_ASSERT( vals.second.isApprox(compare) );
+	CPPUNIT_ASSERT_EQUAL( 4., d_1(t,x,U,alpha,q) );
+	CPPUNIT_ASSERT( d_1.gradient(t,x,U,alpha,q).isApprox(compare) );
 //	std::cout << "BregmanFunctional d_2 of v is "
 //			<< vals.first << "," << vals.second.transpose() << "" << std::endl;
 }
@@ -57,11 +56,10 @@ void BregmanFunctionalUnitTest::twoNorm()
 	Eigen::VectorXd alpha(2);
 	alpha << 1,0;
 	const unsigned int q = 2; 		// power of weight of duality mapping
-	std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
 	Eigen::VectorXd compare(2);
 	compare << 1, 0;
-	CPPUNIT_ASSERT_EQUAL( 4., vals.first );
-	CPPUNIT_ASSERT( vals.second.isApprox(compare) );
+	CPPUNIT_ASSERT_EQUAL( 4., d_2(t,x,U,alpha,q) );
+	CPPUNIT_ASSERT( d_2.gradient(t,x,U,alpha,q).isApprox(compare) );
 //	std::cout << "BregmanFunctional d_2 of v is "
 //			<< vals.first << "," << vals.second.transpose() << "" << std::endl;
 }
@@ -78,11 +76,10 @@ void BregmanFunctionalUnitTest::inftyNorm()
 	Eigen::VectorXd alpha(2);
 	alpha << 1,0;
 	const unsigned int q = 2; 		// power of weight of duality mapping
-	std::pair<double, Eigen::VectorXd> vals = d_infty(t,x,U,alpha,q);
 	Eigen::VectorXd compare(2);
 	compare << 1, 0;
-	CPPUNIT_ASSERT_EQUAL( 4., vals.first );
-	CPPUNIT_ASSERT( vals.second.isApprox(compare) );
+	CPPUNIT_ASSERT_EQUAL( 4., d_infty(t,x,U,alpha,q) );
+	CPPUNIT_ASSERT( d_infty.gradient(t,x,U,alpha,q).isApprox(compare) );
 //	std::cout << "BregmanFunctional d_2 of v is "
 //			<< vals.first << "," << vals.second.transpose() << "" << std::endl;
 }
