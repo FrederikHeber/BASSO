@@ -20,7 +20,9 @@ template <unsigned int p>
 class BregmanFunctional
 {
 public:
-	BregmanFunctional() {}
+	BregmanFunctional(const double _tolerance) :
+		tolerance(_tolerance)
+	{}
 	~BregmanFunctional() {}
 
 	/** Implements BregmanFunctional functional.
@@ -47,6 +49,7 @@ public:
 				+ _alpha.transpose() * _t;
 		// gval=alpha-U'*DualityMapping(x,p,q,Tol);
 		const DualityMapping<p> J_p(_q);
+		J_p.setTolerance(tolerance);
 		const Eigen::VectorXd gval =
 				_alpha -
 				_U.transpose() * J_p(resx);
@@ -54,6 +57,9 @@ public:
 		return std::make_pair( fval, gval );
 	}
 
+private:
+	//!> tolerance to pass on to used duality mapping instance
+	const double tolerance;
 };
 
 
