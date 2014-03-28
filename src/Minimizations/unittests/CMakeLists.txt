@@ -19,9 +19,19 @@ target_link_libraries (BregmanFunctionalUnitTest
 	${EXTRA_LIBS}
 	"${CPPUNIT_LIBRARY}")
 
-# does the application run
 add_test (BregmanFunctionalUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanFunctionalUnitTest)
+
+########################## LpNormUnitTest #######################
+add_executable (LpNormUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	LpNormUnitTest.cpp) 
+target_link_libraries (LpNormUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (LpNormUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/LpNormUnitTest)
 
 # mark as to fail if required
 #set_tests_properties (BregmanFunctionalUnitTest
