@@ -61,6 +61,9 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Math)
 # install targets for config
 install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 
+# include source folder
+include_directories ("${PROJECT_SOURCE_DIR}/src")
+
 ################## BRANCH INTO SUBDIRECTORIES ############################
 
 # add src folder
