@@ -15,10 +15,12 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 add_library (Minimizations 
 	mysqrt.cpp
 	BregmanFunctional.cpp 
-	DualityMapping.cpp)
+	DualityMapping.cpp
+	SequentialSubspaceMinimizer.cpp)
 # ${CMAKE_CURRENT_BINARY_DIR}/Table.h
 
 install (TARGETS Minimizations DESTINATION bin)
 install (FILES BregmanFunctional.hpp DESTINATION include)
 install (FILES DualityMapping.hpp DESTINATION include)
+install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES Minimizations.h DESTINATION include)
