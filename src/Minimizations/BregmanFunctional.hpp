@@ -1,29 +1,29 @@
 /*
- * Bregman.hpp
+ * BregmanFunctional.hpp
  *
  *  Created on: Mar 27, 2014
  *      Author: heber
  */
 
-#ifndef BREGMAN_HPP_
-#define BREGMAN_HPP_
+#ifndef BREGMANFUNCTIONAL_HPP_
+#define BREGMANFUNCTIONAL_HPP_
 
 #include <Eigen/Dense>
 #include <utility>
 
 #include "Minimizations/DualityMapping.hpp"
 
-/** Functor to calculate Bregman functional/distance.
+/** Functor to calculate BregmanFunctional functional/distance.
  *
  */
 template <unsigned int p>
-class Bregman
+class BregmanFunctional
 {
 public:
-	Bregman() {}
-	~Bregman() {}
+	BregmanFunctional() {}
+	~BregmanFunctional() {}
 
-	/** Implements Bregman functional.
+	/** Implements BregmanFunctional functional.
 	 *
 	 * \param _t
 	 * \param _x vector
@@ -57,4 +57,4 @@ public:
 };
 
 
-#endif /* BREGMAN_HPP_ */
+#endif /* BREGMANFUNCTIONAL_HPP_ */
