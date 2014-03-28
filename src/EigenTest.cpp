@@ -32,19 +32,19 @@ int main()
 
 	// testing of DualityMapping
 	{
-		DualityMapping<1> J_1(2);
+		DualityMapping J_1(1);
 		std::cout << "DualityMapping J_1 with weight 2 of v is ("
-				<< J_1(v).transpose() << ")" << std::endl;
+				<< J_1(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		DualityMapping<2> J_2(2);
+		DualityMapping J_2(2);
 		std::cout << "DualityMapping J_2 with weight 2 of v is ("
-				<< J_2(v).transpose() << ")" << std::endl;
+				<< J_2(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		DualityMapping<Eigen::Infinity> J_infty(2);
+		DualityMapping J_infty(LpNorm::Infinity);
 		std::cout << "DualityMapping J_infty with weight 2 of v is ("
-				<< J_infty(v).transpose() << ")" << std::endl;
+				<< J_infty(v,2).transpose() << ")" << std::endl;
 	}
 
 	// testing of BregmanFunctional
