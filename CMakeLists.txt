@@ -56,6 +56,18 @@ if (CPPUNIT_FOUND)
 	#set (EXTRA_LIBS ${EXTRA_LIBS} "${CPPUNIT_LIBRARY}")
 endif (CPPUNIT_FOUND)
 
+# looking for blas
+FIND_PACKAGE(BLAS REQUIRED)
+if (BLAS_FOUND)
+	# find levmar for function minimization
+	set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+	FIND_PACKAGE(LevMar REQUIRED)
+	if (LEVMAR_FOUND)
+		include_directories( "${LEVMAR_INCLUDE_DIR}" )
+		set (LEVMAR_LIBRARY ${LEVMAR_LIBRARY} ${BLAS_LIBRARIES})
+	endif (LEVMAR_FOUND)
+endif (BLAS_FOUND)
+
 ################## BRANCH INTO SUBDIRECTORIES ############################
 
 #### LIBRARIES ####
