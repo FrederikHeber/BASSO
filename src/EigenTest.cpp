@@ -5,6 +5,8 @@
  *      Author: heber
  */
 
+#include "BassoConfig.h"
+
 #include <iostream>
 #include <iomanip>
 #include <Eigen/Dense>
@@ -49,7 +51,7 @@ int main()
 
 	// testing of BregmanFunctional
 	{
-		BregmanFunctional<1> d_2;
+		BregmanFunctional bregman_1(1, BASSOTOLERANCE);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -59,12 +61,12 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
-		std::cout << "BregmanFunctional d_2 of v is "
-				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+		std::cout << "BregmanFunctional bregman_1 of v is "
+				<< bregman_1(t,x,U,alpha,q) << ","
+				<< bregman_1.gradient(t,x,U,alpha,q)<< "" << std::endl;
 	}
 	{
-		BregmanFunctional<2> d_2;
+		BregmanFunctional bregman_2(2, BASSOTOLERANCE);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -74,12 +76,12 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
-		std::cout << "BregmanFunctional d_2 of v is "
-				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+		std::cout << "BregmanFunctional bregman_2 of v is "
+				<< bregman_2(t,x,U,alpha,q) << ","
+				<< bregman_2.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}
 	{
-		BregmanFunctional<Eigen::Infinity> d_2;
+		BregmanFunctional bregman_infty(LpNorm::Infinity, BASSOTOLERANCE);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -89,8 +91,8 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
-		std::cout << "BregmanFunctional d_2 of v is "
-				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+		std::cout << "BregmanFunctional bregman_2 of v is "
+				<< bregman_infty(t,x,U,alpha,q) << ","
+				<< bregman_infty.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}
 }

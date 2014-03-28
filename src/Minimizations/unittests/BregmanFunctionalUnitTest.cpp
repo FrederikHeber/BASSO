@@ -26,7 +26,7 @@ void BregmanFunctionalUnitTest::tearDown()
 
 void BregmanFunctionalUnitTest::oneNorm()
 {
-	BregmanFunctional<1> d_1;
+	BregmanFunctional d_1(1);
 	Eigen::VectorXd t(2);
 	t << 4,3;
 	Eigen::VectorXd x(2);
@@ -46,7 +46,7 @@ void BregmanFunctionalUnitTest::oneNorm()
 
 void BregmanFunctionalUnitTest::twoNorm()
 {
-	BregmanFunctional<2> d_2;
+	BregmanFunctional d_2(2);
 	Eigen::VectorXd t(2);
 	t << 4,3;
 	Eigen::VectorXd x(2);
@@ -66,7 +66,7 @@ void BregmanFunctionalUnitTest::twoNorm()
 
 void BregmanFunctionalUnitTest::inftyNorm()
 {
-	BregmanFunctional<Eigen::Infinity> d_infty;
+	BregmanFunctional d_infty(LpNorm::Infinity);
 	Eigen::VectorXd t(2);
 	t << 4,3;
 	Eigen::VectorXd x(2);

@@ -8,21 +8,20 @@
 #ifndef BREGMANFUNCTIONAL_HPP_
 #define BREGMANFUNCTIONAL_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
-#include <utility>
 
 #include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/LpNorm.hpp"
 
 /** Functor to calculate BregmanFunctional functional/distance.
  *
  */
-template <unsigned int p>
 class BregmanFunctional
 {
 public:
-	BregmanFunctional(const double _tolerance) :
-		tolerance(_tolerance)
-	{}
+	BregmanFunctional(const double _p, const double _tolerance = BASSOTOLERANCE);
 	~BregmanFunctional() {}
 
 	/** Implements BregmanFunctional functional.
@@ -39,16 +38,7 @@ public:
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
 			const unsigned int _q
-			)
-	{
-		// x=x-U*t;
-		const Eigen::VectorXd resx = _x - _U * _t;
-		// fval=1/q*norm(x,p)^q+alpha'*t;
-		const double fval =
-				1./(double)_q * ::pow(resx.lpNorm<p>(), _q)
-				+ _alpha.transpose() * _t;
-		return fval;
-	}
+			);
 
 	/** Implements BregmanFunctional functional.
 	 *
@@ -64,21 +54,15 @@ public:
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
 			const unsigned int _q
-			)
-	{
-		const double fval = operator()(_t,_x,_U_alpha,_q);
-		const DualityMapping<p> J_p(_q);
-		J_p.setTolerance(tolerance);
-		const Eigen::VectorXd gval =
-				_alpha -
-				_U.transpose() * J_p(resx);
-
-		return gval;
-	}
+			);
 
 private:
-	//!> tolerance to pass on to used duality mapping instance
-	const double tolerance;
+	//!> value p of the Lp norm
+	const double p;
+	//!> lp Norm object
+	LpNorm lpnorm;
+	//!> DualityMapping object
+	DualityMapping J_p;
 };
 
 
