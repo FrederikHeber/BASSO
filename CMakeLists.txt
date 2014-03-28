@@ -1,3 +1,8 @@
+##########################################################################
+########################      Basso      #################################
+##########################################################################
+
+
 cmake_minimum_required (VERSION 2.6)
 project (Basso)
 
@@ -9,6 +14,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -g0 -O3")
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 0)
 
+######################## BassoConfig.hpp #################################
+
 # configure a header file to pass some CMake settings
 # to the source code
 configure_file (
@@ -19,6 +26,9 @@ configure_file (
 # add the binary tree to the search path for include files
 # so that we will find BassoConfig.h
 include_directories ("${PROJECT_BINARY_DIR}")
+
+# install targets for config
+install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 
 ######################## CHECK HEADERS  ##################################
 
@@ -46,6 +56,13 @@ if (CPPUNIT_FOUND)
 	#set (EXTRA_LIBS ${EXTRA_LIBS} "${CPPUNIT_LIBRARY}")
 endif (CPPUNIT_FOUND)
 
+################## BRANCH INTO SUBDIRECTORIES ############################
+
+#### LIBRARIES ####
+
+# include source folder
+include_directories ("${PROJECT_SOURCE_DIR}/src")
+
 # add the Minimizations library?
 #
 if (USE_MYMATH)
@@ -58,21 +75,19 @@ endif (USE_MYMATH)
 add_subdirectory (src/Math)
 set (EXTRA_LIBS ${EXTRA_LIBS} Math)
 
-# install targets for config
-install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
-
-# include source folder
-include_directories ("${PROJECT_SOURCE_DIR}/src")
-
-################## BRANCH INTO SUBDIRECTORIES ############################
+#### SOURCE ####
 
 # add src folder
 add_subdirectory (src)
+
+#### TESTS AND UNITTESTS ####
 
 # add test folder
 enable_testing ()	# must reside here
 add_subdirectory (tests)
 add_subdirectory (src/Minimizations/unittests)
+
+##################### PACKING INSTRUCTIONS ###############################
 
 # build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
@@ -81,3 +96,5 @@ set (CPACK_RESOURCE_FILE_LICENSE
 set (CPACK_PACKAGE_VERSION_MAJOR "${Basso_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR "${Basso_VERSION_MINOR}")
 include (CPack)
+
+##########################################################################
