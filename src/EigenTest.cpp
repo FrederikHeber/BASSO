@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/BregmanFunctional.hpp"
 
 int main()
 {
@@ -46,4 +47,50 @@ int main()
 				<< J_infty(v).transpose() << ")" << std::endl;
 	}
 
+	// testing of BregmanFunctional
+	{
+		BregmanFunctional<1> d_2;
+		Eigen::VectorXd t(2);
+		t << 4,3;
+		Eigen::VectorXd x(2);
+		x << 4,3;
+		Eigen::MatrixXd U(2,2);
+		U << 1,0,0,1;
+		Eigen::VectorXd alpha(2);
+		alpha << 1,0;
+		const unsigned int q = 2; 		// power of weight of duality mapping
+		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
+		std::cout << "BregmanFunctional d_2 of v is "
+				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+	}
+	{
+		BregmanFunctional<2> d_2;
+		Eigen::VectorXd t(2);
+		t << 4,3;
+		Eigen::VectorXd x(2);
+		x << 4,3;
+		Eigen::MatrixXd U(2,2);
+		U << 1,0,0,1;
+		Eigen::VectorXd alpha(2);
+		alpha << 1,0;
+		const unsigned int q = 2; 		// power of weight of duality mapping
+		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
+		std::cout << "BregmanFunctional d_2 of v is "
+				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+	}
+	{
+		BregmanFunctional<Eigen::Infinity> d_2;
+		Eigen::VectorXd t(2);
+		t << 4,3;
+		Eigen::VectorXd x(2);
+		x << 4,3;
+		Eigen::MatrixXd U(2,2);
+		U << 1,0,0,1;
+		Eigen::VectorXd alpha(2);
+		alpha << 1,0;
+		const unsigned int q = 2; 		// power of weight of duality mapping
+		std::pair<double, Eigen::VectorXd> vals = d_2(t,x,U,alpha,q);
+		std::cout << "BregmanFunctional d_2 of v is "
+				<< vals.first << "," << vals.second.transpose() << "" << std::endl;
+	}
 }
