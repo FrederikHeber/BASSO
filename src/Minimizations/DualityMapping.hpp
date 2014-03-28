@@ -15,6 +15,8 @@
 
 #include "Math/Helpers.hpp"
 
+class DualityMappingUnitTest;
+
 /** This class contains a duality mapping instance from a specific
  * lp space to its dual.
  *
@@ -23,17 +25,29 @@
 template <unsigned int p>
 class DualityMapping
 {
+	//!> grant unit test DualityMappingUnitTest access to private parts.
+	friend class DualityMappingUnitTest;
 public:
 	DualityMapping(const int _power) :
-		m_power(_power)
+		m_power(_power),
+		tolerance(BASSOTOLERANCE)
 	{}
 	~DualityMapping() {}
+
+	/** Setter for internal tolerance.
+	 *
+	 * \param _tolerance value to set to
+	 */
+	void setTolerance(const double _tolerance)
+	{ tolerance = _tolerance; }
 
 	Eigen::VectorXd operator()(const Eigen::VectorXd &_x) const;
 
 private:
 	//!> contains the power of the weight (of power type) of the mapping
 	const int m_power;
+	//!> tolerance for norm value
+	double tolerance;
 };
 
 /** template specizialization for l_1 norm.
@@ -101,7 +115,7 @@ Eigen::VectorXd DualityMapping<p>::operator()(
 		return Jx;
 	} else {
 		const double norm = _x.lpNorm<p>();
-		if (norm < BASSOTOLERANCE) {
+		if (norm < tolerance) {
 			// J=zeros(size(x,1),1);
 			Eigen::VectorXd Jx = Eigen::VectorXd::Zero(_x.innerSize());
 			return Jx;

@@ -16,6 +16,7 @@ class DualityMappingUnitTest : public CppUnit::TestFixture
   CPPUNIT_TEST( oneNorm );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( inftyNorm );
+  CPPUNIT_TEST( setTolerance );
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -25,6 +26,7 @@ public:
   void oneNorm();
   void twoNorm();
   void inftyNorm();
+  void setTolerance();
 };
 
 

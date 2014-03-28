@@ -5,6 +5,8 @@
  *      Author: heber
  */
 
+#include "BassoConfig.h"
+
 #include "DualityMappingUnitTest.hpp"
 
 #include <Eigen/Dense>
@@ -115,3 +117,11 @@ void DualityMappingUnitTest::inftyNorm()
 	}
 }
 
+void DualityMappingUnitTest::setTolerance()
+{
+	DualityMapping<Eigen::Infinity> J_infty(1);
+	CPPUNIT_ASSERT_EQUAL(BASSOTOLERANCE, J_infty.tolerance);
+	const double value = 1e-1;
+	J_infty.setTolerance(value);
+	CPPUNIT_ASSERT_EQUAL(value, J_infty.tolerance);
+}
