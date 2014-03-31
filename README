@@ -1,0 +1,31 @@
+libBasso - BAnach Sequential Subspace Optimization library
+==========================================================
+
+Basso is a library to minimize a constrained functional in a Banach space
+setting. It is an extension of the sequentional subspace optimization
+method by Narkiss by multiple search directions.
+
+Installation instructions:
+--------------------------
+
+Basso depends on the following packages:
+ * cmake - make utility for checking prerequisites
+ * Eigen - C++ library for linear algebra
+ * CppUnit - C++ library for unit testing
+ * levmar - implementation of the Levenberg Marquardt algorithm for 
+   unconstrained minimization
+
+... on Ubuntu
+-------------
+For Eigen and CppUnit packages exist but not so for levmar.
+
+Levmar depends on two files: A header levmar.h and a library liblevmar.a.
+
+Copy the former into a subfolder "include" of a common installation folder, e.g. levmar-2.6/include. Similarly, the library goes into a subfolder "lib".
+
+It is advised to compile the source in a distinct build directory, e.g. in a subfolder "build64". This is referred to as out-of-source build. To prepare the compilation, call cmake then as follows:
+
+cmake .. -DLEVMAR_INCLUDE_DIR=<path to installation folder>/levmar-2.6/include
+
+
+2014-03-31 Frederik Heber
