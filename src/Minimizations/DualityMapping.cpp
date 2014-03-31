@@ -35,7 +35,7 @@ DualityMapping::DualityMapping(
  */
 Eigen::VectorXd DualityMapping::operator()(
 		const Eigen::VectorXd &_x,
-		const int _power
+		const double _power
 		) const
 {
 	if (p == LpNorm::Infinity) {

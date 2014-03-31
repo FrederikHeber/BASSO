@@ -44,7 +44,7 @@ public:
 	 */
 	Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
-			const int _power) const;
+			const double _power) const;
 
 private:
 	//!> value p of the Lp norm

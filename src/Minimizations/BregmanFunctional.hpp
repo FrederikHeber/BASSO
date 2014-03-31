@@ -37,7 +37,7 @@ public:
 			const Eigen::VectorXd &_x,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
-			const unsigned int _q
+			const double _q
 			);
 
 	/** Implements BregmanFunctional functional.
@@ -53,7 +53,7 @@ public:
 			const Eigen::VectorXd &_x,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
-			const unsigned int _q
+			const double _q
 			);
 
 private:

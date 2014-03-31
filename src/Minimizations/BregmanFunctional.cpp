@@ -31,7 +31,7 @@ double BregmanFunctional::operator()(
 		const Eigen::VectorXd &_x,
 		const Eigen::MatrixXd &_U,
 		const Eigen::VectorXd &_alpha,
-		const unsigned int _q
+		const double _q
 		)
 {
 	// x=x-U*t;
@@ -48,7 +48,7 @@ Eigen::VectorXd BregmanFunctional::gradient(
 		const Eigen::VectorXd &_x,
 		const Eigen::MatrixXd &_U,
 		const Eigen::VectorXd &_alpha,
-		const unsigned int _q
+		const double _q
 		)
 {
 	const Eigen::VectorXd resx = _x - _U * _t;
