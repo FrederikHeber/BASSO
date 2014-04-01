@@ -1,6 +1,8 @@
 # add the executable
 add_executable (Basso Basso.cpp)
 target_link_libraries (Basso ${EXTRA_LIBS})
+target_link_libraries ( Basso ${Boost_LIBRARIES} )
+
 
 # add the install targets
 install (TARGETS Basso DESTINATION bin)

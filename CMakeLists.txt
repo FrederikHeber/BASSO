@@ -39,10 +39,6 @@ check_function_exists (exp HAVE_EXP)
 
 ####################### CHECK LIBRARIES  #################################
 
-# should we use our own math functions?
-option (USE_MYMATH 
-	"Use tutorial provided math implementation" ON) 
-
 # find eigen3 package for linear algebra routines
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 FIND_PACKAGE(Eigen3 REQUIRED)
@@ -68,6 +64,9 @@ if (BLAS_FOUND)
 	endif (LEVMAR_FOUND)
 endif (BLAS_FOUND)
 
+find_package ( Boost 1.46 COMPONENTS filesystem program_options system REQUIRED )
+include_directories( ${Boost_INCLUDE_DIR} )
+
 ################## BRANCH INTO SUBDIRECTORIES ############################
 
 #### LIBRARIES ####
@@ -75,13 +74,10 @@ endif (BLAS_FOUND)
 # include source folder
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 
-# add the Minimizations library?
-#
-if (USE_MYMATH)
-  include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
-  add_subdirectory (src/Minimizations)
-  set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
-endif (USE_MYMATH)
+# add the Minimizations library
+include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
+add_subdirectory (src/Minimizations)
+set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
 
 # add the Math library
 add_subdirectory (src/Math)
