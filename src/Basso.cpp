@@ -7,6 +7,7 @@
 #include <boost/program_options.hpp>
 
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
 
@@ -93,9 +94,26 @@ int main (int argc, char *argv[])
 			<< matrix << " and y = "
 			<< rhs << "." << std::endl;
 
+	// prepare start value
+	Eigen::VectorXd x0(1, rhs.outerSize());
+	x0.setZero();
+
 	// call minimizer
+	SequentialSubspaceMinimizer minimizer;
+	SequentialSubspaceMinimizer::ReturnValues result =
+			minimizer(
+					x0,
+					normx,
+					matrix,
+					rhs,
+					normy,
+					powery,
+					delta);
 
 	// give result
+	std::cout << "Solution is " << result.solution << ","
+			<< " found after " << result.NumberOuterIterations
+			<< " with residual error of " << result.residuum << std::endl;
 
 	// exit
 	return 0;
