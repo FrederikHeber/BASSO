@@ -1,5 +1,6 @@
 // A simple program that computes the square root of a number
 #include <iostream>
+#include <fstream>
 #include "BassoConfig.h"
 
 #include <boost/filesystem/path.hpp>
@@ -72,6 +73,25 @@ int main (int argc, char *argv[])
 	}
 
 	// parse matrix and vector files into instances
+	Eigen::MatrixXd matrix;
+	Eigen::VectorXd rhs;
+	{
+		using namespace MatrixIO;
+
+		{
+			std::ifstream ist(matrix_file.string().c_str());
+			if (ist.good())
+				ist >> matrix;
+		}
+		{
+			std::ifstream ist(rhs_file.string().c_str());
+			if (ist.good())
+				ist >> rhs;
+		}
+	}
+	std::cout << "We solve for Ax = y with A = "
+			<< matrix << " and y = "
+			<< rhs << "." << std::endl;
 
 	// call minimizer
 
