@@ -3,7 +3,9 @@ add_executable (Basso Basso.cpp)
 target_link_libraries ( Basso 
 	${EXTRA_LIBS} 
 	${LEVMAR_LIBRARY} 
-	${Boost_LIBRARIES}) 
+	${CMAKE_THREAD_LIBS_INIT} 
+	${Boost_LIBRARIES}
+	${LIBRT_LIBRARIES}) 
 
 
 # add the install targets

@@ -14,6 +14,7 @@ Basso depends on the following packages:
  * CppUnit - C++ library for unit testing
  * levmar - implementation of the Levenberg Marquardt algorithm for 
    unconstrained minimization
+ * boost - almost standard library (we require 1.54 due to logging)
 
 ... on Ubuntu
 -------------
@@ -27,5 +28,14 @@ It is advised to compile the source in a distinct build directory, e.g. in a sub
 
 cmake .. -DLEVMAR_INCLUDE_DIR=<path to installation folder>/levmar-2.6/include
 
+If additionally boost libraries do not reside in standard folders, such as
+/usr/include, /usr/lib ... but in ~/packages/boost the following options might help:
 
-2014-03-31 Frederik Heber
+cmake -DBoost_NO_SYSTEM_PATHS=ON -DBOOST_ROOT=~/packages/boost/
+
+Note that boost libraries should have been compiled with "layout=tagged". Otherwise, FindBoost.cmake can not find the libraries and headers.
+
+To allow for debugging, you might futher "add -DBoost_DEBUG=ON".
+
+
+2014-04-02 Frederik Heber

@@ -71,7 +71,23 @@ IF (LAPACK_FOUND)
 	endif (BLAS_FOUND)
 endif (LAPACK_FOUND)
 
-find_package ( Boost 1.46 COMPONENTS filesystem program_options system REQUIRED )
+# find (p)thread
+find_package (Threads)
+
+# find librt (required by boost_thread)
+set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+find_package (Librt)
+
+# find boost
+set ( Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.55" "1.55.0" )
+set ( Boost_USE_STATIC_LIBS ON )
+find_package ( Boost 1.54 COMPONENTS 
+	log 
+	filesystem
+	thread
+	program_options 
+	system 
+	REQUIRED )
 include_directories( ${Boost_INCLUDE_DIR} )
 
 ################## BRANCH INTO SUBDIRECTORIES ############################
