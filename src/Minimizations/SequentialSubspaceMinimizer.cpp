@@ -9,6 +9,7 @@
 
 #include "SequentialSubspaceMinimizer.hpp"
 
+#include <boost/log/trivial.hpp>
 #include <cassert>
 #include <cmath>
 #include <Eigen/Dense>
@@ -147,6 +148,8 @@ SequentialSubspaceMinimizer::operator()(
 
 	bool StopCriterion = false;
 
+	BOOST_LOG_TRIVIAL(debug) << "Calculating "
+			<< _A << "*" << _x0 << "-" << _y;
 	Eigen::VectorXd w = _A * _x0 - _y;
 	double wNorm = NormY(w);
 	double TolY = tau * _Delta;

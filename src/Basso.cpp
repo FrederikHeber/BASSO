@@ -1,18 +1,30 @@
 // A simple program that computes the square root of a number
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include "BassoConfig.h"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 #include <boost/program_options.hpp>
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
+namespace src = boost::log::sources;
 
 int main (int argc, char *argv[])
 {
+	// initialize basso logger
+	boost::log::core::get()->set_filter
+    (
+    		boost::log::trivial::severity >= boost::log::trivial::debug
+    );
+
+	// set up command-line-parameters
 	po::options_description desc("Allowed options");
 	desc.add_options()
 	        ("help", "produce help message")
@@ -45,32 +57,38 @@ int main (int argc, char *argv[])
 	double normx;
 	if (vm.count("normx")) {
 		normx = vm["normx"].as<double>();
-		std::cout << "Norm of X was set to " << normx << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Norm of X was set to " << normx << ".\n";
 	}
 	double normy;
 	if (vm.count("normy")) {
 		normy = vm["normy"].as<double>();
-		std::cout << "Norm of Y was set to " << normy << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Norm of Y was set to " << normy << ".\n";
 	}
 	double powery;
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
-		std::cout << "Power of duality maping in Y was set to " << powery << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Power of duality maping in Y was set to " << powery << ".\n";
 	}
 	double delta;
 	if (vm.count("delta")) {
 		delta = vm["delta"].as<double>();
-		std::cout << "Magnitude of noise was set to " << delta << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Magnitude of noise was set to " << delta << ".\n";
 	}
 	boost::filesystem::path matrix_file;
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as<boost::filesystem::path>();
-		std::cout << "Filename of matrix was set to " << matrix_file << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of matrix was set to " << matrix_file << ".\n";
 	}
 	boost::filesystem::path rhs_file;
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
-		std::cout << "Filename of vector was set to " << rhs_file << ".\n";
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of vector was set to " << rhs_file << ".\n";
 	}
 
 	// parse matrix and vector files into instances
@@ -91,12 +109,13 @@ int main (int argc, char *argv[])
 		}
 	}
 	std::cout << "We solve for Ax = y with A = "
-			<< matrix << " and y = "
-			<< rhs << "." << std::endl;
+		<< matrix << " and y = "
+		<< rhs << "." << std::endl;
 
 	// prepare start value
-	Eigen::VectorXd x0(1, rhs.outerSize());
+	Eigen::VectorXd x0(rhs.innerSize());
 	x0.setZero();
+	std::cout << "Starting at x0 = " << x0 << std::endl;
 
 	// call minimizer
 	SequentialSubspaceMinimizer minimizer;
@@ -111,9 +130,9 @@ int main (int argc, char *argv[])
 					delta);
 
 	// give result
-	std::cout << "Solution is " << result.solution << ","
-			<< " found after " << result.NumberOuterIterations
-			<< " with residual error of " << result.residuum << std::endl;
+	std::cout << "Solution is " << std::scientific << std::setprecision(8) << result.solution << ","
+		<< " found after " << result.NumberOuterIterations
+		<< " with residual error of " << result.residuum << std::endl;
 
 	// exit
 	return 0;
