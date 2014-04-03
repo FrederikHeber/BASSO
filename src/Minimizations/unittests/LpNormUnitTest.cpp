@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/LpNorm.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LpNormUnitTest );
@@ -22,6 +23,15 @@ void LpNormUnitTest::setUp()
 
 void LpNormUnitTest::tearDown()
 {
+}
+
+void LpNormUnitTest::throwTest()
+{
+	// we check that assertion is thrown for invalid p value
+	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
+	CPPUNIT_ASSERT_THROW(
+			LpNorm norm(-0.5),
+			MinimizationIllegalValue_exception );
 }
 
 void LpNormUnitTest::oneNorm()

@@ -11,17 +11,24 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+#include "MinimizationExceptions.hpp"
+
 class LpNorm
 {
 public:
 	LpNorm(const double _p) :
 		p(_p)
-	{}
+	{
+		if (p < 0.)
+			throw MinimizationIllegalValue_exception()
+				<< MinimizationIllegalValue_name("p");
+
+	}
 	~LpNorm() {}
 
 	double operator()(const Eigen::VectorXd &_x) const
 	{
-		if (p != 0) {
+		if (p > 0. ) {
 			double value = 0.;
 			for (unsigned int i=0;i<_x.innerSize();++i)
 				value += ::pow(fabs(_x[i]), p);
