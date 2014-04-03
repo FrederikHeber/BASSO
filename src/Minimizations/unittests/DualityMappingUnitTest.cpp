@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( DualityMappingUnitTest );
@@ -26,6 +27,14 @@ void DualityMappingUnitTest::tearDown()
 {
 }
 
+void DualityMappingUnitTest::throwTest()
+{
+	// we check that assertion is thrown for invalid p value
+	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
+	CPPUNIT_ASSERT_THROW(
+			DualityMapping J_illegal(-0.5),
+			MinimizationIllegalValue_exception );
+}
 
 void DualityMappingUnitTest::oneNorm()
 {

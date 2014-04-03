@@ -9,11 +9,11 @@
 
 #include "DualityMapping.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "Minimizations/LpNorm.hpp"
+#include "LpNorm.hpp"
+#include "MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
 
 DualityMapping::DualityMapping(
@@ -24,7 +24,9 @@ DualityMapping::DualityMapping(
 	lpnorm(p)
 {
 	// no negative p values
-	assert( p >= 0. );
+	if (p < 0.)
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("p");
 }
 
 /** General function to calculate the duality mapping.
