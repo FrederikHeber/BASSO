@@ -16,6 +16,7 @@ add_library (Minimizations
 	mysqrt.cpp
 	BregmanFunctional.cpp 
 	DualityMapping.cpp
+	LandweberMinimizer.cpp
 	SequentialSubspaceMinimizer.cpp
 	SmoothnessModulus.cpp)
 # ${CMAKE_CURRENT_BINARY_DIR}/Table.h
@@ -24,6 +25,7 @@ install (TARGETS Minimizations DESTINATION bin)
 install (FILES BregmanFunctional.hpp DESTINATION include)
 install (FILES DualityMapping.hpp DESTINATION include)
 install (FILES GeneralMinimizer.hpp DESTINATION include)
+install (FILES LandweberMinimizer.hpp DESTINATION include)
 install (FILES MinimizationExceptions.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
