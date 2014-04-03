@@ -10,7 +10,6 @@
 #include "SequentialSubspaceMinimizer.hpp"
 
 #include <boost/log/trivial.hpp>
-#include <cassert>
 #include <cmath>
 #include <Eigen/Dense>
 #include <levmar.h>
@@ -18,6 +17,7 @@
 #include "BregmanFunctional.hpp"
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
+#include "MinimizationExceptions.hpp"
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer() :
 	MaxOuterIterations(1000),
@@ -26,7 +26,9 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer() :
 	tau(1.1)
 {
 	// check that regularization parameter is greater than 1
-	assert( tau > 1 );
+	if (tau <= 1.)
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("tau");
 }
 
 /** Structure containing all parameters to call BregmanFunctional functions.
@@ -222,9 +224,11 @@ SequentialSubspaceMinimizer::operator()(
 						covar,
 						static_cast<void *>(&params)
 						);
+				if (ret == -1)
+					throw MinimizationFunctionError_exception()
+						<< MinimizationFunctionError_name(tau);
 				// free everything
 				free(work);
-				free(covar);
 				// solution is in tmin already
 			}
 			const Eigen::VectorXd uold = u;
