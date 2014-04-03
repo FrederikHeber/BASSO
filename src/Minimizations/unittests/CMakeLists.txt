@@ -33,6 +33,18 @@ target_link_libraries (LpNormUnitTest
 add_test (LpNormUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/LpNormUnitTest)
 
+########################## SmoothnessModulusUnitTest #######################
+add_executable (SmoothnessModulusUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	SmoothnessModulusUnitTest.cpp) 
+target_link_libraries (SmoothnessModulusUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (SmoothnessModulusUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/SmoothnessModulusUnitTest)
+
+
 # mark as to fail if required
 #set_tests_properties (BregmanFunctionalUnitTest
 #	PROPERTIES WILL_FAIL true)
