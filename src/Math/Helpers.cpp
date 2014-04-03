@@ -8,6 +8,7 @@
 #include "BassoConfig.h"
 
 #include "Helpers.hpp"
+#include "MathExceptions.hpp"
 
 #include <cmath>
 
@@ -19,7 +20,9 @@ Eigen::VectorXd Helpers::circshift(const Eigen::VectorXd &_x, const int shift)
 		// for the moment we just copy the entries and do not use any ...
 		// TODO: fancy mem copying of blocks
 		const int size = _x.innerSize();
-		assert( abs(shift) <= size);
+		if (abs(shift) > size)
+			throw MathIllegalValue_Error()
+				<< MathIllegalValue_name("shift");
 		Eigen::VectorXd shiftedx(size);
 		for (int i=0;i<size; ++i) {
 			// add size to prevent negative nu8mbers
