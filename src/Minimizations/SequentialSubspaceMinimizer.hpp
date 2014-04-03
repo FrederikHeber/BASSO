@@ -10,30 +10,19 @@
 
 #include <Eigen/Dense>
 
+#include "Minimizations/GeneralMinimizer.hpp"
+
 /** This class implements the sequential subspace optimization by [Schöpfer,
  * Schuster,Louis, 2006].
  *
  */
-class SequentialSubspaceMinimizer
+class SequentialSubspaceMinimizer : public GeneralMinimizer
 {
 public:
 	SequentialSubspaceMinimizer();
 	~SequentialSubspaceMinimizer() {}
 
-	/** Internal structure for return values.
-	 *
-	 */
-	struct ReturnValues
-	{
-		//!> solution vector
-		Eigen::VectorXd solution;
-		//!> remaining residuum
-		double residuum;
-		//!> number of outer iterations till solution
-		int NumberOuterIterations;
-	};
-
-	ReturnValues operator()(
+	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
 			const unsigned int _NormX,
 			const Eigen::MatrixXd &_A,

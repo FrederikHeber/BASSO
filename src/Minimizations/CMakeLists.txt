@@ -22,5 +22,6 @@ add_library (Minimizations
 install (TARGETS Minimizations DESTINATION bin)
 install (FILES BregmanFunctional.hpp DESTINATION include)
 install (FILES DualityMapping.hpp DESTINATION include)
+install (FILES GeneralMinimizer.hpp DESTINATION include)
 install (FILES MinimizationExceptions.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
