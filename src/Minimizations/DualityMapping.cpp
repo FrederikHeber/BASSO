@@ -51,7 +51,7 @@ Eigen::VectorXd DualityMapping::operator()(
 		temp[0] = 1.;
 		const Eigen::VectorXd Jx = Helpers::circshift(temp, rowMax); // no -1 here, as index starts at 0 here, not 1
 		return Jx * factor;
-	} else if (p == 1.) {
+	} else if (p <= 1.) {
 		// J=norm(x,1)^(q-1)*sign(x);
 		const double factor = ::pow(lpnorm(_x), (double)_power-1.);
 		return factor*Helpers::signum(_x);
@@ -59,14 +59,14 @@ Eigen::VectorXd DualityMapping::operator()(
 		// J=abs(x).^(p-1).*sign(x);
 		Eigen::VectorXd Jx = _x.array().abs();
 		for (int i=0;i<Jx.innerSize();++i)
-			Jx[i] = ::pow(Jx[i], p - 1.) * Helpers::sign(Jx[i]);
+			Jx[i] = ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
 		return Jx;
 	} else if (p < (double)_power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
 		const double pnorm = ::pow(lpnorm(_x), (double)_power-p);
 		Eigen::VectorXd Jx = _x.array().abs();
 		for (int i=0;i<Jx.innerSize();++i)
-			Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(Jx[i]);
+			Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
 		return Jx;
 	} else {
 		const double norm = lpnorm(_x);
@@ -80,7 +80,7 @@ Eigen::VectorXd DualityMapping::operator()(
 			const double pnorm = ::pow(norm, exponent);
 			Eigen::VectorXd Jx = _x.array().abs();
 			for (int i=0;i<Jx.innerSize();++i)
-				Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(Jx[i]);
+				Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
 			return Jx;
 		}
 	}
