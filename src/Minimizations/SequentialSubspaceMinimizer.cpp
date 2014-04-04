@@ -23,13 +23,14 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const unsigned int _NormX,
 		const unsigned int _NormY,
 		const double _PowerY,
-		const double _Delta
+		const double _Delta,
+		const unsigned int _maxiter
 		) :
 	val_NormX(_NormX),
 	val_NormY(_NormY),
 	PowerY(_PowerY),
 	Delta(_Delta),
-	MaxOuterIterations(1000),
+	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
 	TolFun(1e-12),
 	tau(1.1)

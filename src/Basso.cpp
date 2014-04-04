@@ -37,6 +37,7 @@ int main (int argc, char *argv[])
 	        		"set the forward operator matrix file")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
+	        ("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
 	        ;
 
 	po::variables_map vm;
@@ -91,6 +92,15 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Filename of vector was set to " << rhs_file << ".\n";
 	}
+	unsigned int maxiter;
+	if (vm.count("maxiter")) {
+		maxiter = vm["maxiter"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum iterations was set to " << maxiter << ".\n";
+	} else {
+		// set default value
+		maxiter = 50;
+	}
 
 	// parse matrix and vector files into instances
 	Eigen::MatrixXd matrix;
@@ -123,7 +133,8 @@ int main (int argc, char *argv[])
 //			normx,
 //			normy,
 //			powery,
-//			delta);
+//			delta,
+//			maxiter);
 //	SequentialSubspaceMinimizer::ReturnValues result =
 //			minimizer(
 //					x0,
@@ -133,7 +144,8 @@ int main (int argc, char *argv[])
 			normx,
 			normy,
 			powery,
-			delta);
+			delta,
+			maxiter);
 	LandweberMinimizer::ReturnValues result =
 			minimizer(
 					x0,

@@ -23,7 +23,8 @@ public:
 			const unsigned int _NormX,
 			const unsigned int _NormY,
 			const double _PowerY,
-			const double _Delta
+			const double _Delta,
+			const unsigned int _maxiter
 			);
 	~SequentialSubspaceMinimizer() {}
 

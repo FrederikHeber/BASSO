@@ -23,13 +23,14 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _NormX,
 		const double _NormY,
 		const double _PowerY,
-		const double _Delta
+		const double _Delta,
+		const unsigned int _maxiter
 		) :
 	val_NormX(_NormX),
 	val_NormY(_NormY),
 	PowerY(_PowerY),
 	Delta(_Delta),
-	MaxOuterIterations(50),
+	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
 	TolFun(1e-12),
 	C(0.9)
