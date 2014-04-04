@@ -23,6 +23,7 @@ public:
 			const double _NormY,
 			const double _PowerY,
 			const double _Delta,
+			const double _C,
 			const unsigned int _maxiter
 			);
 	~LandweberMinimizer() {}

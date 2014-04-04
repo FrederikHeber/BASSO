@@ -24,6 +24,7 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _NormY,
 		const double _PowerY,
 		const double _Delta,
+		const double _C,
 		const unsigned int _maxiter
 		) :
 	val_NormX(_NormX),
@@ -33,7 +34,7 @@ LandweberMinimizer::LandweberMinimizer(
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
 	TolFun(1e-12),
-	C(0.9)
+	C(_C)
 {
 	if ((C <= 0.)) // || ( C > 1.))
 		throw MinimizationIllegalValue_exception()

@@ -29,6 +29,7 @@ int main (int argc, char *argv[])
 	po::options_description desc("Allowed options");
 	desc.add_options()
 	        ("help", "produce help message")
+	        ("C", po::value<double>(), "set the value for C")
 	        ("normx", po::value<double>(), "set the norm of the space X")
 	        ("normy", po::value<double>(), "set the norm of the space Y")
 	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
@@ -56,6 +57,14 @@ int main (int argc, char *argv[])
 	}
 
 	// parse options
+	double C;
+	if (vm.count("C")) {
+		C = vm["C"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "C was set to " << C << ".\n";
+	} else {
+		C = 0.9;
+	}
 	double normx;
 	if (vm.count("normx")) {
 		normx = vm["normx"].as<double>();
@@ -145,6 +154,7 @@ int main (int argc, char *argv[])
 			normy,
 			powery,
 			delta,
+			C,
 			maxiter);
 	LandweberMinimizer::ReturnValues result =
 			minimizer(
