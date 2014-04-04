@@ -26,7 +26,9 @@ public:
 	{
 		//!> solution vector
 		Eigen::VectorXd solution;
-		//!> remaining residuum
+		//!> residual vector
+		Eigen::VectorXd residual;
+		//!> remaining residuum, i.e. norm of residual
 		double residuum;
 		//!> number of outer iterations till solution
 		int NumberOuterIterations;

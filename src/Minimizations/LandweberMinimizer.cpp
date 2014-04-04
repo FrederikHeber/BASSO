@@ -23,8 +23,12 @@ LandweberMinimizer::LandweberMinimizer() :
 	MaxOuterIterations(50),
 	TolX(1e-6),
 	TolFun(1e-12),
-	C(0.5)
-{}
+	C(0.9)
+{
+	if ((C <= 0.) || ( C > 1.))
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("C");
+}
 
 struct LandweberParameters
 {
@@ -40,7 +44,8 @@ func(double *p, double *hx, int m, int n, void *adata)
 {
 	LandweberParameters *params = static_cast<LandweberParameters *>(adata);
 	const double result = (*params->modul)(p[0]);
-	hx[0] = result/p[0] - params->lambda;
+	const double norm = result/p[0] - params->lambda;
+	hx[0] = norm*norm;
 }
 
 double LandweberMinimizer::calculateMatchingTau(
@@ -51,9 +56,9 @@ double LandweberMinimizer::calculateMatchingTau(
 	LandweberParameters params;
 	params.modul = &_modul;
 	params.lambda = _lambda;
-	double tau = .5;
+	double tau[] = { .5 };
 	double info[LM_INFO_SZ];
-	double x[1];
+	double x[] = { 0. };
 	const int m = 1;
 	const int n = 1;
 	double lb[] = { std::numeric_limits<double>::epsilon() };
@@ -61,11 +66,11 @@ double LandweberMinimizer::calculateMatchingTau(
 	double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
 	double *covar = work+LM_DIF_WORKSZ(m, n);
 	int ret = dlevmar_bc_dif(
-			*func,
-			&tau,
+			(*func),
+			tau,
 			x,
-			1,
-			1,
+			m,
+			n,
 			lb,
 			ub,
 			NULL,
@@ -76,18 +81,34 @@ double LandweberMinimizer::calculateMatchingTau(
 			covar,
 			&params
 			);
-	if (ret == -1)
+//	  std::cout << "Minimization info: ";
+//	  for(int i=0; i<LM_INFO_SZ; ++i)
+//	    std::cout << info[i] << ", ";
+//	  std::cout << std::endl;
+	  if (ret == -1)
 		throw MinimizationFunctionError_exception()
-			<< MinimizationFunctionError_name(tau);
+			<< MinimizationFunctionError_name(tau[0]);
 	// free everything
 	free(work);
 	BOOST_LOG_TRIVIAL(trace)
-		<< "Matching tau from modulus of smoothness is " << tau;
+		<< "Matching tau from modulus of smoothness is " << tau[0];
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Counter-check: rho(tau)/tau = "
-		<< _modul(tau)/tau << ", compare with lambda = " << _lambda;
+		<< _modul(tau[0])/tau[0] << ", compare with lambda = " << _lambda;
 
-	return tau;
+	return tau[0];
+}
+
+double LandweberMinimizer::calculateResidual(
+		const Eigen::VectorXd &_x0,
+		const Eigen::MatrixXd &_A,
+		const Eigen::VectorXd &_y,
+		const LpNorm &_NormY,
+		Eigen::VectorXd &_residual
+		) const
+{
+	_residual = _A * _x0 - _y;
+	return _NormY(_residual);
 }
 
 GeneralMinimizer::ReturnValues
@@ -105,20 +126,35 @@ LandweberMinimizer::operator()(
 	double DualPowerX;
 	double val_DualNormX = _val_NormX/(_val_NormX - 1.);
 	double G;
-	if (_val_NormX > 2) {
-		PowerX = _val_NormX;
-		DualPowerX = PowerX/(PowerX - 1.);
+	const double TolY = _Delta;
+	PowerX = _val_NormX;
+	DualPowerX = val_DualNormX; // PowerX/(PowerX - 1.);
+	if (val_DualNormX < 2.) {
 		G = ::pow(2., 2. - val_DualNormX);
 	} else {
-		PowerX = 2.;
-		DualPowerX = 2.;
+//		PowerX = 2.;
+//		DualPowerX = 2.;
 		G = val_DualNormX - 1.;
 	}
+	BOOST_LOG_TRIVIAL(debug)
+		<< "p is " << _val_NormX
+		<< ", q is " << val_DualNormX
+		<< ", r is " << _val_NormY
+		<< ", power of J_p is " <<  PowerX
+		<< ", power of J_q is " <<  DualPowerX
+		<< ", power of J_r is " <<  _PowerY;
 
-	// prepare norm functors
+	// prepare norm and duality mapping functors
 	LpNorm NormX(_val_NormX);
 	LpNorm NormY(_val_NormY);
 	LpNorm DualNormX(val_DualNormX);
+	DualityMapping J_p(_val_NormX);
+	DualityMapping J_q(val_DualNormX);
+	DualityMapping j_r(_val_NormY);
+	J_p.setTolerance(TolX);
+	J_q.setTolerance(TolX);
+	j_r.setTolerance(TolY);
+	SmoothnessModulus modul(val_DualNormX);
 
 	// initialize return structure
 	ReturnValues returnvalues;
@@ -130,63 +166,74 @@ LandweberMinimizer::operator()(
 
 	BOOST_LOG_TRIVIAL(debug) << "Calculating "
 			<< _A << "*" << _x0 << "-" << _y;
-	Eigen::VectorXd w = _A * _x0 - _y;
-	double wNorm = NormY(w);
-	double TolY = _Delta;
-	returnvalues.residuum = wNorm;
+
+	// calculate starting residual and norm
+	returnvalues.residuum = calculateResidual(
+			_x0, _A, _y, NormY,
+			returnvalues.residual);
 
 	// check stopping criterion
 	StopCriterion = (fabs(returnvalues.residuum) <= TolY);
 
-	// start building up search space 'U' with the search vectors 'u'
-	DualityMapping J_p(_val_NormX);
-	DualityMapping j_r(_val_NormY);
-	J_p.setTolerance(TolX);
-	j_r.setTolerance(TolY);
-	DualityMapping J_q(val_DualNormX);
-	J_q.setTolerance(TolX);
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
+	const double modulus_at_one = modul(1);
+	const double _ANorm = ::pow(2, 1.+ 1./_val_NormY); //_A.norm();
 	while (!StopCriterion) {
 		BOOST_LOG_TRIVIAL(debug)
-				<< "Current iteration is " << returnvalues.NumberOuterIterations
-				<< " at position " << returnvalues.solution.transpose();
-				DualityMapping J_y(_val_NormY);
-		J_y.setTolerance(TolX);
-		Eigen::VectorXd u = _A.transpose()*J_y(w, _PowerY);
+				<< "#" << returnvalues.NumberOuterIterations
+				<< " at " << returnvalues.solution.transpose()
+				<< " in " << returnvalues.residual.transpose()
+				<< " with residual of " << returnvalues.residuum;
 		double alpha = 0.;
-		const double _ANorm = _A.norm();
-		if ((returnvalues.NumberOuterIterations == 0)
-			|| (dual_solution.isZero())) {
+		if (dual_solution.isApproxToConstant(0, TolX)) {
 			alpha =
-					C * ::pow(_val_NormY, _val_NormX - 1.) / ::pow(_ANorm,_val_NormX)
+					C * (::pow(val_DualNormX, _val_NormX - 1.)
+						/ ::pow(_ANorm,_val_NormX))
 					* ::pow(returnvalues.residuum, _val_NormX - _val_NormY);
 		} else {
-			SmoothnessModulus modul(_val_NormX);
-			const double modulus = modul(1);
+			const double xnorm = NormX(returnvalues.solution);
 			alpha = C/(::pow(2., val_DualNormX) * G * _ANorm)
-					* returnvalues.residuum / dual_solution.norm();
-			const double lambda = std::min(modulus, alpha);
+					* (returnvalues.residuum / xnorm);
+			const double lambda = std::min(modulus_at_one, alpha);
 			// find intermediate value in smoothness modulus to match lambda
 			const double tau = calculateMatchingTau(modul, lambda);
 			// calculate step width
 			alpha = (tau/_ANorm)
-					* ::pow( dual_solution.norm(), _val_NormX-1.)
-					/ ::pow(returnvalues.residuum, _val_NormY - 1.);
+					* (::pow( xnorm, _val_NormX-1.)
+						/ ::pow(returnvalues.residuum, _val_NormY - 1.));
 		}
 
-		// iterate
-		dual_solution -= alpha * _A.transpose()
-				* j_r( _A * returnvalues.solution - _y, _PowerY);
+		// iterate: J_p (x_{n+1})
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "Step width is " << alpha;
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "A^* is " << _A.transpose();
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "j_r (residual) is "
+//			<< j_r( returnvalues.residual, _PowerY).transpose();
+		const Eigen::VectorXd u = _A.transpose() * j_r( returnvalues.residual, _PowerY);
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "u is " << u.transpose();
+		dual_solution -= alpha * u;
 
-		// finally map back from X^{\conj} to X
+		// finally map back from X^{\conj} to X: x_{n+1}
 		returnvalues.solution =
-				J_q(dual_solution, PowerX);
+				J_q(dual_solution, DualPowerX);
+
+		// update residual
+		returnvalues.residuum = calculateResidual(
+				returnvalues.solution,
+				_A,
+				_y,
+				NormY,
+				returnvalues.residual);
 
 		// check iterations count
 		++returnvalues.NumberOuterIterations;
 		StopCriterion =
-				(returnvalues.NumberOuterIterations >= MaxOuterIterations);
+				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
+				|| (fabs(returnvalues.residuum) <= TolY);
 	}
 
 	return returnvalues;
