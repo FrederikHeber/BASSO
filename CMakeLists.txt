@@ -81,7 +81,8 @@ find_package (Librt)
 # find boost
 set ( Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.55" "1.55.0" )
 set ( Boost_USE_STATIC_LIBS ON )
-find_package ( Boost 1.54 COMPONENTS 
+find_package ( Boost 1.54 COMPONENTS
+	log_setup 
 	log 
 	filesystem
 	thread

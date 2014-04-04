@@ -8,6 +8,9 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/console.hpp>
 #include <boost/program_options.hpp>
 
 #include "MatrixIO/MatrixIO.hpp"
@@ -15,20 +18,20 @@
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
+namespace logging = boost::log;
 namespace src = boost::log::sources;
+namespace expr = boost::log::expressions;
+namespace keywords = boost::log::keywords;
+
+BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime);
 
 int main (int argc, char *argv[])
 {
-	// initialize basso logger
-	boost::log::core::get()->set_filter
-    (
-    		boost::log::trivial::severity >= boost::log::trivial::debug
-    );
-
 	// set up command-line-parameters
 	po::options_description desc("Allowed options");
 	desc.add_options()
 	        ("help", "produce help message")
+	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ("C", po::value<double>(), "set the value for C")
 	        ("normx", po::value<double>(), "set the norm of the space X")
 	        ("normy", po::value<double>(), "set the norm of the space Y")
@@ -55,6 +58,48 @@ int main (int argc, char *argv[])
 	    std::cout << desc << "\n";
 	    return 1;
 	}
+
+
+	unsigned int verbose = 0;
+	if (vm.count("verbose")) {
+		verbose = vm["verbose"].as<unsigned int>();
+		if (verbose > 0)
+			std::cout << "Verbose set to " << verbose << std::endl;
+	}
+	switch (verbose) {
+	default:
+	case 0:
+		logging::core::get()->set_filter
+		(
+				logging::trivial::severity >= logging::trivial::info
+		);
+		break;
+	case 1:
+		logging::core::get()->set_filter
+		(
+				logging::trivial::severity >= logging::trivial::debug
+		);
+		break;
+	case 2:
+		logging::core::get()->set_filter
+		(
+				logging::trivial::severity >= logging::trivial::trace
+		);
+		break;
+	}
+	// change log format
+	logging::add_console_log(std::cout,
+			keywords::format = (
+				expr::stream
+					<< expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S")
+					//<< expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
+					<< ": <" << logging::trivial::severity
+					<< "> " << expr::smessage
+					)
+			//keywords::format = "[%TimeStamp%]: [%Severity%] %Message%"
+			);
+	// register attributes
+	logging::add_common_attributes();
 
 	// parse options
 	double C;
