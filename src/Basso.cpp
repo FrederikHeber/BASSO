@@ -11,6 +11,7 @@
 #include <boost/program_options.hpp>
 
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
@@ -115,22 +116,32 @@ int main (int argc, char *argv[])
 	// prepare start value
 	Eigen::VectorXd x0(rhs.innerSize());
 	x0.setZero();
-	std::cout << "Starting at x0 = " << x0 << std::endl;
+	std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
 
 	// call minimizer
-	SequentialSubspaceMinimizer minimizer;
-	SequentialSubspaceMinimizer::ReturnValues result =
+//	SequentialSubspaceMinimizer minimizer(
+//			normx,
+//			normy,
+//			powery,
+//			delta);
+//	SequentialSubspaceMinimizer::ReturnValues result =
+//			minimizer(
+//					x0,
+//					matrix,
+//					rhs);
+	LandweberMinimizer minimizer(
+			normx,
+			normy,
+			powery,
+			delta);
+	LandweberMinimizer::ReturnValues result =
 			minimizer(
 					x0,
-					normx,
 					matrix,
-					rhs,
-					normy,
-					powery,
-					delta);
+					rhs);
 
 	// give result
-	std::cout << "Solution is " << std::scientific << std::setprecision(8) << result.solution << ","
+	std::cout << "Solution is " << std::scientific << std::setprecision(8) << result.solution.transpose() << ","
 		<< " found after " << result.NumberOuterIterations
 		<< " with residual error of " << result.residuum << std::endl;
 

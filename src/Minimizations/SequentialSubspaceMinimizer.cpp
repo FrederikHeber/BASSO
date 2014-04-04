@@ -19,7 +19,16 @@
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 
-SequentialSubspaceMinimizer::SequentialSubspaceMinimizer() :
+SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
+		const unsigned int _NormX,
+		const unsigned int _NormY,
+		const double _PowerY,
+		const double _Delta
+		) :
+	val_NormX(_NormX),
+	val_NormY(_NormY),
+	PowerY(_PowerY),
+	Delta(_Delta),
 	MaxOuterIterations(1000),
 	TolX(1e-6),
 	TolFun(1e-12),
@@ -111,13 +120,9 @@ jacf(double *p, double *j, int m, int n, void *adata)
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
-		const unsigned int _val_NormX,
 		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
-		const unsigned int _val_NormY,
-		const double _PowerY,
-		const double _Delta
-		)
+		const Eigen::VectorXd &_y
+		) const
 {
 //	NoCols = _A.innerSize();
 //	NoRows = _A.outerSize();
@@ -126,20 +131,20 @@ SequentialSubspaceMinimizer::operator()(
 	double DualPowerX;
 	double val_DualNormX;
 	double G;
-	if (_val_NormX > 2) {
-		PowerX = _val_NormX;
+	if (val_NormX > 2) {
+		PowerX = val_NormX;
 		DualPowerX = PowerX/(PowerX - 1.);
 		G = ::pow(2., 2. - val_DualNormX);
 	} else {
 		PowerX = 2.;
 		DualPowerX = 2.;
-		val_DualNormX = _val_NormX/(_val_NormX - 1.);
+		val_DualNormX = val_NormX/(val_NormX - 1.);
 		G = val_DualNormX - 1.;
 	}
 
 	// prepare norm functors
-	LpNorm NormX(_val_NormX);
-	LpNorm NormY(_val_NormY);
+	LpNorm NormX(val_NormX);
+	LpNorm NormY(val_NormY);
 	LpNorm DualNormX(val_DualNormX);
 
 	// initialize return structure
@@ -154,7 +159,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< _A << "*" << _x0 << "-" << _y;
 	Eigen::VectorXd w = _A * _x0 - _y;
 	double wNorm = NormY(w);
-	double TolY = tau * _Delta;
+	double TolY = tau * Delta;
 	returnvalues.residuum = wNorm;
 
 	// check stopping criterion
@@ -165,21 +170,21 @@ SequentialSubspaceMinimizer::operator()(
 		if ((returnvalues.NumberOuterIterations == 0)
 			|| (returnvalues.residuum > TolY)) {
 			// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-			DualityMapping J_y(_val_NormY);
+			DualityMapping J_y(val_NormY);
 			J_y.setTolerance(TolX);
-			Eigen::VectorXd u = _A.transpose()*J_y(w, _PowerY);
+			Eigen::VectorXd u = _A.transpose()*J_y(w, PowerY);
 			// uNorm=norm(u,DualNormX);
 			const double uNorm = DualNormX(u);
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
-					u.transpose() * _x0 - ::pow(returnvalues.residuum,_PowerY);
+					u.transpose() * _x0 - ::pow(returnvalues.residuum,PowerY);
 			// d=Delta*Residual^(PowerY-1);
-			const double d = _Delta * ::pow(returnvalues.residuum,(double)_PowerY-1.);
+			const double d = Delta * ::pow(returnvalues.residuum,(double)PowerY-1.);
 			// beta=Residual^(PowerY-1)*(Residual-Delta)/uNorm^DualPowerX;
-			const double beta = ::pow(returnvalues.residuum,(double)_PowerY-1.)
-					* (returnvalues.residuum-_Delta)/::pow(uNorm, DualPowerX);
+			const double beta = ::pow(returnvalues.residuum,(double)PowerY-1.)
+					* (returnvalues.residuum-Delta)/::pow(uNorm, DualPowerX);
 			// Jx=DualityMapping(x,NormX,PowerX,TolX);
-			DualityMapping J_x(_val_NormX);
+			DualityMapping J_x(val_NormX);
 			J_x.setTolerance(TolX);
 			Eigen::VectorXd Jx = J_x(_x0, PowerX);
 

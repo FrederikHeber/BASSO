@@ -19,13 +19,22 @@
 #include "MinimizationExceptions.hpp"
 #include "SmoothnessModulus.hpp"
 
-LandweberMinimizer::LandweberMinimizer() :
+LandweberMinimizer::LandweberMinimizer(
+		const double _NormX,
+		const double _NormY,
+		const double _PowerY,
+		const double _Delta
+		) :
+	val_NormX(_NormX),
+	val_NormY(_NormY),
+	PowerY(_PowerY),
+	Delta(_Delta),
 	MaxOuterIterations(50),
 	TolX(1e-6),
 	TolFun(1e-12),
 	C(0.9)
 {
-	if ((C <= 0.) || ( C > 1.))
+	if ((C <= 0.)) // || ( C > 1.))
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("C");
 }
@@ -114,20 +123,16 @@ double LandweberMinimizer::calculateResidual(
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
-		const unsigned int _val_NormX,
 		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
-		const unsigned int _val_NormY,
-		const double _PowerY,
-		const double _Delta
+		const Eigen::VectorXd &_y
 		) const
 {
 	double PowerX;
 	double DualPowerX;
-	double val_DualNormX = _val_NormX/(_val_NormX - 1.);
+	double val_DualNormX = val_NormX/(val_NormX - 1.);
 	double G;
-	const double TolY = _Delta;
-	PowerX = _val_NormX;
+	const double TolY = Delta;
+	PowerX = val_NormX;
 	DualPowerX = val_DualNormX; // PowerX/(PowerX - 1.);
 	if (val_DualNormX < 2.) {
 		G = ::pow(2., 2. - val_DualNormX);
@@ -137,20 +142,20 @@ LandweberMinimizer::operator()(
 		G = val_DualNormX - 1.;
 	}
 	BOOST_LOG_TRIVIAL(debug)
-		<< "p is " << _val_NormX
+		<< "p is " << val_NormX
 		<< ", q is " << val_DualNormX
-		<< ", r is " << _val_NormY
+		<< ", r is " << val_NormY
 		<< ", power of J_p is " <<  PowerX
 		<< ", power of J_q is " <<  DualPowerX
-		<< ", power of J_r is " <<  _PowerY;
+		<< ", power of J_r is " <<  PowerY;
 
 	// prepare norm and duality mapping functors
-	LpNorm NormX(_val_NormX);
-	LpNorm NormY(_val_NormY);
+	LpNorm NormX(val_NormX);
+	LpNorm NormY(val_NormY);
 	LpNorm DualNormX(val_DualNormX);
-	DualityMapping J_p(_val_NormX);
+	DualityMapping J_p(val_NormX);
 	DualityMapping J_q(val_DualNormX);
-	DualityMapping j_r(_val_NormY);
+	DualityMapping j_r(val_NormY);
 	J_p.setTolerance(TolX);
 	J_q.setTolerance(TolX);
 	j_r.setTolerance(TolY);
@@ -178,7 +183,7 @@ LandweberMinimizer::operator()(
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
 	const double modulus_at_one = modul(1);
-	const double _ANorm = ::pow(2, 1.+ 1./_val_NormY); //_A.norm();
+	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
 	while (!StopCriterion) {
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
@@ -188,9 +193,9 @@ LandweberMinimizer::operator()(
 		double alpha = 0.;
 		if (dual_solution.isApproxToConstant(0, TolX)) {
 			alpha =
-					C * (::pow(val_DualNormX, _val_NormX - 1.)
-						/ ::pow(_ANorm,_val_NormX))
-					* ::pow(returnvalues.residuum, _val_NormX - _val_NormY);
+					C * (::pow(val_DualNormX, val_NormX - 1.)
+						/ ::pow(_ANorm,val_NormX))
+					* ::pow(returnvalues.residuum, val_NormX - val_NormY);
 		} else {
 			const double xnorm = NormX(returnvalues.solution);
 			alpha = C/(::pow(2., val_DualNormX) * G * _ANorm)
@@ -200,21 +205,22 @@ LandweberMinimizer::operator()(
 			const double tau = calculateMatchingTau(modul, lambda);
 			// calculate step width
 			alpha = (tau/_ANorm)
-					* (::pow( xnorm, _val_NormX-1.)
-						/ ::pow(returnvalues.residuum, _val_NormY - 1.));
+					* (::pow( xnorm, val_NormX-1.)
+						/ ::pow(returnvalues.residuum, val_NormY - 1.));
 		}
 
 		// iterate: J_p (x_{n+1})
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "Step width is " << alpha;
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "A^* is " << _A.transpose();
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "j_r (residual) is "
-//			<< j_r( returnvalues.residual, _PowerY).transpose();
-		const Eigen::VectorXd u = _A.transpose() * j_r( returnvalues.residual, _PowerY);
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "u is " << u.transpose();
+		BOOST_LOG_TRIVIAL(trace)
+			<< "Step width is " << alpha;
+		BOOST_LOG_TRIVIAL(trace)
+			<< "A^* is " << _A.transpose();
+		BOOST_LOG_TRIVIAL(trace)
+			<< "j_r (residual) is "
+			<< j_r( returnvalues.residual, PowerY).transpose();
+		const Eigen::VectorXd u =
+				_A.transpose() * j_r( returnvalues.residual, PowerY);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "u is " << u.transpose();
 		dual_solution -= alpha * u;
 
 		// finally map back from X^{\conj} to X: x_{n+1}
