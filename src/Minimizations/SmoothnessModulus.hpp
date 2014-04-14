@@ -25,7 +25,7 @@ public:
 	 * \param _value
 	 * \return rho of \a _value
 	 */
-	double operator()(const double _value);
+	double operator()(const double _value) const;
 
 private:
 	//!> p value for norm

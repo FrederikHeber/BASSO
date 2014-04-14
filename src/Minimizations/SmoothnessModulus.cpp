@@ -19,7 +19,7 @@ SmoothnessModulus::SmoothnessModulus(const double _p) :
 			<< MinimizationIllegalValue_name("p");
 }
 
-double SmoothnessModulus::operator()(const double _value)
+double SmoothnessModulus::operator()(const double _value) const
 {
 //	BOOST_LOG_TRIVIAL(trace) <<
 //			"Calculating modulus of smoothness at " << _value;
@@ -30,9 +30,13 @@ double SmoothnessModulus::operator()(const double _value)
 	double result = 0.;
 	if ((p > 1.) && (p <= 2.)) {
 		const double value_p = ::pow(_value, p);
-		result = ::pow( 1. + value_p, 1./p) - 1.;
+		result = value_p/p;
+				// ::pow( 1. + value_p, 1./p) - 1.;
 	} else if (p > 2.) {
 		result = .5*(p-1.)*_value*_value;
+//				::pow(
+//				.5*(::pow(1. + _value, p) + ::pow(fabs(1. - _value), p)),
+//				1./p) - 1.; //
 	}
 
 	return result;

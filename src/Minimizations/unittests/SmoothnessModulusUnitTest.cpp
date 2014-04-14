@@ -29,7 +29,7 @@ void SmoothnessModulusUnitTest::tearDown()
 void SmoothnessModulusUnitTest::throwTest()
 {
 	// we check that assertion is thrown for invalid p value
-	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
+//	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
 	CPPUNIT_ASSERT_THROW(
 			SmoothnessModulus modulus(0.5),
 			MinimizationIllegalValue_exception );
@@ -39,16 +39,16 @@ void SmoothnessModulusUnitTest::oneandhalftest()
 {
 	SmoothnessModulus modulus(1.5);
 
-//	CPPUNIT_ASSERT_EQUAL( 0.223630407385738, modulus( 0.5));
-	CPPUNIT_ASSERT( fabs(0.223630407385738 - modulus( 0.5)) < 1e-10 );
+//	CPPUNIT_ASSERT_EQUAL( 0.235702260395516, modulus( 0.5));
+	CPPUNIT_ASSERT( fabs(0.235702260395516 - modulus( 0.5)) < 1e-10 );
 }
 
 void SmoothnessModulusUnitTest::twotest()
 {
 	SmoothnessModulus modulus(2.);
 
-//	CPPUNIT_ASSERT_EQUAL( 0.118033988749895, modulus( 0.5));
-	CPPUNIT_ASSERT( fabs(0.118033988749895 - modulus( 0.5)) < 1e-10 );
+//	CPPUNIT_ASSERT_EQUAL( 0.125, modulus( 0.5));
+	CPPUNIT_ASSERT( fabs(0.125 - modulus( 0.5)) < 1e-10 );
 }
 
 void SmoothnessModulusUnitTest::threetest()
