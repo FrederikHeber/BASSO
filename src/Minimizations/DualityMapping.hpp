@@ -34,7 +34,7 @@ public:
 	 *
 	 * \param _tolerance value to set to
 	 */
-	void setTolerance(const double _tolerance)
+	void setTolerance(const double _tolerance) const
 	{ tolerance = _tolerance; }
 
 	/** Evaluates duality mapping at \a _x.
@@ -50,7 +50,7 @@ private:
 	//!> value p of the Lp norm
 	const double p;
 	//!> tolerance for norm value
-	double tolerance;
+	mutable double tolerance;
 	//!> lp norm object
 	LpNorm lpnorm;
 };
