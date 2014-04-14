@@ -42,23 +42,6 @@ private:
 			SmoothnessModulus &_modul,
 			const double _lambda) const;
 
-	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
-	 *
-	 * \param _x0 current iteration point
-	 * \param _A matrix of inverse problem
-	 * \param _y right-hand side
-	 * \param _NormY functor to calculate norm
-	 * \param _residual residual vector, updated after call
-	 * \return norm of residual
-	 */
-	double calculateResidual(
-			const Eigen::VectorXd &_x0,
-			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y,
-			const LpNorm &_NormY,
-			Eigen::VectorXd &_residual
-			) const;
-
 private:
 	//!> Lp norm of space X: p
 	const double val_NormX;

@@ -111,16 +111,79 @@ double LandweberMinimizer::calculateMatchingTau(
 	return tau[0];
 }
 
-double LandweberMinimizer::calculateResidual(
+/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
+ *
+ * \param _x0 current iteration point
+ * \param _A matrix of inverse problem
+ * \param _y right-hand side
+ * \param _NormY functor to calculate norm
+ * \param _residual residual vector, updated after call
+ * \return norm of residual
+ */
+static double calculateResidual(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
 		const LpNorm &_NormY,
 		Eigen::VectorXd &_residual
-		) const
+		)
 {
 	_residual = _A * _x0 - _y;
 	return _NormY(_residual);
+}
+
+struct MinimizationParameters
+{
+	MinimizationParameters(
+		const Eigen::VectorXd &_x_n,
+		const Eigen::VectorXd &_u_n,
+		const Eigen::MatrixXd &_A,
+		const Eigen::VectorXd &_y,
+		const LpNorm &_NormY,
+		const DualityMapping &_J_p,
+		const DualityMapping &_J_q
+			) :
+		x_n(_x_n),
+		u_n(_u_n),
+		A(_A),
+		y(_y),
+		NormY(_NormY),
+		J_p(_J_p),
+		J_q(_J_q)
+	{}
+
+	const Eigen::VectorXd &x_n;
+	const Eigen::VectorXd &u_n;
+	const Eigen::MatrixXd &A;
+	const Eigen::VectorXd &y;
+	const LpNorm &NormY;
+	const DualityMapping &J_p;
+	const DualityMapping &J_q;
+};
+
+/** Static function to calculate residual for given step width
+ *
+ */
+static void
+func_residual(double *p, double *hx, int m, int n, void *adata)
+{
+	struct MinimizationParameters *params =
+			static_cast<MinimizationParameters *>(adata);
+	// calculate new candidate position
+	Eigen::VectorXd dual_solution =
+			J_p(params->x_n, PowerX);
+	dual_solution -= alpha * u;
+	Eigen::VectorXd x =
+			J_q(dual_solution, DualPowerX);
+	// calculate residual at candidate position (goes into hx[0])
+	Eigen::VectorXd residual;
+	hx[0] = calculateResidual(
+			x,
+			params->A,
+			params->y,
+			params->NormY,
+			residual
+			);
 }
 
 GeneralMinimizer::ReturnValues
@@ -197,7 +260,16 @@ LandweberMinimizer::operator()(
 				<< " at " << returnvalues.solution.transpose()
 				<< " in " << returnvalues.residual.transpose()
 				<< " with residual of " << returnvalues.residuum;
+		BOOST_LOG_TRIVIAL(trace)
+			<< "j_r (residual) is "
+			<< j_r( returnvalues.residual, PowerY).transpose();
+		const Eigen::VectorXd u =
+				_A.transpose() * j_r( returnvalues.residual, PowerY);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "u is " << u.transpose();
 		double alpha = 0.;
+		// use step width used in theoretical proof
+		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
 		if (dual_solution.isApproxToConstant(0, TolX)) {
 			const double q_p = ::pow(val_DualNormX, val_NormX - 1.);
 			BOOST_LOG_TRIVIAL(trace)
@@ -233,17 +305,53 @@ LandweberMinimizer::operator()(
 				<< "R_r " << R_r;
 			alpha = (tau/_ANorm) * (x_p / R_r);
 		}
+		// get alpha from line search
+		// i.e. along u we look for alpha to minimize residual
+		{
+			struct MinimizationParameters params(
+					returnvalues.solution,	// x_n
+					u, // u_n
+					_A, // A
+					_y, // y
+					NormY, // Normy
+					J_p, // J_p
+					J_q // J_q
+					);
+			double info[LM_INFO_SZ];
+			double x[] = { 0. };
+			double opts[] = { TolX, TolX, TolX, TolX };
+			const int m = 1;
+			const int n = 1;
+			double lb[] = { 0 };
+			double ub[] = { std::numeric_limits<double>::max() };
+			double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
+			double *covar = work+LM_DIF_WORKSZ(m, n);
+			int ret = dlevmar_bc_dif(
+					(*func_residual),
+					&alpha,
+					x,
+					m,
+					n,
+					lb,
+					ub,
+					NULL,
+					1000,
+					opts, 	/* opts[4] */
+					info,
+					work,
+					covar,
+					&params
+					);
+			  if (ret == -1)
+				throw MinimizationFunctionError_exception()
+					<< MinimizationFunctionError_name(alpha);
+			// free everything
+			free(work);
+		}
 
 		// iterate: J_p (x_{n+1})
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Step width is " << alpha;
-		BOOST_LOG_TRIVIAL(trace)
-			<< "j_r (residual) is "
-			<< j_r( returnvalues.residual, PowerY).transpose();
-		const Eigen::VectorXd u =
-				_A.transpose() * j_r( returnvalues.residual, PowerY);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "u is " << u.transpose();
 		dual_solution -= alpha * u;
 
 		// finally map back from X^{\conj} to X: x_{n+1}
