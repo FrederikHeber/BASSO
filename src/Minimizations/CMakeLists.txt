@@ -17,6 +17,7 @@ add_library (Minimizations
 	BregmanFunctional.cpp 
 	DualityMapping.cpp
 	LandweberMinimizer.cpp
+	LandweberMinimizer_calculateMatchingTau.cpp
 	SequentialSubspaceMinimizer.cpp
 	SmoothnessModulus.cpp)
 # ${CMAKE_CURRENT_BINARY_DIR}/Table.h
