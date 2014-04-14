@@ -41,19 +41,20 @@ LandweberMinimizer::LandweberMinimizer(
 			<< MinimizationIllegalValue_name("C");
 }
 
-struct LandweberParameters
+struct SmoothnessParameters
 {
 	SmoothnessModulus *modul;
 	double lambda;
 };
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to calculate distance of smoothness modulus over tau
+ * to given lambda with respect to tau.
  *
  */
 static void
-func(double *p, double *hx, int m, int n, void *adata)
+func_smoothness_over_tau(double *p, double *hx, int m, int n, void *adata)
 {
-	LandweberParameters *params = static_cast<LandweberParameters *>(adata);
+	SmoothnessParameters *params = static_cast<SmoothnessParameters *>(adata);
 	const double result = (*params->modul)(p[0]);
 	const double norm = result/p[0] - params->lambda;
 	hx[0] = norm*norm;
@@ -64,7 +65,7 @@ double LandweberMinimizer::calculateMatchingTau(
 		const double _lambda
 		) const
 {
-	LandweberParameters params;
+	SmoothnessParameters params;
 	params.modul = &_modul;
 	params.lambda = _lambda;
 	double tau[] = { .5 };
@@ -77,7 +78,7 @@ double LandweberMinimizer::calculateMatchingTau(
 	double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
 	double *covar = work+LM_DIF_WORKSZ(m, n);
 	int ret = dlevmar_bc_dif(
-			(*func),
+			(*func_smoothness_over_tau),
 			tau,
 			x,
 			m,
