@@ -166,11 +166,20 @@ int main (int argc, char *argv[])
 			std::ifstream ist(matrix_file.string().c_str());
 			if (ist.good())
 				ist >> matrix;
+			else {
+				std::cerr << "Failed to open " << matrix_file.string() << std::endl;
+				return 255;
+			}
+
 		}
 		{
 			std::ifstream ist(rhs_file.string().c_str());
 			if (ist.good())
 				ist >> rhs;
+			else {
+				std::cerr << "Failed to open " << rhs_file.string() << std::endl;
+				return 255;
+			}
 		}
 	}
 	std::cout << "We solve for Ax = y with A = "
