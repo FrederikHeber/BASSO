@@ -67,12 +67,11 @@ double LandweberMinimizer::calculateResidual(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
-		const LpNorm &_NormY,
 		Eigen::VectorXd &_residual
 		) const
 {
 	_residual = _A * _x0 - _y;
-	return _NormY(_residual);
+	return NormY(_residual);
 }
 
 GeneralMinimizer::ReturnValues
@@ -104,7 +103,7 @@ LandweberMinimizer::operator()(
 	returnvalues.solution = _x0;
 	// calculate starting residual and norm
 	returnvalues.residuum = calculateResidual(
-			_x0, _A, _y, NormY,
+			_x0, _A, _y,
 			returnvalues.residual);
 
 	/// -# check stopping criterion
@@ -184,7 +183,6 @@ LandweberMinimizer::operator()(
 				returnvalues.solution,
 				_A,
 				_y,
-				NormY,
 				returnvalues.residual);
 
 		// check iterations count

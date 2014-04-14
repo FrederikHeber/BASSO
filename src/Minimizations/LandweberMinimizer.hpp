@@ -48,7 +48,6 @@ private:
 	 * \param _x0 current iteration point
 	 * \param _A matrix of inverse problem
 	 * \param _y right-hand side
-	 * \param _NormY functor to calculate norm
 	 * \param _residual residual vector, updated after call
 	 * \return norm of residual
 	 */
@@ -56,7 +55,6 @@ private:
 			const Eigen::VectorXd &_x0,
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
-			const LpNorm &_NormY,
 			Eigen::VectorXd &_residual
 			) const;
 
