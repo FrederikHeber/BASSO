@@ -18,6 +18,7 @@ add_library (Minimizations
 	DualityMapping.cpp
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
+	LandweberMinimizer_calculateOptimalStepwidth.cpp
 	SequentialSubspaceMinimizer.cpp
 	SmoothnessModulus.cpp)
 # ${CMAKE_CURRENT_BINARY_DIR}/Table.h

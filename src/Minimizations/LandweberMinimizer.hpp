@@ -59,6 +59,26 @@ public:
 			Eigen::VectorXd &_residual
 			) const;
 
+	/** Calculate optimal step width via a line search.
+	 *
+	 * i.e. along u we look for alpha to minimize residual
+	 *
+	 * @param _x current position
+	 * @param _u direction for line search
+	 * @param _A matrix
+	 * @param _y right-hand side
+	 * @param _alpha initial guess for step width
+	 * @return optimal step \f$ \alpha \f$ width to minimize
+	 * 		\f$ || A (x - \alpha u) - y ||_Y \f$
+	 */
+	double calculateOptimalStepwidth(
+			const Eigen::VectorXd &_x,
+			const Eigen::VectorXd &_u,
+			const Eigen::MatrixXd &_A,
+			const Eigen::VectorXd &_y,
+			const double _alpha = 0) const;
+
+public:
 	//!> Lp norm of space X: p
 	const double val_NormX;
 	//!> Lp norm of space Y: r

@@ -82,60 +82,6 @@ double LandweberMinimizer::calculateResidual(
 	return NormY(_residual);
 }
 
-struct MinimizationParameters
-{
-	MinimizationParameters(
-		const Eigen::VectorXd &_x_n,
-		const Eigen::VectorXd &_u_n,
-		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
-		const LpNorm &_NormY,
-		const DualityMapping &_J_p,
-		const DualityMapping &_J_q
-			) :
-		x_n(_x_n),
-		u_n(_u_n),
-		A(_A),
-		y(_y),
-		NormY(_NormY),
-		J_p(_J_p),
-		J_q(_J_q)
-	{}
-
-	const Eigen::VectorXd &x_n;
-	const Eigen::VectorXd &u_n;
-	const Eigen::MatrixXd &A;
-	const Eigen::VectorXd &y;
-	const LpNorm &NormY;
-	const DualityMapping &J_p;
-	const DualityMapping &J_q;
-};
-
-/** Static function to calculate residual for given step width
- *
- */
-static void
-func_residual(double *p, double *hx, int m, int n, void *adata)
-{
-	struct MinimizationParameters *params =
-			static_cast<MinimizationParameters *>(adata);
-	// calculate new candidate position
-	Eigen::VectorXd dual_solution =
-			J_p(params->x_n, PowerX);
-	dual_solution -= alpha * u;
-	Eigen::VectorXd x =
-			J_q(dual_solution, DualPowerX);
-	// calculate residual at candidate position (goes into hx[0])
-	Eigen::VectorXd residual;
-	hx[0] = calculateResidual(
-			x,
-			params->A,
-			params->y,
-			params->NormY,
-			residual
-			);
-}
-
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
@@ -233,48 +179,12 @@ LandweberMinimizer::operator()(
 			alpha = (tau/_ANorm) * (x_p / R_r);
 		}
 		// get alpha from line search
-		// i.e. along u we look for alpha to minimize residual
-		{
-			struct MinimizationParameters params(
-					returnvalues.solution,	// x_n
-					u, // u_n
-					_A, // A
-					_y, // y
-					NormY, // Normy
-					J_p, // J_p
-					J_q // J_q
-					);
-			double info[LM_INFO_SZ];
-			double x[] = { 0. };
-			double opts[] = { TolX, TolX, TolX, TolX };
-			const int m = 1;
-			const int n = 1;
-			double lb[] = { 0 };
-			double ub[] = { std::numeric_limits<double>::max() };
-			double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-			double *covar = work+LM_DIF_WORKSZ(m, n);
-			int ret = dlevmar_bc_dif(
-					(*func_residual),
-					&alpha,
-					x,
-					m,
-					n,
-					lb,
-					ub,
-					NULL,
-					1000,
-					opts, 	/* opts[4] */
-					info,
-					work,
-					covar,
-					&params
-					);
-			  if (ret == -1)
-				throw MinimizationFunctionError_exception()
-					<< MinimizationFunctionError_name(alpha);
-			// free everything
-			free(work);
-		}
+		alpha = calculateOptimalStepwidth(
+				 returnvalues.solution,
+				 u,
+				 _A,
+				 _y,
+				 alpha);
 
 		// iterate: J_p (x_{n+1})
 		BOOST_LOG_TRIVIAL(trace)
