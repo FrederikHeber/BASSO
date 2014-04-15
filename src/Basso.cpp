@@ -35,6 +35,7 @@ int main (int argc, char *argv[])
 	        ("C", po::value<double>(), "set the value for C")
 	        ("normx", po::value<double>(), "set the norm of the space X")
 	        ("normy", po::value<double>(), "set the norm of the space Y")
+	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
 	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("matrix", po::value< boost::filesystem::path >(),
@@ -50,7 +51,7 @@ int main (int argc, char *argv[])
 
 	if ((vm.count("help"))
 			|| (!vm.count("normx")) || (!vm.count("normy"))
-			|| (!vm.count("powery")) || (!vm.count("delta"))
+			|| (!vm.count("delta"))
 			|| (!vm.count("matrix")) || (!vm.count("rhs"))) {
 		std::cout << argv[0] << " version "
 				<< Basso_VERSION_MAJOR << "."
@@ -122,11 +123,25 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm of Y was set to " << normy << ".\n";
 	}
+	double powerx;
+	if (vm.count("powerx")) {
+		powerx = vm["powerx"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Power of duality maping in X was set to " << powerx << ".\n";
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Using normx as powerx." << "\n.";
+		powerx = normx;
+	}
 	double powery;
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in Y was set to " << powery << ".\n";
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Using normy as powery." << "\n.";
+		powery = normy;
 	}
 	double delta;
 	if (vm.count("delta")) {
@@ -206,6 +221,7 @@ int main (int argc, char *argv[])
 	LandweberMinimizer minimizer(
 			normx,
 			normy,
+			powerx,
 			powery,
 			delta,
 			C,
@@ -217,8 +233,9 @@ int main (int argc, char *argv[])
 					rhs);
 
 	// give result
-	std::cout << "Solution is " << std::scientific << std::setprecision(8) << result.solution.transpose() << ","
-		<< " found after " << result.NumberOuterIterations
+	std::cout << "Solution is "
+		<< std::scientific << std::setprecision(8) << result.solution.transpose()
+		<< ", found after " << result.NumberOuterIterations
 		<< " with residual error of " << result.residuum << std::endl;
 
 	// exit

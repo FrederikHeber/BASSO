@@ -19,6 +19,7 @@
 LandweberMinimizer::LandweberMinimizer(
 		const double _NormX,
 		const double _NormY,
+		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
 		const double _C,
@@ -27,9 +28,9 @@ LandweberMinimizer::LandweberMinimizer(
 	val_NormX(_NormX),
 	val_NormY(_NormY),
 	val_DualNormX(val_NormX/(val_NormX - 1.)),
-	PowerX(val_NormX),
+	PowerX(_PowerX),
 	PowerY(_PowerY),
-	DualPowerX(val_DualNormX),  // PowerX/(PowerX - 1.)
+	DualPowerX(PowerX/(PowerX - 1.)),
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),

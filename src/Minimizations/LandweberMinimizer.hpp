@@ -22,6 +22,7 @@ public:
 	LandweberMinimizer(
 			const double _NormX,
 			const double _NormY,
+			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
 			const double _C,
@@ -103,6 +104,7 @@ public:
 	const double TolFun;
 	//!> positive dampening constant for iteration
 	const double C;
+
 	//!> norm object for space X
 	const LpNorm NormX;
 	//!> norm object for space Y

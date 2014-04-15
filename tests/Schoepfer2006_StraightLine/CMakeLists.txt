@@ -3,7 +3,6 @@ add_test (Basso_Schoepfer2006_StraightLine1
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 2 
 		--normy 2 
-		--powery 2 
 		--delta 0.01 
 		--C 1 
 		--maxiter 50 
@@ -17,7 +16,6 @@ add_test (Basso_Schoepfer2006_StraightLine2
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 4 
 		--normy 4 
-		--powery 2 
 		--delta 0.01
 		--C 6
 		--maxiter 10000
@@ -31,7 +29,6 @@ add_test (Basso_Schoepfer2006_StraightLine3
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 4 
 		--normy 20 
-		--powery 2 
 		--delta 0.01
 		--C 6
 		--maxiter 10000
@@ -45,7 +42,6 @@ add_test (Basso_Schoepfer2006_StraightLine4
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 6 
 		--normy 40 
-		--powery 2 
 		--delta 0.01
 		--C 10
 		--maxiter 10000
@@ -59,7 +55,6 @@ add_test (Basso_Schoepfer2006_StraightLine5
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 1.5 
 		--normy 2 
-		--powery 2 
 		--delta 0.01
 		--C 2
 		--maxiter 1000
@@ -73,7 +68,6 @@ add_test (Basso_Schoepfer2006_StraightLine6
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 1.5 
 		--normy 10 
-		--powery 2 
 		--delta 0.01
 		--C 2
 		--maxiter 1000
@@ -87,7 +81,6 @@ add_test(Basso_Schoepfer2006_StraightLine7
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--normx 1.1 
 		--normy 5 
-		--powery 2 
 		--delta 0.01
 		--C 8
 		--maxiter 5000
