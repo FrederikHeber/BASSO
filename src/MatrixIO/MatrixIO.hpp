@@ -21,11 +21,50 @@ namespace MatrixIO {
 
 /** Output contents of \a m into stream \ost in Matlab-like format.
  *
- * \param ist output stream
+ * \param ost output stream
  * \param m matrix to write in Matlab-like format
  * \return stream for concatenation
  */
-std::istream & operator>>(std::istream &ist, Eigen::MatrixXd &m)
+inline std::ostream & operator<<(std::ostream &ost, const Eigen::MatrixXd &m)
+{
+	if (ost.good()) {
+		const Eigen::MatrixXd::Index rows = m.innerSize();
+		const Eigen::MatrixXd::Index cols = m.outerSize();
+		ost << rows << " " << cols << std::endl;
+		for (Eigen::MatrixXd::Index row = 0; (row < rows) && ost.good(); ++row ) {
+			for (Eigen::MatrixXd::Index col = 0; (col < cols) && ost.good(); ++row )
+				ost << m(row, col) << " ";
+			ost << std::endl;
+		}
+	}
+	return ost;
+}
+
+/** Output contents of \a v into stream \ost in Matlab-like format.
+ *
+ * \param ost output stream
+ * \param v vector to write in Matlab-like format
+ * \return stream for concatenation
+ */
+inline std::ostream & operator<<(std::ostream &ost, const Eigen::VectorXd &v)
+{
+	if (ost.good()) {
+		const Eigen::MatrixXd::Index rows = v.innerSize();
+		ost << rows << " " << 1 << std::endl;
+		for (Eigen::MatrixXd::Index row = 0; (row < rows) && ost.good(); ++row )
+			ost << v(row) << std::endl;
+	}
+	return ost;
+}
+
+
+/** Parse a Matlab-like formatted stream \a ist into the matrix \a m.
+ *
+ * @param ist input stream
+ * @param m matrix to parse
+ * @return stream for concatenation
+ */
+inline std::istream & operator>>(std::istream &ist, Eigen::MatrixXd &m)
 {
 	if (ist.good()) {
 		// parse first line with dimensions
@@ -52,7 +91,7 @@ std::istream & operator>>(std::istream &ist, Eigen::MatrixXd &m)
 	return ist;
 }
 
-std::istream & operator>>(std::istream &ist, Eigen::VectorXd &v)
+inline std::istream & operator>>(std::istream &ist, Eigen::VectorXd &v)
 {
 	Eigen::MatrixXd m;
 	ist >> m;
