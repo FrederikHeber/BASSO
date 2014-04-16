@@ -40,7 +40,7 @@ Eigen::VectorXd DualityMapping::operator()(
 		const double _power
 		) const
 {
-	if (p == LpNorm::Infinity) {
+	if (p == LpNorm::Infinity) {	// single-valued selection
 		// [xNorm,k]=max(abs(x));
 		unsigned int rowMax;
 		unsigned int colMax;
@@ -51,7 +51,7 @@ Eigen::VectorXd DualityMapping::operator()(
 		temp[0] = 1.;
 		const Eigen::VectorXd Jx = Helpers::circshift(temp, rowMax); // no -1 here, as index starts at 0 here, not 1
 		return Jx * factor;
-	} else if (p <= 1.) {
+	} else if (p <= 1.) {	// single-valued selection
 		// J=norm(x,1)^(q-1)*sign(x);
 		LpNorm norm1(1);
 		const double factor = ::pow(norm1(_x), (double)_power-1.);

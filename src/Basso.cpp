@@ -199,14 +199,24 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
-	std::cout << "We solve for Ax = y with A = "
-		<< matrix << " and y = "
-		<< rhs << "." << std::endl;
+	// print parsed matrix and vector if small or high verbosity requested
+	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+			<< "We solve for Ax = y with A = "
+			<< matrix << " and y = "
+			<< rhs.transpose() << "." << std::endl;
+	} else {
+		BOOST_LOG_TRIVIAL(info)
+			<< "We solve for Ax = y with A = "
+			<< matrix << " and y = "
+			<< rhs.transpose() << "." << std::endl;
+	}
 
 	// prepare start value
 	Eigen::VectorXd x0(rhs.innerSize());
 	x0.setZero();
-	std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
+	if (x0.innerSize() < 10)
+		std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
 
 	// call minimizer
 //	SequentialSubspaceMinimizer minimizer(
@@ -235,10 +245,17 @@ int main (int argc, char *argv[])
 					rhs);
 
 	// give result
-	std::cout << "Solution is "
-		<< std::scientific << std::setprecision(8) << result.solution.transpose()
-		<< ", found after " << result.NumberOuterIterations
-		<< " with residual error of " << result.residuum << std::endl;
+	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+		std::cout << "Solution has been found after "
+				<< result.NumberOuterIterations
+				<< " with residual error of " << result.residuum
+				<< std::endl;
+	} else {
+		std::cout << "Solution is "
+			<< std::scientific << std::setprecision(8) << result.solution.transpose()
+			<< ", found after " << result.NumberOuterIterations
+			<< " with residual error of " << result.residuum << std::endl;
+	}
 
 	// writing solution
 	{

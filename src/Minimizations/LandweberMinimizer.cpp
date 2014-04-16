@@ -90,10 +90,13 @@ LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_y
 		) const
 {
-	BOOST_LOG_TRIVIAL(debug) << "Calculating "
-			<< _A << "*" << _x0 << "-" << _y;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "A^* is " << _A.transpose();
+	if ((_A.innerSize() < 10) && (_A.outerSize() < 10)) {
+		BOOST_LOG_TRIVIAL(info) << "Calculating "
+				<< _A << "*" << _x0.transpose() << "-" << _y.transpose();
+	} else {
+		BOOST_LOG_TRIVIAL(trace) << "Calculating "
+				<< _A << "*" << _x0.transpose() << "-" << _y.transpose();
+	}
 
 	// G constant used in theoretical step width
 	double G;
@@ -131,9 +134,11 @@ LandweberMinimizer::operator()(
 	while (!StopCriterion) {
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
-				<< " at " << returnvalues.solution.transpose()
-				<< " in " << returnvalues.residual.transpose()
 				<< " with residual of " << returnvalues.residuum;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x_n is " << returnvalues.solution.transpose();
+		BOOST_LOG_TRIVIAL(trace)
+				<< "R_n is " << returnvalues.residual.transpose();
 		BOOST_LOG_TRIVIAL(trace)
 			<< "j_r (residual) is "
 			<< j_r( returnvalues.residual, PowerY).transpose();
