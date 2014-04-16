@@ -53,7 +53,8 @@ Eigen::VectorXd DualityMapping::operator()(
 		return Jx * factor;
 	} else if (p <= 1.) {
 		// J=norm(x,1)^(q-1)*sign(x);
-		const double factor = ::pow(lpnorm(_x), (double)_power-1.);
+		LpNorm norm1(1);
+		const double factor = ::pow(norm1(_x), (double)_power-1.);
 		return factor*Helpers::signum(_x);
 	} else if (p == _power) {
 		// J=abs(x).^(p-1).*sign(x);
