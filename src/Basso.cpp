@@ -42,6 +42,8 @@ int main (int argc, char *argv[])
 	        		"set the forward operator matrix file")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
+			("solution", po::value< boost::filesystem::path >(),
+					"set the file name to write solution vector to")
 	        ("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
 	        ;
 
@@ -237,6 +239,29 @@ int main (int argc, char *argv[])
 		<< std::scientific << std::setprecision(8) << result.solution.transpose()
 		<< ", found after " << result.NumberOuterIterations
 		<< " with residual error of " << result.residuum << std::endl;
+
+	// writing solution
+	{
+		boost::filesystem::path solution_file;
+		if (vm.count("solution")) {
+			solution_file = vm["solution"].as<boost::filesystem::path>();
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Writing solution vector to " << solution_file << ".\n";
+
+		}
+
+		{
+			using namespace MatrixIO;
+			std::ofstream ost(solution_file.string().c_str());
+			if (ost.good())
+				ost << result.solution;
+			else {
+				std::cerr << "Failed to open " << solution_file.string() << std::endl;
+				return 255;
+			}
+
+		}
+	}
 
 	// exit
 	return 0;
