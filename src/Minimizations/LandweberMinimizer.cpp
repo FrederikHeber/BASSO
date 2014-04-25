@@ -107,6 +107,8 @@ LandweberMinimizer::operator()(
 //		DualPowerX = 2.;
 		G = val_DualNormX - 1.;
 	}
+	BOOST_LOG_TRIVIAL(trace)
+		<< "G is " << G;
 
 	/// -# initialize return structure
 	ReturnValues returnvalues;
@@ -196,10 +198,14 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Step width is " << alpha;
 		dual_solution -= alpha * u;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x^*_n+1 is " << dual_solution.transpose();
 
 		// finally map back from X^{\conj} to X: x_{n+1}
 		returnvalues.solution =
 				J_q(dual_solution, DualPowerX);
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x_n+1 is " << returnvalues.solution.transpose();
 
 		// update residual
 		returnvalues.residuum = calculateResidual(

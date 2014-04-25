@@ -109,7 +109,7 @@ int main (int argc, char *argv[])
 	if (vm.count("C")) {
 		C = vm["C"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "C was set to " << C << ".\n";
+			<< "C was set to " << C << "\n";
 	} else {
 		C = 0.9;
 	}
@@ -117,19 +117,19 @@ int main (int argc, char *argv[])
 	if (vm.count("normx")) {
 		normx = vm["normx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of X was set to " << normx << ".\n";
+			<< "Norm of X was set to " << normx << "\n";
 	}
 	double normy;
 	if (vm.count("normy")) {
 		normy = vm["normy"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of Y was set to " << normy << ".\n";
+			<< "Norm of Y was set to " << normy << "\n";
 	}
 	double powerx;
 	if (vm.count("powerx")) {
 		powerx = vm["powerx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in X was set to " << powerx << ".\n";
+			<< "Power of duality maping in X was set to " << powerx << "\n";
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normx as powerx." << "\n.";
@@ -139,7 +139,7 @@ int main (int argc, char *argv[])
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in Y was set to " << powery << ".\n";
+			<< "Power of duality maping in Y was set to " << powery << "\n";
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normy as powery." << "\n.";
@@ -149,25 +149,25 @@ int main (int argc, char *argv[])
 	if (vm.count("delta")) {
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Magnitude of noise was set to " << delta << ".\n";
+			<< "Magnitude of noise was set to " << delta << "\n";
 	}
 	boost::filesystem::path matrix_file;
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << matrix_file << ".\n";
+			<< "Filename of matrix was set to " << matrix_file << "\n";
 	}
 	boost::filesystem::path rhs_file;
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << rhs_file << ".\n";
+			<< "Filename of vector was set to " << rhs_file << "\n";
 	}
 	unsigned int maxiter;
 	if (vm.count("maxiter")) {
 		maxiter = vm["maxiter"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations was set to " << maxiter << ".\n";
+			<< "Maximum iterations was set to " << maxiter << "\n";
 	} else {
 		// set default value
 		maxiter = 50;
@@ -204,12 +204,12 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(trace)
 			<< "We solve for Ax = y with A = "
 			<< matrix << " and y = "
-			<< rhs.transpose() << "." << std::endl;
+			<< rhs.transpose() << std::endl;
 	} else {
 		BOOST_LOG_TRIVIAL(info)
 			<< "We solve for Ax = y with A = "
 			<< matrix << " and y = "
-			<< rhs.transpose() << "." << std::endl;
+			<< rhs.transpose() << std::endl;
 	}
 
 	// prepare start value
@@ -246,15 +246,16 @@ int main (int argc, char *argv[])
 
 	// give result
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-		std::cout << "Solution has been found after "
+		std::cout << "Solution after "
 				<< result.NumberOuterIterations
 				<< " with residual error of " << result.residuum
 				<< std::endl;
 	} else {
-		std::cout << "Solution is "
-			<< std::scientific << std::setprecision(8) << result.solution.transpose()
-			<< ", found after " << result.NumberOuterIterations
-			<< " with residual error of " << result.residuum << std::endl;
+		std::cout << "Solution after " << result.NumberOuterIterations
+			<< " with residual error of " << result.residuum
+			<< " is " << std::scientific << std::setprecision(8)
+			<< result.solution.transpose()
+			<< std::endl;
 	}
 
 	// writing solution
