@@ -11,6 +11,17 @@ target_link_libraries (DualityMappingUnitTest
 add_test (DualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/DualityMappingUnitTest)
 
+########################## BregmanDistanceUnitTest #######################
+add_executable (BregmanDistanceUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	BregmanDistanceUnitTest.cpp) 
+target_link_libraries (BregmanDistanceUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (BregmanDistanceUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanDistanceUnitTest)
+
 ########################## BregmanFunctionalUnitTest #######################
 add_executable (BregmanFunctionalUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
