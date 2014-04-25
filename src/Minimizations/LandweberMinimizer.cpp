@@ -163,11 +163,22 @@ LandweberMinimizer::operator()(
 			const double A_p = ::pow(_ANorm,val_NormX);
 			BOOST_LOG_TRIVIAL(trace)
 				<< "A_p " << A_p;
-			const double R_p_r = ::pow(returnvalues.residuum, val_NormX - val_NormY);
+			double R_p = 0.;
+			if (val_NormX == LpNorm::Infinity) {
+				R_p = returnvalues.residual.array().abs().maxCoeff();
+			} else {
+				R_p = ::pow(returnvalues.residuum, val_NormX);
+			}
+			double R_r = 0.;
+			if (val_NormY == LpNorm::Infinity) {
+				R_r = returnvalues.residual.array().abs().maxCoeff();
+			} else {
+				R_r = ::pow(returnvalues.residuum, val_NormY);
+			}
 			BOOST_LOG_TRIVIAL(trace)
-				<< "R_p_r " << R_p_r;
+				<< "R_p " << R_p << ", R_r " << R_r;
 			alpha = // C
-					0.9 * (q_p / A_p) * R_p_r;
+					0.9 * (q_p / A_p) * (R_p/R_r);
 		} else {
 			const double xnorm = NormX(returnvalues.solution);
 			BOOST_LOG_TRIVIAL(trace)
@@ -186,7 +197,13 @@ LandweberMinimizer::operator()(
 			const double x_p = ::pow( xnorm, val_NormX-1.);
 			BOOST_LOG_TRIVIAL(trace)
 				<< "x_p " << x_p;
-			const double R_r = ::pow(returnvalues.residuum, val_NormY - 1.);
+			double R_r = 0.;
+			if (val_NormY == LpNorm::Infinity) {
+				R_r = returnvalues.residual.array().abs().maxCoeff()
+						/ returnvalues.residuum;
+			} else {
+				R_r = ::pow(returnvalues.residuum, val_NormY - 1.);
+			}
 			BOOST_LOG_TRIVIAL(trace)
 				<< "R_r " << R_r;
 			alpha = (tau/_ANorm) * (x_p / R_r);
