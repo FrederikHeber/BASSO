@@ -26,7 +26,8 @@ public:
 			const double _PowerY,
 			const double _Delta,
 			const double _C,
-			const unsigned int _maxiter
+			const unsigned int _maxiter,
+			const unsigned int _outputsteps=0
 			);
 	~LandweberMinimizer() {}
 
@@ -104,6 +105,8 @@ public:
 	const double TolFun;
 	//!> positive dampening constant for iteration
 	const double C;
+	//!> output solution each .. steps, 0 means never
+	unsigned int outputsteps;
 
 	//!> norm object for space X
 	const LpNorm NormX;

@@ -13,7 +13,10 @@
 #include <Eigen/Dense>
 #include <levmar.h>
 #include <limits>
+#include <fstream>
+#include <sstream>
 
+#include "MatrixIO/MatrixIO.hpp"
 #include "MinimizationExceptions.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
@@ -23,7 +26,8 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const double _C,
-		const unsigned int _maxiter
+		const unsigned int _maxiter,
+		const unsigned int _outputsteps
 		) :
 	val_NormX(_NormX),
 	val_NormY(_NormY),
@@ -37,6 +41,7 @@ LandweberMinimizer::LandweberMinimizer(
 	TolY(Delta),
 	TolFun(1e-12),
 	C(_C),
+	outputsteps(_outputsteps),
 	NormX(val_NormX),
 	NormY(val_NormY),
 	DualNormX(val_DualNormX),
@@ -219,6 +224,36 @@ LandweberMinimizer::operator()(
 		StopCriterion =
 				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
 				|| (fabs(returnvalues.residuum) <= TolY);
+
+		// print each solution
+		if ((outputsteps != 0) &&
+				(returnvalues.NumberOuterIterations % outputsteps == 0)) {
+			{
+				std::stringstream solution_file;
+				solution_file << "solution"
+						<< (returnvalues.NumberOuterIterations / outputsteps) << ".m";
+				using namespace MatrixIO;
+				std::ofstream ost(solution_file.str().c_str());
+				if (ost.good())
+					ost << returnvalues.solution;
+				else {
+					std::cerr << "Failed to open " << solution_file.str() << std::endl;
+				}
+			}
+			{
+				std::stringstream solution_file;
+				solution_file << "projected_solution"
+						<< (returnvalues.NumberOuterIterations / outputsteps) << ".m";
+				using namespace MatrixIO;
+				std::ofstream ost(solution_file.str().c_str());
+				if (ost.good())
+					ost << _A * returnvalues.solution;
+				else {
+					std::cerr << "Failed to open " << solution_file.str() << std::endl;
+				}
+			}
+
+		}
 	}
 
 	return returnvalues;

@@ -30,21 +30,22 @@ int main (int argc, char *argv[])
 	// set up command-line-parameters
 	po::options_description desc("Allowed options");
 	desc.add_options()
-	        ("help", "produce help message")
-	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ("C", po::value<double>(), "set the value for C")
-	        ("normx", po::value<double>(), "set the norm of the space X")
-	        ("normy", po::value<double>(), "set the norm of the space Y")
-	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
-	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
 	        ("delta", po::value<double>(), "set the amount of noise")
+	        ("help", "produce help message")
 	        ("matrix", po::value< boost::filesystem::path >(),
 	        		"set the forward operator matrix file")
+			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
+	        ("normx", po::value<double>(), "set the norm of the space X")
+	        ("normy", po::value<double>(), "set the norm of the space Y")
+	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
+	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
+	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
-	        ("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
+	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
 
 	po::variables_map vm;
@@ -113,6 +114,27 @@ int main (int argc, char *argv[])
 	} else {
 		C = 0.9;
 	}
+	double delta;
+	if (vm.count("delta")) {
+		delta = vm["delta"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Magnitude of noise was set to " << delta << "\n";
+	}
+	boost::filesystem::path matrix_file;
+	if (vm.count("matrix")) {
+		matrix_file = vm["matrix"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of matrix was set to " << matrix_file << "\n";
+	}
+	unsigned int maxiter;
+	if (vm.count("maxiter")) {
+		maxiter = vm["maxiter"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum iterations was set to " << maxiter << "\n";
+	} else {
+		// set default value
+		maxiter = 50;
+	}
 	double normx;
 	if (vm.count("normx")) {
 		normx = vm["normx"].as<double>();
@@ -124,6 +146,15 @@ int main (int argc, char *argv[])
 		normy = vm["normy"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm of Y was set to " << normy << "\n";
+	}
+	unsigned int outputsteps;
+	if (vm.count("output-steps")) {
+		outputsteps = vm["output-steps"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Output steps was set to " << outputsteps << "\n";
+	} else {
+		// set default value
+		outputsteps = 0;
 	}
 	double powerx;
 	if (vm.count("powerx")) {
@@ -145,32 +176,11 @@ int main (int argc, char *argv[])
 			<< "Using normy as powery." << "\n.";
 		powery = normy;
 	}
-	double delta;
-	if (vm.count("delta")) {
-		delta = vm["delta"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Magnitude of noise was set to " << delta << "\n";
-	}
-	boost::filesystem::path matrix_file;
-	if (vm.count("matrix")) {
-		matrix_file = vm["matrix"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << matrix_file << "\n";
-	}
 	boost::filesystem::path rhs_file;
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Filename of vector was set to " << rhs_file << "\n";
-	}
-	unsigned int maxiter;
-	if (vm.count("maxiter")) {
-		maxiter = vm["maxiter"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations was set to " << maxiter << "\n";
-	} else {
-		// set default value
-		maxiter = 50;
 	}
 
 	// parse matrix and vector files into instances
@@ -247,7 +257,8 @@ int main (int argc, char *argv[])
 			powery,
 			delta,
 			C,
-			maxiter);
+			maxiter,
+			outputsteps);
 	LandweberMinimizer::ReturnValues result =
 			minimizer(
 					x0,
