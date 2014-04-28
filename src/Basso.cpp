@@ -1,8 +1,11 @@
+
+#include "BassoConfig.h"
+
 // A simple program that computes the square root of a number
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-#include "BassoConfig.h"
+#include <string>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/log/core.hpp>
@@ -14,8 +17,8 @@
 #include <boost/program_options.hpp>
 
 #include "MatrixIO/MatrixIO.hpp"
-#include "Minimizations/LandweberMinimizer.hpp"
-#include "Minimizations/SequentialSubspaceMinimizer.hpp"
+#include "Minimizations/GeneralMinimizer.hpp"
+#include "Minimizations/MinimizerFactory.hpp"
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -30,6 +33,7 @@ int main (int argc, char *argv[])
 	// set up command-line-parameters
 	po::options_description desc("Allowed options");
 	desc.add_options()
+			("algorithm", po::value<std::string>(), "set the used iteration algorithm")
 	        ("C", po::value<double>(), "set the value for C")
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("help", "produce help message")
@@ -106,6 +110,15 @@ int main (int argc, char *argv[])
 	logging::add_common_attributes();
 
 	// parse options
+	std::string algorithm_name;
+	if (vm.count("algorithm")) {
+		algorithm_name = vm["algorithm"].as<std::string>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "algorithm was set to " << algorithm_name << "\n";
+	} else {
+		algorithm_name =
+				MinimizerFactory::TypeNames[MinimizerFactory::landweber];
+	}
 	double C;
 	if (vm.count("C")) {
 		C = vm["C"].as<double>();
@@ -239,20 +252,10 @@ int main (int argc, char *argv[])
 		std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
 
 	// call minimizer
-//	SequentialSubspaceMinimizer minimizer(
-//			normx,
-//			normy,
-//			powerx,
-//			powery,
-//			delta,
-//			maxiter,
-//			outputsteps);
-//	SequentialSubspaceMinimizer::ReturnValues result =
-//			minimizer(
-//					x0,
-//					matrix,
-//					rhs);
-	LandweberMinimizer minimizer(
+	MinimizerFactory factory;
+	MinimizerFactory::instance_ptr_t minimizer =
+		factory.getInstance(
+			factory.getTypeForName(algorithm_name),
 			normx,
 			normy,
 			powerx,
@@ -261,8 +264,8 @@ int main (int argc, char *argv[])
 			C,
 			maxiter,
 			outputsteps);
-	LandweberMinimizer::ReturnValues result =
-			minimizer(
+	GeneralMinimizer::ReturnValues result =
+			(*minimizer)(
 					x0,
 					matrix,
 					rhs);

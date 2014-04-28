@@ -1,6 +1,7 @@
 # test 1: 
 add_test (Basso_Schoepfer2006_StraightLine1
 	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm landweber
 		--normx 2 
 		--normy 2 
 		--delta 0.0001 
@@ -14,6 +15,7 @@ set_tests_properties (Basso_Schoepfer2006_StraightLine1
 # test 2: 
 add_test (Basso_Schoepfer2006_StraightLine2
 	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm landweber
 		--normx 4 
 		--normy 20 
 		--delta 0.01 
@@ -27,6 +29,7 @@ set_tests_properties (Basso_Schoepfer2006_StraightLine2
 # test 3: 
 add_test (Basso_Schoepfer2006_StraightLine3
 	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm landweber
 		--normx 1.5 
 		--normy 10 
 		--delta 0.0001 
@@ -40,6 +43,7 @@ set_tests_properties (Basso_Schoepfer2006_StraightLine3
 # test 4: 
 add_test (Basso_Schoepfer2006_RandomMatrix
 	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm landweber
 		--normx 2 
 		--normy 0 
 		--delta 0.0001 
