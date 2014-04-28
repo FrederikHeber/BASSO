@@ -45,6 +45,9 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	if (tau <= 1.)
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("tau");
+
+	// change y tolerance according to regularization parameter
+	const_cast<double&>(TolY) = tau * Delta;
 }
 
 /** Structure containing all parameters to call BregmanFunctional functions.
@@ -136,7 +139,6 @@ SequentialSubspaceMinimizer::operator()(
 
 	double PowerX;
 	double DualPowerX;
-	double val_DualNormX;
 	double G;
 	if (val_NormX > 2) {
 		PowerX = val_NormX;
@@ -145,64 +147,90 @@ SequentialSubspaceMinimizer::operator()(
 	} else {
 		PowerX = 2.;
 		DualPowerX = 2.;
-		val_DualNormX = val_NormX/(val_NormX - 1.);
 		G = val_DualNormX - 1.;
 	}
+	BOOST_LOG_TRIVIAL(trace)
+		<< "New PowerX is " << PowerX;
+	BOOST_LOG_TRIVIAL(trace)
+		<< "New DualPowerX is " << DualPowerX;
+	BOOST_LOG_TRIVIAL(trace)
+		<< "G is " << G;
 
-	// prepare norm functors
-	LpNorm NormX(val_NormX);
-	LpNorm NormY(val_NormY);
-	LpNorm DualNormX(val_DualNormX);
-
-	// initialize return structure
+	/// -# initialize return structure
 	ReturnValues returnvalues;
 	returnvalues.NumberOuterIterations = 0;
 	// set iterate 'x' as start vector 'x0'
 	returnvalues.solution = _x0;
+	// calculate starting residual and norm
+	returnvalues.residuum = calculateResidual(
+			_x0, _A, _y,
+			returnvalues.residual);
 
+	/// -# check stopping criterion
 	bool StopCriterion = false;
-
-	BOOST_LOG_TRIVIAL(debug) << "Calculating "
-			<< _A << "*" << _x0 << "-" << _y;
-	Eigen::VectorXd w = _A * _x0 - _y;
-	double wNorm = NormY(w);
-	double TolY = tau * Delta;
-	returnvalues.residuum = wNorm;
-
-	// check stopping criterion
 	StopCriterion = (fabs(returnvalues.residuum) <= TolY);
+
+	// calculate some values prior to loop
+	// Jx=DualityMapping(x,NormX,PowerX,TolX);
+	Eigen::VectorXd dual_solution =
+			J_p(returnvalues.solution, PowerX);
+	BOOST_LOG_TRIVIAL(trace)
+		<< "Jx_0 is " << dual_solution.transpose();
+//	const double modulus_at_one = modul(1);
+//	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
+//	BOOST_LOG_TRIVIAL(trace)
+//		<< "_ANorm " << _ANorm;
 
 	// start building up search space 'U' with the search vectors 'u'
 	while (!StopCriterion) {
 		if ((returnvalues.NumberOuterIterations == 0)
 			|| (returnvalues.residuum > TolY)) {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << returnvalues.NumberOuterIterations
+					<< " with residual of " << returnvalues.residuum;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "x_n is " << returnvalues.solution.transpose();
+			BOOST_LOG_TRIVIAL(trace)
+					<< "R_n is " << returnvalues.residual.transpose();
+			BOOST_LOG_TRIVIAL(trace)
+				<< "j_r (residual) is "
+				<< j_r( returnvalues.residual, PowerY).transpose();
+
 			// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-			DualityMapping J_y(val_NormY);
-			J_y.setTolerance(TolX);
-			Eigen::VectorXd u = _A.transpose()*J_y(w, PowerY);
+			Eigen::VectorXd u =
+					_A.transpose()*j_r(returnvalues.residual, PowerY);
+			BOOST_LOG_TRIVIAL(trace)
+				<< "u is " << u.transpose();
+
 			// uNorm=norm(u,DualNormX);
 			const double uNorm = DualNormX(u);
+			BOOST_LOG_TRIVIAL(trace)
+				<< "uNorm is " << uNorm;
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
 					u.transpose() * _x0 - ::pow(returnvalues.residuum,PowerY);
+			BOOST_LOG_TRIVIAL(trace)
+				<< "alpha is " << alpha;
 			// d=Delta*Residual^(PowerY-1);
-			const double d = Delta * ::pow(returnvalues.residuum,(double)PowerY-1.);
+			const double d =
+					Delta * ::pow(returnvalues.residuum,(double)PowerY-1.);
 			// beta=Residual^(PowerY-1)*(Residual-Delta)/uNorm^DualPowerX;
-			const double beta = ::pow(returnvalues.residuum,(double)PowerY-1.)
+			const double beta =
+					::pow(returnvalues.residuum,(double)PowerY-1.)
 					* (returnvalues.residuum-Delta)/::pow(uNorm, DualPowerX);
-			// Jx=DualityMapping(x,NormX,PowerX,TolX);
-			DualityMapping J_x(val_NormX);
-			J_x.setTolerance(TolX);
-			Eigen::VectorXd Jx = J_x(_x0, PowerX);
 
-			double tmin;
-			if (Jx.isZero(BASSOTOLERANCE)) {
+			double tmin = 0.;
+			if (dual_solution.isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
 				tmin = ::pow(beta, PowerX - 1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "tmin is " << tmin;
 			} else {
 				// t0=(beta/G)^(PowerX-1);
 				Eigen::VectorXd t0(1);
 				t0[0] = ::pow(beta/G, PowerX - 1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "t0[0] is " << t0[0];
 				// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 				BregmanFunctional bregman(val_DualNormX, TolX);
 				// TODO_ we actually have to perform a function minimization
@@ -212,7 +240,7 @@ SequentialSubspaceMinimizer::operator()(
 				BregmanParameters params(
 						bregman,
 						t0,
-						Jx,
+						dual_solution,
 						u,
 						steps,
 						DualPowerX);
@@ -242,19 +270,33 @@ SequentialSubspaceMinimizer::operator()(
 				// free everything
 				free(work);
 				// solution is in tmin already
+				BOOST_LOG_TRIVIAL(trace)
+					<< "tmin is " << tmin;
 			}
-			const Eigen::VectorXd uold = u;
-			const double alphao0ld = alpha;
-			const double dold = d;
+//			const Eigen::VectorXd uold = u;
+//			const double alphao0ld = alpha;
+//			const double dold = d;
 			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-			DualityMapping Jdual_x(val_DualNormX);
-			Jdual_x.setTolerance(TolX);
-			returnvalues.solution = Jdual_x(Jx - tmin*u, DualPowerX);
+			dual_solution -= tmin*u;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "x^*_n+1 is " << dual_solution.transpose();
+			returnvalues.solution =
+					J_q(dual_solution , DualPowerX);
+			BOOST_LOG_TRIVIAL(trace)
+					<< "x_n+1 is " << returnvalues.solution.transpose();
+
+			// update residual
+			returnvalues.residuum = calculateResidual(
+					returnvalues.solution,
+					_A,
+					_y,
+					returnvalues.residual);
 
 			// check iterations count
 			++returnvalues.NumberOuterIterations;
 			StopCriterion =
-					(returnvalues.NumberOuterIterations >= MaxOuterIterations);
+					(returnvalues.NumberOuterIterations >= MaxOuterIterations)
+					|| (fabs(returnvalues.residuum) <= TolY);
 
 			// print intermediat solution
 			printIntermediateSolution(
