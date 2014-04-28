@@ -34,7 +34,7 @@ int main (int argc, char *argv[])
 	po::options_description desc("Allowed options");
 	desc.add_options()
 			("algorithm", po::value<std::string>(), "set the used iteration algorithm")
-	        ("C", po::value<double>(), "set the value for C")
+	        ("C", po::value<double>(), "set the value for C (landweber)")
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("help", "produce help message")
 	        ("matrix", po::value< boost::filesystem::path >(),
@@ -49,6 +49,7 @@ int main (int argc, char *argv[])
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
+			("tau", po::value<double>(), "set the value for tau (sequencesubspace)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
 
@@ -194,6 +195,14 @@ int main (int argc, char *argv[])
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Filename of vector was set to " << rhs_file << "\n";
+	}
+	double tau;
+	if (vm.count("tau")) {
+		tau = vm["tau"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "tau was set to " << tau << "\n";
+	} else {
+		tau = 1.1;
 	}
 
 	// parse matrix and vector files into instances
