@@ -21,11 +21,20 @@ public:
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
-			const double _C,
 			const unsigned int _maxiter,
 			const unsigned int _outputsteps=0
 			);
 	~LandweberMinimizer() {}
+
+	/** Setter for C.
+	 *
+	 * This is to have a definite place where C is changed. Hence,
+	 * it is const and cannot accidentally be changed in the code, but
+	 * it can still be set after the instance has been created.
+	 *
+	 * @param _C new value of C
+	 */
+	void setC(const double _C);
 
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
@@ -62,6 +71,8 @@ public:
 			const double _alpha = 0) const;
 
 public:
+	//!> positive dampening constant for iteration
+	const double C;
 	//!> smoothness modulus object for dual Space X^*
 	const SmoothnessModulus modul;
 };

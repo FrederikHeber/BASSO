@@ -25,11 +25,20 @@ public:
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
-			const double _C,
 			const unsigned int _maxiter,
 			const unsigned int _outputsteps
 			);
 	~SequentialSubspaceMinimizer() {}
+
+	/** Setter for tau.
+	 *
+	 * This is to have a definite place where tau is changed. Hence,
+	 * it is const and cannot accidentally be changed in the code, but
+	 * it can still be set after the instance has been created.
+	 *
+	 * @param _tau new value of tau, tau in (1, infty)
+	 */
+	void setTau(const double _tau);
 
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,

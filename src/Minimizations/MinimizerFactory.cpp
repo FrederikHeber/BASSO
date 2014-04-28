@@ -27,7 +27,6 @@ MinimizerFactory::getInstance(
 		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
-		const double _C,
 		const unsigned int _maxiter,
 		const unsigned int _outputsteps
 		)
@@ -42,7 +41,6 @@ MinimizerFactory::getInstance(
 				_PowerX,
 				_PowerY,
 				_Delta,
-				_C,
 				_maxiter,
 				_outputsteps
 				);
@@ -54,7 +52,6 @@ MinimizerFactory::getInstance(
 					_PowerX,
 					_PowerY,
 					_Delta,
-					_C,
 					_maxiter,
 					_outputsteps
 					);

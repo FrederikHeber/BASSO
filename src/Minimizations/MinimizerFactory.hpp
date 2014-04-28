@@ -43,7 +43,6 @@ public:
 	 * @param _PowerY power type of gauge function of duality mapping in target
 	 * 			space
 	 * @param _Delta noise level
-	 * @param _C dampening coefficient
 	 * @param _maxiter maximum number of iterations
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
@@ -55,7 +54,6 @@ public:
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
-			const double _C,
 			const unsigned int _maxiter,
 			const unsigned int _outputsteps=0
 			);

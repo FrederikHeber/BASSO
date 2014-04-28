@@ -21,7 +21,6 @@ GeneralMinimizer::GeneralMinimizer(
 		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
-		const double _C,
 		const unsigned int _maxiter,
 		const unsigned int _outputsteps
 		) :
@@ -36,7 +35,6 @@ GeneralMinimizer::GeneralMinimizer(
 	TolX(1e-6),
 	TolY(Delta),
 	TolFun(1e-12),
-	C(_C),
 	outputsteps(_outputsteps),
 	NormX(val_NormX),
 	NormY(val_NormY),
@@ -45,10 +43,6 @@ GeneralMinimizer::GeneralMinimizer(
 	J_q(val_DualNormX),
 	j_r(val_NormY)
 {
-	if ((C <= 0.)) // || ( C > 1.))
-		throw MinimizationIllegalValue_exception()
-			<< MinimizationIllegalValue_name("C");
-
 	BOOST_LOG_TRIVIAL(debug)
 		<< "p is " << val_NormX
 		<< ", q is " << val_DualNormX

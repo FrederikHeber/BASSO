@@ -25,27 +25,30 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
-		const double _C,
 		const unsigned int _maxiter,
 		const unsigned int _outputsteps
 		) :
-		GeneralMinimizer(
-				_NormX,
-				_NormY,
-				_PowerX,
-				_PowerY,
-				_Delta,
-				_C,
-				_maxiter,
-				_outputsteps
-				),
-		tau(1.1)
+	GeneralMinimizer(
+			_NormX,
+			_NormY,
+			_PowerX,
+			_PowerY,
+			_Delta,
+			_maxiter,
+			_outputsteps
+			),
+	tau(1.1)
+{}
+
+void SequentialSubspaceMinimizer::setTau(
+		const double _tau
+		)
 {
 	// check that regularization parameter is greater than 1
-	if (tau <= 1.)
+	if (_tau <= 1.)
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("tau");
-
+	const_cast<double&>(tau) = _tau;
 	// change y tolerance according to regularization parameter
 	const_cast<double&>(TolY) = tau * Delta;
 }

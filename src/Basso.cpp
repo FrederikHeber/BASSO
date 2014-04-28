@@ -18,7 +18,9 @@
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
+#include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
+#include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -262,17 +264,37 @@ int main (int argc, char *argv[])
 
 	// call minimizer
 	MinimizerFactory factory;
+	MinimizerFactory::InstanceType type =
+			factory.getTypeForName(algorithm_name);
 	MinimizerFactory::instance_ptr_t minimizer =
 		factory.getInstance(
-			factory.getTypeForName(algorithm_name),
+			type,
 			normx,
 			normy,
 			powerx,
 			powery,
 			delta,
-			C,
 			maxiter,
 			outputsteps);
+	try {
+		switch(type) {
+		case MinimizerFactory::landweber:
+				static_cast<LandweberMinimizer*>(minimizer.get())->setC(C);
+			break;
+		case MinimizerFactory::sequentialsubspace:
+			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);
+			break;
+		default:
+			std::cerr << "Unknown InstanceType." << std::endl;
+			return 255;
+			break;
+		}
+	} catch (MinimizationIllegalValue_exception &e) {
+		std::cerr << "Illegal value for "
+				<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
+				<< std::endl;
+		return 255;
+	}
 	GeneralMinimizer::ReturnValues result =
 			(*minimizer)(
 					x0,

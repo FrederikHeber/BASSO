@@ -26,7 +26,6 @@ public:
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
-			const double _C,
 			const unsigned int _maxiter,
 			const unsigned int _outputsteps=0
 			);
@@ -106,8 +105,6 @@ public:
 	const double TolY;
 	//!> tolerance for Fun
 	const double TolFun;
-	//!> positive dampening constant for iteration
-	const double C;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
 

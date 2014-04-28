@@ -25,7 +25,6 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
-		const double _C,
 		const unsigned int _maxiter,
 		const unsigned int _outputsteps
 		) :
@@ -35,13 +34,21 @@ LandweberMinimizer::LandweberMinimizer(
 				_PowerX,
 				_PowerY,
 				_Delta,
-				_C,
 				_maxiter,
 				_outputsteps
 				),
+	C(0.9),
 	modul(val_DualNormX)
 {}
 
+void LandweberMinimizer::setC(const double _C)
+{
+	if ((_C <= 0.)) // || ( _C > 1.))
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("C");
+
+	const_cast<double&>(C) = _C;
+}
 
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
