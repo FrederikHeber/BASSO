@@ -47,26 +47,6 @@ private:
 
 	// constants
 
-	//!> Lp norm of space X: p
-	const double val_NormX;
-	//!> Lp norm of space Y: r
-	const double val_NormY;
-	//!> power of dual map J_p
-	const double PowerX;
-	//!> power of dual map J_r
-	const double PowerY;
-	//!> magnitude of noise
-	const double Delta;
-	//!> maximum number of iterations in outer loop
-	const unsigned int MaxOuterIterations;
-	//!> tolerance for x
-	const double TolX;
-	//!> tolerance for Fun
-	const double TolFun;
-	//!> positive dampening constant for iteration
-	const double C;
-	//!> output solution each .. steps, 0 means never
-	unsigned int outputsteps;
 	//!> regularization parameter for discrepancy principle, tau > 1
 	const double tau;
 };

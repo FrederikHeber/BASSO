@@ -5,6 +5,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 add_library (Minimizations 
 	BregmanFunctional.cpp 
 	DualityMapping.cpp
+	GeneralMinimizer.cpp
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
 	LandweberMinimizer_calculateOptimalStepwidth.cpp
