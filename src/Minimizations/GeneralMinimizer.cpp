@@ -63,6 +63,17 @@ GeneralMinimizer::GeneralMinimizer(
 	j_r.setTolerance(TolY);
 }
 
+double GeneralMinimizer::calculateResidual(
+		const Eigen::VectorXd &_x0,
+		const Eigen::MatrixXd &_A,
+		const Eigen::VectorXd &_y,
+		Eigen::VectorXd &_residual
+		) const
+{
+	_residual = _A * _x0 - _y;
+	return NormY(_residual);
+}
+
 void GeneralMinimizer::printIntermediateSolution(
 		const Eigen::VectorXd &_solution,
 		const Eigen::MatrixXd &_A,

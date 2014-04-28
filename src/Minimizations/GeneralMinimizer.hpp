@@ -53,6 +53,21 @@ public:
 			const Eigen::VectorXd &_y
 			) const = 0;
 
+	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
+	 *
+	 * \param _x0 current iteration point
+	 * \param _A matrix of inverse problem
+	 * \param _y right-hand side
+	 * \param _residual residual vector, updated after call
+	 * \return norm of residual
+	 */
+	double calculateResidual(
+			const Eigen::VectorXd &_x0,
+			const Eigen::MatrixXd &_A,
+			const Eigen::VectorXd &_y,
+			Eigen::VectorXd &_residual
+			) const;
+
 protected:
 	/** Internal helper function for specific Minimizers to print debugging
 	 *  solutions.

@@ -43,25 +43,6 @@ LandweberMinimizer::LandweberMinimizer(
 {}
 
 
-/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
- *
- * \param _x0 current iteration point
- * \param _A matrix of inverse problem
- * \param _y right-hand side
- * \param _residual residual vector, updated after call
- * \return norm of residual
- */
-double LandweberMinimizer::calculateResidual(
-		const Eigen::VectorXd &_x0,
-		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
-		Eigen::VectorXd &_residual
-		) const
-{
-	_residual = _A * _x0 - _y;
-	return NormY(_residual);
-}
-
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
