@@ -9,6 +9,7 @@ add_library (Minimizations
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
 	LandweberMinimizer_calculateOptimalStepwidth.cpp
+	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
 	SmoothnessModulus.cpp)
 
@@ -18,5 +19,6 @@ install (FILES DualityMapping.hpp DESTINATION include)
 install (FILES GeneralMinimizer.hpp DESTINATION include)
 install (FILES LandweberMinimizer.hpp DESTINATION include)
 install (FILES MinimizationExceptions.hpp DESTINATION include)
+install (FILES MinimizerFactory.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
