@@ -7,9 +7,13 @@
 
 #include "BassoConfig.h"
 
+#include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
 
 #include <boost/log/trivial.hpp>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 GeneralMinimizer::GeneralMinimizer(
 		const double _NormX,
@@ -59,3 +63,47 @@ GeneralMinimizer::GeneralMinimizer(
 	j_r.setTolerance(TolY);
 }
 
+void GeneralMinimizer::printIntermediateSolution(
+		const Eigen::VectorXd &_solution,
+		const Eigen::MatrixXd &_A,
+		unsigned int _NumberOuterIterations
+		) const
+{
+	// print each solution
+	if ((outputsteps != 0) &&
+			(_NumberOuterIterations % outputsteps == 0)) {
+		{
+			std::stringstream solution_file;
+			solution_file << "solution"
+					<< (_NumberOuterIterations / outputsteps) << ".m";
+			using namespace MatrixIO;
+			std::ofstream ost(solution_file.str().c_str());
+			if (ost.good())
+				try {
+					ost << _solution;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Could not write all data of intermediate solution to stream.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << solution_file.str() << std::endl;
+			}
+		}
+		{
+			std::stringstream solution_file;
+			solution_file << "projected_solution"
+					<< (_NumberOuterIterations / outputsteps) << ".m";
+			using namespace MatrixIO;
+			std::ofstream ost(solution_file.str().c_str());
+			if (ost.good())
+				try {
+					ost << _A * _solution;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Could not write all data of projected intermediate solution to stream.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << solution_file.str() << std::endl;
+			}
+		}
+
+	}
+}

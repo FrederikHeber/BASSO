@@ -255,6 +255,12 @@ SequentialSubspaceMinimizer::operator()(
 			++returnvalues.NumberOuterIterations;
 			StopCriterion =
 					(returnvalues.NumberOuterIterations >= MaxOuterIterations);
+
+			// print intermediat solution
+			printIntermediateSolution(
+					returnvalues.solution,
+					_A,
+					returnvalues.NumberOuterIterations);
 		}
 	}
 

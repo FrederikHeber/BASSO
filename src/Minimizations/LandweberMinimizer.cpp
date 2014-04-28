@@ -216,35 +216,11 @@ LandweberMinimizer::operator()(
 				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
 				|| (fabs(returnvalues.residuum) <= TolY);
 
-		// print each solution
-		if ((outputsteps != 0) &&
-				(returnvalues.NumberOuterIterations % outputsteps == 0)) {
-			{
-				std::stringstream solution_file;
-				solution_file << "solution"
-						<< (returnvalues.NumberOuterIterations / outputsteps) << ".m";
-				using namespace MatrixIO;
-				std::ofstream ost(solution_file.str().c_str());
-				if (ost.good())
-					ost << returnvalues.solution;
-				else {
-					std::cerr << "Failed to open " << solution_file.str() << std::endl;
-				}
-			}
-			{
-				std::stringstream solution_file;
-				solution_file << "projected_solution"
-						<< (returnvalues.NumberOuterIterations / outputsteps) << ".m";
-				using namespace MatrixIO;
-				std::ofstream ost(solution_file.str().c_str());
-				if (ost.good())
-					ost << _A * returnvalues.solution;
-				else {
-					std::cerr << "Failed to open " << solution_file.str() << std::endl;
-				}
-			}
-
-		}
+		// print intermediat solution
+		printIntermediateSolution(
+				returnvalues.solution,
+				_A,
+				returnvalues.NumberOuterIterations);
 	}
 
 	return returnvalues;

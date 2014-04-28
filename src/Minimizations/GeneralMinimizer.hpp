@@ -53,6 +53,21 @@ public:
 			const Eigen::VectorXd &_y
 			) const = 0;
 
+protected:
+	/** Internal helper function for specific Minimizers to print debugging
+	 *  solutions.
+	 *
+	 * @param _solution intermediate solution
+	 * @param _A forward matrix, required for printing projected solution
+	 * @param _NumberOuterIterations current iteration count
+	 */
+	void printIntermediateSolution(
+			const Eigen::VectorXd &_solution,
+			const Eigen::MatrixXd &_A,
+			unsigned int _NumberOuterIterations
+			) const
+;
+
 public:
 	//!> Lp norm of space X: p
 	const double val_NormX;
