@@ -182,7 +182,12 @@ int main (int argc, char *argv[])
 		{
 			std::ifstream ist(matrix_file.string().c_str());
 			if (ist.good())
-				ist >> matrix;
+				try {
+					ist >> matrix;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully parse matrix from " << matrix_file.string() << std::endl;
+					return 255;
+				}
 			else {
 				std::cerr << "Failed to open " << matrix_file.string() << std::endl;
 				return 255;
@@ -192,7 +197,12 @@ int main (int argc, char *argv[])
 		{
 			std::ifstream ist(rhs_file.string().c_str());
 			if (ist.good())
-				ist >> rhs;
+				try {
+					ist >> rhs;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully parse rhs from " << rhs_file.string() << std::endl;
+					return 255;
+				}
 			else {
 				std::cerr << "Failed to open " << rhs_file.string() << std::endl;
 				return 255;
@@ -272,7 +282,11 @@ int main (int argc, char *argv[])
 			using namespace MatrixIO;
 			std::ofstream ost(solution_file.string().c_str());
 			if (ost.good())
-				ost << result.solution;
+				try {
+					ost << result.solution;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write solution to file.\n";
+				}
 			else {
 				std::cerr << "Failed to open " << solution_file.string() << std::endl;
 				return 255;

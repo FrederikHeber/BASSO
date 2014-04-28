@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 
+#include "MatrixIO/MatrixIOExceptions.hpp"
 
 /** This namespace combines functions to read and write matrices and
  * vectors from the Eigen library
@@ -31,11 +32,17 @@ inline std::ostream & operator<<(std::ostream &ost, const Eigen::MatrixXd &m)
 		const Eigen::MatrixXd::Index rows = m.innerSize();
 		const Eigen::MatrixXd::Index cols = m.outerSize();
 		ost << rows << " " << cols << std::endl;
-		for (Eigen::MatrixXd::Index row = 0; (row < rows) && ost.good(); ++row ) {
-			for (Eigen::MatrixXd::Index col = 0; (col < cols) && ost.good(); ++row )
+		Eigen::MatrixXd::Index row = 0;
+		for (; (row < rows) && ost.good(); ++row ) {
+			Eigen::MatrixXd::Index col = 0;
+			for (; (col < cols) && ost.good(); ++row )
 				ost << m(row, col) << " ";
 			ost << std::endl;
+			if (col != cols)
+				throw MatrixIOStreamEnded_exception();
 		}
+		if (row != rows)
+			throw MatrixIOStreamEnded_exception();
 	}
 	return ost;
 }
@@ -51,8 +58,11 @@ inline std::ostream & operator<<(std::ostream &ost, const Eigen::VectorXd &v)
 	if (ost.good()) {
 		const Eigen::MatrixXd::Index rows = v.innerSize();
 		ost << rows << " " << 1 << std::endl;
-		for (Eigen::MatrixXd::Index row = 0; (row < rows) && ost.good(); ++row )
+		Eigen::MatrixXd::Index row = 0;
+		for (; (row < rows) && ost.good(); ++row )
 			ost << v(row) << std::endl;
+		if (row != rows)
+			throw MatrixIOStreamEnded_exception();
 	}
 	return ost;
 }
@@ -80,13 +90,19 @@ inline std::istream & operator>>(std::istream &ist, Eigen::MatrixXd &m)
 		m.resize(rows, cols);
 
 		// parse following lines
-		for (unsigned int i=0; (i < rows) && ist.good(); ++i) {
+		unsigned int i=0;
+		for (; (i < rows) && ist.good(); ++i) {
 			std::string contents;
 			getline(ist, contents);
 			std::stringstream sstr(contents);
-			for (unsigned int j=0; (j < cols) && sstr.good(); ++j)
+			unsigned int j=0;
+			for (; (j < cols) && sstr.good(); ++j)
 				sstr >> m(i,j);
+			if (j != cols)
+				throw MatrixIOStreamEnded_exception();
 		}
+		if (i != rows)
+			throw MatrixIOStreamEnded_exception();
 	}
 	return ist;
 }

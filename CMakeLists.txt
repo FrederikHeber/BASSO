@@ -98,6 +98,10 @@ include_directories( ${Boost_INCLUDE_DIR} )
 # include source folder
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 
+# add the MatrixIO library
+include_directories ("${PROJECT_SOURCE_DIR}/MatrixIO")
+add_subdirectory (src/MatrixIO)
+
 # add the Minimizations library
 include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
 add_subdirectory (src/Minimizations)
