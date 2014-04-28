@@ -242,9 +242,11 @@ int main (int argc, char *argv[])
 //	SequentialSubspaceMinimizer minimizer(
 //			normx,
 //			normy,
+//			powerx,
 //			powery,
 //			delta,
-//			maxiter);
+//			maxiter,
+//			outputsteps);
 //	SequentialSubspaceMinimizer::ReturnValues result =
 //			minimizer(
 //					x0,

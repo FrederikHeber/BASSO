@@ -22,17 +22,23 @@
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const unsigned int _NormX,
 		const unsigned int _NormY,
+		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
-		const unsigned int _maxiter
+		const double _C,
+		const unsigned int _maxiter,
+		const unsigned int _outputsteps
 		) :
 	val_NormX(_NormX),
 	val_NormY(_NormY),
+ 	PowerX(_PowerX),
 	PowerY(_PowerY),
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
 	TolFun(1e-12),
+ 	C(_C),
+	outputsteps(_outputsteps),
 	tau(1.1)
 {
 	// check that regularization parameter is greater than 1
