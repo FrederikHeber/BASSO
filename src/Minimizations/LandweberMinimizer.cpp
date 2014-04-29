@@ -14,10 +14,7 @@
 #include <levmar.h>
 #include <limits>
 
-#include "DualityMapping.hpp"
-#include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
-#include "SmoothnessModulus.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
 		const double _NormX,
@@ -29,107 +26,60 @@ LandweberMinimizer::LandweberMinimizer(
 		) :
 	val_NormX(_NormX),
 	val_NormY(_NormY),
+	val_DualNormX(val_NormX/(val_NormX - 1.)),
+	PowerX(val_NormX),
 	PowerY(_PowerY),
+	DualPowerX(val_DualNormX),  // PowerX/(PowerX - 1.)
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
+	TolY(Delta),
 	TolFun(1e-12),
-	C(_C)
+	C(_C),
+	NormX(val_NormX),
+	NormY(val_NormY),
+	DualNormX(val_DualNormX),
+	J_p(val_NormX),
+	J_q(val_DualNormX),
+	j_r(val_NormY),
+	modul(val_DualNormX)
 {
 	if ((C <= 0.)) // || ( C > 1.))
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("C");
+
+	BOOST_LOG_TRIVIAL(debug)
+		<< "p is " << val_NormX
+		<< ", q is " << val_DualNormX
+		<< ", r is " << val_NormY
+		<< ", power of J_p is " <<  PowerX
+		<< ", power of J_q is " <<  DualPowerX
+		<< ", power of J_r is " <<  PowerY;
+
+	// set tolerances values
+	J_p.setTolerance(TolX);
+	J_q.setTolerance(TolX);
+	j_r.setTolerance(TolY);
 }
 
-struct SmoothnessParameters
-{
-	SmoothnessModulus *modul;
-	double lambda;
-};
-
-/** Static function to calculate distance of smoothness modulus over tau
- * to given lambda with respect to tau.
- *
- */
-static void
-func_smoothness_over_tau(double *p, double *hx, int m, int n, void *adata)
-{
-	SmoothnessParameters *params = static_cast<SmoothnessParameters *>(adata);
-	const double result = (*params->modul)(p[0]);
-	const double norm = result/p[0] - params->lambda;
-	hx[0] = norm*norm;
-}
-
-double LandweberMinimizer::calculateMatchingTau(
-		SmoothnessModulus &_modul,
-		const double _lambda
-		) const
-{
-	SmoothnessParameters params;
-	params.modul = &_modul;
-	params.lambda = _lambda;
-	double tau[] = { .5 };
-	double info[LM_INFO_SZ];
-	double x[] = { 0. };
-	const int m = 1;
-	const int n = 1;
-	double lb[] = { std::numeric_limits<double>::epsilon() };
-	double ub[] = { 1. };
-	double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-	double *covar = work+LM_DIF_WORKSZ(m, n);
-	int ret = dlevmar_bc_dif(
-			(*func_smoothness_over_tau),
-			tau,
-			x,
-			m,
-			n,
-			lb,
-			ub,
-			NULL,
-			1000,
-			NULL, 	/* opts[4] */
-			info,
-			work,
-			covar,
-			&params
-			);
-//	  std::cout << "Minimization info: ";
-//	  for(int i=0; i<LM_INFO_SZ; ++i)
-//	    std::cout << info[i] << ", ";
-//	  std::cout << std::endl;
-	  if (ret == -1)
-		throw MinimizationFunctionError_exception()
-			<< MinimizationFunctionError_name(tau[0]);
-	// free everything
-	free(work);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Matching tau from modulus of smoothness is " << tau[0];
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Counter-check: rho(tau)/tau = "
-		<< _modul(tau[0])/tau[0] << ", lambda = " << _lambda;
-
-	return tau[0];
-}
 
 /** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
  *
  * \param _x0 current iteration point
  * \param _A matrix of inverse problem
  * \param _y right-hand side
- * \param _NormY functor to calculate norm
  * \param _residual residual vector, updated after call
  * \return norm of residual
  */
-static double calculateResidual(
+double LandweberMinimizer::calculateResidual(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
-		const LpNorm &_NormY,
 		Eigen::VectorXd &_residual
-		)
+		) const
 {
 	_residual = _A * _x0 - _y;
-	return _NormY(_residual);
+	return NormY(_residual);
 }
 
 struct MinimizationParameters
@@ -193,13 +143,13 @@ LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_y
 		) const
 {
-	double PowerX;
-	double DualPowerX;
-	double val_DualNormX = val_NormX/(val_NormX - 1.);
+	BOOST_LOG_TRIVIAL(debug) << "Calculating "
+			<< _A << "*" << _x0 << "-" << _y;
+	BOOST_LOG_TRIVIAL(trace)
+		<< "A^* is " << _A.transpose();
+
+	// G constant used in theoretical step width
 	double G;
-	const double TolY = Delta;
-	PowerX = val_NormX;
-	DualPowerX = val_DualNormX; // PowerX/(PowerX - 1.);
 	if (val_DualNormX < 2.) {
 		G = ::pow(2., 2. - val_DualNormX);
 	} else {
@@ -207,53 +157,30 @@ LandweberMinimizer::operator()(
 //		DualPowerX = 2.;
 		G = val_DualNormX - 1.;
 	}
-	BOOST_LOG_TRIVIAL(debug)
-		<< "p is " << val_NormX
-		<< ", q is " << val_DualNormX
-		<< ", r is " << val_NormY
-		<< ", power of J_p is " <<  PowerX
-		<< ", power of J_q is " <<  DualPowerX
-		<< ", power of J_r is " <<  PowerY;
 
-	// prepare norm and duality mapping functors
-	LpNorm NormX(val_NormX);
-	LpNorm NormY(val_NormY);
-	LpNorm DualNormX(val_DualNormX);
-	DualityMapping J_p(val_NormX);
-	DualityMapping J_q(val_DualNormX);
-	DualityMapping j_r(val_NormY);
-	J_p.setTolerance(TolX);
-	J_q.setTolerance(TolX);
-	j_r.setTolerance(TolY);
-	SmoothnessModulus modul(val_DualNormX);
-
-	// initialize return structure
+	/// -# initialize return structure
 	ReturnValues returnvalues;
 	returnvalues.NumberOuterIterations = 0;
 	// set iterate 'x' as start vector 'x0'
 	returnvalues.solution = _x0;
-
-	bool StopCriterion = false;
-
-	BOOST_LOG_TRIVIAL(debug) << "Calculating "
-			<< _A << "*" << _x0 << "-" << _y;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "A^* is " << _A.transpose();
-
 	// calculate starting residual and norm
 	returnvalues.residuum = calculateResidual(
-			_x0, _A, _y, NormY,
+			_x0, _A, _y,
 			returnvalues.residual);
 
-	// check stopping criterion
+	/// -# check stopping criterion
+	bool StopCriterion = false;
 	StopCriterion = (fabs(returnvalues.residuum) <= TolY);
 
+	// calculate some values prior to loop
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
 	const double modulus_at_one = modul(1);
 	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
 	BOOST_LOG_TRIVIAL(trace)
 		<< "_ANorm " << _ANorm;
+
+	/// -# loop over stopping criterion
 	while (!StopCriterion) {
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
@@ -363,7 +290,6 @@ LandweberMinimizer::operator()(
 				returnvalues.solution,
 				_A,
 				_y,
-				NormY,
 				returnvalues.residual);
 
 		// check iterations count
