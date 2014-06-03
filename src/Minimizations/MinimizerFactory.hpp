@@ -64,8 +64,8 @@ public:
 	 * @param _name name of InstanceType to check
 	 * \return true - name ok, false - name unknown
 	 */
-	bool isValidTypeName(
-			const std::string &_name) const
+	static bool isValidTypeName(
+			const std::string &_name)
 	{
 		return getTypeNamesIndex(_name) != MAX_InstanceType;
 	}
@@ -76,8 +76,8 @@ public:
 	 * @param _name name of instance type
 	 * @return id of this instance type
 	 */
-	enum InstanceType getTypeForName(
-			const std::string &_name) const;
+	static enum InstanceType getTypeForName(
+			const std::string &_name);
 
 	/** Helper function to get name to an internal instance type.
 	 *
@@ -87,8 +87,8 @@ public:
 	 * @param _type id of instance type
 	 * @return string containing type's name
 	 */
-	const std::string& getNameForType(
-			const enum InstanceType &_type) const;
+	static const std::string& getNameForType(
+			const enum InstanceType &_type);
 
 protected:
 	/** Internal function to look up the index for the given name.
@@ -96,8 +96,8 @@ protected:
 	 * @param _name name of InstanceType to look up in TypeNames
 	 * @return index in array
 	 */
-	unsigned int getTypeNamesIndex(
-			const std::string &_name) const;
+	static unsigned int getTypeNamesIndex(
+			const std::string &_name);
 
 public:
 	//!> name of each known instance type

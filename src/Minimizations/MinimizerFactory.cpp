@@ -67,7 +67,7 @@ MinimizerFactory::getInstance(
 }
 
 unsigned int MinimizerFactory::getTypeNamesIndex(
-		const std::string &_name) const
+		const std::string &_name)
 {
 	unsigned int i=0;
 	for (; i<MAX_InstanceType; ++i)
@@ -78,7 +78,7 @@ unsigned int MinimizerFactory::getTypeNamesIndex(
 }
 
 MinimizerFactory::InstanceType MinimizerFactory::getTypeForName(
-		const std::string &_name) const
+		const std::string &_name)
 {
 	unsigned int i=getTypeNamesIndex(_name);
 	assert(i != MAX_InstanceType);
@@ -86,7 +86,7 @@ MinimizerFactory::InstanceType MinimizerFactory::getTypeForName(
 }
 
 const std::string& MinimizerFactory::getNameForType(
-		const enum InstanceType &_type) const
+		const enum InstanceType &_type)
 {
 	assert( (_type >= landweber) && (_type < MAX_InstanceType) );
 	return TypeNames[_type];
