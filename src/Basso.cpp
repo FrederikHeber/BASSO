@@ -113,14 +113,25 @@ int main (int argc, char *argv[])
 	logging::add_common_attributes();
 
 	// parse options
-	std::string algorithm_name;
-	if (vm.count("algorithm")) {
-		algorithm_name = vm["algorithm"].as<std::string>();
+	MinimizerFactory::InstanceType type = MinimizerFactory::MAX_InstanceType;
+	{
+		// get desired algorithm
+		std::string algorithm_name;
+		if (vm.count("algorithm")) {
+			algorithm_name = vm["algorithm"].as<std::string>();
+		} else {
+			algorithm_name =
+					MinimizerFactory::TypeNames[MinimizerFactory::landweber];
+		}
+		// check whether algorithm_name states valid type
+		if (!MinimizerFactory::isValidTypeName(algorithm_name)) {
+			std::cerr << "Unknown algorithm specified by "
+					<< algorithm_name << std::endl;
+			return 255;
+		}
 		BOOST_LOG_TRIVIAL(debug)
 			<< "algorithm was set to " << algorithm_name << "\n";
-	} else {
-		algorithm_name =
-				MinimizerFactory::TypeNames[MinimizerFactory::landweber];
+		type = MinimizerFactory::getTypeForName(algorithm_name);
 	}
 	double C;
 	if (vm.count("C")) {
@@ -264,8 +275,6 @@ int main (int argc, char *argv[])
 
 	// call minimizer
 	MinimizerFactory factory;
-	MinimizerFactory::InstanceType type =
-			factory.getTypeForName(algorithm_name);
 	MinimizerFactory::instance_ptr_t minimizer =
 		factory.getInstance(
 			type,
@@ -285,7 +294,8 @@ int main (int argc, char *argv[])
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);
 			break;
 		default:
-			std::cerr << "Unknown InstanceType." << std::endl;
+			std::cerr << "Unknown InstanceType"
+				<< MinimizerFactory::getNameForType(type) << "." << std::endl;
 			return 255;
 			break;
 		}
