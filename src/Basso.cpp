@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
-			("tau", po::value<double>(), "set the value for tau (sequencesubspace)")
+			("tau", po::value<double>(), "set the value for tau (SSO)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
 

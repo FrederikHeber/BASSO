@@ -26,7 +26,7 @@ public:
 	MinimizerFactory() {}
 	~MinimizerFactory() {}
 
-	//!> enumeration of all known instances
+	//!> enumeration of all known instances (Don't forget to add string literal to TypeNames)
 	enum InstanceType {
 		landweber=0,
 		sequentialsubspace=1,
@@ -100,7 +100,7 @@ protected:
 			const std::string &_name);
 
 public:
-	//!> name of each known instance type
+	//!> name of each known instance type (Don't forget to add enum to InstanceType)
 	static const std::string TypeNames[];
 };
 

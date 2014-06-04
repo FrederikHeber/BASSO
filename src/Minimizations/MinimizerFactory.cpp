@@ -16,7 +16,7 @@
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {
 		"landweber",
-		"sequentialsubspace"
+		"SSO"
 };
 
 MinimizerFactory::instance_ptr_t
