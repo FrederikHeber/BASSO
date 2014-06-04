@@ -233,7 +233,7 @@ int main (int argc, char *argv[])
 	}
 
 	// prepare start value
-	Eigen::VectorXd x0(rhs.innerSize());
+	Eigen::VectorXd x0(matrix.outerSize());
 	x0.setZero();
 	if (x0.innerSize() < 10)
 		std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
