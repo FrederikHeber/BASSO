@@ -12,6 +12,9 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
+#include <gsl/gsl_multimin.h>
+#include <gsl/gsl_vector.h>
+#include <limits>
 
 #include "BregmanFunctional.hpp"
 #include "DualityMapping.hpp"
@@ -105,31 +108,36 @@ struct BregmanParameters
 /** Static function to wrap call to BregmanFunctional::operator()().
  *
  */
-static void
-func(double *p, double *hx, int m, int n, void *adata)
+static double
+func(const gsl_vector *x, void *adata)
 {
 	struct BregmanParameters *params =
 			static_cast<BregmanParameters *>(adata);
-	params->t[0] = p[0];
-	hx[0] =
+	for (int i=0;i<params->t.innerSize();++i)
+		params->t[i] = gsl_vector_get(x, i);
+	const double returnvalue =
 			(params->bregman)(
 					params->t,
 					params->x,
 					params->U,
 					params->alpha,
 					params->q);
+	BOOST_LOG_TRIVIAL(trace)
+		<< "func() evaluates to " << returnvalue;
+	return returnvalue;
 }
 
 /** Static function to wrap call to BregmanFunctional::operator()().
  *
  */
 static void
-jacf(double *p, double *j, int m, int n, void *adata)
+jacf(const gsl_vector *x, void *adata, gsl_vector *g)
 {
 	struct BregmanParameters *params =
 			static_cast<BregmanParameters *>(adata);
 	// update where to evaluate
-	params->t[0] = p[0];
+	for (int i=0;i<params->t.innerSize();++i)
+		params->t[i] = gsl_vector_get(x, i);
 	Eigen::VectorXd grad =
 			(params->bregman).gradient(
 					params->t,
@@ -137,8 +145,43 @@ jacf(double *p, double *j, int m, int n, void *adata)
 					params->U,
 					params->alpha,
 					params->q);
-	for (int i=0; i<m;++i)
-		j[i] = grad[i];
+	for (int i=0; i<grad.innerSize();++i)
+		gsl_vector_set(g, i, grad[i]);
+	BOOST_LOG_TRIVIAL(trace)
+		<< "grad() evaluates to " << grad.transpose();
+}
+
+/** Static function to wrap call to BregmanFunctional::operator()().
+ *
+ */
+static void
+funcjacf(const gsl_vector *x, void *adata, double *f, gsl_vector *g)
+{
+	struct BregmanParameters *params =
+			static_cast<BregmanParameters *>(adata);
+	// update where to evaluate
+	for (int i=0;i<params->t.innerSize();++i)
+		params->t[i] = gsl_vector_get(x, i);
+	*f =
+			(params->bregman)(
+					params->t,
+					params->x,
+					params->U,
+					params->alpha,
+					params->q);
+	BOOST_LOG_TRIVIAL(trace)
+		<< "func() evaluates to " << *f;
+	Eigen::VectorXd grad =
+			(params->bregman).gradient(
+					params->t,
+					params->x,
+					params->U,
+					params->alpha,
+					params->q);
+	for (int i=0; i<grad.innerSize();++i)
+		gsl_vector_set(g, i, grad[i]);
+	BOOST_LOG_TRIVIAL(trace)
+		<< "grad() evaluates to " << grad.transpose();
 }
 
 SequentialSubspaceMinimizer::ReturnValues
@@ -150,25 +193,6 @@ SequentialSubspaceMinimizer::operator()(
 {
 //	NoCols = _A.innerSize();
 //	NoRows = _A.outerSize();
-
-	double PowerX;
-	double DualPowerX;
-	double G;
-	if (val_NormX > 2) {
-		PowerX = val_NormX;
-		DualPowerX = PowerX/(PowerX - 1.);
-		G = ::pow(2., 2. - val_DualNormX);
-	} else {
-		PowerX = 2.;
-		DualPowerX = 2.;
-		G = val_DualNormX - 1.;
-	}
-	BOOST_LOG_TRIVIAL(trace)
-		<< "New PowerX is " << PowerX;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "New DualPowerX is " << DualPowerX;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "G is " << G;
 
 	/// -# initialize return structure
 	ReturnValues returnvalues;
@@ -196,128 +220,139 @@ SequentialSubspaceMinimizer::operator()(
 //		<< "_ANorm " << _ANorm;
 
 	// start building up search space 'U' with the search vectors 'u'
+	Eigen::MatrixXd U(_A.outerSize(),N);
+	Eigen::VectorXd alphas(N);
+	unsigned int index = 0;
 	while (!StopCriterion) {
-		if ((returnvalues.NumberOuterIterations == 0)
-			|| (returnvalues.residuum > TolY)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << returnvalues.NumberOuterIterations
-					<< " with residual of " << returnvalues.residuum;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n is " << returnvalues.solution.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "R_n is " << returnvalues.residual.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-				<< "j_r (residual) is "
-				<< j_r( returnvalues.residual, PowerY).transpose();
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#" << returnvalues.NumberOuterIterations
+				<< " with residual of " << returnvalues.residuum;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x_n is " << returnvalues.solution.transpose();
+		BOOST_LOG_TRIVIAL(trace)
+				<< "R_n is " << returnvalues.residual.transpose();
+		BOOST_LOG_TRIVIAL(trace)
+			<< "j_r (residual) is "
+			<< j_r( returnvalues.residual, PowerY).transpose();
 
-			// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-			Eigen::VectorXd u =
-					_A.transpose()*j_r(returnvalues.residual, PowerY);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "u is " << u.transpose();
+		// u=A'*DualityMapping(w,NormY,PowerY,TolX);
+		Eigen::VectorXd u = j_r(returnvalues.residual, PowerY);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "u is " << u.transpose();
 
-			// uNorm=norm(u,DualNormX);
-			const double uNorm = DualNormX(u);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "uNorm is " << uNorm;
-			// alpha=u'*x-Residual^PowerY;
-			const double alpha =
-					u.transpose() * _x0 - ::pow(returnvalues.residuum,PowerY);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "alpha is " << alpha;
-			// d=Delta*Residual^(PowerY-1);
-			const double d =
-					Delta * ::pow(returnvalues.residuum,(double)PowerY-1.);
-			// beta=Residual^(PowerY-1)*(Residual-Delta)/uNorm^DualPowerX;
-			const double beta =
-					::pow(returnvalues.residuum,(double)PowerY-1.)
-					* (returnvalues.residuum-Delta)/::pow(uNorm, DualPowerX);
+		// uNorm=norm(u,DualNormX);
+		const double uNorm = DualNormX(u);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "uNorm is " << uNorm;
 
-			double tmin = 0.;
-			if (dual_solution.isApproxToConstant(0, TolX)) {
-				// tmin=beta^(PowerX-1);
-				tmin = ::pow(beta, PowerX - 1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin;
-			} else {
-				// t0=(beta/G)^(PowerX-1);
-				Eigen::VectorXd t0(1);
-				t0[0] = ::pow(beta/G, PowerX - 1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "t0[0] is " << t0[0];
-				// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-				BregmanFunctional bregman(val_DualNormX, TolX);
-				// TODO_ we actually have to perform a function minimization
-				// with respect to t starting at t0
-				Eigen::VectorXd steps(1);
-				steps[0] = alpha+d;
-				BregmanParameters params(
-						bregman,
-						t0,
-						dual_solution,
-						u,
-						steps,
-						DualPowerX);
-//				double info[LM_INFO_SZ];
-//				double x[1];
-//				const int m = 1;
-//				const int n = 1;
-//				double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-//				double *covar = work+LM_DIF_WORKSZ(m, n);
-//				int ret = dlevmar_der(
-//						*func,
-//						*jacf,
-//						&tmin,
-//						x,
-//						m,
-//						n,
-//						1000, 	/* itmax */
-//						NULL, 	/* opts[4] */
-//						info,
-//						work,
-//						covar,
-//						static_cast<void *>(&params)
-//						);
-//				if (ret == -1)
-//					throw MinimizationFunctionError_exception()
-//						<< MinimizationFunctionError_name(tau);
-//				// free everything
-//				free(work);
-				// solution is in tmin already
-				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin;
+		// alpha=u'*x
+		const double alpha =
+				u.transpose() * _y;
+		BOOST_LOG_TRIVIAL(trace)
+			<< "alpha is " << alpha;
+
+		// add u to U and alpha to alphas
+		U.col(index) = _A.transpose()*u;
+		alphas(index) = alpha;
+		index = (index + 1) % N;
+
+		Eigen::VectorXd tmin(N);
+		tmin.setZero();
+		{
+			// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+			BregmanFunctional bregman(val_DualNormX, TolX);
+			// we perform a function minimization
+			// with respect to t starting at t0
+			BregmanParameters params(
+					bregman,
+					tmin,
+					dual_solution,
+					U,
+					alphas,
+					DualPowerX);
+			size_t iter = 0;
+			int status;
+
+			const gsl_multimin_fdfminimizer_type *T;
+			gsl_multimin_fdfminimizer *s;
+
+			gsl_vector *x;
+			gsl_multimin_function_fdf my_func;
+
+			my_func.n = N;
+			my_func.f = &func;
+			my_func.df = &jacf;
+			my_func.fdf = &funcjacf;
+			my_func.params = &params;
+
+			/* Starting point, x = (0,0) */
+			x = gsl_vector_alloc (N);
+			for (unsigned int i=0;i<N;++i)
+			  gsl_vector_set (x, i, tmin(i));
+
+			T = gsl_multimin_fdfminimizer_vector_bfgs;
+			s = gsl_multimin_fdfminimizer_alloc (T, N);
+
+			gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, TolY);
+
+			do
+			{
+			  iter++;
+			  status = gsl_multimin_fdfminimizer_iterate (s);
+
+			  if (status)
+				break;
+
+			  status = gsl_multimin_test_gradient (s->gradient, TolY);
+
+//				  if (status == GSL_SUCCESS)
+//					printf ("Minimum found at:\n");
+//
+//				  printf ("%5d %.5f %.5f %10.5f\n", iter,
+//						  gsl_vector_get (s->x, 0),
+//						  gsl_vector_get (s->x, 1),
+//						  s->f);
+
 			}
-//			const Eigen::VectorXd uold = u;
-//			const double alphao0ld = alpha;
-//			const double dold = d;
-			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-			dual_solution -= tmin*u;
+			while (status == GSL_CONTINUE && iter < 100);
+
+			// place solution at tmin
+			for (size_t i=0;i<N;++i)
+			  tmin(i) = gsl_vector_get (s->x, i);
+
+			gsl_multimin_fdfminimizer_free (s);
+			gsl_vector_free (x);
+
 			BOOST_LOG_TRIVIAL(trace)
-					<< "x^*_n+1 is " << dual_solution.transpose();
-			returnvalues.solution =
-					J_q(dual_solution , DualPowerX);
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n+1 is " << returnvalues.solution.transpose();
-
-			// update residual
-			returnvalues.residuum = calculateResidual(
-					returnvalues.solution,
-					_A,
-					_y,
-					returnvalues.residual);
-
-			// check iterations count
-			++returnvalues.NumberOuterIterations;
-			StopCriterion =
-					(returnvalues.NumberOuterIterations >= MaxOuterIterations)
-					|| (fabs(returnvalues.residuum) <= TolY);
-
-			// print intermediat solution
-			printIntermediateSolution(
-					returnvalues.solution,
-					_A,
-					returnvalues.NumberOuterIterations);
+				<< "tmin is " << tmin.transpose();
 		}
+		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
+		dual_solution -= U*tmin;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x^*_n+1 is " << dual_solution.transpose();
+		returnvalues.solution =
+				J_q(dual_solution , DualPowerX);
+		BOOST_LOG_TRIVIAL(trace)
+				<< "x_n+1 is " << returnvalues.solution.transpose();
+
+		// update residual
+		returnvalues.residuum = calculateResidual(
+				returnvalues.solution,
+				_A,
+				_y,
+				returnvalues.residual);
+
+		// check iterations count
+		++returnvalues.NumberOuterIterations;
+		StopCriterion =
+				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
+				|| (fabs(returnvalues.residuum) <= TolY);
+
+		// print intermediat solution
+		printIntermediateSolution(
+				returnvalues.solution,
+				_A,
+				returnvalues.NumberOuterIterations);
 	}
 
 	// and return solution

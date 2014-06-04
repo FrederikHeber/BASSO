@@ -52,6 +52,19 @@ if (CPPUNIT_FOUND)
 	#set (EXTRA_LIBS ${EXTRA_LIBS} "${CPPUNIT_LIBRARY}")
 endif (CPPUNIT_FOUND)
 
+# looking for blas
+set (BLA_VENDOR "Generic")
+FIND_PACKAGE(BLAS REQUIRED)
+if (BLAS_FOUND)
+	# find gsl for function minimization
+	set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+	FIND_PACKAGE(GSL REQUIRED)
+	if (GSL_FOUND)
+		include_directories( "${GSL_INCLUDE_DIR}" )
+		set (GSL_LIBRARY ${GSL_LIBRARIES} ${BLAS_blas_LIBRARY})
+	endif (GSL_FOUND)
+endif (BLAS_FOUND)
+
 # find (p)thread
 find_package (Threads)
 
