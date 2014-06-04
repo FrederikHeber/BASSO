@@ -36,7 +36,8 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_maxiter,
 			_outputsteps
 			),
-	tau(1.1)
+	tau(1.1),
+	N(2)
 {}
 
 void SequentialSubspaceMinimizer::setTau(
@@ -50,6 +51,17 @@ void SequentialSubspaceMinimizer::setTau(
 	const_cast<double&>(tau) = _tau;
 	// change y tolerance according to regularization parameter
 	const_cast<double&>(TolY) = tau * Delta;
+}
+
+void SequentialSubspaceMinimizer::setN(
+		const unsigned int _N
+		)
+{
+	// check that number of search directions is greater than 1
+	if (_N < 1)
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("N");
+	const_cast<unsigned int&>(N) = _N;
 }
 
 /** Structure containing all parameters to call BregmanFunctional functions.

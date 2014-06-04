@@ -40,6 +40,16 @@ public:
 	 */
 	void setTau(const double _tau);
 
+	/** Setter for N, the number of search directions.
+	 *
+	 * This is to have a definite place where N is changed. Hence,
+	 * it is const and cannot accidentally be changed in the code, but
+	 * it can still be set after the instance has been created.
+	 *
+	 * @param _N new value of N, N in [1, infty)
+	 */
+	void setN(const unsigned int _N);
+
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
 			const Eigen::MatrixXd &_A,
@@ -58,6 +68,9 @@ private:
 
 	//!> regularization parameter for discrepancy principle, tau > 1
 	const double tau;
+
+	//!> number of search directions
+	const unsigned int N;
 };
 
 

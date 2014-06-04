@@ -44,6 +44,7 @@ int main (int argc, char *argv[])
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
 	        ("normx", po::value<double>(), "set the norm of the space X")
 	        ("normy", po::value<double>(), "set the norm of the space Y")
+	        ("number-directions", po::value<unsigned int>(), "set the number of search directions (SSO)")
 	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
 	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
 	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
@@ -174,6 +175,15 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm of Y was set to " << normy << "\n";
 	}
+	unsigned int N;
+	if (vm.count("number-directions")) {
+		N = vm["number-directions"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Number of search directions was set to " << N << "\n";
+	} else {
+		// set default value
+		N = 2;
+	}
 	unsigned int outputsteps;
 	if (vm.count("output-steps")) {
 		outputsteps = vm["output-steps"].as<unsigned int>();
@@ -292,6 +302,7 @@ int main (int argc, char *argv[])
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);
+			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);
 			break;
 		default:
 			std::cerr << "Unknown InstanceType"
