@@ -11,7 +11,6 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
-#include <levmar.h>
 #include <limits>
 #include <fstream>
 #include <sstream>

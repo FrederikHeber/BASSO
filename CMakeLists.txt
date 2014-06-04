@@ -52,25 +52,6 @@ if (CPPUNIT_FOUND)
 	#set (EXTRA_LIBS ${EXTRA_LIBS} "${CPPUNIT_LIBRARY}")
 endif (CPPUNIT_FOUND)
 
-# looking for blas
-FIND_PACKAGE(LAPACK REQUIRED)
-IF (LAPACK_FOUND)
-	set (BLA_VENDOR "Generic")
-	FIND_PACKAGE(BLAS REQUIRED)
-	if (BLAS_FOUND)
-		FIND_PACKAGE(F2C REQUIRED)
-		if (F2C_FOUND)
-			# find levmar for function minimization
-			set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-			FIND_PACKAGE(LevMar REQUIRED)
-			if (LEVMAR_FOUND)
-				include_directories( "${LEVMAR_INCLUDE_DIR}" )
-				set (LEVMAR_LIBRARY ${LEVMAR_LIBRARY} ${LAPACK_lapack_LIBRARY} ${BLAS_blas_LIBRARY} ${F2C_LIBRARY})
-			endif (LEVMAR_FOUND)
-		endif (F2C_FOUND)
-	endif (BLAS_FOUND)
-endif (LAPACK_FOUND)
-
 # find (p)thread
 find_package (Threads)
 

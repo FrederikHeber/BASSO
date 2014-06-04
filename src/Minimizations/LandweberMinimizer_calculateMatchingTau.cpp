@@ -7,86 +7,67 @@
 
 #include "LandweberMinimizer.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
-#include <levmar.h>
+#include <boost/math/tools/minima.hpp>
 #include <limits>
 
 #include "MinimizationExceptions.hpp"
 
-struct SmoothnessParameters
+class function_smoothness
 {
-	SmoothnessParameters(
+public:
+	function_smoothness(
 			const SmoothnessModulus &_modul,
 			const double _lambda
 			) :
 		modul(_modul),
 		lambda(_lambda)
 	{}
+	~function_smoothness() {}
 
+	double operator()(double _arg) const
+	{
+		const double result = (modul)(_arg);
+		const double norm = result/_arg - lambda;
+		return norm*norm;
+	}
+
+private:
 	const SmoothnessModulus &modul;
 	const double lambda;
 };
-
-/** Static function to calculate distance of smoothness modulus over tau
- * to given lambda with respect to tau.
- *
- */
-static void
-func_smoothness_over_tau(double *p, double *hx, int m, int n, void *adata)
-{
-	SmoothnessParameters *params = static_cast<SmoothnessParameters *>(adata);
-	const double result = (params->modul)(p[0]);
-	const double norm = result/p[0] - params->lambda;
-	hx[0] = norm*norm;
-}
 
 double LandweberMinimizer::calculateMatchingTau(
 		const SmoothnessModulus &_modul,
 		const double _lambda
 		) const
 {
-	SmoothnessParameters params(_modul, _lambda);
-	double tau[] = { .5 };
-	double info[LM_INFO_SZ];
-	double x[] = { 0. };
-	const int m = 1;
-	const int n = 1;
-	double lb[] = { std::numeric_limits<double>::epsilon() };
-	double ub[] = { 1. };
-	double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-	double *covar = work+LM_DIF_WORKSZ(m, n);
-	int ret = dlevmar_bc_dif(
-			(*func_smoothness_over_tau),
-			tau,
-			x,
-			m,
-			n,
-			lb,
-			ub,
-			NULL,
-			1000,
-			NULL, 	/* opts[4] */
-			info,
-			work,
-			covar,
-			&params
-			);
-//	  std::cout << "Minimization info: ";
-//	  for(int i=0; i<LM_INFO_SZ; ++i)
-//	    std::cout << info[i] << ", ";
-//	  std::cout << std::endl;
-	  if (ret == -1)
-		throw MinimizationFunctionError_exception()
-			<< MinimizationFunctionError_name(tau[0]);
-	// free everything
-	free(work);
+	function_smoothness smoothness(_modul, _lambda);
+	double tau = .5;
+	double minval = -1000.;
+	double maxval = 1000.;
+	int bits = 32;
+	boost::uintmax_t maxiter = 100;
+	std::pair<double, double> minpair =
+			boost::math::tools::brent_find_minima(
+					boost::bind(
+							&function_smoothness::operator(),
+							boost::cref(smoothness),
+							_1),
+					minval,
+					maxval,
+					bits,
+					maxiter);
+	tau = minpair.first;
+
 	BOOST_LOG_TRIVIAL(trace)
-		<< "Matching tau from modulus of smoothness is " << tau[0];
+		<< "Matching tau from modulus of smoothness is " << tau;
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Counter-check: rho(tau)/tau = "
-		<< _modul(tau[0])/tau[0] << ", lambda = " << _lambda;
+		<< _modul(tau)/tau << ", lambda = " << _lambda;
 
-	return tau[0];
+	return tau;
 }
 
 

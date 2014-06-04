@@ -7,19 +7,12 @@
 
 #include "LandweberMinimizer.hpp"
 
-#define USE_APPROXIMATE_LINESEARCH
-
 #include <Eigen/Dense>
-#ifndef USE_APPROXIMATE_LINESEARCH
-#include <levmar.h>
-#else
 #include <boost/bind.hpp>
 #include <boost/math/tools/minima.hpp>
-#endif
 #include <limits>
 
 #include "MinimizationExceptions.hpp"
-
 
 struct MinimizationParameters
 {
@@ -43,32 +36,6 @@ struct MinimizationParameters
 	const Eigen::VectorXd &y;
 	const LandweberMinimizer &landweber;
 };
-
-#ifndef USE_APPROXIMATE_LINESEARCH
-/** Static function to calculate residual for given step width
- *
- */
-static void
-func_residual(double *p, double *hx, int m, int n, void *adata)
-{
-	struct MinimizationParameters *params =
-			static_cast<MinimizationParameters *>(adata);
-	// calculate new candidate position
-	Eigen::VectorXd dual_solution =
-			params->landweber.J_p(params->x_n, params->landweber.PowerX);
-	dual_solution -= p[0] * params->u_n;
-	Eigen::VectorXd x =
-			params->landweber.J_q(dual_solution, params->landweber.DualPowerX);
-	// calculate residual at candidate position (goes into hx[0])
-	Eigen::VectorXd residual;
-	hx[0] = params->landweber.calculateResidual(
-			x,
-			params->A,
-			params->y,
-			residual
-			);
-}
-#endif
 
 class function_residual
 {
@@ -116,47 +83,6 @@ double LandweberMinimizer::calculateOptimalStepwidth(
 		const double _alpha) const
 {
 	double alpha = _alpha;
-#ifndef USE_APPROXIMATE_LINESEARCH
-	struct MinimizationParameters params(
-			_x,	// x_n
-			_u, // u_n
-			_A, // A
-			_y, // y
-			*this // landweber
-			);
-	double info[LM_INFO_SZ];
-	double x[] = { 0. };
-	double opts[] = { TolX, TolX, TolX, TolX };
-	const int m = 1;
-	const int n = 1;
-	double lb[] = { 0 };
-	double ub[] = { std::numeric_limits<double>::max() };
-	double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-	double *covar = work+LM_DIF_WORKSZ(m, n);
-	int ret = dlevmar_bc_dif(
-			(*func_residual),
-			&alpha,
-			x,
-			m,
-			n,
-			lb,
-			ub,
-			NULL,
-			1000,
-			opts, 	/* opts[4] */
-			info,
-			work,
-			covar,
-			&params
-			);
-	  if (ret == -1) {
-		alpha = _alpha;
-		throw MinimizationFunctionError_exception()
-			<< MinimizationFunctionError_name(alpha);
-	  }
-	// free everything
-	free(work);
-#else
 	function_residual res(
 			_x,	// x_n
 			_u, // u_n
@@ -179,7 +105,6 @@ double LandweberMinimizer::calculateOptimalStepwidth(
 					bits,
 					maxiter);
 	alpha = minpair.first;
-#endif
 
 	return alpha;
 }

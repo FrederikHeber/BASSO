@@ -12,7 +12,6 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
-#include <levmar.h>
 
 #include "BregmanFunctional.hpp"
 #include "DualityMapping.hpp"
@@ -55,7 +54,7 @@ void SequentialSubspaceMinimizer::setTau(
 
 /** Structure containing all parameters to call BregmanFunctional functions.
  *
- * This is required to use levmar function minimization that only allows
+ * This is required to use function minimization that only allows
  * to pass a void* pointer to pass on information to the function to be
  * minimized.
  *
@@ -247,31 +246,31 @@ SequentialSubspaceMinimizer::operator()(
 						u,
 						steps,
 						DualPowerX);
-				double info[LM_INFO_SZ];
-				double x[1];
-				const int m = 1;
-				const int n = 1;
-				double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-				double *covar = work+LM_DIF_WORKSZ(m, n);
-				int ret = dlevmar_der(
-						*func,
-						*jacf,
-						&tmin,
-						x,
-						m,
-						n,
-						1000, 	/* itmax */
-						NULL, 	/* opts[4] */
-						info,
-						work,
-						covar,
-						static_cast<void *>(&params)
-						);
-				if (ret == -1)
-					throw MinimizationFunctionError_exception()
-						<< MinimizationFunctionError_name(tau);
-				// free everything
-				free(work);
+//				double info[LM_INFO_SZ];
+//				double x[1];
+//				const int m = 1;
+//				const int n = 1;
+//				double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
+//				double *covar = work+LM_DIF_WORKSZ(m, n);
+//				int ret = dlevmar_der(
+//						*func,
+//						*jacf,
+//						&tmin,
+//						x,
+//						m,
+//						n,
+//						1000, 	/* itmax */
+//						NULL, 	/* opts[4] */
+//						info,
+//						work,
+//						covar,
+//						static_cast<void *>(&params)
+//						);
+//				if (ret == -1)
+//					throw MinimizationFunctionError_exception()
+//						<< MinimizationFunctionError_name(tau);
+//				// free everything
+//				free(work);
 				// solution is in tmin already
 				BOOST_LOG_TRIVIAL(trace)
 					<< "tmin is " << tmin;
