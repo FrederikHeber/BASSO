@@ -22,6 +22,7 @@ GeneralMinimizer::GeneralMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const Eigen::VectorXd &_solution,
 		const unsigned int _outputsteps
 		) :
 	val_NormX(_NormX),
@@ -41,7 +42,8 @@ GeneralMinimizer::GeneralMinimizer(
 	DualNormX(val_DualNormX),
 	J_p(val_NormX),
 	J_q(val_DualNormX),
-	j_r(val_NormY)
+	j_r(val_NormY),
+	solution(_solution)
 {
 	BOOST_LOG_TRIVIAL(debug)
 		<< "p is " << val_NormX

@@ -52,6 +52,8 @@ int main (int argc, char *argv[])
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
+			("compare-against", po::value< boost::filesystem::path >(),
+					"set the file name of the solution to compare against (BregmanDistance)")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
@@ -143,6 +145,12 @@ int main (int argc, char *argv[])
 		C = 0.9;
 	}
 	double delta;
+	boost::filesystem::path comparison_file;
+	if (vm.count("compare-against")) {
+		comparison_file = vm["compare-against"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Parsing true solution vector from " << comparison_file << ".\n";
+	}
 	if (vm.count("delta")) {
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
@@ -231,6 +239,7 @@ int main (int argc, char *argv[])
 	// parse matrix and vector files into instances
 	Eigen::MatrixXd matrix;
 	Eigen::VectorXd rhs;
+	Eigen::VectorXd solution;
 	{
 		using namespace MatrixIO;
 
@@ -261,6 +270,29 @@ int main (int argc, char *argv[])
 			else {
 				std::cerr << "Failed to open " << rhs_file.string() << std::endl;
 				return 255;
+			}
+		}
+		{
+			// just try to parse solution, we ignore if file does not exist
+			std::ifstream ist(comparison_file.string().c_str());
+			if (ist.good())
+				try {
+					ist >> solution;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully parse solution from " << comparison_file.string() << std::endl;
+					return 255;
+				}
+			else {
+				if (comparison_file.string().empty())
+					BOOST_LOG_TRIVIAL(debug)
+							<< "No solution file was given.";
+				else {
+					BOOST_LOG_TRIVIAL(error)
+						<< "Could not parse solution from " << comparison_file.string();
+					return 255;
+				}
+				solution = Eigen::VectorXd(matrix.outerSize());
+				solution.setZero();
 			}
 		}
 	}
@@ -294,11 +326,12 @@ int main (int argc, char *argv[])
 			powery,
 			delta,
 			maxiter,
+			solution,
 			outputsteps);
 	try {
 		switch(type) {
 		case MinimizerFactory::landweber:
-				static_cast<LandweberMinimizer*>(minimizer.get())->setC(C);
+			static_cast<LandweberMinimizer*>(minimizer.get())->setC(C);
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);

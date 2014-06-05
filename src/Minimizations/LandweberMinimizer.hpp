@@ -22,6 +22,7 @@ public:
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
+			const Eigen::VectorXd &_solution,
 			const unsigned int _outputsteps=0
 			);
 	~LandweberMinimizer() {}

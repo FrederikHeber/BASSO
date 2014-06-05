@@ -17,6 +17,7 @@
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "MinimizationExceptions.hpp"
+#include "Minimizations/BregmanDistance.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
 		const double _NormX,
@@ -25,6 +26,7 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const Eigen::VectorXd &_solution,
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
@@ -34,6 +36,7 @@ LandweberMinimizer::LandweberMinimizer(
 				_PowerY,
 				_Delta,
 				_maxiter,
+				_solution,
 				_outputsteps
 				),
 	C(0.9),
@@ -97,12 +100,28 @@ LandweberMinimizer::operator()(
 	const double _ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "_ANorm " << _ANorm;
+	BregmanDistance Delta_p(val_NormX);
+	double old_distance = 0.;
+	if (!solution.isZero()) {
+		old_distance = Delta_p(returnvalues.solution, solution)
+			+ 1e4*BASSOTOLERANCE; // make sure its larger
+	}
 
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
+		// check that distance truely decreases
+		if (!solution.isZero()) {
+			const double new_distance = Delta_p(returnvalues.solution, solution);
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
+				<< ",x) is "
+				<< new_distance;
+//			assert( old_distance > new_distance );
+			old_distance = new_distance;
+		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
 		BOOST_LOG_TRIVIAL(trace)

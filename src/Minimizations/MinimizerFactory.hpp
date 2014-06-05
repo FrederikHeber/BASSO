@@ -44,6 +44,7 @@ public:
 	 * 			space
 	 * @param _Delta noise level
 	 * @param _maxiter maximum number of iterations
+	 * @param _solution true solution (if available) to test BregmanDistance against
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
 	 */
@@ -55,6 +56,7 @@ public:
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
+			const Eigen::VectorXd &_solution,
 			const unsigned int _outputsteps=0
 			);
 

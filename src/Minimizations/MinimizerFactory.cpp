@@ -28,6 +28,7 @@ MinimizerFactory::getInstance(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const Eigen::VectorXd &_solution,
 		const unsigned int _outputsteps
 		)
 {
@@ -42,6 +43,7 @@ MinimizerFactory::getInstance(
 				_PowerY,
 				_Delta,
 				_maxiter,
+				_solution,
 				_outputsteps
 				);
 		break;
@@ -53,6 +55,7 @@ MinimizerFactory::getInstance(
 					_PowerY,
 					_Delta,
 					_maxiter,
+					_solution,
 					_outputsteps
 					);
 			break;

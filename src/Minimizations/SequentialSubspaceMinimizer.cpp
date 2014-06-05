@@ -20,6 +20,7 @@
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
+#include "Minimizations/BregmanDistance.hpp"
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _NormX,
@@ -28,6 +29,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const Eigen::VectorXd &_solution,
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
@@ -37,6 +39,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_PowerY,
 			_Delta,
 			_maxiter,
+			_solution,
 			_outputsteps
 			),
 	tau(1.1),
@@ -219,6 +222,13 @@ SequentialSubspaceMinimizer::operator()(
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
 
+	BregmanDistance Delta_p(val_NormX);
+	double old_distance = 0.;
+	if (!solution.isZero()) {
+		old_distance = Delta_p(returnvalues.solution, solution)
+			+ 1e4*BASSOTOLERANCE; // make sure its larger
+	}
+
 	// start building up search space 'U' with the search vectors 'u'
 	Eigen::MatrixXd U(_A.outerSize(),N);
 	Eigen::VectorXd alphas(N);
@@ -227,6 +237,16 @@ SequentialSubspaceMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
+		// check that distance truely decreases
+		if (!solution.isZero()) {
+			const double new_distance = Delta_p(returnvalues.solution, solution);
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
+				<< ",x) is "
+				<< new_distance;
+//			assert( old_distance > new_distance );
+			old_distance = new_distance;
+		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
 		BOOST_LOG_TRIVIAL(trace)
