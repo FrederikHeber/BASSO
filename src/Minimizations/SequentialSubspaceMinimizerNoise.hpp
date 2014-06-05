@@ -20,8 +20,8 @@ class SequentialSubspaceMinimizerNoise : public GeneralMinimizer
 {
 public:
 	SequentialSubspaceMinimizerNoise(
-			const unsigned int _NormX,
-			const unsigned int _NormY,
+			const double _NormX,
+			const double _NormY,
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
