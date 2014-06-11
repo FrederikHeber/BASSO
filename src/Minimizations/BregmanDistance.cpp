@@ -19,7 +19,8 @@
 
 double BregmanDistance::operator()(
 		const Eigen::VectorXd &_x,
-		const Eigen::VectorXd &_y
+		const Eigen::VectorXd &_y,
+		const double _power
 		) const
 {
 	BOOST_LOG_TRIVIAL(trace)
@@ -33,6 +34,6 @@ double BregmanDistance::operator()(
 		result += (1./q) * ::pow(lpnorm(_x), p);
 		result += (1./p) * ::pow(lpnorm(_y), p);
 	}
-	result -= J_p(_x,p).transpose() * _y;
+	result -= J_p(_x,_power).transpose() * _y;
 	return result;
 }

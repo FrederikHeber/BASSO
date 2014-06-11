@@ -225,8 +225,10 @@ SequentialSubspaceMinimizer::operator()(
 	BregmanDistance Delta_p(val_NormX);
 	double old_distance = 0.;
 	if (!solution.isZero()) {
-		old_distance = Delta_p(returnvalues.solution, solution)
+		old_distance = Delta_p(returnvalues.solution, solution, PowerX)
 			+ 1e4*BASSOTOLERANCE; // make sure its larger
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Starting Bregman distance is " << old_distance;
 	}
 
 	// start building up search space 'U' with the search vectors 'u'
@@ -239,7 +241,8 @@ SequentialSubspaceMinimizer::operator()(
 				<< " with residual of " << returnvalues.residuum;
 		// check that distance truely decreases
 		if (!solution.isZero()) {
-			const double new_distance = Delta_p(returnvalues.solution, solution);
+			const double new_distance =
+					Delta_p(returnvalues.solution, solution, PowerX);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
 				<< ",x) is "

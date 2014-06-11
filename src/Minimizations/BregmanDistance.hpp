@@ -43,11 +43,13 @@ public:
 	 *
 	 * @param _x first argument
 	 * @param _y second argument
+	 * @param _power power of duality mapping
 	 * @return Bregman distance between first and second argument
 	 */
 	double operator()(
 			const Eigen::VectorXd &_x,
-			const Eigen::VectorXd &_y
+			const Eigen::VectorXd &_y,
+			const double _power
 			) const;
 
 private:
