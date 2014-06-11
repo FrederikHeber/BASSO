@@ -17,6 +17,9 @@ add_executable (BregmanDistanceUnitTest
 	BregmanDistanceUnitTest.cpp) 
 target_link_libraries (BregmanDistanceUnitTest 
 	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+	${LIBRT_LIBRARIES}
 	"${CPPUNIT_LIBRARY}")
 
 add_test (BregmanDistanceUnitTest 

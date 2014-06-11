@@ -8,14 +8,9 @@
 #include <string>
 
 #include <boost/filesystem/path.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
 #include <boost/program_options.hpp>
 
+#include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
 #include "Minimizations/LandweberMinimizer.hpp"
@@ -23,12 +18,6 @@
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 namespace po = boost::program_options;
-namespace logging = boost::log;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace keywords = boost::log::keywords;
-
-BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime);
 
 int main (int argc, char *argv[])
 {
@@ -73,7 +62,7 @@ int main (int argc, char *argv[])
 	    return 1;
 	}
 
-
+	// set verbosity level
 	unsigned int verbose = 0;
 	if (vm.count("verbose")) {
 		verbose = vm["verbose"].as<unsigned int>();
@@ -101,19 +90,7 @@ int main (int argc, char *argv[])
 		);
 		break;
 	}
-	// change log format
-	logging::add_console_log(std::cout,
-			keywords::format = (
-				expr::stream
-					<< expr::format_date_time(timestamp, "%Y-%m-%d %H:%M:%S")
-					//<< expr::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S")
-					<< ": <" << logging::trivial::severity
-					<< "> " << expr::smessage
-					)
-			//keywords::format = "[%TimeStamp%]: [%Severity%] %Message%"
-			);
-	// register attributes
-	logging::add_common_attributes();
+	startLogging();
 
 	// parse options
 	MinimizerFactory::InstanceType type = MinimizerFactory::MAX_InstanceType;

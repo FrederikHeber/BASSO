@@ -9,6 +9,7 @@
 
 #include <Eigen/Dense>
 
+#include "Log/Logging.hpp"
 #include "Minimizations/BregmanDistance.hpp"
 
 // Registers the fixture into the 'registry'
@@ -17,6 +18,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( BregmanDistanceUnitTest );
 
 void BregmanDistanceUnitTest::setUp()
 {
+	// BregmanDistance uses logging
+	startLogging();
 }
 
 

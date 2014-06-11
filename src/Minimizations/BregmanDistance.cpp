@@ -12,6 +12,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+#include "Log/Logging.hpp"
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
@@ -21,6 +22,9 @@ double BregmanDistance::operator()(
 		const Eigen::VectorXd &_y
 		) const
 {
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Calculating Bregman distance between "
+			<< _x.transpose() << " and " << _y.transpose();
 	double result = 0.;
 	if (p == LpNorm::Infinity) {
 		result += _x.array().abs().maxCoeff();
