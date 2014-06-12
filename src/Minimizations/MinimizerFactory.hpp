@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 
+class Database;
 class GeneralMinimizer;
 
 /** This class is a factory for GeneralMinimizers, producing
@@ -45,6 +46,7 @@ public:
 	 * @param _Delta noise level
 	 * @param _maxiter maximum number of iterations
 	 * @param _solution true solution (if available) to test BregmanDistance against
+	 * @param _database database to store iteration information to
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
 	 */
@@ -57,6 +59,7 @@ public:
 			const double _Delta,
 			const unsigned int _maxiter,
 			const Eigen::VectorXd &_solution,
+			Database &_database,
 			const unsigned int _outputsteps=0
 			);
 

@@ -5,6 +5,7 @@ target_link_libraries ( Basso
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
 	${Boost_LIBRARIES}
+	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 
 

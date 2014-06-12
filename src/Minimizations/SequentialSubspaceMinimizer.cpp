@@ -30,6 +30,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _Delta,
 		const unsigned int _maxiter,
 		const Eigen::VectorXd &_solution,
+		Database &_database,
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
@@ -40,6 +41,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_Delta,
 			_maxiter,
 			_solution,
+			_database,
 			_outputsteps
 			),
 	tau(1.1),

@@ -10,6 +10,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
 
+#include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
@@ -294,6 +295,7 @@ int main (int argc, char *argv[])
 
 	// call minimizer
 	MinimizerFactory factory;
+	Database database;
 	MinimizerFactory::instance_ptr_t minimizer =
 		factory.getInstance(
 			type,
@@ -304,6 +306,7 @@ int main (int argc, char *argv[])
 			delta,
 			maxiter,
 			solution,
+			database,
 			outputsteps);
 	try {
 		switch(type) {

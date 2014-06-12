@@ -12,6 +12,8 @@
 
 #include "Minimizations/GeneralMinimizer.hpp"
 
+class Database;
+
 /** This class implements the sequential subspace optimization by [Schöpfer,
  * Schuster,Louis, 2006].
  *
@@ -27,6 +29,7 @@ public:
 			const double _Delta,
 			const unsigned int _maxiter,
 			const Eigen::VectorXd &_solution,
+			Database &_database,
 			const unsigned int _outputsteps
 			);
 	~SequentialSubspaceMinimizerNoise() {}
