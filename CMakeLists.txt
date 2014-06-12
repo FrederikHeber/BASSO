@@ -85,6 +85,17 @@ find_package ( Boost 1.54 COMPONENTS
 	REQUIRED )
 include_directories( ${Boost_INCLUDE_DIR} )
 
+# find pocosqlite
+set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+find_package (Poco)
+include_directories(${Poco_INCLUDE_DIRS})
+link_directories(${Poco_LIBRARY_DIR})
+set (POCO_SQL_LIBRARIES
+	${Poco_Data_LIBRARY_RELEASE}
+	${Poco_SQLite_LIBRARY_RELEASE}
+	${Poco_Foundation_LIBRARY_RELEASE}
+	)
+
 ################## BRANCH INTO SUBDIRECTORIES ############################
 
 #### LIBRARIES ####
@@ -109,6 +120,10 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Math)
 add_subdirectory (src/Log)
 set (EXTRA_LIBS ${EXTRA_LIBS} Log)
 
+# add the Database folder
+add_subdirectory (src/Database)
+set (EXTRA_LIBS ${EXTRA_LIBS} Database)
+
 #### SOURCE ####
 
 # add src folder
@@ -119,6 +134,7 @@ add_subdirectory (src)
 # add test folder
 enable_testing ()	# must reside here
 add_subdirectory (tests)
+add_subdirectory (src/Database/unittests)
 add_subdirectory (src/Minimizations/unittests)
 
 ##################### PACKING INSTRUCTIONS ###############################
