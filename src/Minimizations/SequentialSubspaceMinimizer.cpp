@@ -221,6 +221,7 @@ SequentialSubspaceMinimizer::operator()(
 //	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
+	const double _ynorm = NormY(_y);
 
 	BregmanDistance Delta_p(val_NormX);
 	double old_distance = 0.;
@@ -239,16 +240,22 @@ SequentialSubspaceMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
+		BOOST_LOG_TRIVIAL(debug)
+			<< "#" << returnvalues.NumberOuterIterations << ": "
+			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
 		// check that distance truely decreases
 		if (!solution.isZero()) {
 			const double new_distance =
 					Delta_p(returnvalues.solution, solution, PowerX);
 			BOOST_LOG_TRIVIAL(debug)
-				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
-				<< ",x) is "
+				<< "#" << returnvalues.NumberOuterIterations << ": "
+				<< "Delta_p(x_n,x) is "
 				<< new_distance;
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
+			BOOST_LOG_TRIVIAL(debug)
+				<< "#" << returnvalues.NumberOuterIterations << ": "
+				<< "||x_n-x|| is " << NormX(returnvalues.solution-solution);
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
