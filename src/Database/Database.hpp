@@ -13,8 +13,11 @@
 #include <boost/variant.hpp>
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
+
+#include "Database/DefaultValue.hpp"
 
 /** The Database class provides a single instance to contain all iteration-
  * related data. The data is eventually placed in a single-file (sqlite)
@@ -24,6 +27,14 @@ class Database
 {
 public:
 	typedef boost::variant<int, double, std::string > typevariant_t;
+
+	enum types_t
+	{
+		inttype=0,
+		doubletype=1,
+		valchartype=2,
+		MAX_TYPES
+	};
 
 	Database();
 	~Database();
@@ -36,6 +47,8 @@ public:
 			typevariant_t >
 	{
 		bool operator<(const Tuple_t &_a) const;
+
+		void replace(const std::string &_key, const typevariant_t &_value);
 	};
 
 	/** Adds a data tuple to the database.
@@ -72,7 +85,7 @@ private:
 	 */
 	keys_t getSetofUniqueKeys() const;
 
-	typedef std::map< std::string, std::string > KeyType_t;
+	typedef std::map< std::string, enum types_t > KeyType_t;
 
 	/** Determines for every key the unique type from the tuples present in
 	 * the internal_database.
@@ -91,14 +104,36 @@ private:
 	 */
 	bool checkDatabaseSanity(const keys_t &_keys) const;
 
-    typedef std::vector< double > values_t;
+    typedef std::vector< std::string > values_t;
 
     /** Returns all values of \a _keys for each tuple.
      *
-     * @param _keys keys to look for
+     * @param _key key to look for
      * @return vector of values of the corresponding keys
      */
-    values_t getAllValuesPerType(const keys_t &_keys) const;
+    template <class T>
+    values_t getAllValuesPerType(const std::string &_key) const
+    {
+    	values_t values;
+		for (internal_database_t::const_iterator iter = internal_database.begin();
+				iter != internal_database.end(); ++iter) {
+			Tuple_t::const_iterator finditer = iter->find(_key);
+			// if key present in given ones
+			DefaultValue<T> defaultval;
+			T value = defaultval.get();
+			if (finditer != iter->end()) {
+				value = boost::get<T>(finditer->second);
+			}
+			// append value
+			{
+				std::stringstream output;
+				output << value;
+				values.push_back(output.str());
+			}
+		}
+    	return values;
+    }
+
 private:
 	//!> states whether a database file name has been given or not.
 	bool DatabaseFileGiven;
@@ -111,6 +146,9 @@ private:
 
 	//!> internal database containing all tuples.
 	internal_database_t internal_database;
+
+	//!> static vector with all type names
+	static std::vector<std::string> TypeNames;
 };
 
 

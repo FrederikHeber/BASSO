@@ -10,15 +10,26 @@
 
 #include "Database.hpp"
 
+#include "boost/assign.hpp"
+
 #include "Log/Logging.hpp"
 #include "Poco/Data/Common.h"
 #include "Poco/Data/SQLite/Connector.h"
 
 using namespace Poco::Data;
+using namespace boost::assign;
+
+// static entities
+std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
+
 
 Database::Database() :
 		DatabaseFileGiven(false)
-{}
+{
+	TypeNames[inttype] = "valchar(255)";	//int
+	TypeNames[doubletype] = "valchar(255)";	//double
+	TypeNames[valchartype] = "valchar(255)";
+}
 
 Database::~Database()
 {
@@ -50,26 +61,108 @@ bool Database::writeSQLitefile()
 		assert(keys.size() == KeyTypes.size());
 
 		/// third, we create the table with the given keys
+		keys_t::const_iterator specialiter = keys.begin();
+		const unsigned int MAXKEYS = 8;
+		std::advance(specialiter, keys.size() > MAXKEYS ? MAXKEYS : keys.size());
+		keys_t allowed_keys(keys.begin(), specialiter);
 		Session ses("SQLite", filename.c_str());
-		ses << "CREATE TABLE data (";
-		for (KeyType_t::const_iterator iter = KeyTypes.begin();
-				iter != KeyTypes.end();) {
-			ses << iter->first << " " << iter->second;
-			++iter;
-			if (iter != KeyTypes.end())
-				ses << ",";
+		ses << "DROP TABLE IF EXISTS data", now;
+		std::stringstream sql;
+		{
+			keys_t tempkeys(allowed_keys);
+			sql << "CREATE TABLE data (";
+			for (KeyType_t::const_iterator iter = KeyTypes.begin();
+					iter != KeyTypes.end();) {
+				if (tempkeys.find(iter->first) != tempkeys.end()) {
+					sql << iter->first << " " << TypeNames[iter->second];
+					tempkeys.erase(iter->first);
+					if (!tempkeys.empty())
+						sql << ",";
+				}
+				++iter;
+			}
+			sql << ")";
 		}
-		ses << ");";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		Statement stmt = ( ses << sql.str() );
+		stmt.execute();
 
 		/// then, convert the information in tuples in vector per type
 		/// each having the same length
-		keys_t allowed_keys(keys.begin(), ++keys.begin());
-		values_t values =
-				getAllValuesPerType(allowed_keys);
+		std::vector<values_t> valuevector;
+		{
+			keys_t tempkeys(allowed_keys);
+			for (KeyType_t::const_iterator keytypeiter = KeyTypes.begin();
+					keytypeiter != KeyTypes.end(); ++keytypeiter) {
+				if (tempkeys.find(keytypeiter->first) != tempkeys.end()) {
+					switch(keytypeiter->second) {
+					case inttype:
+					{
+						values_t values =
+								getAllValuesPerType<int>(keytypeiter->first);
+						valuevector.push_back(values);
+						break;
+					}
+					case doubletype:
+					{
+						values_t values =
+								getAllValuesPerType<double>(keytypeiter->first);
+						valuevector.push_back(values);
+						break;
+					}
+					case valchartype:
+					{
+						values_t values =
+								getAllValuesPerType<std::string>(keytypeiter->first);
+						valuevector.push_back(values);
+						break;
+					}
+					default:
+						BOOST_LOG_TRIVIAL(error)
+							<< "Unknown type for key " << keytypeiter->first;
+						break;
+					}
+					tempkeys.erase(keytypeiter->first);
+				}
+			}
+		}
+		switch (valuevector.size()) {
+		case 0:
+			BOOST_LOG_TRIVIAL(warning)
+				<< "Database contains no values";
+			break;
+		case 1:
+			ses << "INSERT INTO data VALUES(?)", use(valuevector[0]), now;
+			break;
+		case 2:
+			ses << "INSERT INTO data VALUES(?,?)", use(valuevector[0]), use(valuevector[1]), now;
+			break;
+		case 3:
+			ses << "INSERT INTO data VALUES(?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), now;
+			break;
+		case 4:
+			ses << "INSERT INTO data VALUES(?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), now;
+			break;
+		case 5:
+			ses << "INSERT INTO data VALUES(?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), now;
+			break;
+		case 6:
+			ses << "INSERT INTO data VALUES(?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), now;
+			break;
+		case 7:
+			ses << "INSERT INTO data VALUES(?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), now;
+			break;
+		case 8:
+			ses << "INSERT INTO data VALUES(?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), now;
+			break;
+		default:
+			BOOST_LOG_TRIVIAL(error)
+				<< "Cannot deal (yet) with tuple size" << valuevector.size();
+			break;
+		}
 
 		/// finally, we write all information to the table
-		ses << "INSERT INTO data VALUES(:" << *keys.begin()
-				<< ")", use(values), now;
     } else {
     	BOOST_LOG_TRIVIAL(warning)
     			<< "The database is empty, not writing iteration-file.";
@@ -78,54 +171,27 @@ bool Database::writeSQLitefile()
     return true;
 }
 
-Database::values_t
-Database::getAllValuesPerType(const keys_t &_keys) const
-{
-	values_t values;
-
-	for (keys_t::const_iterator keyiter = _keys.begin();
-			keyiter != _keys.end(); ++keyiter) {
-		for (internal_database_t::const_iterator iter = internal_database.begin();
-				iter != internal_database.end(); ++iter) {
-			const Tuple_t &currrent = *iter;
-			Tuple_t::const_iterator finditer = iter->find(*keyiter);
-			// if key present in given ones
-			if (finditer != iter->end()) {
-				values.push_back(boost::get<double>(finditer->second));
-			} else
-				values.push_back(0.);
-		}
-	}
-
-	return values;
-}
-
-const std::string&
+static
+enum Database::types_t
 getVariantsType(const boost::variant<int, double, std::string> &_variant)
 {
-	static const std::string intname = "int";
-	static const std::string doublename = "double";
-	static const std::string stringname = "varchar(255)";
-	static const std::string unknown = "unknown";
 	if (boost::get<const int>(&_variant) != NULL)
-		return intname;
+		return Database::inttype;
 	else if (boost::get<const double>(&_variant) != NULL)
-		return doublename;
+		return Database::doubletype;
 	else if (boost::get<const std::string>(&_variant) != NULL)
-		return stringname;
+		return Database::valchartype;
 	else
-		return unknown;
+		return Database::MAX_TYPES;
 }
 
 Database::KeyType_t Database::getKeyToTypeMap(
 		const keys_t &_keys) const
 {
-	typedef std::map< std::string, std::string > KeyType_t;
 	KeyType_t KeyType;
 
 	for (internal_database_t::const_iterator iter = internal_database.begin();
 			iter != internal_database.end(); ++iter) {
-		const Tuple_t &currrent = *iter;
 		for (Tuple_t::const_iterator keyiter = iter->begin();
 				keyiter != iter->end(); ++keyiter) {
 			// if key present in given ones
@@ -151,20 +217,19 @@ bool Database::checkDatabaseSanity(const keys_t &_keys) const
 
 	for (internal_database_t::const_iterator iter = internal_database.begin();
 			iter != internal_database.end(); ++iter) {
-		const Tuple_t &currrent = *iter;
 		for (Tuple_t::const_iterator keyiter = iter->begin();
 				keyiter != iter->end(); ++keyiter) {
 			// if key present in given ones
 			if (_keys.count(keyiter->first)) {
-				const std::string &NameOfType = getVariantsType(keyiter->second);
+				const enum types_t type = getVariantsType(keyiter->second);
 				std::pair< KeyType_t::iterator, bool > inserter =
 						KeyType.insert( std::make_pair(
 								keyiter->first,
-								NameOfType)
+								type)
 						);
 				// if value present check against map
 				if (inserter.second == false)
-					status &= inserter.first->second == NameOfType;
+					status &= inserter.first->second == type;
 			}
 		}
 	}
@@ -177,7 +242,6 @@ Database::keys_t Database::getSetofUniqueKeys() const
 
 	for (internal_database_t::const_iterator iter = internal_database.begin();
 			iter != internal_database.end(); ++iter) {
-		const Tuple_t &currrent = *iter;
 		for (Tuple_t::const_iterator keyiter = iter->begin();
 				keyiter != iter->end(); ++keyiter) {
 			keys.insert(keyiter->first);
@@ -204,4 +268,15 @@ bool Database::Tuple_t::operator<(const Tuple_t &_a) const
 		}
 	}
 	return status;
+}
+
+void Database::Tuple_t::replace(
+		const std::string &_key,
+		const typevariant_t &_value)
+{
+	std::pair<iterator, bool> inserter =
+			insert( std::make_pair(_key, _value) );
+	if (!inserter.second) {
+		inserter.first->second = _value;
+	}
 }
