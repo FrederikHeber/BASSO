@@ -15,6 +15,8 @@ Basso depends on the following packages:
  * levmar - implementation of the Levenberg Marquardt algorithm for 
    unconstrained minimization
  * boost - almost standard library (we require 1.54 due to logging)
+ * poco - poco is used (optionally) to write iteration information to
+   a sqlite3 database
 
 ... on Ubuntu
 -------------
@@ -35,7 +37,9 @@ cmake -DBoost_NO_SYSTEM_PATHS=ON -DBOOST_ROOT=~/packages/boost/
 
 Note that boost libraries should have been compiled with "layout=tagged". Otherwise, FindBoost.cmake can not find the libraries and headers.
 
-To allow for debugging, you might futher "add -DBoost_DEBUG=ON".
+To allow for debugging, you might futher add "-DBoost_DEBUG=ON".
+
+In general, to compile in debugging information add "-DCMAKE_BUILD_TYPE=Debug", to compile without use "-DCMAKE_BUILD_TYPE=Release".
 
 
 2014-04-02 Frederik Heber
