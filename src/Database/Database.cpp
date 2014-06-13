@@ -10,6 +10,7 @@
 
 #include "Database.hpp"
 
+#include "Log/Logging.hpp"
 #include "Poco/Data/Common.h"
 #include "Poco/Data/SQLite/Connector.h"
 
@@ -43,30 +44,38 @@ bool Database::writeSQLitefile()
 	/// first, we need to find the set of unique keys
 	const keys_t keys = getSetofUniqueKeys();
 
-	/// second, we need to gather a type for each key
-	KeyType_t KeyTypes = getKeyToTypeMap(keys);
-    assert(keys.size() == KeyTypes.size());
+    if (!keys.empty()) {
+		/// second, we need to gather a type for each key
+		KeyType_t KeyTypes = getKeyToTypeMap(keys);
+		assert(keys.size() == KeyTypes.size());
 
-	/// third, we create the table with the given keys
-    Session ses("SQLite", filename.c_str());
-    ses << "CREATE TABLE data (";
-    for (KeyType_t::const_iterator iter = KeyTypes.begin();
-    		iter != KeyTypes.end();) {
-		ses << iter->first << " " << iter->second;
-		++iter;
-		if (iter != KeyTypes.end())
-			ses << ",";
+		/// third, we create the table with the given keys
+		Session ses("SQLite", filename.c_str());
+		ses << "CREATE TABLE data (";
+		for (KeyType_t::const_iterator iter = KeyTypes.begin();
+				iter != KeyTypes.end();) {
+			ses << iter->first << " " << iter->second;
+			++iter;
+			if (iter != KeyTypes.end())
+				ses << ",";
+		}
+		ses << ");";
+
+		/// then, convert the information in tuples in vector per type
+		/// each having the same length
+		keys_t allowed_keys(keys.begin(), ++keys.begin());
+		values_t values =
+				getAllValuesPerType(allowed_keys);
+
+		/// finally, we write all information to the table
+		ses << "INSERT INTO data VALUES(:" << *keys.begin()
+				<< ")", use(values), now;
+    } else {
+    	BOOST_LOG_TRIVIAL(warning)
+    			<< "The database is empty, not writing iteration-file.";
     }
-    ses << ");";
 
-    /// then, convert the information in tuples in vector per type
-    /// each having the same length
-    values_t values =
-    		getAllValuesPerType(keys_t(keys.begin(), ++keys.begin()));
-
-	/// finally, we write all information to the table
-    ses << "INSERT INTO data VALUES(:" << *keys.begin()
-    		<< ")", use(values), now;
+    return true;
 }
 
 Database::values_t
