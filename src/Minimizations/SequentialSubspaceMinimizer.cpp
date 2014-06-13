@@ -17,6 +17,7 @@
 #include <limits>
 
 #include "BregmanFunctional.hpp"
+#include "Database/Database.hpp"
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
@@ -234,17 +235,31 @@ SequentialSubspaceMinimizer::operator()(
 				<< "Starting Bregman distance is " << old_distance;
 	}
 
+	// build data tuple for iteration information
+	Database::Tuple_t tuple;
+	tuple.insert( std::make_pair("p", val_NormX));
+	tuple.insert( std::make_pair("r", val_DualNormX));
+	tuple.insert( std::make_pair("N", (int)N));
+	tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
+	tuple.insert( std::make_pair("iteration", (int)0));
+	tuple.insert( std::make_pair("relative_residual", 0.));
+	tuple.insert( std::make_pair("error", 0.));
+	tuple.insert( std::make_pair("bregman_distance", 0.));
+
+
 	// start building up search space 'U' with the search vectors 'u'
 	Eigen::MatrixXd U(_A.outerSize(),N);
 	Eigen::VectorXd alphas(N);
 	unsigned int index = 0;
 	while (!StopCriterion) {
+		tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "#" << returnvalues.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
+		tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
 		// check that distance truely decreases
 		if (!solution.isZero()) {
 			const double new_distance =
@@ -253,11 +268,13 @@ SequentialSubspaceMinimizer::operator()(
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p(x_n,x) is "
 				<< new_distance;
+			tuple.replace( "bregman_distance", new_distance);
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "||x_n-x|| is " << NormX(returnvalues.solution-solution);
+			tuple.replace( "error", NormX(returnvalues.solution-solution));
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
@@ -385,6 +402,9 @@ SequentialSubspaceMinimizer::operator()(
 				returnvalues.solution,
 				_A,
 				returnvalues.NumberOuterIterations);
+
+		// submit current tuple
+		database.addTuple(tuple);
 	}
 
 	// and return solution
