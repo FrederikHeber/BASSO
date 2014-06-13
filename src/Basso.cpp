@@ -29,6 +29,8 @@ int main (int argc, char *argv[])
 	        ("C", po::value<double>(), "set the value for C (landweber)")
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("help", "produce help message")
+	        ("iteration-file", po::value< boost::filesystem::path >(),
+	        		"set the filename to write information on iteration in sqlite format")
 	        ("matrix", po::value< boost::filesystem::path >(),
 	        		"set the forward operator matrix file")
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
@@ -133,6 +135,13 @@ int main (int argc, char *argv[])
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Magnitude of noise was set to " << delta << "\n";
+	}
+
+	boost::filesystem::path iteration_file;
+	if (vm.count("iteration-file")) {
+		iteration_file = vm["iteration-file"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of iteration-file was set to " << iteration_file << "\n";
 	}
 	boost::filesystem::path matrix_file;
 	if (vm.count("matrix")) {
@@ -296,6 +305,8 @@ int main (int argc, char *argv[])
 	// call minimizer
 	MinimizerFactory factory;
 	Database database;
+	if (!iteration_file.string().empty())
+		database.setDatabaseFile(iteration_file.string());
 	MinimizerFactory::instance_ptr_t minimizer =
 		factory.getInstance(
 			type,
