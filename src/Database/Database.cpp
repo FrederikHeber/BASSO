@@ -26,8 +26,8 @@ std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
 Database::Database() :
 		DatabaseFileGiven(false)
 {
-	TypeNames[inttype] = "valchar(255)";	//int
-	TypeNames[doubletype] = "valchar(255)";	//double
+	TypeNames[inttype] = "int";
+	TypeNames[doubletype] = "double";
 	TypeNames[valchartype] = "valchar(255)";
 }
 
