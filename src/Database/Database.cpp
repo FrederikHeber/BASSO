@@ -66,11 +66,12 @@ bool Database::writeSQLitefile()
 		std::advance(specialiter, keys.size() > MAXKEYS ? MAXKEYS : keys.size());
 		keys_t allowed_keys(keys.begin(), specialiter);
 		Session ses("SQLite", filename.c_str());
-		ses << "DROP TABLE IF EXISTS data", now;
+		// Don't drop table, we might want to accumulate multiple datasets
+//		ses << "DROP TABLE IF EXISTS data", now;
 		std::stringstream sql;
 		{
 			keys_t tempkeys(allowed_keys);
-			sql << "CREATE TABLE data (";
+			sql << "CREATE TABLE IF NOT EXISTS data (";
 			for (KeyType_t::const_iterator iter = KeyTypes.begin();
 					iter != KeyTypes.end();) {
 				if (tempkeys.find(iter->first) != tempkeys.end()) {
