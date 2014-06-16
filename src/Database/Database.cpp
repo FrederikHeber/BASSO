@@ -128,6 +128,7 @@ bool Database::writeSQLitefile()
 				}
 			}
 		}
+		ses << "BEGIN", now;
 		switch (valuevector.size()) {
 		case 0:
 			BOOST_LOG_TRIVIAL(warning)
@@ -162,6 +163,7 @@ bool Database::writeSQLitefile()
 				<< "Cannot deal (yet) with tuple size" << valuevector.size();
 			break;
 		}
+		ses << "END", now;
 
 		/// finally, we write all information to the table
     } else {
