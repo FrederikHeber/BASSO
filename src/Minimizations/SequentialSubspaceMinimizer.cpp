@@ -226,7 +226,7 @@ SequentialSubspaceMinimizer::operator()(
 //		<< "_ANorm " << _ANorm;
 	const double _ynorm = NormY(_y);
 
-	BregmanDistance Delta_p(val_NormX);
+	BregmanDistance Delta_p(PowerX);
 	double old_distance = 0.;
 	if (!solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, solution, PowerX)
