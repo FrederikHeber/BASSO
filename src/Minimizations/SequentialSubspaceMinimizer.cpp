@@ -209,10 +209,11 @@ SequentialSubspaceMinimizer::operator()(
 	returnvalues.residuum = calculateResidual(
 			_x0, _A, _y,
 			returnvalues.residual);
+	const double _ynorm = NormY(_y);
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
-	StopCriterion = (fabs(returnvalues.residuum) <= TolY);
+	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 	// calculate some values prior to loop
 	// Jx=DualityMapping(x,NormX,PowerX,TolX);
@@ -224,7 +225,6 @@ SequentialSubspaceMinimizer::operator()(
 //	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
-	const double _ynorm = NormY(_y);
 
 	BregmanDistance Delta_p(PowerX);
 	double old_distance = 0.;
@@ -395,7 +395,7 @@ SequentialSubspaceMinimizer::operator()(
 		++returnvalues.NumberOuterIterations;
 		StopCriterion =
 				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
-				|| (fabs(returnvalues.residuum) <= TolY);
+				|| (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 		// print intermediat solution
 		printIntermediateSolution(

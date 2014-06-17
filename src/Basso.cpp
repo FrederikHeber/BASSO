@@ -347,14 +347,15 @@ int main (int argc, char *argv[])
 					rhs);
 
 	// give result
+	LpNorm NormY(normy);
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 		std::cout << "Solution after "
 				<< result.NumberOuterIterations
-				<< " with residual error of " << result.residuum
+				<< " with relative residual of " << result.residuum/NormY(rhs)
 				<< std::endl;
 	} else {
 		std::cout << "Solution after " << result.NumberOuterIterations
-			<< " with residual error of " << result.residuum
+			<< " with relative residual of " << result.residuum/NormY(rhs)
 			<< " is " << std::scientific << std::setprecision(8)
 			<< result.solution.transpose()
 			<< std::endl;

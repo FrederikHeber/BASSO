@@ -54,4 +54,4 @@ add_test (Basso_Landweber_RandomMatrix
 		--matrix ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/randommatrix.m 
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/randomvector.m)
 set_tests_properties (Basso_Landweber_RandomMatrix
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 100 with residual error of 1.59.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 100 with relative residual of 0.87.*")
