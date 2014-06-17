@@ -248,8 +248,8 @@ SequentialSubspaceMinimizer::operator()(
 
 
 	// start building up search space 'U' with the search vectors 'u'
-	Eigen::MatrixXd U(_A.outerSize(),N);
-	Eigen::VectorXd alphas(N);
+	Eigen::MatrixXd U = Eigen::MatrixXd::Zero(_A.outerSize(),N);
+	Eigen::VectorXd alphas = Eigen::VectorXd::Zero(N);
 	unsigned int index = 0;
 	while (!StopCriterion) {
 		tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
