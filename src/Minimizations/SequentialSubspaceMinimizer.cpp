@@ -226,7 +226,7 @@ SequentialSubspaceMinimizer::operator()(
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
 
-	BregmanDistance Delta_p(PowerX);
+	BregmanDistance Delta_p(NormX, J_p, PowerX);
 	double old_distance = 0.;
 	if (!solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, solution, PowerX)

@@ -102,7 +102,7 @@ LandweberMinimizer::operator()(
 	const double _ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "_ANorm " << _ANorm;
-	BregmanDistance Delta_p(val_NormX);
+	BregmanDistance Delta_p(NormX, J_p, val_NormX);
 	double old_distance = 0.;
 	if (!solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, solution, PowerX)

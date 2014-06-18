@@ -24,11 +24,13 @@ class BregmanDistance
 {
 public:
 	BregmanDistance(
+			const LpNorm &_lpnorm,
+			const DualityMapping &_J_p,
 			const double _p) :
+				lpnorm(_lpnorm),
+				J_p(_J_p),
 				p(_p),
-				q(p/(p-1.)),
-				lpnorm(p),
-				J_p(p)
+				q(p/(p-1.))
 	{
 		if (p <= 1.)
 			throw MinimizationIllegalValue_exception()
@@ -58,9 +60,9 @@ private:
 	//!> value q that is conjugate to p
 	const double q;
 	//!> lp Norm object
-	LpNorm lpnorm;
+	const LpNorm &lpnorm;
 	//!> DualityMapping object
-	DualityMapping J_p;
+	const DualityMapping &J_p;
 };
 
 

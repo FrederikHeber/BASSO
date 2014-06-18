@@ -29,7 +29,9 @@ void BregmanDistanceUnitTest::tearDown()
 
 void BregmanDistanceUnitTest::oneNorm()
 {
-	CPPUNIT_ASSERT_THROW( BregmanDistance d_1(1),
+	LpNorm lpnorm(1.);
+	DualityMapping J_1(1.);
+	CPPUNIT_ASSERT_THROW( BregmanDistance d_1(lpnorm, J_1, 1),
 			MinimizationIllegalValue_exception);
 	Eigen::VectorXd t(2);
 	t << 3.5,5;
@@ -42,7 +44,9 @@ void BregmanDistanceUnitTest::oneNorm()
 
 void BregmanDistanceUnitTest::twoNorm()
 {
-	BregmanDistance d_2(2);
+	LpNorm lpnorm(2.);
+	DualityMapping J_2(2.);
+	BregmanDistance d_2(lpnorm, J_2, 2);
 	Eigen::VectorXd t(2);
 	t << 3.5,5;
 	Eigen::VectorXd x(2);
@@ -55,7 +59,9 @@ void BregmanDistanceUnitTest::twoNorm()
 
 void BregmanDistanceUnitTest::inftyNorm()
 {
-	CPPUNIT_ASSERT_THROW( BregmanDistance d_0(0),
+	LpNorm lpnorm(LpNorm::Infinity);
+	DualityMapping J_infty(LpNorm::Infinity);
+	CPPUNIT_ASSERT_THROW( BregmanDistance d_infty(lpnorm, J_infty, 0),
 			MinimizationIllegalValue_exception);
 	Eigen::VectorXd t(2);
 	t << 3.5,5;
