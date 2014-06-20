@@ -51,7 +51,11 @@ int main()
 
 	// testing of BregmanFunctional
 	{
-		BregmanFunctional bregman_1(1, BASSOTOLERANCE);
+		LpNorm lpnorm(1);
+		LpNorm lpdualnorm(LpNorm::Infinity);
+		DualityMapping J_1(1);
+		DualityMapping J_infty(LpNorm::Infinity);
+		BregmanFunctional bregman_1(lpdualnorm, J_infty);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -66,7 +70,9 @@ int main()
 				<< bregman_1.gradient(t,x,U,alpha,q)<< "" << std::endl;
 	}
 	{
-		BregmanFunctional bregman_2(2, BASSOTOLERANCE);
+		LpNorm lpnorm(2);
+		DualityMapping J_2(2);
+		BregmanFunctional bregman_2(lpnorm, J_2);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -81,7 +87,11 @@ int main()
 				<< bregman_2.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}
 	{
-		BregmanFunctional bregman_infty(LpNorm::Infinity, BASSOTOLERANCE);
+		LpNorm lpnorm(LpNorm::Infinity);
+		LpNorm lpdualnorm(1.);
+		DualityMapping J_1(LpNorm::Infinity);
+		DualityMapping J_infty(1.);
+		BregmanFunctional bregman_infty(lpdualnorm, J_1);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);

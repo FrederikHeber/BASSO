@@ -21,20 +21,27 @@
 class BregmanFunctional
 {
 public:
-	BregmanFunctional(const double _p, const double _tolerance = BASSOTOLERANCE);
+	/** Constructor for BregmanFunctional.
+	 *
+	 * @param _lpdualnorm norm object of dual space
+	 * @param _J_q duality mapping from dual space to space
+	 */
+	BregmanFunctional(
+			const LpNorm &_lpdualnorm,
+			const DualityMapping &_J_q);
 	~BregmanFunctional() {}
 
 	/** Implements BregmanFunctional functional.
 	 *
-	 * \param _t
-	 * \param _x vector
-	 * \param _U
-	 * \param _alpha
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
 	 * \param _q power of the weight of the duality mapping
 	 */
 	double operator()(
 			const Eigen::VectorXd &_t,
-			const Eigen::VectorXd &_x,
+			const Eigen::VectorXd &_dualx,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
 			const double _q
@@ -42,27 +49,25 @@ public:
 
 	/** Implements BregmanFunctional functional.
 	 *
-	 * \param _t
-	 * \param _x vector
-	 * \param _U
-	 * \param _alpha
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
 	 * \param _q power of the weight of the duality mapping
 	 */
 	Eigen::VectorXd gradient(
 			const Eigen::VectorXd &_t,
-			const Eigen::VectorXd &_x,
+			const Eigen::VectorXd &_dualx,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha,
 			const double _q
 			);
 
 private:
-	//!> value p of the Lp norm
-	const double p;
 	//!> lp Norm object
-	LpNorm lpnorm;
+	const LpNorm &lpdualnorm;
 	//!> DualityMapping object
-	DualityMapping J_p;
+	const DualityMapping &J_q;
 };
 
 

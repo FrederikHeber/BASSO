@@ -13,7 +13,7 @@
 class BregmanFunctionalUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( BregmanFunctionalUnitTest );
-  CPPUNIT_TEST( oneNorm );
+  CPPUNIT_TEST( oneoneNorm );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( inftyNorm );
   CPPUNIT_TEST_SUITE_END();
@@ -22,7 +22,7 @@ public:
   void setUp();
   void tearDown();
 
-  void oneNorm();
+  void oneoneNorm();
   void twoNorm();
   void inftyNorm();
 };

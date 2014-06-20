@@ -309,7 +309,9 @@ SequentialSubspaceMinimizer::operator()(
 		tmin.setZero();
 		{
 			// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-			BregmanFunctional bregman(val_DualNormX, TolX);
+			BregmanFunctional bregman(
+					DualNormX,
+					J_q);
 			// we perform a function minimization
 			// with respect to t starting at t0
 			BregmanParameters params(

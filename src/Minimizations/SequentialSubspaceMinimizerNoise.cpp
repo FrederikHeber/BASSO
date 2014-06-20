@@ -238,7 +238,9 @@ SequentialSubspaceMinimizerNoise::operator()(
 				BOOST_LOG_TRIVIAL(trace)
 					<< "t0[0] is " << t0[0];
 				// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-				BregmanFunctional bregman(val_DualNormX, TolX);
+				BregmanFunctional bregman(
+						DualNormX,
+						J_q);
 				// TODO_ we actually have to perform a function minimization
 				// with respect to t starting at t0
 				Eigen::VectorXd steps(1);
