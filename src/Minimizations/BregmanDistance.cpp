@@ -23,6 +23,10 @@ double BregmanDistance::operator()(
 		const double _power
 		) const
 {
+
+	if ((_power != 0.) && (_power <= 1.))
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("_power");
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Calculating Bregman distance between "
 			<< _x.transpose() << " and " << _y.transpose();
@@ -31,8 +35,8 @@ double BregmanDistance::operator()(
 		result += _x.array().abs().maxCoeff();
 		result += _y.array().abs().maxCoeff();
 	} else {
-		result += (1./q) * ::pow(lpnorm(_x), p);
-		result += (1./p) * ::pow(lpnorm(_y), p);
+		result += ((_power-1.)/_power) * ::pow(lpnorm(_x), _power);
+		result += (1./_power) * ::pow(lpnorm(_y), _power);
 	}
 	result -= J_p(_x,_power).transpose() * _y;
 	return result;

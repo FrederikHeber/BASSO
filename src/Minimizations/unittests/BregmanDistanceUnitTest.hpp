@@ -13,8 +13,11 @@
 class BregmanDistanceUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( BregmanDistanceUnitTest );
-  CPPUNIT_TEST( oneNorm );
+  CPPUNIT_TEST( oneoneNorm );
+  CPPUNIT_TEST( onefiveNorm );
   CPPUNIT_TEST( twoNorm );
+  CPPUNIT_TEST( threeNorm );
+  CPPUNIT_TEST( sixNorm );
   CPPUNIT_TEST( inftyNorm );
   CPPUNIT_TEST_SUITE_END();
 
@@ -22,8 +25,11 @@ public:
   void setUp();
   void tearDown();
 
-  void oneNorm();
+  void oneoneNorm();
+  void onefiveNorm();
   void twoNorm();
+  void threeNorm();
+  void sixNorm();
   void inftyNorm();
 };
 

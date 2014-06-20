@@ -31,6 +31,19 @@ DualityMapping::DualityMapping(
 
 /** General function to calculate the duality mapping.
  *
+ *	In [Schöpfer et al., '06] some formulas for the duality mapping in
+ *	Lp and other spaces are given. Note that also the power type of the
+ *	duality mapping is denoted by p, making it ambigious.
+ *
+ *	We have settled on the following:
+ *	The norm \f$ ||.|| \f$ is always the one of the space the argument
+ *	of the duality mapping lives in, i.e. independent of the p in
+ *	\f$ L_p \f$. We here refer to \f$ L_p \f$'s p as \a power, where
+ *	\a p denotes the norm of the space.
+ *
+ *	With this convention the implementations in this function match
+ *	the ones found in  [Schöpfer et al., '06].
+ *
  * \param _x vector
  * \return dual element corresponding to one element of the duality mapping for
  * 		x

@@ -27,21 +27,26 @@ public:
 			const LpNorm &_lpnorm,
 			const DualityMapping &_J_p,
 			const double _p) :
-				lpnorm(_lpnorm),
-				J_p(_J_p),
 				p(_p),
-				q(p/(p-1.))
-	{
-		if (p <= 1.)
-			throw MinimizationIllegalValue_exception()
-				<< MinimizationIllegalValue_name("p");
-	}
+				lpnorm(_lpnorm),
+				J_p(_J_p)
+	{}
 	~BregmanDistance() {}
 
 	/** Calculate the Bregman distance between \a _x and \a _y.
 	 *
 	 * The Bregman distance reads as
-	 * \f$ \Delta_n(x,y) = \tfrac 1 q ||x||^p + \tfrac 1 p ||y||^p - \langle J_{\mathrm{power}}(x), y \rangle \f$
+	 * \f$ \Delta_p(x,y) = \tfrac 1 q ||x||^p + \tfrac 1 p ||y||^p - \langle J_{p}(x), y \rangle \f$
+	 *
+	 * Note that the argument \a p (and \a q with it) is ambigious because
+	 * the lp-norm also has an argument p. For clarification, the p and q
+	 * in the above formulas refer to the power type \a p of the duality
+	 * mapping \f$ L_p \f$. Hence, q is conjugate to \a _power. We refer
+	 * to  \f$ L_p \f$'s always as \a _power to distinguish clearly from
+	 * the norm.
+	 *
+	 * That's also why \a p is set in the cstor where we create the norm
+	 * object while the power type may be given in operator().
 	 *
 	 * @param _x first argument
 	 * @param _y second argument
@@ -57,8 +62,6 @@ public:
 private:
 	//!> value p of the Lp norm
 	const double p;
-	//!> value q that is conjugate to p
-	const double q;
 	//!> lp Norm object
 	const LpNorm &lpnorm;
 	//!> DualityMapping object
