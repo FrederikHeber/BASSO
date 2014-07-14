@@ -20,6 +20,7 @@ class LpNormUnitTest : public CppUnit::TestFixture
   CPPUNIT_TEST( fourNorm );
   CPPUNIT_TEST( elevenNorm );
   CPPUNIT_TEST( inftyNorm );
+  CPPUNIT_TEST( otherNorm );
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -33,6 +34,7 @@ public:
   void fourNorm();
   void elevenNorm();
   void inftyNorm();
+  void otherNorm();
 };
 
 
