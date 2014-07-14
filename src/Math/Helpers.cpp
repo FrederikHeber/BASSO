@@ -25,7 +25,7 @@ Eigen::VectorXd Helpers::circshift(const Eigen::VectorXd &_x, const int shift)
 				<< MathIllegalValue_name("shift");
 		Eigen::VectorXd shiftedx(size);
 		for (int i=0;i<size; ++i) {
-			// add size to prevent negative nu8mbers
+			// add size to prevent negative numbers
 			const int index = (i+shift+size)%size;
 			shiftedx[index] = _x[i];
 		}

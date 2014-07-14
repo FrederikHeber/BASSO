@@ -135,6 +135,7 @@ add_subdirectory (src)
 enable_testing ()	# must reside here
 add_subdirectory (tests)
 add_subdirectory (src/Database/unittests)
+add_subdirectory (src/Math/unittests)
 add_subdirectory (src/Minimizations/unittests)
 
 ##################### PACKING INSTRUCTIONS ###############################
