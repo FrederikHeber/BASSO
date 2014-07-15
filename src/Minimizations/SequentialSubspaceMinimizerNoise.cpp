@@ -25,7 +25,6 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
-		const Eigen::VectorXd &_solution,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -36,7 +35,6 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 			_PowerY,
 			_Delta,
 			_maxiter,
-			_solution,
 			_database,
 			_outputsteps
 			),
@@ -137,7 +135,8 @@ SequentialSubspaceMinimizerNoise::ReturnValues
 SequentialSubspaceMinimizerNoise::operator()(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y
+		const Eigen::VectorXd &_y,
+		const Eigen::VectorXd &_solution
 		) const
 {
 //	NoCols = _A.innerSize();

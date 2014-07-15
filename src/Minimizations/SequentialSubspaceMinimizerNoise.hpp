@@ -28,7 +28,6 @@ public:
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
-			const Eigen::VectorXd &_solution,
 			Database &_database,
 			const unsigned int _outputsteps
 			);
@@ -47,7 +46,8 @@ public:
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
 			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y
+			const Eigen::VectorXd &_y,
+			const Eigen::VectorXd &_solution
 			) const;
 
 private:

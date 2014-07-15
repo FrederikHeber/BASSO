@@ -316,7 +316,6 @@ int main (int argc, char *argv[])
 			powery,
 			delta,
 			maxiter,
-			solution,
 			database,
 			outputsteps);
 	try {
@@ -344,7 +343,8 @@ int main (int argc, char *argv[])
 			(*minimizer)(
 					x0,
 					matrix,
-					rhs);
+					rhs,
+					solution);
 
 	// give result
 	LpNorm NormY(normy);

@@ -29,7 +29,6 @@ public:
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
-			const Eigen::VectorXd &_solution,
 			Database &_database,
 			const unsigned int _outputsteps=0
 			);
@@ -50,10 +49,22 @@ public:
 		int NumberOuterIterations;
 	};
 
+	/** Solve the inverse problem _A * x = _y for x with given
+	 * tart value \a _x0, discretized operator \A _A and right-hand
+	 * side \a _y.
+	 *
+	 * @param _x0 start value, may be zero vector
+	 * @param _A matrix as discretized operator
+	 * @param _y right-hand side
+	 * @param _solution additional true solution to calculate Bregman
+	 * 			distance
+	 * @return structure with solution and iteration information
+	 */
 	virtual ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
 			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y
+			const Eigen::VectorXd &_y,
+			const Eigen::VectorXd &_solution
 			) const = 0;
 
 	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
@@ -124,9 +135,6 @@ public:
 	const DualityMapping J_q;
 	//!> duality mapping object for space Y (single-valued)
 	const DualityMapping j_r;
-
-	//!> true solution to measure distance as BregmanDistance against
-	const Eigen::VectorXd solution;
 
 	/** reference to an external database where we store infomation
 	 * about the behavior of the iteration procedure.

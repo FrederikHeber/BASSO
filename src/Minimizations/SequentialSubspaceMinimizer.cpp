@@ -30,7 +30,6 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
-		const Eigen::VectorXd &_solution,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -41,7 +40,6 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_PowerY,
 			_Delta,
 			_maxiter,
-			_solution,
 			_database,
 			_outputsteps
 			),
@@ -194,7 +192,8 @@ SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y
+		const Eigen::VectorXd &_y,
+		const Eigen::VectorXd &_solution
 		) const
 {
 //	NoCols = _A.innerSize();
@@ -228,8 +227,8 @@ SequentialSubspaceMinimizer::operator()(
 
 	BregmanDistance Delta_p(NormX, J_p, PowerX);
 	double old_distance = 0.;
-	if (!solution.isZero()) {
-		old_distance = Delta_p(returnvalues.solution, solution, PowerX)
+	if (!_solution.isZero()) {
+		old_distance = Delta_p(returnvalues.solution, _solution, PowerX)
 			+ 1e4*BASSOTOLERANCE; // make sure its larger
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Starting Bregman distance is " << old_distance;
@@ -261,9 +260,9 @@ SequentialSubspaceMinimizer::operator()(
 			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
 		tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
 		// check that distance truely decreases
-		if (!solution.isZero()) {
+		if (!_solution.isZero()) {
 			const double new_distance =
-					Delta_p(returnvalues.solution, solution, PowerX);
+					Delta_p(returnvalues.solution, _solution, PowerX);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p(x_n,x) is "
@@ -273,8 +272,8 @@ SequentialSubspaceMinimizer::operator()(
 			old_distance = new_distance;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
-				<< "||x_n-x|| is " << NormX(returnvalues.solution-solution);
-			tuple.replace( "error", NormX(returnvalues.solution-solution));
+				<< "||x_n-x|| is " << NormX(returnvalues.solution-_solution);
+			tuple.replace( "error", NormX(returnvalues.solution-_solution));
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();

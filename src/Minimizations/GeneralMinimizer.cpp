@@ -22,7 +22,6 @@ GeneralMinimizer::GeneralMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
-		const Eigen::VectorXd &_solution,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -44,7 +43,6 @@ GeneralMinimizer::GeneralMinimizer(
 	J_p(val_NormX),
 	J_q(val_DualNormX),
 	j_r(val_NormY),
-	solution(_solution),
 	database(_database)
 {
 	BOOST_LOG_TRIVIAL(debug)

@@ -26,7 +26,6 @@ LandweberMinimizer::LandweberMinimizer(
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
-		const Eigen::VectorXd &_solution,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -37,7 +36,6 @@ LandweberMinimizer::LandweberMinimizer(
 				_PowerY,
 				_Delta,
 				_maxiter,
-				_solution,
 				_database,
 				_outputsteps
 				),
@@ -58,7 +56,8 @@ GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
 		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y
+		const Eigen::VectorXd &_y,
+		const Eigen::VectorXd &_solution
 		) const
 {
 	if ((_A.innerSize() < 10) && (_A.outerSize() < 10)) {
@@ -104,8 +103,8 @@ LandweberMinimizer::operator()(
 		<< "_ANorm " << _ANorm;
 	BregmanDistance Delta_p(NormX, J_p, val_NormX);
 	double old_distance = 0.;
-	if (!solution.isZero()) {
-		old_distance = Delta_p(returnvalues.solution, solution, PowerX)
+	if (!_solution.isZero()) {
+		old_distance = Delta_p(returnvalues.solution, _solution, PowerX)
 			+ 1e4*BASSOTOLERANCE; // make sure its larger
 	}
 
@@ -115,9 +114,9 @@ LandweberMinimizer::operator()(
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
 		// check that distance truely decreases
-		if (!solution.isZero()) {
+		if (!_solution.isZero()) {
 			const double new_distance =
-					Delta_p(returnvalues.solution, solution, PowerX);
+					Delta_p(returnvalues.solution, _solution, PowerX);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
 				<< ",x) is "
