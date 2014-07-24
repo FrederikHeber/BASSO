@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "Database/Database.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/BregmanDistance.hpp"
@@ -89,10 +90,21 @@ LandweberMinimizer::operator()(
 	returnvalues.residuum = calculateResidual(
 			_x0, _A, _y,
 			returnvalues.residual);
+	const double _ynorm = NormY(_y);
+
+	// build data tuple for iteration information
+	Database::Tuple_t tuple;
+	tuple.insert( std::make_pair("p", val_NormX));
+	tuple.insert( std::make_pair("r", val_DualNormX));
+	tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
+	tuple.insert( std::make_pair("iteration", (int)0));
+	tuple.insert( std::make_pair("relative_residual", 0.));
+	tuple.insert( std::make_pair("error", 0.));
+	tuple.insert( std::make_pair("bregman_distance", 0.));
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
-	StopCriterion = (fabs(returnvalues.residuum) <= TolY);
+	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 	// calculate some values prior to loop
 	Eigen::VectorXd dual_solution =
@@ -110,19 +122,29 @@ LandweberMinimizer::operator()(
 
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
+		tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
+		BOOST_LOG_TRIVIAL(debug)
+			<< "#" << returnvalues.NumberOuterIterations << ": "
+			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
+		tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
 		// check that distance truely decreases
 		if (!_solution.isZero()) {
 			const double new_distance =
 					Delta_p(returnvalues.solution, _solution, PowerX);
 			BOOST_LOG_TRIVIAL(debug)
-				<< "Delta_p(x_" << returnvalues.NumberOuterIterations
-				<< ",x) is "
+				<< "#" << returnvalues.NumberOuterIterations << ": "
+				<< "Delta_p(x_n,x) is "
 				<< new_distance;
+			tuple.replace( "bregman_distance", new_distance);
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
+			BOOST_LOG_TRIVIAL(debug)
+				<< "#" << returnvalues.NumberOuterIterations << ": "
+				<< "||x_n-x|| is " << NormX(returnvalues.solution-_solution);
+			tuple.replace( "error", NormX(returnvalues.solution-_solution));
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
@@ -231,6 +253,9 @@ LandweberMinimizer::operator()(
 				returnvalues.solution,
 				_A,
 				returnvalues.NumberOuterIterations);
+
+		// submit current tuple
+		database.addTuple(tuple);
 	}
 
 	return returnvalues;
