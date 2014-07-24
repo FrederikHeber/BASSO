@@ -95,7 +95,7 @@ LandweberMinimizer::operator()(
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
 	const double modulus_at_one = modul(1);
-	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
+	const double _ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "_ANorm " << _ANorm;
 
@@ -118,6 +118,7 @@ LandweberMinimizer::operator()(
 		double alpha = 0.;
 		// use step width used in theoretical proof
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
+		if (0) {
 		if (dual_solution.isApproxToConstant(0, TolX)) {
 			const double q_p = ::pow(val_DualNormX, val_NormX - 1.);
 			BOOST_LOG_TRIVIAL(trace)
@@ -169,6 +170,7 @@ LandweberMinimizer::operator()(
 			BOOST_LOG_TRIVIAL(trace)
 				<< "R_r " << R_r;
 			alpha = (tau/_ANorm) * (x_p / R_r);
+		}
 		}
 		// get alpha from line search
 		alpha = calculateOptimalStepwidth(
