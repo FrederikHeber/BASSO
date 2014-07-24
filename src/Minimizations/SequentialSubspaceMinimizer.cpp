@@ -210,11 +210,7 @@ SequentialSubspaceMinimizer::operator()(
 			returnvalues.residual);
 	const double _ynorm = NormY(_y);
 
-	/// -# check stopping criterion
-	bool StopCriterion = false;
-	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
-
-	// calculate some values prior to loop
+	/// -# calculate some values prior to loop
 	// Jx=DualityMapping(x,NormX,PowerX,TolX);
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
@@ -224,6 +220,14 @@ SequentialSubspaceMinimizer::operator()(
 //	const double _ANorm = ::pow(2, 1.+ 1./val_NormY); //_A.norm();
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
+
+	if ((_solution.innerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+			<< "true solution is " << _solution.transpose() << std::endl;
+	} else {
+		BOOST_LOG_TRIVIAL(info)
+			<< "true solution is " << _solution.transpose() << std::endl;
+	}
 
 	BregmanDistance Delta_p(NormX, J_p, PowerX);
 	double old_distance = 0.;
@@ -245,6 +249,9 @@ SequentialSubspaceMinimizer::operator()(
 	tuple.insert( std::make_pair("error", 0.));
 	tuple.insert( std::make_pair("bregman_distance", 0.));
 
+	/// -# check stopping criterion
+	bool StopCriterion = false;
+	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 	// start building up search space 'U' with the search vectors 'u'
 	Eigen::MatrixXd U = Eigen::MatrixXd::Zero(_A.outerSize(),N);
@@ -259,7 +266,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "#" << returnvalues.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
 		tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
-		// check that distance truely decreases
+		// check that distance truly decreases
 		if (!_solution.isZero()) {
 			const double new_distance =
 					Delta_p(returnvalues.solution, _solution, PowerX);
@@ -279,28 +286,26 @@ SequentialSubspaceMinimizer::operator()(
 				<< "x_n is " << returnvalues.solution.transpose();
 		BOOST_LOG_TRIVIAL(trace)
 				<< "R_n is " << returnvalues.residual.transpose();
-		BOOST_LOG_TRIVIAL(trace)
-			<< "j_r (residual) is "
-			<< j_r( returnvalues.residual, PowerY).transpose();
 
-		// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-		Eigen::VectorXd u = j_r(returnvalues.residual, PowerY);
+		// Jw=DualityMapping(w,NormY,PowerY,TolX);
+		Eigen::VectorXd Jw = j_r(returnvalues.residual, PowerY);
 		BOOST_LOG_TRIVIAL(trace)
-			<< "u is " << u.transpose();
+			<< "Jw= j_r (R_n) is " << Jw.transpose();
 
-		// uNorm=norm(u,DualNormX);
-		const double uNorm = DualNormX(u);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "uNorm is " << uNorm;
+		// JwNorm=norm(w,DualNormX);
+//		const double JwNorm = DualNormX(Jw);
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "wNorm is " << wNorm;
 
-		// alpha=u'*x
+		// alpha=Jw'*y
 		const double alpha =
-				u.transpose() * _y;
+				Jw.transpose() * _y;
 		BOOST_LOG_TRIVIAL(trace)
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		U.col(index) = _A.transpose()*u;
+		U.col(index) = (_A.transpose()*Jw);
+		//U.col(index) *= 1./NormX(U.col(index));
 		alphas(index) = alpha;
 		index = (index + 1) % N;
 
@@ -347,13 +352,13 @@ SequentialSubspaceMinimizer::operator()(
 
 			do
 			{
-			  iter++;
+			  ++iter;
 			  status = gsl_multimin_fdfminimizer_iterate (s);
 
 			  if (status)
 				break;
 
-			  status = gsl_multimin_test_gradient (s->gradient, TolY);
+			  status = gsl_multimin_test_gradient (s->gradient, TolFun);
 
 //				  if (status == GSL_SUCCESS)
 //					printf ("Minimum found at:\n");
