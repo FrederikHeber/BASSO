@@ -18,6 +18,7 @@
 
 #include "BregmanFunctional.hpp"
 #include "Database/Database.hpp"
+#include "Database/Table.hpp"
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
@@ -239,15 +240,16 @@ SequentialSubspaceMinimizer::operator()(
 	}
 
 	// build data tuple for iteration information
-	Database::Tuple_t tuple;
-	tuple.insert( std::make_pair("p", val_NormX));
-	tuple.insert( std::make_pair("r", val_DualNormX));
-	tuple.insert( std::make_pair("N", (int)N));
-	tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
-	tuple.insert( std::make_pair("iteration", (int)0));
-	tuple.insert( std::make_pair("relative_residual", 0.));
-	tuple.insert( std::make_pair("error", 0.));
-	tuple.insert( std::make_pair("bregman_distance", 0.));
+	Table &per_iteration_table = database.addTable("per_iteration");
+	Table::Tuple_t per_iteration_tuple;
+	per_iteration_tuple.insert( std::make_pair("p", val_NormX));
+	per_iteration_tuple.insert( std::make_pair("r", val_DualNormX));
+	per_iteration_tuple.insert( std::make_pair("N", (int)N));
+	per_iteration_tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
+	per_iteration_tuple.insert( std::make_pair("iteration", (int)0));
+	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
+	per_iteration_tuple.insert( std::make_pair("error", 0.));
+	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
@@ -258,14 +260,14 @@ SequentialSubspaceMinimizer::operator()(
 	Eigen::VectorXd alphas = Eigen::VectorXd::Zero(N);
 	unsigned int index = 0;
 	while (!StopCriterion) {
-		tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
+		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations
 				<< " with residual of " << returnvalues.residuum;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "#" << returnvalues.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/_ynorm;
-		tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
+		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/_ynorm);
 		// check that distance truly decreases
 		if (!_solution.isZero()) {
 			const double new_distance =
@@ -274,13 +276,13 @@ SequentialSubspaceMinimizer::operator()(
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p(x_n,x) is "
 				<< new_distance;
-			tuple.replace( "bregman_distance", new_distance);
+			per_iteration_tuple.replace( "bregman_distance", new_distance);
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "||x_n-x|| is " << NormX(returnvalues.solution-_solution);
-			tuple.replace( "error", NormX(returnvalues.solution-_solution));
+			per_iteration_tuple.replace( "error", NormX(returnvalues.solution-_solution));
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.solution.transpose();
@@ -410,7 +412,7 @@ SequentialSubspaceMinimizer::operator()(
 				returnvalues.NumberOuterIterations);
 
 		// submit current tuple
-		database.addTuple(tuple);
+		per_iteration_table.addTuple(per_iteration_tuple);
 	}
 
 	// and return solution
