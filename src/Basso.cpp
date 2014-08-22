@@ -135,6 +135,8 @@ int main (int argc, char *argv[])
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Magnitude of noise was set to " << delta << "\n";
+	} else {
+		delta = 1e-4;
 	}
 
 	boost::filesystem::path iteration_file;
@@ -163,12 +165,16 @@ int main (int argc, char *argv[])
 		normx = vm["normx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm of X was set to " << normx << "\n";
+	} else {
+		normx = 2;
 	}
 	double normy;
 	if (vm.count("normy")) {
 		normy = vm["normy"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm of Y was set to " << normy << "\n";
+	} else {
+		normy = 2.;
 	}
 	unsigned int N;
 	if (vm.count("number-directions")) {
