@@ -264,6 +264,8 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("iterations", (int)0));
 	overall_tuple.insert( std::make_pair("relative_residual", 0.));
 	overall_tuple.insert( std::make_pair("runtime", 0.));
+	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
+	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", 0.));
 
 	/// -# check stopping criterion
 	const Eigen::MatrixXd A_transposed = _A.transpose();
@@ -439,6 +441,8 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", returnvalues.residuum );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
+	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
+	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution

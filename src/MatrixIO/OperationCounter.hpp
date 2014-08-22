@@ -39,6 +39,20 @@ public:
 		return tmp;
 	}
 
+	/** Getter for the number of function calls.
+	 *
+	 * @return number of calls to operator()
+	 */
+	size_t getCount() const
+	{ return count; }
+
+	/** Getter for the total runtime of function calls.
+	 *
+	 * @return overall runtime of operator() in seconds
+	 */
+	double getTiming() const
+	{ return boost::chrono::duration_cast<boost::chrono::duration<double> >(timing).count(); }
+
 private:
 	//!> function call that is wrapped by this class
 	function_t operatorfunction;
