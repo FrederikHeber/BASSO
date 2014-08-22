@@ -266,6 +266,7 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("runtime", 0.));
 
 	/// -# check stopping criterion
+	const Eigen::MatrixXd A_transposed = _A.transpose();
 	bool StopCriterion = false;
 	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
@@ -320,7 +321,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		U.col(index) = (_A.transpose()*Jw);
+		U.col(index) = MatrixVectorProduct(A_transposed,Jw);
 		//U.col(index) *= 1./NormX(U.col(index));
 		alphas(index) = alpha;
 		index = (index + 1) % N;

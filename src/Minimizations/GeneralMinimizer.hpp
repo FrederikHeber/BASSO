@@ -10,6 +10,8 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixIO/OperationCounter.hpp"
+
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "SmoothnessModulus.hpp"
@@ -94,9 +96,7 @@ protected:
 			const Eigen::VectorXd &_solution,
 			const Eigen::MatrixXd &_A,
 			unsigned int _NumberOuterIterations
-			) const
-;
-
+			) const;
 public:
 	//!> Lp norm of space X: p
 	const double val_NormX;
@@ -136,10 +136,34 @@ public:
 	//!> duality mapping object for space Y (single-valued)
 	const DualityMapping j_r;
 
+protected:
+
 	/** reference to an external database where we store infomation
 	 * about the behavior of the iteration procedure.
 	 */
 	Database &database;
+
+	boost::function<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				)> matrix_vector_fctor;
+	const OperationCounter<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+		const Eigen::MatrixBase<Eigen::MatrixXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> MatrixVectorProduct;
+
+	boost::function<
+		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&)
+				> scalar_vector_fctor;
+	const OperationCounter<
+		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+		const Eigen::MatrixBase<Eigen::VectorXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> ScalarVectorProduct;
 };
 
 

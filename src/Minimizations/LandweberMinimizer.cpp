@@ -134,6 +134,8 @@ LandweberMinimizer::operator()(
 	if (!_solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, _solution, PowerX)
 			+ 1e4*BASSOTOLERANCE; // make sure its larger
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Starting Bregman distance is " << old_distance;
 	}
 
 	/// -# loop over stopping criterion

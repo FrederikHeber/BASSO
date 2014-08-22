@@ -8,8 +8,10 @@
 #include "BassoConfig.h"
 
 #include "MatrixIO/MatrixIO.hpp"
+#include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <fstream>
 #include <iostream>
@@ -43,7 +45,25 @@ GeneralMinimizer::GeneralMinimizer(
 	J_p(val_NormX),
 	J_q(val_DualNormX),
 	j_r(val_NormY),
-	database(_database)
+	database(_database),
+	matrix_vector_fctor(
+			boost::bind(
+					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
+						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
+								_1, _2
+			)
+	),
+	MatrixVectorProduct(matrix_vector_fctor),
+	scalar_vector_fctor(
+			boost::bind(
+					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
+						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
+								_1, _2
+			)
+	),
+	ScalarVectorProduct(scalar_vector_fctor)
 {
 	BOOST_LOG_TRIVIAL(debug)
 		<< "p is " << val_NormX
@@ -66,7 +86,7 @@ double GeneralMinimizer::calculateResidual(
 		Eigen::VectorXd &_residual
 		) const
 {
-	_residual = _A * _x0 - _y;
+	_residual = MatrixVectorProduct(_A,_x0) - _y;
 	return NormY(_residual);
 }
 
