@@ -10,25 +10,20 @@ Installation instructions:
 
 Basso depends on the following packages:
  * cmake - make utility for checking prerequisites
+ * GSL - GNU Scientific library for function minimization
  * Eigen - C++ library for linear algebra
  * CppUnit - C++ library for unit testing
- * levmar - implementation of the Levenberg Marquardt algorithm for 
-   unconstrained minimization
  * boost - almost standard library (we require 1.54 due to logging)
  * poco - poco is used (optionally) to write iteration information to
    a sqlite3 database
 
 ... on Ubuntu
 -------------
-For Eigen and CppUnit packages exist but not so for levmar.
-
-Levmar depends on two files: A header levmar.h and a library liblevmar.a.
-
-Copy the former into a subfolder "include" of a common installation folder, e.g. levmar-2.6/include. Similarly, the library goes into a subfolder "lib".
+Eigen and CppUnit packages and reside in standard paths, hence we have to do nothing
 
 It is advised to compile the source in a distinct build directory, e.g. in a subfolder "build64". This is referred to as out-of-source build. To prepare the compilation, call cmake then as follows:
 
-cmake .. -DLEVMAR_INCLUDE_DIR=<path to installation folder>/levmar-2.6/include
+cmake ..
 
 If additionally boost libraries do not reside in standard folders, such as
 /usr/include, /usr/lib ... but in ~/packages/boost the following options might help:
@@ -41,5 +36,14 @@ To allow for debugging, you might futher add "-DBoost_DEBUG=ON".
 
 In general, to compile in debugging information add "-DCMAKE_BUILD_TYPE=Debug", to compile without use "-DCMAKE_BUILD_TYPE=Release".
 
+Timing Measurements
+-------------------
 
-2014-04-02 Frederik Heber
+Add
+
+-DUSE_TIMING
+
+to activate the timing measurements of each part of the algorithm.
+
+
+2014-08-22 Frederik Heber

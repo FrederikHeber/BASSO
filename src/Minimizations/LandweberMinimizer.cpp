@@ -8,6 +8,7 @@
 #include "LandweberMinimizer.hpp"
 
 #include <algorithm>
+#include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
@@ -62,6 +63,9 @@ LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_solution
 		) const
 {
+	boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	if ((_A.innerSize() < 10) && (_A.outerSize() < 10)) {
 		BOOST_LOG_TRIVIAL(info) << "Calculating "
 				<< _A << "*" << _x0.transpose() << "-" << _y.transpose();
@@ -94,7 +98,7 @@ LandweberMinimizer::operator()(
 	const double _ynorm = NormY(_y);
 
 	// build data tuple for iteration information
-	Table &per_iteration_table = database.addTable("per_iteration");
+	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple;
 	per_iteration_tuple.insert( std::make_pair("p", val_NormX));
 	per_iteration_tuple.insert( std::make_pair("r", val_DualNormX));
@@ -103,6 +107,16 @@ LandweberMinimizer::operator()(
 	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
 	per_iteration_tuple.insert( std::make_pair("error", 0.));
 	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
+
+	// build data tuple for overall information
+	Table& overall_table = database.addTable("overall");
+	Table::Tuple_t overall_tuple;
+	overall_tuple.insert( std::make_pair("p", val_NormX));
+	overall_tuple.insert( std::make_pair("r", val_DualNormX));
+	overall_tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
+	overall_tuple.insert( std::make_pair("iterations", (int)0));
+	overall_tuple.insert( std::make_pair("relative_residual", 0.));
+	overall_tuple.insert( std::make_pair("runtime", 0.));
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
@@ -259,6 +273,17 @@ LandweberMinimizer::operator()(
 		// submit current tuple
 		per_iteration_table.addTuple(per_iteration_tuple);
 	}
+
+	boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	std::cout << "The operation took " << boost::chrono::duration<double>(timing_end - timing_start) << "." << std::endl;
+
+	// submit overall_tuple
+	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );
+	overall_tuple.replace( "relative_residual", returnvalues.residuum );
+	overall_tuple.replace( "runtime",
+			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
+	overall_table.addTuple(overall_tuple);
 
 	return returnvalues;
 }
