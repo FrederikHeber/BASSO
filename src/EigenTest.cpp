@@ -7,10 +7,14 @@
 
 #include "BassoConfig.h"
 
+#include <boost/function.hpp>
+
+#include <boost/bind.hpp>
+#include <Eigen/Dense>
 #include <iostream>
 #include <iomanip>
-#include <Eigen/Dense>
 
+#include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/BregmanFunctional.hpp"
 
@@ -49,13 +53,47 @@ int main()
 				<< J_infty(v,2).transpose() << ")" << std::endl;
 	}
 
+	boost::function<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				)> matrix_vector_fctor =
+			boost::bind(
+					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
+						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
+								_1, _2
+			)
+	;
+	const OperationCounter<
+				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> MatrixVectorProduct(matrix_vector_fctor);
+	boost::function<
+			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
+					const Eigen::MatrixBase<Eigen::VectorXd>&,
+					const Eigen::MatrixBase<Eigen::VectorXd>&)
+					> scalar_vector_fctor =
+			boost::bind(
+					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
+						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
+								_1, _2
+			);
+	const OperationCounter<
+				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> ScalarVectorProduct(scalar_vector_fctor);
+
 	// testing of BregmanFunctional
 	{
 		LpNorm lpnorm(1);
 		LpNorm lpdualnorm(LpNorm::Infinity);
 		DualityMapping J_1(1);
 		DualityMapping J_infty(LpNorm::Infinity);
-		BregmanFunctional bregman_1(lpdualnorm, J_infty);
+		BregmanFunctional bregman_1(lpdualnorm, J_infty, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -72,7 +110,7 @@ int main()
 	{
 		LpNorm lpnorm(2);
 		DualityMapping J_2(2);
-		BregmanFunctional bregman_2(lpnorm, J_2);
+		BregmanFunctional bregman_2(lpnorm, J_2, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -91,7 +129,7 @@ int main()
 		LpNorm lpdualnorm(1.);
 		DualityMapping J_1(LpNorm::Infinity);
 		DualityMapping J_infty(1.);
-		BregmanFunctional bregman_infty(lpdualnorm, J_1);
+		BregmanFunctional bregman_infty(lpdualnorm, J_1, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);

@@ -12,6 +12,7 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
@@ -28,7 +29,17 @@ public:
 	 */
 	BregmanFunctional(
 			const LpNorm &_lpdualnorm,
-			const DualityMapping &_J_q);
+			const DualityMapping &_J_q,
+			const OperationCounter<
+				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> &_MatrixVectorProduct,
+			const OperationCounter<
+				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> &_ScalarVectorProduct);
 	~BregmanFunctional() {}
 
 	/** Implements BregmanFunctional functional.
@@ -68,6 +79,18 @@ private:
 	const LpNorm &lpdualnorm;
 	//!> DualityMapping object
 	const DualityMapping &J_q;
+	//!> counting and timing object for MatrixVectorMultiplication
+	const OperationCounter<
+			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+			const Eigen::MatrixBase<Eigen::MatrixXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &MatrixVectorProduct;
+	//!> counting and timing object for VectorVectorMultiplication
+	const OperationCounter<
+			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+			const Eigen::MatrixBase<Eigen::VectorXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &ScalarVectorProduct;
 };
 
 

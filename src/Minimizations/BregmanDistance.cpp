@@ -38,6 +38,7 @@ double BregmanDistance::operator()(
 		result += ((_power-1.)/_power) * ::pow(lpnorm(_x), _power);
 		result += (1./_power) * ::pow(lpnorm(_y), _power);
 	}
-	result -= J_p(_x,_power).transpose() * _y;
+	const Eigen::VectorXd dual_x = J_p(_x,_power).transpose();
+	result -= ScalarVectorProduct(dual_x, _y);
 	return result;
 }

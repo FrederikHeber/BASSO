@@ -17,10 +17,22 @@
 
 BregmanFunctional::BregmanFunctional(
 		const LpNorm &_lpdualnorm,
-		const DualityMapping &_J_q
+		const DualityMapping &_J_q,
+		const OperationCounter<
+			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+			const Eigen::MatrixBase<Eigen::MatrixXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &_MatrixVectorProduct,
+		const OperationCounter<
+			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+			const Eigen::MatrixBase<Eigen::VectorXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &_ScalarVectorProduct
 		) :
 	lpdualnorm(_lpdualnorm),
-	J_q(_J_q)
+	J_q(_J_q),
+	MatrixVectorProduct(_MatrixVectorProduct),
+	ScalarVectorProduct(_ScalarVectorProduct)
 {}
 
 double BregmanFunctional::operator()(
@@ -32,11 +44,12 @@ double BregmanFunctional::operator()(
 		)
 {
 	// x=x-U*t;
-	const Eigen::VectorXd resx = _dualx - _U * _t;
+	const Eigen::VectorXd resx = _dualx - MatrixVectorProduct(_U,_t);
 	// fval=1/q*norm(x,p)^q+alpha'*t;
+	const Eigen::VectorXd alpha_transposed = _alpha.transpose();
 	const double fval =
 			1./(double)_q * ::pow(lpdualnorm(resx), _q)
-			+ _alpha.transpose() * _t;
+			+ ScalarVectorProduct(alpha_transposed, _t);
 	return fval;
 }
 
@@ -48,10 +61,11 @@ Eigen::VectorXd BregmanFunctional::gradient(
 		const double _q
 		)
 {
-	const Eigen::VectorXd resx = _dualx - _U * _t;
+	const Eigen::VectorXd resx = _dualx - MatrixVectorProduct(_U, _t);
+	const Eigen::MatrixXd &U_transposed = _U.transpose();
 	const Eigen::VectorXd gval =
 			_alpha -
-			_U.transpose() * J_q(resx, _q);
+			MatrixVectorProduct(U_transposed, J_q(resx, _q));
 
 	return gval;
 }

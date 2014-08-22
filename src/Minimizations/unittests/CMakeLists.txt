@@ -19,8 +19,8 @@ target_link_libraries (BregmanDistanceUnitTest
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
-	${LIBRT_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
 
 add_test (BregmanDistanceUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanDistanceUnitTest)
@@ -31,7 +31,9 @@ add_executable (BregmanFunctionalUnitTest
 	BregmanFunctionalUnitTest.cpp) 
 target_link_libraries (BregmanFunctionalUnitTest 
 	${EXTRA_LIBS}
-	"${CPPUNIT_LIBRARY}")
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (BregmanFunctionalUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanFunctionalUnitTest)
@@ -42,7 +44,7 @@ add_executable (LpNormUnitTest
 	LpNormUnitTest.cpp) 
 target_link_libraries (LpNormUnitTest 
 	${EXTRA_LIBS}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}") 
 
 add_test (LpNormUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/LpNormUnitTest)

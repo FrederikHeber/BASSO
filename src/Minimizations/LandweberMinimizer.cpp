@@ -119,6 +119,8 @@ LandweberMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("runtime", 0.));
 	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
 	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", 0.));
+	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
+	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
@@ -131,7 +133,7 @@ LandweberMinimizer::operator()(
 	const double _ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "_ANorm " << _ANorm;
-	BregmanDistance Delta_p(NormX, J_p, val_NormX);
+	BregmanDistance Delta_p(NormX, J_p, val_NormX, ScalarVectorProduct);
 	double old_distance = 0.;
 	if (!_solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, _solution, PowerX)
@@ -289,6 +291,8 @@ LandweberMinimizer::operator()(
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
 	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
+	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
+	overall_tuple.replace( "runtime_vector_vector_products", ScalarVectorProduct.getTiming() );
 	overall_table.addTuple(overall_tuple);
 
 	return returnvalues;

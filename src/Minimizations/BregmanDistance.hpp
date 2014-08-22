@@ -12,6 +12,7 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixIO/OperationCounter.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
@@ -26,10 +27,16 @@ public:
 	BregmanDistance(
 			const LpNorm &_lpnorm,
 			const DualityMapping &_J_p,
-			const double _p) :
+			const double _p,
+			const OperationCounter<
+					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+					const Eigen::MatrixBase<Eigen::VectorXd>&,
+					const Eigen::MatrixBase<Eigen::VectorXd>&
+					>& _ScalarVectorProduct) :
 				p(_p),
 				lpnorm(_lpnorm),
-				J_p(_J_p)
+				J_p(_J_p),
+				ScalarVectorProduct(_ScalarVectorProduct)
 	{}
 	~BregmanDistance() {}
 
@@ -66,6 +73,12 @@ private:
 	const LpNorm &lpnorm;
 	//!> DualityMapping object
 	const DualityMapping &J_p;
+	//!> counting and timing object for VectorVectorMultiplication
+	const OperationCounter<
+						Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+						const Eigen::MatrixBase<Eigen::VectorXd>&,
+						const Eigen::MatrixBase<Eigen::VectorXd>&
+						>& ScalarVectorProduct;
 };
 
 

@@ -14,4 +14,8 @@ install (TARGETS Basso DESTINATION bin)
 
 # add test program to check that eigen-headers are found and compile
 add_executable (EigenTest EigenTest.cpp)
-target_link_libraries (EigenTest ${EXTRA_LIBS})
+target_link_libraries (EigenTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	${LIBRT_LIBRARIES})
+	

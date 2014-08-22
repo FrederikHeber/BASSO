@@ -233,7 +233,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "true solution is " << _solution.transpose() << std::endl;
 	}
 
-	BregmanDistance Delta_p(NormX, J_p, PowerX);
+	BregmanDistance Delta_p(NormX, J_p, PowerX, ScalarVectorProduct);
 	double old_distance = 0.;
 	if (!_solution.isZero()) {
 		old_distance = Delta_p(returnvalues.solution, _solution, PowerX)
@@ -266,9 +266,11 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("runtime", 0.));
 	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
 	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", 0.));
+	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
+	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
 
 	/// -# check stopping criterion
-	const Eigen::MatrixXd A_transposed = _A.transpose();
+	const Eigen::MatrixXd & A_transposed = _A.transpose();
 	bool StopCriterion = false;
 	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
@@ -334,7 +336,9 @@ SequentialSubspaceMinimizer::operator()(
 			// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 			BregmanFunctional bregman(
 					DualNormX,
-					J_q);
+					J_q,
+					MatrixVectorProduct,
+					ScalarVectorProduct);
 			// we perform a function minimization
 			// with respect to t starting at t0
 			BregmanParameters params(
@@ -443,6 +447,8 @@ SequentialSubspaceMinimizer::operator()(
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
 	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
+	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
+	overall_tuple.replace( "runtime_vector_vector_products", ScalarVectorProduct.getTiming() );
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution
