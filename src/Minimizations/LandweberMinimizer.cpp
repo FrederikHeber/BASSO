@@ -104,6 +104,7 @@ LandweberMinimizer::operator()(
 	per_iteration_tuple.insert( std::make_pair("r", val_DualNormX));
 	per_iteration_tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0));
+	per_iteration_tuple.insert( std::make_pair("stepwidth", (int)0));
 	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
 	per_iteration_tuple.insert( std::make_pair("error", 0.));
 	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
@@ -243,6 +244,8 @@ LandweberMinimizer::operator()(
 				 _A,
 				 _y,
 				 alpha);
+
+		per_iteration_tuple.replace( "stepwidth", alpha);
 
 		// iterate: J_p (x_{n+1})
 		BOOST_LOG_TRIVIAL(trace)

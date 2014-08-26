@@ -250,6 +250,7 @@ SequentialSubspaceMinimizer::operator()(
 	per_iteration_tuple.insert( std::make_pair("N", (int)N));
 	per_iteration_tuple.insert( std::make_pair("dim", (int)_x0.innerSize()));
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0));
+	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.));
 	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
 	per_iteration_tuple.insert( std::make_pair("error", 0.));
 	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
@@ -404,6 +405,7 @@ SequentialSubspaceMinimizer::operator()(
 			BOOST_LOG_TRIVIAL(trace)
 				<< "tmin is " << tmin.transpose();
 		}
+		per_iteration_tuple.replace( "stepwidth", tmin.norm());
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 		dual_solution -= U*tmin;
 		BOOST_LOG_TRIVIAL(trace)
