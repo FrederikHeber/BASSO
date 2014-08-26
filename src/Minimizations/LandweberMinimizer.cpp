@@ -268,7 +268,7 @@ LandweberMinimizer::operator()(
 		++returnvalues.NumberOuterIterations;
 		StopCriterion =
 				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
-				|| (fabs(returnvalues.residuum) <= TolY);
+				|| (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 		// print intermediat solution
 		printIntermediateSolution(
