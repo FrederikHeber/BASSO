@@ -46,7 +46,9 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_outputsteps
 			),
 	tau(1.1),
-	N(2)
+	N(2),
+	MatrixVectorProduct_subspace(MatrixVectorProduct),
+	ScalarVectorProduct_subspace(ScalarVectorProduct)
 {}
 
 void SequentialSubspaceMinimizer::setTau(
@@ -266,9 +268,9 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("relative_residual", 0.));
 	overall_tuple.insert( std::make_pair("runtime", 0.));
 	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", 0.));
 	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
+	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0));
+	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0));
 
 	/// -# check stopping criterion
 	const Eigen::MatrixXd & A_transposed = _A.transpose();
@@ -338,8 +340,8 @@ SequentialSubspaceMinimizer::operator()(
 			BregmanFunctional bregman(
 					DualNormX,
 					J_q,
-					MatrixVectorProduct,
-					ScalarVectorProduct);
+					MatrixVectorProduct_subspace,
+					ScalarVectorProduct_subspace);
 			// we perform a function minimization
 			// with respect to t starting at t0
 			BregmanParameters params(
@@ -407,7 +409,7 @@ SequentialSubspaceMinimizer::operator()(
 		}
 		per_iteration_tuple.replace( "stepwidth", tmin.norm());
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-		dual_solution -= U*tmin;
+		dual_solution -= MatrixVectorProduct(U,tmin);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution.transpose();
 		returnvalues.solution =
@@ -448,9 +450,9 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
-	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
-	overall_tuple.replace( "runtime_vector_vector_products", ScalarVectorProduct.getTiming() );
+	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
+	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution

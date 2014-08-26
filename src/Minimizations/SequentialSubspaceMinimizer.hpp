@@ -75,6 +75,19 @@ private:
 
 	//!> number of search directions
 	const unsigned int N;
+
+	//!> counter for the small matrix vector products in subspace
+	const OperationCounter<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+		const Eigen::MatrixBase<Eigen::MatrixXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> MatrixVectorProduct_subspace;
+	//!> counter for the small scalar products in subspace
+	const OperationCounter<
+		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+		const Eigen::MatrixBase<Eigen::VectorXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> ScalarVectorProduct_subspace;
 };
 
 
