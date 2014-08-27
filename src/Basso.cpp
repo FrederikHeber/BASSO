@@ -47,6 +47,7 @@ int main (int argc, char *argv[])
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
+			("useOptimalStepwidth", po::value<bool>(), "set whether to use optimal calculated step width or theoretical one (Landweber)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
 
@@ -228,6 +229,14 @@ int main (int argc, char *argv[])
 	} else {
 		tau = 1.1;
 	}
+	bool useOptimalStepwidth;
+	if (vm.count("useOptimalStepwidth")) {
+		useOptimalStepwidth = vm["useOptimalStepwidth"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug) << "useOptimalStepwidth was set to "
+			<< useOptimalStepwidth << "\n";
+	} else {
+		useOptimalStepwidth = true;
+	}
 
 	// parse matrix and vector files into instances
 	Eigen::MatrixXd matrix;
@@ -328,6 +337,8 @@ int main (int argc, char *argv[])
 		switch(type) {
 		case MinimizerFactory::landweber:
 			static_cast<LandweberMinimizer*>(minimizer.get())->setC(C);
+			static_cast<LandweberMinimizer*>(minimizer.get())->setuseOptimalStepwidth(
+					useOptimalStepwidth);
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);

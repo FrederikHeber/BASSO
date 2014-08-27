@@ -43,8 +43,15 @@ LandweberMinimizer::LandweberMinimizer(
 				_outputsteps
 				),
 	C(0.9),
-	modul(val_DualNormX)
+	modul(val_DualNormX),
+	useOptimalStepwidth(true)
 {}
+
+void LandweberMinimizer::setuseOptimalStepwidth(
+	const bool _useOptimalStepwidth)
+{
+	const_cast<bool &>(useOptimalStepwidth) = _useOptimalStepwidth;
+}
 
 void LandweberMinimizer::setC(const double _C)
 {
@@ -131,9 +138,12 @@ LandweberMinimizer::operator()(
 	Eigen::VectorXd dual_solution =
 			J_p(returnvalues.solution, PowerX);
 	const double modulus_at_one = modul(1);
-	const double _ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "_ANorm " << _ANorm;
+	double _ANorm = 0.;
+	if (!useOptimalStepwidth) {
+		_ANorm = _A.norm(); //::pow(2, 1.+ 1./val_NormY);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "_ANorm " << _ANorm;
+	}
 	BregmanDistance Delta_p(NormX, J_p, val_NormX, ScalarVectorProduct);
 	double old_distance = 0.;
 	if (!_solution.isZero()) {
@@ -180,70 +190,72 @@ LandweberMinimizer::operator()(
 				_A.transpose() * j_r( returnvalues.residual, PowerY);
 		BOOST_LOG_TRIVIAL(trace)
 			<< "u is " << u.transpose();
+
 		double alpha = 0.;
 		// use step width used in theoretical proof
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
-		if (0) {
-		if (dual_solution.isApproxToConstant(0, TolX)) {
-			const double q_p = ::pow(val_DualNormX, val_NormX - 1.);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "q_p " << q_p;
-			const double A_p = ::pow(_ANorm,val_NormX);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "A_p " << A_p;
-			double R_p = 0.;
-			if (val_NormX == LpNorm::Infinity) {
-				R_p = returnvalues.residual.array().abs().maxCoeff();
+		if (!useOptimalStepwidth) {
+			if (dual_solution.isApproxToConstant(0, TolX)) {
+				const double q_p = ::pow(val_DualNormX, val_NormX - 1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "q_p " << q_p;
+				const double A_p = ::pow(_ANorm,val_NormX);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "A_p " << A_p;
+				double R_p = 0.;
+				if (val_NormX == LpNorm::Infinity) {
+					R_p = returnvalues.residual.array().abs().maxCoeff();
+				} else {
+					R_p = ::pow(returnvalues.residuum, val_NormX);
+				}
+				double R_r = 0.;
+				if (val_NormY == LpNorm::Infinity) {
+					R_r = returnvalues.residual.array().abs().maxCoeff();
+				} else {
+					R_r = ::pow(returnvalues.residuum, val_NormY);
+				}
+				BOOST_LOG_TRIVIAL(trace)
+					<< "R_p " << R_p << ", R_r " << R_r;
+				alpha = // C
+						0.9 * (q_p / A_p) * (R_p/R_r);
 			} else {
-				R_p = ::pow(returnvalues.residuum, val_NormX);
+				const double xnorm = NormX(returnvalues.solution);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "xnorm " << xnorm;
+				const double two_q = ::pow(2., val_DualNormX);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "two_q " << two_q;
+				alpha = C/(two_q * G * _ANorm)
+						* (returnvalues.residuum / xnorm);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "initial lambda " << alpha;
+				const double lambda = std::min(modulus_at_one, alpha);
+				// find intermediate value in smoothness modulus to match lambda
+				const double tau = calculateMatchingTau(modul, lambda);
+				// calculate step width
+				const double x_p = ::pow( xnorm, val_NormX-1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "x_p " << x_p;
+				double R_r = 0.;
+				if (val_NormY == LpNorm::Infinity) {
+					R_r = returnvalues.residual.array().abs().maxCoeff()
+							/ returnvalues.residuum;
+				} else {
+					R_r = ::pow(returnvalues.residuum, val_NormY - 1.);
+				}
+				BOOST_LOG_TRIVIAL(trace)
+					<< "R_r " << R_r;
+				alpha = (tau/_ANorm) * (x_p / R_r);
 			}
-			double R_r = 0.;
-			if (val_NormY == LpNorm::Infinity) {
-				R_r = returnvalues.residual.array().abs().maxCoeff();
-			} else {
-				R_r = ::pow(returnvalues.residuum, val_NormY);
-			}
-			BOOST_LOG_TRIVIAL(trace)
-				<< "R_p " << R_p << ", R_r " << R_r;
-			alpha = // C
-					0.9 * (q_p / A_p) * (R_p/R_r);
 		} else {
-			const double xnorm = NormX(returnvalues.solution);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "xnorm " << xnorm;
-			const double two_q = ::pow(2., val_DualNormX);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "two_q " << two_q;
-			alpha = C/(two_q * G * _ANorm)
-					* (returnvalues.residuum / xnorm);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "initial lambda " << alpha;
-			const double lambda = std::min(modulus_at_one, alpha);
-			// find intermediate value in smoothness modulus to match lambda
-			const double tau = calculateMatchingTau(modul, lambda);
-			// calculate step width
-			const double x_p = ::pow( xnorm, val_NormX-1.);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "x_p " << x_p;
-			double R_r = 0.;
-			if (val_NormY == LpNorm::Infinity) {
-				R_r = returnvalues.residual.array().abs().maxCoeff()
-						/ returnvalues.residuum;
-			} else {
-				R_r = ::pow(returnvalues.residuum, val_NormY - 1.);
-			}
-			BOOST_LOG_TRIVIAL(trace)
-				<< "R_r " << R_r;
-			alpha = (tau/_ANorm) * (x_p / R_r);
+			// get alpha from line search
+			alpha = calculateOptimalStepwidth(
+					 returnvalues.solution,
+					 u,
+					 _A,
+					 _y,
+					 alpha);
 		}
-		}
-		// get alpha from line search
-		alpha = calculateOptimalStepwidth(
-				 returnvalues.solution,
-				 u,
-				 _A,
-				 _y,
-				 alpha);
 
 		per_iteration_tuple.replace( "stepwidth", alpha);
 

@@ -39,6 +39,16 @@ public:
 	 */
 	void setC(const double _C);
 
+	/** Setter for useOptimalStepwidth.
+	 *
+	 * This is to have a definite place where useOptimalStepwidth is
+	 * changed. Hence, it is const and cannot accidentally be changed in
+	 * the code, but it can still be set after the instance has been created.
+	 *
+	 * @param _useOptimalStepwidth new value of useOptimalStepwidth
+	 */
+	void setuseOptimalStepwidth(const bool _useOptimalStepwidth);
+
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
 			const Eigen::MatrixXd &_A,
@@ -79,6 +89,8 @@ public:
 	const double C;
 	//!> smoothness modulus object for dual Space X^*
 	const SmoothnessModulus modul;
+	//!> whether to use optimal step width calculation or a theoretical one
+	const bool useOptimalStepwidth;
 };
 
 
