@@ -17,6 +17,12 @@
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
+#include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/SequentialSubspaceMinimizer_HyperplaneProjection.hpp"
+
+// instantiate required template functions
+CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const double _NormX,
@@ -28,16 +34,16 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
-	GeneralMinimizer(
-			_NormX,
-			_NormY,
-			_PowerX,
-			_PowerY,
-			_Delta,
-			_maxiter,
-			_database,
-			_outputsteps
-			),
+	SequentialSubspaceMinimizer(
+		_NormX,
+		_NormY,
+		_PowerX,
+		_PowerY,
+		_Delta,
+		_maxiter,
+		_database,
+		_outputsteps
+		),
 	tau(1.1)
 {}
 
@@ -52,83 +58,6 @@ void SequentialSubspaceMinimizerNoise::setTau(
 	const_cast<double&>(tau) = _tau;
 	// change y tolerance according to regularization parameter
 	const_cast<double&>(TolY) = tau * Delta;
-}
-
-/** Structure containing all parameters to call BregmanProjectionFunctional functions.
- *
- * This is required to use levmar function minimization that only allows
- * to pass a void* pointer to pass on information to the function to be
- * minimized.
- *
- * \sa BregmanProjectionFunctional
- *
- */
-struct BregmanParameters
-{
-	BregmanProjectionFunctional &bregman;
-	Eigen::VectorXd t;
-	const Eigen::VectorXd &x;
-	const Eigen::MatrixXd &U;
-	const Eigen::VectorXd &alpha;
-	const double q;
-
-	/** Constructor to initialize refs.
-	 *
-	 */
-	BregmanParameters(
-		BregmanProjectionFunctional &_bregman,
-		const Eigen::VectorXd &_t,
-		const Eigen::VectorXd &_x,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha,
-		const double _q
-		) :
-			bregman(_bregman),
-			t(_t),
-			x(_x),
-			U(_U),
-			alpha(_alpha),
-			q(_q)
-	{}
-};
-
-/** Static function to wrap call to BregmanProjectionFunctional::operator()().
- *
- */
-static void
-func(double *p, double *hx, int m, int n, void *adata)
-{
-	struct BregmanParameters *params =
-			static_cast<BregmanParameters *>(adata);
-	params->t[0] = p[0];
-	hx[0] =
-			(params->bregman)(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-}
-
-/** Static function to wrap call to BregmanProjectionFunctional::operator()().
- *
- */
-static void
-jacf(double *p, double *j, int m, int n, void *adata)
-{
-	struct BregmanParameters *params =
-			static_cast<BregmanParameters *>(adata);
-	// update where to evaluate
-	params->t[0] = p[0];
-	Eigen::VectorXd grad =
-			(params->bregman).gradient(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-	for (int i=0; i<m;++i)
-		j[i] = grad[i];
 }
 
 SequentialSubspaceMinimizerNoise::ReturnValues
@@ -186,7 +115,9 @@ SequentialSubspaceMinimizerNoise::operator()(
 //	BOOST_LOG_TRIVIAL(trace)
 //		<< "_ANorm " << _ANorm;
 
-	// start building up search space 'U' with the search vectors 'u'
+	// reset inner state of problem has changed
+	if (state.getDimension() != _A.outerSize())
+		state.set(_A.outerSize(), N);
 	while (!StopCriterion) {
 		if ((returnvalues.NumberOuterIterations == 0)
 			|| (returnvalues.residuum > TolY)) {
@@ -224,10 +155,11 @@ SequentialSubspaceMinimizerNoise::operator()(
 					::pow(returnvalues.residuum,(double)PowerY-1.)
 					* (returnvalues.residuum-Delta)/::pow(uNorm, DualPowerX);
 
-			double tmin = 0.;
+			Eigen::VectorXd tmin(1);
+			tmin.setZero();
 			if (dual_solution.isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
-				tmin = ::pow(beta, PowerX - 1.);
+				tmin[0] = ::pow(beta, PowerX - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "tmin is " << tmin;
 			} else {
@@ -236,51 +168,32 @@ SequentialSubspaceMinimizerNoise::operator()(
 				t0[0] = ::pow(beta/G, PowerX - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "t0[0] is " << t0[0];
-				// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-				BregmanProjectionFunctional bregman(
-						DualNormX,
-						J_q,
-						MatrixVectorProduct,
-						ScalarVectorProduct);
-				// TODO_ we actually have to perform a function minimization
-				// with respect to t starting at t0
-				Eigen::VectorXd steps(1);
-				steps[0] = alpha+d;
-				BregmanParameters params(
-						bregman,
-						t0,
-						dual_solution,
-						u,
-						steps,
-						DualPowerX);
-//				double info[LM_INFO_SZ];
-//				double x[1];
-//				const int m = 1;
-//				const int n = 1;
-//				double *work = (double *)malloc( ( LM_DIF_WORKSZ(m, n) + m*m) * sizeof(double));
-//				double *covar = work+LM_DIF_WORKSZ(m, n);
-//				int ret = dlevmar_der(
-//						*func,
-//						*jacf,
-//						&tmin,
-//						x,
-//						m,
-//						n,
-//						1000, 	/* itmax */
-//						NULL, 	/* opts[4] */
-//						info,
-//						work,
-//						covar,
-//						static_cast<void *>(&params)
-//						);
-//				if (ret == -1)
-//					throw MinimizationFunctionError_exception()
-//						<< MinimizationFunctionError_name(tau);
-//				// free everything
-//				free(work);
-				// solution is in tmin already
-				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin;
+				{
+					// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+					BregmanProjectionFunctional bregman(
+							DualNormX,
+							J_q,
+							MatrixVectorProduct_subspace,
+							ScalarVectorProduct_subspace);
+
+					HyperplaneProjection functional(
+							bregman,
+							dual_solution,
+							state.U,
+							state.alphas,
+							DualPowerX);
+
+					// TODO: current alpha needs to be modified for minimization!
+					Eigen::VectorXd steps(1);
+					steps[0] = alpha+d;
+					FunctionMinimizer<Eigen::VectorXd> minimizer(
+						functional, t0);
+
+					tmin = minimizer(1, TolY, tmin);
+
+					BOOST_LOG_TRIVIAL(trace)
+						<< "tmin is " << tmin.transpose();
+				}
 			}
 //			const Eigen::VectorXd uold = u;
 //			const double alphao0ld = alpha;

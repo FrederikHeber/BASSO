@@ -12,7 +12,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/GeneralMinimizer.hpp"
+#include "Minimizations/SequentialSubspaceMinimizer.hpp"
 
 class Database;
 
@@ -20,7 +20,7 @@ class Database;
  * Schuster,Louis, 2006].
  *
  */
-class SequentialSubspaceMinimizerNoise : public GeneralMinimizer
+class SequentialSubspaceMinimizerNoise : public SequentialSubspaceMinimizer
 {
 public:
 	SequentialSubspaceMinimizerNoise(

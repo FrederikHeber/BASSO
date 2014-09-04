@@ -59,7 +59,7 @@ public:
 	void resetState()
 	{ state.reset(); }
 
-private:
+protected:
 	/** This class encapsulates the state of the iteration, i.e. all
 	 * variables that defined the current state of the iterate.
 	 */
@@ -112,7 +112,7 @@ private:
 		unsigned int index;
 	};
 
-private:
+protected:
 	// internal variables
 
 //	//!> number of columns (M)
