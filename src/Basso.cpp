@@ -17,6 +17,7 @@
 #include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
+#include "Minimizations/SequentialSubspaceMinimizerNoise.hpp"
 
 namespace po = boost::program_options;
 
@@ -223,6 +224,10 @@ int main (int argc, char *argv[])
 	}
 	double tau;
 	if (vm.count("tau")) {
+		if (type != MinimizerFactory::sequentialsubspace_noise) {
+			BOOST_LOG_TRIVIAL(warning)
+					<< "Tau is set, but not SSO_noise chosen, ignoring";
+		}
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau was set to " << tau << "\n";
@@ -231,6 +236,10 @@ int main (int argc, char *argv[])
 	}
 	bool useOptimalStepwidth;
 	if (vm.count("useOptimalStepwidth")) {
+		if (type != MinimizerFactory::landweber) {
+			BOOST_LOG_TRIVIAL(warning)
+					<< "useOptimalStepwidth is set, but not landweber chosen, ignoring";
+		}
 		useOptimalStepwidth = vm["useOptimalStepwidth"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug) << "useOptimalStepwidth was set to "
 			<< useOptimalStepwidth << "\n";
@@ -342,6 +351,10 @@ int main (int argc, char *argv[])
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);
+			break;
+		case MinimizerFactory::sequentialsubspace_noise:
+			static_cast<SequentialSubspaceMinimizerNoise*>(minimizer.get())->setTau(tau);
+			static_cast<SequentialSubspaceMinimizerNoise*>(minimizer.get())->setN(N);
 			break;
 		default:
 			std::cerr << "Unknown InstanceType"

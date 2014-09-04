@@ -33,6 +33,7 @@ public:
 	enum InstanceType {
 		landweber=0,
 		sequentialsubspace=1,
+		sequentialsubspace_noise=2,
 		MAX_InstanceType
 	};
 

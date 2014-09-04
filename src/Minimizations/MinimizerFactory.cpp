@@ -11,12 +11,13 @@
 #include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
-
+#include "Minimizations/SequentialSubspaceMinimizerNoise.hpp"
 
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {
 		"landweber",
-		"SSO"
+		"SSO",
+		"SSO_noise"
 };
 
 MinimizerFactory::instance_ptr_t
@@ -49,6 +50,18 @@ MinimizerFactory::getInstance(
 		break;
 	case sequentialsubspace:
 			instance = new SequentialSubspaceMinimizer(
+					_NormX,
+					_NormY,
+					_PowerX,
+					_PowerY,
+					_Delta,
+					_maxiter,
+					_database,
+					_outputsteps
+					);
+			break;
+	case sequentialsubspace_noise:
+			instance = new SequentialSubspaceMinimizerNoise(
 					_NormX,
 					_NormY,
 					_PowerX,
