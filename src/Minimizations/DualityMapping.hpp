@@ -8,6 +8,8 @@
 #ifndef DUALITYMAPPING_HPP_
 #define DUALITYMAPPING_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 
 #include "Minimizations/LpNorm.hpp"

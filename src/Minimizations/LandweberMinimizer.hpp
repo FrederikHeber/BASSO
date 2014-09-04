@@ -8,6 +8,8 @@
 #ifndef LANDWEBERMINIMIZER_HPP_
 #define LANDWEBERMINIMIZER_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 
 #include "Minimizations/GeneralMinimizer.hpp"

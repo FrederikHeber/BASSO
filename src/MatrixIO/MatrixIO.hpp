@@ -8,6 +8,8 @@
 #ifndef MATRIXIO_HPP_
 #define MATRIXIO_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 #include <iostream>
 #include <sstream>

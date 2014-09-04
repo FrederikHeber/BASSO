@@ -8,6 +8,8 @@
 #ifndef MINIMIZERFACTORY_HPP_
 #define MINIMIZERFACTORY_HPP_
 
+#include "BassoConfig.h"
+
 #include <boost/shared_ptr.hpp>
 #include <string>
 

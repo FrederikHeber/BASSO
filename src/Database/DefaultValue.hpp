@@ -8,6 +8,8 @@
 #ifndef DEFAULTVALUE_HPP_
 #define DEFAULTVALUE_HPP_
 
+#include "BassoConfig.h"
+
 #include <string>
 
 template <class T>

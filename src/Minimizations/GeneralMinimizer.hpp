@@ -8,6 +8,8 @@
 #ifndef GENERALMINIMIZER_HPP_
 #define GENERALMINIMIZER_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"

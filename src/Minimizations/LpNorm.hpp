@@ -8,6 +8,8 @@
 #ifndef LPNORM_HPP_
 #define LPNORM_HPP_
 
+#include "BassoConfig.h"
+
 #include <cmath>
 #include <Eigen/Dense>
 

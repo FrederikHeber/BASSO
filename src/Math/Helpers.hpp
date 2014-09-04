@@ -8,6 +8,8 @@
 #ifndef HELPERS_HPP_
 #define HELPERS_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 
 /** Namespace Helpers contains helper functions for linear algebra routines

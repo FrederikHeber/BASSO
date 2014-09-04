@@ -5,6 +5,8 @@
  *      Author: heber
  */
 
+#include "BassoConfig.h"
+
 #include "SmoothnessModulus.hpp"
 
 //#include <boost/log/trivial.hpp>

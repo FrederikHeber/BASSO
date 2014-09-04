@@ -8,6 +8,8 @@
 #ifndef MINIMIZATIONEXCEPTIONS_HPP_
 #define MINIMIZATIONEXCEPTIONS_HPP_
 
+#include "BassoConfig.h"
+
 #include <boost/exception/all.hpp>
 #include <string>
 

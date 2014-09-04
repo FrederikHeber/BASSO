@@ -8,6 +8,8 @@
 #ifndef MATHEXCEPTIONS_HPP_
 #define MATHEXCEPTIONS_HPP_
 
+#include "BassoConfig.h"
+
 #include <boost/exception/all.hpp>
 #include <string>
 

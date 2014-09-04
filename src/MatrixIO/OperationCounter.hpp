@@ -8,6 +8,8 @@
 #ifndef OPERATIONCOUNTER_HPP_
 #define OPERATIONCOUNTER_HPP_
 
+#include "BassoConfig.h"
+
 #include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/function.hpp>

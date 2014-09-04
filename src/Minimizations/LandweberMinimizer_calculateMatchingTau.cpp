@@ -5,6 +5,8 @@
  *      Author: heber
  */
 
+#include "BassoConfig.h"
+
 #include "LandweberMinimizer.hpp"
 
 #include <boost/bind.hpp>

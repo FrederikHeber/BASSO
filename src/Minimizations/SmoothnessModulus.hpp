@@ -8,6 +8,8 @@
 #ifndef SMOOTHNESSMODULUS_HPP_
 #define SMOOTHNESSMODULUS_HPP_
 
+#include "BassoConfig.h"
+
 /** Functor for the modulus of smoothness in Lp spaces.
  *
  * \note For the moment we just implemented the asymptotic formulas given in

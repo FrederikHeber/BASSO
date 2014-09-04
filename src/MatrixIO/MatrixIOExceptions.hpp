@@ -8,6 +8,8 @@
 #ifndef MATRIXIOEXCEPTIONS_HPP_
 #define MATRIXIOEXCEPTIONS_HPP_
 
+#include "BassoConfig.h"
+
 #include <boost/exception/all.hpp>
 #include <string>
 

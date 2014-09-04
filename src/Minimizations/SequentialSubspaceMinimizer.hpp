@@ -8,6 +8,8 @@
 #ifndef SEQUENTIALSUBSPACEMINIMIZER_HPP_
 #define SEQUENTIALSUBSPACEMINIMIZER_HPP_
 
+#include "BassoConfig.h"
+
 #include <Eigen/Dense>
 
 #include "Minimizations/GeneralMinimizer.hpp"
