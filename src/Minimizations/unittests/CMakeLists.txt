@@ -25,18 +25,18 @@ target_link_libraries (BregmanDistanceUnitTest
 add_test (BregmanDistanceUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanDistanceUnitTest)
 
-########################## BregmanFunctionalUnitTest #######################
-add_executable (BregmanFunctionalUnitTest 
+########################## BregmanProjectionFunctionalUnitTest #######################
+add_executable (BregmanProjectionFunctionalUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
-	BregmanFunctionalUnitTest.cpp) 
-target_link_libraries (BregmanFunctionalUnitTest 
+	BregmanProjectionFunctionalUnitTest.cpp) 
+target_link_libraries (BregmanProjectionFunctionalUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
-add_test (BregmanFunctionalUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanFunctionalUnitTest)
+add_test (BregmanProjectionFunctionalUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanProjectionFunctionalUnitTest)
 
 ########################## LpNormUnitTest #######################
 add_executable (LpNormUnitTest 

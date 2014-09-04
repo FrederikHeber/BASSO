@@ -16,7 +16,7 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/DualityMapping.hpp"
-#include "Minimizations/BregmanFunctional.hpp"
+#include "Minimizations/BregmanProjectionFunctional.hpp"
 
 int main()
 {
@@ -87,13 +87,13 @@ int main()
 				const Eigen::MatrixBase<Eigen::VectorXd>&
 				> ScalarVectorProduct(scalar_vector_fctor);
 
-	// testing of BregmanFunctional
+	// testing of BregmanProjectionFunctional
 	{
 		LpNorm lpnorm(1);
 		LpNorm lpdualnorm(LpNorm::Infinity);
 		DualityMapping J_1(1);
 		DualityMapping J_infty(LpNorm::Infinity);
-		BregmanFunctional bregman_1(lpdualnorm, J_infty, MatrixVectorProduct, ScalarVectorProduct);
+		BregmanProjectionFunctional bregman_1(lpdualnorm, J_infty, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -103,14 +103,14 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::cout << "BregmanFunctional bregman_1 of v is "
+		std::cout << "BregmanProjectionFunctional bregman_1 of v is "
 				<< bregman_1(t,x,U,alpha,q) << ","
 				<< bregman_1.gradient(t,x,U,alpha,q)<< "" << std::endl;
 	}
 	{
 		LpNorm lpnorm(2);
 		DualityMapping J_2(2);
-		BregmanFunctional bregman_2(lpnorm, J_2, MatrixVectorProduct, ScalarVectorProduct);
+		BregmanProjectionFunctional bregman_2(lpnorm, J_2, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -120,7 +120,7 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::cout << "BregmanFunctional bregman_2 of v is "
+		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
 				<< bregman_2(t,x,U,alpha,q) << ","
 				<< bregman_2.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}
@@ -129,7 +129,7 @@ int main()
 		LpNorm lpdualnorm(1.);
 		DualityMapping J_1(LpNorm::Infinity);
 		DualityMapping J_infty(1.);
-		BregmanFunctional bregman_infty(lpdualnorm, J_1, MatrixVectorProduct, ScalarVectorProduct);
+		BregmanProjectionFunctional bregman_infty(lpdualnorm, J_1, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -139,7 +139,7 @@ int main()
 		Eigen::VectorXd alpha(2);
 		alpha << 1,0;
 		const unsigned int q = 2; 		// power of weight of duality mapping
-		std::cout << "BregmanFunctional bregman_2 of v is "
+		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
 				<< bregman_infty(t,x,U,alpha,q) << ","
 				<< bregman_infty.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}

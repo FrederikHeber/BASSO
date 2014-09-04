@@ -1,5 +1,5 @@
 /*
- * BregmanFunctional.cpp
+ * BregmanProjectionFunctional.cpp
  *
  *  Created on: Mar 28, 2014
  *      Author: heber
@@ -7,7 +7,7 @@
 
 #include "BassoConfig.h"
 
-#include "BregmanFunctional.hpp"
+#include "BregmanProjectionFunctional.hpp"
 
 #include <cmath>
 #include <Eigen/Dense>
@@ -15,7 +15,7 @@
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
-BregmanFunctional::BregmanFunctional(
+BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const LpNorm &_lpdualnorm,
 		const DualityMapping &_J_q,
 		const OperationCounter<
@@ -35,7 +35,7 @@ BregmanFunctional::BregmanFunctional(
 	ScalarVectorProduct(_ScalarVectorProduct)
 {}
 
-double BregmanFunctional::operator()(
+double BregmanProjectionFunctional::operator()(
 		const Eigen::VectorXd &_t,
 		const Eigen::VectorXd &_dualx,
 		const Eigen::MatrixXd &_U,
@@ -53,7 +53,7 @@ double BregmanFunctional::operator()(
 	return fval;
 }
 
-Eigen::VectorXd BregmanFunctional::gradient(
+Eigen::VectorXd BregmanProjectionFunctional::gradient(
 		const Eigen::VectorXd &_t,
 		const Eigen::VectorXd &_dualx,
 		const Eigen::MatrixXd &_U,

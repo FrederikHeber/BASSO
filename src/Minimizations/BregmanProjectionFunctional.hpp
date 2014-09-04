@@ -1,12 +1,12 @@
 /*
- * BregmanFunctional.hpp
+ * BregmanProjectionFunctional.hpp
  *
  *  Created on: Mar 27, 2014
  *      Author: heber
  */
 
-#ifndef BREGMANFUNCTIONAL_HPP_
-#define BREGMANFUNCTIONAL_HPP_
+#ifndef BREGMANPROJECTIONFUNCTIONAL_HPP_
+#define BREGMANPROJECTIONFUNCTIONAL_HPP_
 
 #include "BassoConfig.h"
 
@@ -16,18 +16,18 @@
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
-/** Functor to calculate BregmanFunctional functional/distance.
+/** Functor to calculate BregmanProjectionFunctional functional/distance.
  *
  */
-class BregmanFunctional
+class BregmanProjectionFunctional
 {
 public:
-	/** Constructor for BregmanFunctional.
+	/** Constructor for BregmanProjectionFunctional.
 	 *
 	 * @param _lpdualnorm norm object of dual space
 	 * @param _J_q duality mapping from dual space to space
 	 */
-	BregmanFunctional(
+	BregmanProjectionFunctional(
 			const LpNorm &_lpdualnorm,
 			const DualityMapping &_J_q,
 			const OperationCounter<
@@ -40,9 +40,9 @@ public:
 				const Eigen::MatrixBase<Eigen::VectorXd>&,
 				const Eigen::MatrixBase<Eigen::VectorXd>&
 				> &_ScalarVectorProduct);
-	~BregmanFunctional() {}
+	~BregmanProjectionFunctional() {}
 
-	/** Implements BregmanFunctional functional.
+	/** Implements BregmanProjectionFunctional functional.
 	 *
 	 * \param _t coefficients to column vectors of search space
 	 * \param _x current dual of solution
@@ -58,7 +58,7 @@ public:
 			const double _q
 			);
 
-	/** Implements BregmanFunctional functional.
+	/** Implements BregmanProjectionFunctional functional.
 	 *
 	 * \param _t coefficients to column vectors of search space
 	 * \param _x current dual of solution
@@ -94,4 +94,4 @@ private:
 };
 
 
-#endif /* BREGMANFUNCTIONAL_HPP_ */
+#endif /* BREGMANPROJECTIONFUNCTIONAL_HPP_ */

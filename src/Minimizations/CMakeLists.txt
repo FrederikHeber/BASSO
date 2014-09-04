@@ -4,7 +4,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Minimizations 
 	BregmanDistance.cpp
-	BregmanFunctional.cpp 
+	BregmanProjectionFunctional.cpp 
 	DualityMapping.cpp
 	GeneralMinimizer.cpp
 	LandweberMinimizer.cpp
@@ -17,7 +17,7 @@ add_library (Minimizations
 
 install (TARGETS Minimizations DESTINATION bin)
 install (FILES BregmanDistance.hpp DESTINATION include)
-install (FILES BregmanFunctional.hpp DESTINATION include)
+install (FILES BregmanProjectionFunctional.hpp DESTINATION include)
 install (FILES DualityMapping.hpp DESTINATION include)
 install (FILES GeneralMinimizer.hpp DESTINATION include)
 install (FILES LandweberMinimizer.hpp DESTINATION include)

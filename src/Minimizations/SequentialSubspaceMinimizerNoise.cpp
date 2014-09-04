@@ -13,7 +13,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "BregmanFunctional.hpp"
+#include "BregmanProjectionFunctional.hpp"
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
@@ -54,18 +54,18 @@ void SequentialSubspaceMinimizerNoise::setTau(
 	const_cast<double&>(TolY) = tau * Delta;
 }
 
-/** Structure containing all parameters to call BregmanFunctional functions.
+/** Structure containing all parameters to call BregmanProjectionFunctional functions.
  *
  * This is required to use levmar function minimization that only allows
  * to pass a void* pointer to pass on information to the function to be
  * minimized.
  *
- * \sa BregmanFunctional
+ * \sa BregmanProjectionFunctional
  *
  */
 struct BregmanParameters
 {
-	BregmanFunctional &bregman;
+	BregmanProjectionFunctional &bregman;
 	Eigen::VectorXd t;
 	const Eigen::VectorXd &x;
 	const Eigen::MatrixXd &U;
@@ -76,7 +76,7 @@ struct BregmanParameters
 	 *
 	 */
 	BregmanParameters(
-		BregmanFunctional &_bregman,
+		BregmanProjectionFunctional &_bregman,
 		const Eigen::VectorXd &_t,
 		const Eigen::VectorXd &_x,
 		const Eigen::MatrixXd &_U,
@@ -92,7 +92,7 @@ struct BregmanParameters
 	{}
 };
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to wrap call to BregmanProjectionFunctional::operator()().
  *
  */
 static void
@@ -110,7 +110,7 @@ func(double *p, double *hx, int m, int n, void *adata)
 					params->q);
 }
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to wrap call to BregmanProjectionFunctional::operator()().
  *
  */
 static void
@@ -236,8 +236,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 				t0[0] = ::pow(beta/G, PowerX - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "t0[0] is " << t0[0];
-				// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-				BregmanFunctional bregman(
+				// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+				BregmanProjectionFunctional bregman(
 						DualNormX,
 						J_q,
 						MatrixVectorProduct,

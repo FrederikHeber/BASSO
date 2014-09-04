@@ -1,12 +1,12 @@
 /*
- * BregmanFunctionalUnitTest.hpp
+ * BregmanProjectionFunctionalUnitTest.hpp
  *
  *  Created on: Mar 28, 2014
  *      Author: heber
  */
 
-#ifndef BREGMANFUNCTIONALUNITTEST_HPP_
-#define BREGMANFUNCTIONALUNITTEST_HPP_
+#ifndef BregmanProjectionFunctionalUNITTEST_HPP_
+#define BregmanProjectionFunctionalUNITTEST_HPP_
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -16,9 +16,9 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
-class BregmanFunctionalUnitTest : public CppUnit::TestFixture
+class BregmanProjectionFunctionalUnitTest : public CppUnit::TestFixture
 {
-  CPPUNIT_TEST_SUITE( BregmanFunctionalUnitTest );
+  CPPUNIT_TEST_SUITE( BregmanProjectionFunctionalUnitTest );
   CPPUNIT_TEST( oneoneNorm );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( inftyNorm );
@@ -58,4 +58,4 @@ private:
 };
 
 
-#endif /* BREGMANFUNCTIONALUNITTEST_HPP_ */
+#endif /* BregmanProjectionFunctionalUNITTEST_HPP_ */

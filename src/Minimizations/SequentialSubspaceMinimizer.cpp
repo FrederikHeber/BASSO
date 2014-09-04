@@ -17,7 +17,7 @@
 #include <gsl/gsl_vector.h>
 #include <limits>
 
-#include "BregmanFunctional.hpp"
+#include "BregmanProjectionFunctional.hpp"
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "DualityMapping.hpp"
@@ -75,18 +75,18 @@ void SequentialSubspaceMinimizer::setN(
 	const_cast<unsigned int&>(N) = _N;
 }
 
-/** Structure containing all parameters to call BregmanFunctional functions.
+/** Structure containing all parameters to call BregmanProjectionFunctional functions.
  *
  * This is required to use function minimization that only allows
  * to pass a void* pointer to pass on information to the function to be
  * minimized.
  *
- * \sa BregmanFunctional
+ * \sa BregmanProjectionFunctional
  *
  */
 struct BregmanParameters
 {
-	BregmanFunctional &bregman;
+	BregmanProjectionFunctional &bregman;
 	Eigen::VectorXd t;
 	const Eigen::VectorXd &x;
 	const Eigen::MatrixXd &U;
@@ -97,7 +97,7 @@ struct BregmanParameters
 	 *
 	 */
 	BregmanParameters(
-		BregmanFunctional &_bregman,
+		BregmanProjectionFunctional &_bregman,
 		const Eigen::VectorXd &_t,
 		const Eigen::VectorXd &_x,
 		const Eigen::MatrixXd &_U,
@@ -113,7 +113,7 @@ struct BregmanParameters
 	{}
 };
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to wrap call to BregmanProjectionFunctional::operator()().
  *
  */
 static double
@@ -135,7 +135,7 @@ func(const gsl_vector *x, void *adata)
 	return returnvalue;
 }
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to wrap call to BregmanProjectionFunctional::operator()().
  *
  */
 static void
@@ -159,7 +159,7 @@ jacf(const gsl_vector *x, void *adata, gsl_vector *g)
 		<< "grad() evaluates to " << grad.transpose();
 }
 
-/** Static function to wrap call to BregmanFunctional::operator()().
+/** Static function to wrap call to BregmanProjectionFunctional::operator()().
  *
  */
 static void
@@ -335,8 +335,8 @@ SequentialSubspaceMinimizer::operator()(
 		Eigen::VectorXd tmin(N);
 		tmin.setZero();
 		{
-			// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-			BregmanFunctional bregman(
+			// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+			BregmanProjectionFunctional bregman(
 					DualNormX,
 					J_q,
 					MatrixVectorProduct_subspace,
