@@ -48,24 +48,10 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_database,
 			_outputsteps
 			),
-	tau(1.1),
 	N(2),
 	MatrixVectorProduct_subspace(MatrixVectorProduct),
 	ScalarVectorProduct_subspace(ScalarVectorProduct)
 {}
-
-void SequentialSubspaceMinimizer::setTau(
-		const double _tau
-		)
-{
-	// check that regularization parameter is greater than 1
-	if (_tau <= 1.)
-		throw MinimizationIllegalValue_exception()
-			<< MinimizationIllegalValue_name("tau");
-	const_cast<double&>(tau) = _tau;
-	// change y tolerance according to regularization parameter
-	const_cast<double&>(TolY) = tau * Delta;
-}
 
 void SequentialSubspaceMinimizer::setN(
 		const unsigned int _N

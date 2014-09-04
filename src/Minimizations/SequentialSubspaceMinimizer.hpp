@@ -35,16 +35,6 @@ public:
 			);
 	~SequentialSubspaceMinimizer() {}
 
-	/** Setter for tau.
-	 *
-	 * This is to have a definite place where tau is changed. Hence,
-	 * it is const and cannot accidentally be changed in the code, but
-	 * it can still be set after the instance has been created.
-	 *
-	 * @param _tau new value of tau, tau in (1, infty)
-	 */
-	void setTau(const double _tau);
-
 	/** Setter for N, the number of search directions.
 	 *
 	 * This is to have a definite place where N is changed. Hence,
@@ -131,9 +121,6 @@ private:
 //	unsigned int NoRows;
 
 	// constants
-
-	//!> regularization parameter for discrepancy principle, tau > 1
-	const double tau;
 
 	//!> number of search directions
 	const unsigned int N;

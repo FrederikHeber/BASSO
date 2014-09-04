@@ -341,7 +341,6 @@ int main (int argc, char *argv[])
 					useOptimalStepwidth);
 			break;
 		case MinimizerFactory::sequentialsubspace:
-			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setTau(tau);
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);
 			break;
 		default:
