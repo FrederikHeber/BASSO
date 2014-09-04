@@ -56,6 +56,14 @@ public:
 			const Eigen::VectorXd &_solution
 			);
 
+	/** Resets the iteration state of this minimizer in case
+	 * the same object is to be used for another minimization with
+	 * different problem matrix, right-hand side, ...
+	 *
+	 * As the Landweber's inner state is empty, nothing needs to be done.
+	 */
+	void resetState() {}
+
 private:
 	/** Calculates tau for modulus of smoothness such that modulus
 	 * over tau matches given \a _lambda

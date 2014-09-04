@@ -69,6 +69,12 @@ public:
 			const Eigen::VectorXd &_solution
 			) = 0;
 
+	/** Resets the iteration state of this minimizer in case
+	 * the same object is to be used for another minimization with
+	 * different problem matrix, right-hand side, ...
+	 */
+	virtual void resetState() = 0;
+
 	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
 	 *
 	 * \param _x0 current iteration point

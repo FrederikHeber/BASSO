@@ -277,10 +277,9 @@ SequentialSubspaceMinimizer::operator()(
 	bool StopCriterion = false;
 	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
-	// start building up search space 'U' with the search vectors 'u'
-	Eigen::MatrixXd U = Eigen::MatrixXd::Zero(_A.outerSize(),N);
-	Eigen::VectorXd alphas = Eigen::VectorXd::Zero(N);
-	unsigned int index = 0;
+	// reset inner state of problem has changed
+	if (state.getDimension() != _A.outerSize())
+		state.set(_A.outerSize(), N);
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
@@ -328,10 +327,10 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		U.col(index) = MatrixVectorProduct(A_transposed,Jw);
+		state.U.col(state.index) = MatrixVectorProduct(A_transposed,Jw);
 		//U.col(index) *= 1./NormX(U.col(index));
-		alphas(index) = alpha;
-		index = (index + 1) % N;
+		state.alphas(state.index) = alpha;
+		state.index = (state.index + 1) % N;
 
 		Eigen::VectorXd tmin(N);
 		tmin.setZero();
@@ -348,8 +347,8 @@ SequentialSubspaceMinimizer::operator()(
 					bregman,
 					tmin,
 					dual_solution,
-					U,
-					alphas,
+					state.U,
+					state.alphas,
 					DualPowerX);
 			size_t iter = 0;
 			int status;
@@ -409,7 +408,7 @@ SequentialSubspaceMinimizer::operator()(
 		}
 		per_iteration_tuple.replace( "stepwidth", tmin.norm());
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-		dual_solution -= MatrixVectorProduct(U,tmin);
+		dual_solution -= MatrixVectorProduct(state.U,tmin);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution.transpose();
 		returnvalues.solution =
@@ -457,4 +456,15 @@ SequentialSubspaceMinimizer::operator()(
 
 	// and return solution
 	return returnvalues;
+}
+
+void SequentialSubspaceMinimizer::IterationState::set(
+		const unsigned int _dimension,
+		const unsigned int _N
+		)
+{
+	U = Eigen::MatrixXd::Zero(_dimension,_N);
+	alphas = Eigen::VectorXd::Zero(_N);
+	index = 0;
+	isInitialized = true;
 }

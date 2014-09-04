@@ -60,6 +60,66 @@ public:
 			const Eigen::VectorXd &_solution
 			);
 
+	/** Resets the iteration state of this minimizer in case
+	 * the same object is to be used for another minimization with
+	 * different problem matrix, right-hand side, ...
+	 */
+	void resetState()
+	{ state.reset(); }
+
+private:
+	/** This class encapsulates the state of the iteration, i.e. all
+	 * variables that defined the current state of the iterate.
+	 */
+	struct IterationState
+	{
+		/** Default cstor for IterationState.
+		 *
+		 */
+		IterationState() :
+			isInitialized(false),
+			index(-1)
+		{}
+
+		/** Resets the state to not initialized.
+		 *
+		 */
+		void reset()
+		{ isInitialized = false; }
+
+		/** Initializer for the internal iteration state
+		 *
+		 * @param _dimension dimension of the search direction vectors
+		 * @param _N number of search directions
+		 */
+		void set(
+				const unsigned int _dimension,
+				const unsigned int _N
+				);
+
+		/** Getter for the dimension of the search directions in \a U.
+		 *
+		 * @return size of search direction vectors,
+		 * 		   0 - if state not initialized
+		 */
+		unsigned int getDimension() const
+		{
+			if (isInitialized)
+				return U.innerSize();
+			else
+				return 0;
+		}
+
+		//!> flag to indicate whether inner state has been initialized
+		bool isInitialized;
+		//!> subspace matrix with search directions as column vectors
+		Eigen::MatrixXd U;
+		//!> offset of hyperplanes of search directions for projection
+		Eigen::VectorXd alphas;
+		//!> index of the last updated search direction
+		unsigned int index;
+	};
+
 private:
 	// internal variables
 
@@ -75,6 +135,9 @@ private:
 
 	//!> number of search directions
 	const unsigned int N;
+
+	//!> internal state of the iteration
+	IterationState state;
 
 	//!> counter for the small matrix vector products in subspace
 	const OperationCounter<

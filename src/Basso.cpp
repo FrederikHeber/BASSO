@@ -362,6 +362,7 @@ int main (int argc, char *argv[])
 					matrix,
 					rhs,
 					solution);
+	minimizer->resetState();
 
 	// give result
 	LpNorm NormY(normy);
