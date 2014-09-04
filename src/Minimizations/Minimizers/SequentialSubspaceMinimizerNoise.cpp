@@ -147,8 +147,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
 
 	// reset inner state of problem has changed
-	if (state.getDimension() != A.getSourceSpace()->getDimension())
-		state.set(A.getSourceSpace()->getDimension(), N);
+	if (istate.getDimension() != A.getSourceSpace()->getDimension())
+		istate.set(A.getSourceSpace()->getDimension(), N);
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		if ((returnvalues.NumberOuterIterations == 0)
@@ -213,8 +213,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 					HyperplaneProjection functional(
 							bregman,
 							dual_solution->getVectorRepresentation(),
-							state.U,
-							state.alphas);
+							istate.getSearchSpace(),
+							istate.getAlphas());
 
 					// TODO: current alpha needs to be modified for minimization!
 					Eigen::VectorXd steps(1);

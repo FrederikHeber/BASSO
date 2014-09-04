@@ -9,6 +9,7 @@
 
 #include "SequentialSubspaceMinimizer.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
@@ -59,6 +60,8 @@ void SequentialSubspaceMinimizer::setN(
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("N");
 	const_cast<unsigned int&>(N) = _N;
+	// make state invalid
+	istate.reset();
 }
 
 SequentialSubspaceMinimizer::ReturnValues
@@ -145,6 +148,7 @@ SequentialSubspaceMinimizer::operator()(
 	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
 	per_iteration_tuple.insert( std::make_pair("error", 0.));
 	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
+	per_iteration_tuple.insert( std::make_pair("updated_index", (int)0));
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
@@ -166,8 +170,8 @@ SequentialSubspaceMinimizer::operator()(
 	StopCriterion = (fabs(returnvalues.residuum/ynorm) <= TolY);
 
 	// reset inner state of problem has changed
-	if (state.getDimension() != A.getSourceSpace()->getDimension())
-		state.set(A.getSourceSpace()->getDimension(), N);
+	if (istate.getDimension() != A.getSourceSpace()->getDimension())
+		istate.set(A.getSourceSpace()->getDimension(), N);
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
@@ -219,13 +223,14 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		state.U.col(state.index) =
+		const Eigen::VectorXd newdir =
 				MatrixVectorProduct(
 						A_t.getMatrixRepresentation(),
 						Jw->getVectorRepresentation());
-		//U.col(index) *= 1./NormX(U.col(index));
-		state.alphas(state.index) = alpha;
-		state.index = (state.index + 1) % N;
+		istate.updateSearchSpace(newdir, returnvalues.m_solution->getVectorRepresentation(), alpha);
+		per_iteration_tuple.replace( "updated_index", (int)istate.getIndex());
+		BOOST_LOG_TRIVIAL(trace)
+				<< "updated_index is " << istate.getIndex();
 
 		Eigen::VectorXd tmin(N);
 		tmin.setZero();
@@ -241,8 +246,8 @@ SequentialSubspaceMinimizer::operator()(
 			HyperplaneProjection functional(
 					bregman,
 					dual_solution->getVectorRepresentation(),
-					state.U,
-					state.alphas);
+					istate.getSearchSpace(),
+					istate.getAlphas());
 
 			FunctionMinimizer<Eigen::VectorXd> minimizer(
 				functional, tmin);
@@ -256,7 +261,7 @@ SequentialSubspaceMinimizer::operator()(
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 		{
 			const SpaceElement_ptr_t tempelement = DualSpaceX.createElement();
-			*tempelement = MatrixVectorProduct(state.U,tmin);
+			*tempelement = MatrixVectorProduct_subspace(istate.getSearchSpace(),tmin);
 			*dual_solution -= tempelement;
 		}
 		BOOST_LOG_TRIVIAL(trace)
@@ -306,6 +311,12 @@ SequentialSubspaceMinimizer::operator()(
 	return returnvalues;
 }
 
+SequentialSubspaceMinimizer::IterationState::IterationState() :
+	isInitialized(false),
+	index(-1),
+	updateIndex(&SequentialSubspaceMinimizer::IterationState::advanceIndex)
+{}
+
 void SequentialSubspaceMinimizer::IterationState::set(
 		const unsigned int _dimension,
 		const unsigned int _N
@@ -316,3 +327,23 @@ void SequentialSubspaceMinimizer::IterationState::set(
 	index = 0;
 	isInitialized = true;
 }
+
+void
+SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
+		const Eigen::VectorXd &_newdir,
+		const Eigen::VectorXd &_iterate,
+		const double _alpha)
+{
+	index = updateIndex(this, _newdir, _iterate);
+	U.col(index) = _newdir;
+	alphas(index) = _alpha;
+}
+
+unsigned int
+SequentialSubspaceMinimizer::IterationState::advanceIndex(
+		const Eigen::VectorXd &_newdir,
+		const Eigen::VectorXd &_iterate) const
+{
+	return ((index + 1) % getDimension());
+}
+

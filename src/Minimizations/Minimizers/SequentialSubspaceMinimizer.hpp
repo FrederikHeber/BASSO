@@ -55,21 +55,18 @@ public:
 	 * different problem matrix, right-hand side, ...
 	 */
 	void resetState()
-	{ state.reset(); }
+	{ istate.reset(); }
 
 protected:
 	/** This class encapsulates the state of the iteration, i.e. all
-	 * variables that defined the current state of the iterate.
+	 * variables that define the current state of the iterate.
 	 */
 	struct IterationState
 	{
 		/** Default cstor for IterationState.
 		 *
 		 */
-		IterationState() :
-			isInitialized(false),
-			index(-1)
-		{}
+		IterationState();
 
 		/** Resets the state to not initialized.
 		 *
@@ -95,19 +92,75 @@ protected:
 		unsigned int getDimension() const
 		{
 			if (isInitialized)
-				return U.innerSize();
+				return U.outerSize();
 			else
 				return 0;
 		}
 
-		//!> flag to indicate whether inner state has been initialized
-		bool isInitialized;
+		/** Method for updating the search space with a new direction.
+		 *
+		 * @param _newdir new search direction
+		 * @param _iterate current iterate
+		 * @param _alpha new offset
+		 */
+		void updateSearchSpace(
+				const Eigen::VectorXd &_newdir,
+				const Eigen::VectorXd &_iterate,
+				const double _alpha);
+
+		/** Const ref getter for \a U.
+		 *
+		 * @return const ref to U
+		 */
+		const Eigen::MatrixXd & getSearchSpace() const
+		{ return U; }
+
+		/** Const ref getter for \a alphas.
+		 *
+		 * @return const ref to alphas
+		 */
+		const Eigen::VectorXd & getAlphas() const
+		{ return alphas; }
+
+		/** Const ref getter for \a index.
+		 *
+		 * @return current index
+		 */
+		const unsigned int & getIndex() const {
+			return index;
+		}
+
+	private:
 		//!> subspace matrix with search directions as column vectors
 		Eigen::MatrixXd U;
 		//!> offset of hyperplanes of search directions for projection
 		Eigen::VectorXd alphas;
+
+		/** Function that simply advances the index in a round-robin fashion.
+		 *
+		 * @param _newdir new search direction
+		 * @param _iterate current iterate
+		 * @return index+1 mod N
+		 */
+		unsigned int advanceIndex(
+				const Eigen::VectorXd &_newdir,
+				const Eigen::VectorXd &_iterate) const;
+
+	private:
+		//!> flag to indicate whether inner state has been initialized
+		bool isInitialized;
+
 		//!> index of the last updated search direction
 		unsigned int index;
+
+		//!> bound function to allow various index update mechanisms
+		typedef boost::function<
+				unsigned int (
+						const IterationState * const,
+						const Eigen::VectorXd &,
+						const Eigen::VectorXd &
+						)> updater_t;
+		updater_t updateIndex;
 	};
 
 protected:
@@ -124,7 +177,7 @@ protected:
 	const unsigned int N;
 
 	//!> internal state of the iteration
-	IterationState state;
+	IterationState istate;
 
 	//!> counter for the small matrix vector products in subspace
 	const OperationCounter<
