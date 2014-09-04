@@ -13,17 +13,20 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
-#include <gsl/gsl_multimin.h>
-#include <gsl/gsl_vector.h>
 #include <limits>
 
-#include "BregmanProjectionFunctional.hpp"
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/BregmanDistance.hpp"
+#include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/SequentialSubspaceMinimizer_HyperplaneProjection.hpp"
+
+// instantiate required template functions
+CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const double _NormX,
@@ -73,123 +76,6 @@ void SequentialSubspaceMinimizer::setN(
 		throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("N");
 	const_cast<unsigned int&>(N) = _N;
-}
-
-/** Structure containing all parameters to call BregmanProjectionFunctional functions.
- *
- * This is required to use function minimization that only allows
- * to pass a void* pointer to pass on information to the function to be
- * minimized.
- *
- * \sa BregmanProjectionFunctional
- *
- */
-struct BregmanParameters
-{
-	BregmanProjectionFunctional &bregman;
-	Eigen::VectorXd t;
-	const Eigen::VectorXd &x;
-	const Eigen::MatrixXd &U;
-	const Eigen::VectorXd &alpha;
-	const double q;
-
-	/** Constructor to initialize refs.
-	 *
-	 */
-	BregmanParameters(
-		BregmanProjectionFunctional &_bregman,
-		const Eigen::VectorXd &_t,
-		const Eigen::VectorXd &_x,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha,
-		const double _q
-		) :
-			bregman(_bregman),
-			t(_t),
-			x(_x),
-			U(_U),
-			alpha(_alpha),
-			q(_q)
-	{}
-};
-
-/** Static function to wrap call to BregmanProjectionFunctional::operator()().
- *
- */
-static double
-func(const gsl_vector *x, void *adata)
-{
-	struct BregmanParameters *params =
-			static_cast<BregmanParameters *>(adata);
-	for (int i=0;i<params->t.innerSize();++i)
-		params->t[i] = gsl_vector_get(x, i);
-	const double returnvalue =
-			(params->bregman)(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "func() evaluates to " << returnvalue;
-	return returnvalue;
-}
-
-/** Static function to wrap call to BregmanProjectionFunctional::operator()().
- *
- */
-static void
-jacf(const gsl_vector *x, void *adata, gsl_vector *g)
-{
-	struct BregmanParameters *params =
-			static_cast<BregmanParameters *>(adata);
-	// update where to evaluate
-	for (int i=0;i<params->t.innerSize();++i)
-		params->t[i] = gsl_vector_get(x, i);
-	Eigen::VectorXd grad =
-			(params->bregman).gradient(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-	for (int i=0; i<grad.innerSize();++i)
-		gsl_vector_set(g, i, grad[i]);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "grad() evaluates to " << grad.transpose();
-}
-
-/** Static function to wrap call to BregmanProjectionFunctional::operator()().
- *
- */
-static void
-funcjacf(const gsl_vector *x, void *adata, double *f, gsl_vector *g)
-{
-	struct BregmanParameters *params =
-			static_cast<BregmanParameters *>(adata);
-	// update where to evaluate
-	for (int i=0;i<params->t.innerSize();++i)
-		params->t[i] = gsl_vector_get(x, i);
-	*f =
-			(params->bregman)(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "func() evaluates to " << *f;
-	Eigen::VectorXd grad =
-			(params->bregman).gradient(
-					params->t,
-					params->x,
-					params->U,
-					params->alpha,
-					params->q);
-	for (int i=0; i<grad.innerSize();++i)
-		gsl_vector_set(g, i, grad[i]);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "grad() evaluates to " << grad.transpose();
 }
 
 SequentialSubspaceMinimizer::ReturnValues
@@ -341,67 +227,18 @@ SequentialSubspaceMinimizer::operator()(
 					J_q,
 					MatrixVectorProduct_subspace,
 					ScalarVectorProduct_subspace);
-			// we perform a function minimization
-			// with respect to t starting at t0
-			BregmanParameters params(
+
+			HyperplaneProjection functional(
 					bregman,
-					tmin,
 					dual_solution,
 					state.U,
 					state.alphas,
 					DualPowerX);
-			size_t iter = 0;
-			int status;
 
-			const gsl_multimin_fdfminimizer_type *T;
-			gsl_multimin_fdfminimizer *s;
+			FunctionMinimizer<Eigen::VectorXd> minimizer(
+				functional, tmin);
 
-			gsl_vector *x;
-			gsl_multimin_function_fdf my_func;
-
-			my_func.n = N;
-			my_func.f = &func;
-			my_func.df = &jacf;
-			my_func.fdf = &funcjacf;
-			my_func.params = &params;
-
-			/* Starting point, x = (0,0) */
-			x = gsl_vector_alloc (N);
-			for (unsigned int i=0;i<N;++i)
-			  gsl_vector_set (x, i, tmin(i));
-
-			T = gsl_multimin_fdfminimizer_vector_bfgs;
-			s = gsl_multimin_fdfminimizer_alloc (T, N);
-
-			gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, TolY);
-
-			do
-			{
-			  ++iter;
-			  status = gsl_multimin_fdfminimizer_iterate (s);
-
-			  if (status)
-				break;
-
-			  status = gsl_multimin_test_gradient (s->gradient, TolFun);
-
-//				  if (status == GSL_SUCCESS)
-//					printf ("Minimum found at:\n");
-//
-//				  printf ("%5d %.5f %.5f %10.5f\n", iter,
-//						  gsl_vector_get (s->x, 0),
-//						  gsl_vector_get (s->x, 1),
-//						  s->f);
-
-			}
-			while (status == GSL_CONTINUE && iter < 100);
-
-			// place solution at tmin
-			for (size_t i=0;i<N;++i)
-			  tmin(i) = gsl_vector_get (s->x, i);
-
-			gsl_multimin_fdfminimizer_free (s);
-			gsl_vector_free (x);
+			tmin = minimizer(N, TolFun, tmin);
 
 			BOOST_LOG_TRIVIAL(trace)
 				<< "tmin is " << tmin.transpose();

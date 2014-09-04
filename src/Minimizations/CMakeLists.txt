@@ -12,6 +12,7 @@ add_library (Minimizations
 	LandweberMinimizer_calculateOptimalStepwidth.cpp
 	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
+	SequentialSubspaceMinimizer_HyperplaneProjection.cpp
 	SequentialSubspaceMinimizerNoise.cpp
 	SmoothnessModulus.cpp)
 
@@ -27,5 +28,6 @@ install (FILES LandweberMinimizer.hpp DESTINATION include)
 install (FILES MinimizationExceptions.hpp DESTINATION include)
 install (FILES MinimizerFactory.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
+install (FILES SequentialSubspaceMinimizer_HyperplaneProjection.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
