@@ -366,15 +366,14 @@ SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
 		const InverseProblem_ptr_t &_problem,
 		enum UpdateAlgorithmType _type)
 {
+	const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
+	const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
+	const Norm & DualNormX = *DualSpaceX.getNorm();
 	switch (_type) {
 	case RoundRobin:
 		istate.updateIndex = &IterationState::advanceIndex;
 		break;
 	case MostParallel:
-	{
-		const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
-		const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
-		const Norm & DualNormX = *DualSpaceX.getNorm();
 		istate.updateIndex = boost::bind(
 				&IterationState::updateIndexToMostParallel,
 				_1,
@@ -382,7 +381,14 @@ SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
 				boost::cref(projector),
 				_2);
 		break;
-	}
+	case MostOrthogonal:
+		istate.updateIndex = boost::bind(
+				&IterationState::updateIndexToMostOrthogonal,
+				_1,
+				boost::cref(DualNormX),
+				boost::cref(projector),
+				_2);
+		break;
 	default:
 		BOOST_LOG_TRIVIAL(error)
 			<< "Unknown updateIndex algorithm.";

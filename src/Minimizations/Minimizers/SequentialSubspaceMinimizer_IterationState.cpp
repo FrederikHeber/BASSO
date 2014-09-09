@@ -174,3 +174,25 @@ SequentialSubspaceMinimizer::IterationState::updateIndexToMostParallel(
 			const_cast<const angles_t &>(angles).begin(),
 			indexiter);
 }
+
+unsigned int
+SequentialSubspaceMinimizer::IterationState::updateIndexToMostOrthogonal(
+		const Norm &_Norm,
+		const VectorProjection &_projector,
+		const SpaceElement_ptr_t &_newdir) const
+{
+	// calculate the angles
+	angles_t angles = calculateBregmanAngles(
+			_Norm,
+			_projector,
+			_newdir);
+
+	// find min angle (this automatically fills all zero columns)
+	const angles_t::const_iterator indexiter =
+			std::min_element(angles.begin(), angles.end());
+
+	// and return its index
+	return std::distance(
+			const_cast<const angles_t &>(angles).begin(),
+			indexiter);
+}

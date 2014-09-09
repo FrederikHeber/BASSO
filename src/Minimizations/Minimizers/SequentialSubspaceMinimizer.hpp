@@ -63,6 +63,7 @@ public:
 	enum UpdateAlgorithmType {
 		RoundRobin=0,
 		MostParallel=1,
+		MostOrthogonal=2,
 		MAX_UpdateAlgorithmType
 	};
 
@@ -214,7 +215,8 @@ protected:
 				const SpaceElement_ptr_t &_newdir) const;
 
 		/** Function that compares new search direction with present ones
-		 * in the state and selects the one that is most parallel.
+		 * in the state and selects the one that is most parallel,
+		 * i.e. the one with maximum angle.
 		 *
 		 * @param _Norm norm object to calculate norms
 		 * @param _projector VectorProjection instance
@@ -227,6 +229,20 @@ protected:
 				const VectorProjection &_projector,
 				const SpaceElement_ptr_t &_newdir) const;
 
+		/** Function that compares new search direction with present ones
+		 * in the state and selects the one that is most orthogonal,
+		 * i.e. the one with minimum angle.
+		 *
+		 * @param _Norm norm object to calculate norms
+		 * @param _projector VectorProjection instance
+		 * @param _newdir new direction to compare to present ones
+		 * @return index whose search direction is most orthogonal to \a newdir
+		 */
+		unsigned int
+		updateIndexToMostOrthogonal(
+				const Norm &_Norm,
+				const VectorProjection &_projector,
+				const SpaceElement_ptr_t &_newdir) const;
 	private:
 		//!> flag to indicate whether inner state has been initialized
 		bool isInitialized;
