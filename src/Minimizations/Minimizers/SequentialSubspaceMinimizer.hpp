@@ -58,6 +58,21 @@ public:
 	{ istate.reset(); }
 
 protected:
+
+	//!> enumeration of available update index methods
+	enum UpdateAlgorithmType {
+		RoundRobin=0,
+		MAX_UpdateAlgorithmType
+	};
+
+	/** Sets the updateIndex function object of IterationState to
+	 * the desired alternative update method.
+ 	 *
+	 * @param _type desired variant of the updateIndex() algorithm
+ 	 */
+	void setupdateIndexAlgorithm(
+			const enum UpdateAlgorithmType _type);
+
 	/** This class encapsulates the state of the iteration, i.e. all
 	 * variables that define the current state of the iterate.
 	 */
@@ -112,15 +127,13 @@ protected:
 		 *
 		 * @return const ref to U
 		 */
-		const Eigen::MatrixXd & getSearchSpace() const
-		{ return U; }
+		const Eigen::MatrixXd & getSearchSpace() const;
 
 		/** Const ref getter for \a alphas.
 		 *
 		 * @return const ref to alphas
 		 */
-		const Eigen::VectorXd & getAlphas() const
-		{ return alphas; }
+		const Eigen::VectorXd & getAlphas() const;
 
 		/** Const ref getter for \a index.
 		 *
@@ -131,6 +144,10 @@ protected:
 		}
 
 	private:
+		//!> grant function access to updateIndex
+		friend void SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
+				const enum UpdateAlgorithmType _type);
+
 		//!> subspace matrix with search directions as column vectors
 		Eigen::MatrixXd U;
 		//!> offset of hyperplanes of search directions for projection
@@ -162,7 +179,6 @@ protected:
 						)> updater_t;
 		updater_t updateIndex;
 	};
-
 protected:
 	// internal variables
 

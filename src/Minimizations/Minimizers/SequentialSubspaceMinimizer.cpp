@@ -9,12 +9,10 @@
 
 #include "SequentialSubspaceMinimizer.hpp"
 
-#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
-#include <limits>
 
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
@@ -311,39 +309,18 @@ SequentialSubspaceMinimizer::operator()(
 	return returnvalues;
 }
 
-SequentialSubspaceMinimizer::IterationState::IterationState() :
-	isInitialized(false),
-	index(-1),
-	updateIndex(&SequentialSubspaceMinimizer::IterationState::advanceIndex)
-{}
-
-void SequentialSubspaceMinimizer::IterationState::set(
-		const unsigned int _dimension,
-		const unsigned int _N
-		)
-{
-	U = Eigen::MatrixXd::Zero(_dimension,_N);
-	alphas = Eigen::VectorXd::Zero(_N);
-	index = 0;
-	isInitialized = true;
-}
 
 void
-SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
-		const Eigen::VectorXd &_newdir,
-		const Eigen::VectorXd &_iterate,
-		const double _alpha)
+SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
+		enum UpdateAlgorithmType _type)
 {
-	index = updateIndex(this, _newdir, _iterate);
-	U.col(index) = _newdir;
-	alphas(index) = _alpha;
+	switch (_type) {
+	case RoundRobin:
+		istate.updateIndex = &SequentialSubspaceMinimizer::IterationState::advanceIndex;
+		break;
+	default:
+		BOOST_LOG_TRIVIAL(error)
+			<< "Unknown updateIndex algorithm.";
+		assert(0);
+	}
 }
-
-unsigned int
-SequentialSubspaceMinimizer::IterationState::advanceIndex(
-		const Eigen::VectorXd &_newdir,
-		const Eigen::VectorXd &_iterate) const
-{
-	return ((index + 1) % getDimension());
-}
-

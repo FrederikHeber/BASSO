@@ -25,6 +25,7 @@ add_library (Minimizations
 	Minimizers/LandweberMinimizer_calculateOptimalStepwidth.cpp
 	Minimizers/MinimizerFactory.cpp
 	Minimizers/SequentialSubspaceMinimizer.cpp
+	Minimizers/SequentialSubspaceMinimizer_IterationState.cpp
 	Minimizers/SequentialSubspaceMinimizerNoise.cpp
 	Norms/NormFactory.cpp
 	Spaces/NormedSpaceFactory.cpp
