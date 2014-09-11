@@ -16,6 +16,10 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Minimizations/types.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+
 SequentialSubspaceMinimizer::IterationState::IterationState() :
 	isInitialized(false),
 	index(-1),
@@ -23,11 +27,22 @@ SequentialSubspaceMinimizer::IterationState::IterationState() :
 {}
 
 void SequentialSubspaceMinimizer::IterationState::set(
-		const unsigned int _dimension,
+		const SpaceElement_ptr_t &_x0,
+		const SpaceElement_ptr_t &_residual,
+		const double _residuum,
 		const unsigned int _N
 		)
 {
-	U = Eigen::MatrixXd::Zero(_dimension,_N);
+	/// -# initialize return structure
+	NumberOuterIterations = 0;
+	// set iterate 'x' as start vector 'x0'
+	m_solution = _x0->getSpace()->createElement();
+	m_solution = _x0;
+	// calculate starting residual and norm
+	residuum = _residuum;
+	m_residual = _residual->getSpace()->createElement();
+	*m_residual = _residual;
+	U = Eigen::MatrixXd::Zero(_x0->getSpace()->getDimension(),_N);
 	alphas = Eigen::VectorXd::Zero(_N);
 	index = 0;
 	isInitialized = true;
@@ -55,19 +70,19 @@ SequentialSubspaceMinimizer::IterationState::getAlphas() const
 
 void
 SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
-		const Eigen::VectorXd &_newdir,
-		const Eigen::VectorXd &_iterate,
+		const SpaceElement_ptr_t &_newdir,
+		const SpaceElement_ptr_t &_iterate,
 		const double _alpha)
 {
 	index = updateIndex(this, _newdir, _iterate);
-	U.col(index) = _newdir;
+	U.col(index) = _newdir->getVectorRepresentation();
 	alphas(index) = _alpha;
 }
 
 unsigned int
 SequentialSubspaceMinimizer::IterationState::advanceIndex(
-		const Eigen::VectorXd &_newdir,
-		const Eigen::VectorXd &_iterate) const
+		const SpaceElement_ptr_t &_newdir,
+		const SpaceElement_ptr_t &_iterate) const
 {
 	return ((index + 1) % getDimension());
 }

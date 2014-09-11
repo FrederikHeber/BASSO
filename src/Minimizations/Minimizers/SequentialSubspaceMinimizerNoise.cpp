@@ -96,22 +96,14 @@ SequentialSubspaceMinimizerNoise::operator()(
 	BOOST_LOG_TRIVIAL(trace)
 		<< "G is " << G;
 
-	/// -# initialize return structure
-	ReturnValues returnvalues;
-	returnvalues.NumberOuterIterations = 0;
-	// set iterate 'x' as start vector 'x0'
-	returnvalues.m_solution = _problem->x->getSpace()->createElement();
-	*returnvalues.m_solution = _startvalue;
-	returnvalues.m_residual = _problem->y->getSpace()->createElement();
-// calculate starting residual and norm
-	returnvalues.residuum = calculateResidual(
+	// reset inner state if problem has changed
+	if (!istate.getisInitialized()) {
+		SpaceElement_ptr_t residual = A.getTargetSpace()->createElement();
+		const double residuum = calculateResidual(
 			_problem,
-			returnvalues.m_residual);
-	const double ynorm = NormY(y);
-
-	/// -# check stopping criterion
-	bool StopCriterion = false;
-	StopCriterion = (fabs(returnvalues.residuum/ynorm) <= TolY);
+			residual);
+		istate.set(_startvalue, residual, residuum, N);
+	}
 
 	// calculate some values prior to loop
 	// Jx=DualityMapping(x,NormX,PowerX,TolX);
@@ -146,23 +138,25 @@ SequentialSubspaceMinimizerNoise::operator()(
 	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
 	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
 
-	// reset inner state of problem has changed
-	if (istate.getDimension() != A.getSourceSpace()->getDimension())
-		istate.set(A.getSourceSpace()->getDimension(), N);
-	while (!StopCriterion) {
-		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
-		if ((returnvalues.NumberOuterIterations == 0)
-			|| (returnvalues.residuum > TolY)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << returnvalues.NumberOuterIterations
-					<< " with residual of " << returnvalues.residuum;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n is " << returnvalues.m_solution;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "R_n is " << returnvalues.m_residual;
-			per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+	/// -# check stopping criterion
+	const double ynorm = NormY(y);
+	bool StopCriterion = false;
+	StopCriterion = (fabs(istate.residuum/ynorm) <= TolY);
 
-			const SpaceElement_ptr_t Jw = j_r( returnvalues.m_residual );
+	while (!StopCriterion) {
+		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+		if ((istate.NumberOuterIterations == 0)
+			|| (istate.residuum > TolY)) {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << istate.NumberOuterIterations
+					<< " with residual of " << istate.residuum;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "x_n is " << istate.m_solution;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "R_n is " << istate.m_residual;
+			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
+
+			const SpaceElement_ptr_t Jw = j_r( istate.m_residual );
 			BOOST_LOG_TRIVIAL(trace)
 					<< "j_r (residual) is " << Jw;
 
@@ -177,16 +171,16 @@ SequentialSubspaceMinimizerNoise::operator()(
 				<< "uNorm is " << uNorm;
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
-					u * returnvalues.m_solution - ::pow(returnvalues.residuum,j_r.getPower());
+					u * istate.m_solution - ::pow(istate.residuum,j_r.getPower());
 			BOOST_LOG_TRIVIAL(trace)
 				<< "alpha is " << alpha;
 			// d=Delta*Residual^(PowerY-1);
 			const double d =
-					Delta * ::pow(returnvalues.residuum,(double)j_r.getPower()-1.);
+					Delta * ::pow(istate.residuum,(double)j_r.getPower()-1.);
 			// beta=Residual^(PowerY-1)*(Residual-Delta)/uNorm^DualPowerX;
 			const double beta =
-					::pow(returnvalues.residuum,(double)j_r.getPower()-1.)
-					* (returnvalues.residuum-Delta)/::pow(uNorm, J_q.getPower());
+					::pow(istate.residuum,(double)j_r.getPower()-1.)
+					* (istate.residuum-Delta)/::pow(uNorm, J_q.getPower());
 
 			Eigen::VectorXd tmin(1);
 			tmin.setZero();
@@ -240,27 +234,27 @@ SequentialSubspaceMinimizerNoise::operator()(
 			}
 			BOOST_LOG_TRIVIAL(trace)
 					<< "x^*_n+1 is " << dual_solution;
-			returnvalues.m_solution = J_q(dual_solution);
+			istate.m_solution = J_q(dual_solution);
 			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n+1 is " << returnvalues.m_solution;
-			*_problem->x = returnvalues.m_solution;
+					<< "x_n+1 is " << istate.m_solution;
+			*_problem->x = istate.m_solution;
 
 			// update residual
-			returnvalues.residuum = calculateResidual(
+			istate.residuum = calculateResidual(
 					_problem,
-					returnvalues.m_residual);
+					istate.m_residual);
 
 			// check iterations count
-			++returnvalues.NumberOuterIterations;
+			++istate.NumberOuterIterations;
 			StopCriterion =
-					(returnvalues.NumberOuterIterations >= MaxOuterIterations)
-					|| (fabs(returnvalues.residuum) <= TolY);
+					(istate.NumberOuterIterations >= MaxOuterIterations)
+					|| (fabs(istate.residuum) <= TolY);
 
 			// print intermediat solution
 			printIntermediateSolution(
-					 returnvalues.m_solution->getVectorRepresentation(),
+					 istate.m_solution->getVectorRepresentation(),
 					 A.getMatrixRepresentation(),
-					returnvalues.NumberOuterIterations);
+					istate.NumberOuterIterations);
 		}
 
 		// submit current tuple
@@ -272,8 +266,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	std::cout << "The operation took " << boost::chrono::duration<double>(timing_end - timing_start) << "." << std::endl;
 
 	// submit overall_tuple
-	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );
-	overall_tuple.replace( "relative_residual", returnvalues.residuum );
+	overall_tuple.replace( "iterations", istate.NumberOuterIterations );
+	overall_tuple.replace( "relative_residual", istate.residuum );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
@@ -283,5 +277,5 @@ SequentialSubspaceMinimizerNoise::operator()(
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution
-	return returnvalues;
+	return istate;
 }

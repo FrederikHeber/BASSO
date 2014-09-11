@@ -76,7 +76,7 @@ protected:
 	/** This class encapsulates the state of the iteration, i.e. all
 	 * variables that define the current state of the iterate.
 	 */
-	struct IterationState
+	struct IterationState : public ReturnValues
 	{
 		/** Default cstor for IterationState.
 		 *
@@ -91,11 +91,15 @@ protected:
 
 		/** Initializer for the internal iteration state
 		 *
-		 * @param _dimension dimension of the search direction vectors
+		 * @param _x0 initial iterate
+		 * @param _residual initial residual vector
+		 * @param _residuum initial residuum
 		 * @param _N number of search directions
 		 */
 		void set(
-				const unsigned int _dimension,
+				const SpaceElement_ptr_t &_x0,
+				const SpaceElement_ptr_t &_residual,
+				const double _residuum,
 				const unsigned int _N
 				);
 
@@ -119,8 +123,8 @@ protected:
 		 * @param _alpha new offset
 		 */
 		void updateSearchSpace(
-				const Eigen::VectorXd &_newdir,
-				const Eigen::VectorXd &_iterate,
+				const SpaceElement_ptr_t &_newdir,
+				const SpaceElement_ptr_t &_iterate,
 				const double _alpha);
 
 		/** Const ref getter for \a U.
@@ -143,6 +147,13 @@ protected:
 			return index;
 		}
 
+		/** Getter for isInitialized, states whether set() needs to be
+		 * called yet.
+		 *
+		 * @return true - set() was called, false - set() still needs to be called
+		 */
+		const bool getisInitialized() const;
+
 	private:
 		//!> grant function access to updateIndex
 		friend void SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
@@ -160,8 +171,8 @@ protected:
 		 * @return index+1 mod N
 		 */
 		unsigned int advanceIndex(
-				const Eigen::VectorXd &_newdir,
-				const Eigen::VectorXd &_iterate) const;
+				const SpaceElement_ptr_t &_newdir,
+				const SpaceElement_ptr_t &_iterate) const;
 
 	private:
 		//!> flag to indicate whether inner state has been initialized
@@ -174,8 +185,8 @@ protected:
 		typedef boost::function<
 				unsigned int (
 						const IterationState * const,
-						const Eigen::VectorXd &,
-						const Eigen::VectorXd &
+						const SpaceElement_ptr_t &,
+						const SpaceElement_ptr_t &
 						)> updater_t;
 		updater_t updateIndex;
 	};
@@ -208,6 +219,10 @@ protected:
 		const Eigen::MatrixBase<Eigen::VectorXd>&
 		> ScalarVectorProduct_subspace;
 };
+
+inline
+const bool SequentialSubspaceMinimizer::IterationState::getisInitialized() const
+{ return isInitialized; }
 
 
 #endif /* SEQUENTIALSUBSPACEMINIMIZER_HPP_ */
