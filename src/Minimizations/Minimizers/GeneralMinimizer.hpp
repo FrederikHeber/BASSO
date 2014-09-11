@@ -14,6 +14,7 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
+#include "Database/Table.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Functions/SmoothnessModulus.hpp"
@@ -114,6 +115,18 @@ protected:
 	 * about the behavior of the iteration procedure.
 	 */
 	Database &database;
+
+	static Table::Tuple_t preparePerIterationTuple(
+			const double _val_NormX,
+			const double _val_NormY,
+			const unsigned int _N,
+			const unsigned int _dim);
+
+	static Table::Tuple_t prepareOverallTuple(
+			const double _val_NormX,
+			const double _val_NormY,
+			const unsigned int _N,
+			const unsigned int _dim);
 
 	boost::function<
 		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (

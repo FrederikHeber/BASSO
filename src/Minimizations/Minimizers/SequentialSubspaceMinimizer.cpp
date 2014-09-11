@@ -10,6 +10,7 @@
 #include "SequentialSubspaceMinimizer.hpp"
 
 #include <boost/chrono.hpp>
+#include <boost/assign.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
@@ -26,6 +27,8 @@
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+
+using namespace boost::assign;
 
 // instantiate required template functions
 CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
@@ -132,32 +135,13 @@ SequentialSubspaceMinimizer::operator()(
 
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
-	Table::Tuple_t per_iteration_tuple;
-	per_iteration_tuple.insert( std::make_pair("p", NormX.getPvalue()));
-	per_iteration_tuple.insert( std::make_pair("r", NormY.getPvalue()));
-	per_iteration_tuple.insert( std::make_pair("N", (int)N));
-	per_iteration_tuple.insert( std::make_pair("dim", (int)SpaceX.getDimension()));
-	per_iteration_tuple.insert( std::make_pair("iteration", (int)0));
-	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.));
-	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
-	per_iteration_tuple.insert( std::make_pair("error", 0.));
-	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
-	per_iteration_tuple.insert( std::make_pair("updated_index", (int)0));
+	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
+			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
-	Table::Tuple_t overall_tuple;
-	overall_tuple.insert( std::make_pair("p", NormX.getPvalue()));
-	overall_tuple.insert( std::make_pair("r", NormY.getPvalue()));
-	overall_tuple.insert( std::make_pair("N", (int)N));
-	overall_tuple.insert( std::make_pair("dim", (int)SpaceX.getDimension()));
-	overall_tuple.insert( std::make_pair("iterations", (int)0));
-	overall_tuple.insert( std::make_pair("relative_residual", 0.));
-	overall_tuple.insert( std::make_pair("runtime", 0.));
-	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0));
-	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0));
+	Table::Tuple_t overall_tuple = prepareOverallTuple(
+			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
 
 	/// -# check stopping criterion
 	const double ynorm = NormY(y);

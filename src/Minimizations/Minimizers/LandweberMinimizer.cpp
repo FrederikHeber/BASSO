@@ -114,29 +114,13 @@ LandweberMinimizer::operator()(
 
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
-	Table::Tuple_t per_iteration_tuple;
-	per_iteration_tuple.insert( std::make_pair("p", NormX.getPvalue()));
-	per_iteration_tuple.insert( std::make_pair("r", NormY.getPvalue()));
-	per_iteration_tuple.insert( std::make_pair("dim", (int)SpaceX.getDimension()));
-	per_iteration_tuple.insert( std::make_pair("iteration", (int)0));
-	per_iteration_tuple.insert( std::make_pair("stepwidth", (int)0));
-	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.));
-	per_iteration_tuple.insert( std::make_pair("error", 0.));
-	per_iteration_tuple.insert( std::make_pair("bregman_distance", 0.));
+	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
+			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension());
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
-	Table::Tuple_t overall_tuple;
-	overall_tuple.insert( std::make_pair("p", NormX.getPvalue()));
-	overall_tuple.insert( std::make_pair("r", NormY.getPvalue()));
-	overall_tuple.insert( std::make_pair("dim", (int)SpaceX.getDimension()));
-	overall_tuple.insert( std::make_pair("iterations", (int)0));
-	overall_tuple.insert( std::make_pair("relative_residual", 0.));
-	overall_tuple.insert( std::make_pair("runtime", 0.));
-	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", 0.));
-	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0));
-	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", 0.));
+	Table::Tuple_t overall_tuple = prepareOverallTuple(
+			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension());
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
