@@ -86,3 +86,70 @@ SequentialSubspaceMinimizer::IterationState::advanceIndex(
 {
 	return ((index + 1) % getDimension());
 }
+
+const SequentialSubspaceMinimizer::IterationState::angles_t
+SequentialSubspaceMinimizer::IterationState::calculateBregmanAngles(
+		const Norm &_Norm,
+		const VectorProjection &_projector,
+		const SpaceElement_ptr_t &_newdir) const
+{
+	// calculate all angles
+	const Eigen::MatrixXd &U = getSearchSpace();
+	const unsigned int N = getDimension();
+	typedef std::vector<double> angles_t;
+	angles_t angles(N, 0.);
+
+	for (unsigned int l=0;l<N;++l) {
+		if (U.col(l).norm() < std::numeric_limits<double>::epsilon())
+			continue;
+		// first: minimum, second: minimizer (equals length in LpNorm here)
+		const std::pair<double, double> tmp =
+				_projector(
+						U.col(l),
+						_newdir->getVectorRepresentation(),
+						1e-4);
+		const double projected_distance = tmp.second;
+		const double original_distance = _Norm(_newdir);
+		if (fabs(projected_distance) > std::numeric_limits<double>::epsilon()*1e2) {
+			angles[l] = fabs(projected_distance / original_distance);
+		} else {
+			angles[l] = 0.;
+		}
+		BOOST_LOG_TRIVIAL(info)
+			<< "Bregman Angles #" << l << " is " << angles[l];
+	}
+
+	return angles;
+}
+
+const SequentialSubspaceMinimizer::IterationState::angles_t
+SequentialSubspaceMinimizer::IterationState::calculateAngles(
+		const Norm &_Norm,
+		const SpaceElement_ptr_t &_newdir) const
+{
+	// calculate all angles
+	const Eigen::MatrixXd &U = getSearchSpace();
+	const unsigned int N = getDimension();
+	angles_t angles(N, 0.);
+
+	for (unsigned int l=0;l<N;++l) {
+		if (U.col(l).norm() < std::numeric_limits<double>::epsilon()) {
+			continue;
+		}
+		// first: minimum, second: minimizer (equals length in LpNorm here)
+		const Eigen::VectorXd Ucol_transposed = U.col(l).transpose();
+		const double projected_distance = Ucol_transposed.dot(
+				_newdir->getVectorRepresentation())
+				/ _Norm(U.col(l));
+		const double original_distance = _Norm(_newdir);
+		if (fabs(projected_distance) > std::numeric_limits<double>::epsilon()*1e2) {
+			angles[l] = fabs(projected_distance / original_distance);
+		} else {
+			angles[l] = 0.;
+		}
+		BOOST_LOG_TRIVIAL(info)
+			<< "Angles #" << l << " is " << angles[l];
+	}
+
+	return angles;
+}

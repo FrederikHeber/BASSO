@@ -11,10 +11,13 @@
 #include "BassoConfig.h"
 
 #include <Eigen/Dense>
+#include <vector>
 
+#include "Minimizations/Functions/VectorProjection.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 
 class Database;
+class LpNorm;
 
 /** This class implements the sequential subspace optimization by [Schöpfer,
  * Schuster,Louis, 2006].
@@ -154,6 +157,42 @@ protected:
 		 */
 		const bool getisInitialized() const;
 
+		//!> typedef for a vector of angles
+		typedef std::vector<double> angles_t;
+
+		/** Helper function to calculate the angles between each search
+		 * direction in ::U and the given _newdir.
+		 *
+		 * @param _Norm norm object to calculate norms
+		 * @param _newdir new direction to compare to present ones
+		 * @return vector of doubles, the angles
+		 */
+		const angles_t
+		calculateAngles(
+				const Norm &_Norm,
+				const SpaceElement_ptr_t &_newdir) const;
+
+		/** Helper function to calculate the angles between each search
+		 * direction in ::U and the given _newdir using Bregman projections
+		 * and distance.
+		 *
+		 * @param _Norm norm object to calculate norms
+		 * @param _projector VectorProjection instance
+		 * @param _newdir new direction to compare to present ones
+		 * @return vector of doubles, the angles
+		 */
+		const angles_t
+		calculateBregmanAngles(
+				const Norm &_Norm,
+				const VectorProjection &_projector,
+				const SpaceElement_ptr_t &_newdir) const;
+	private:
+		/** Prevent copy cstor for IterationState.
+		 *
+		 */
+		IterationState(const IterationState&);
+		IterationState& operator=(const IterationState&);
+
 	private:
 		//!> grant function access to updateIndex
 		friend void SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
@@ -218,6 +257,9 @@ protected:
 		const Eigen::MatrixBase<Eigen::VectorXd>&,
 		const Eigen::MatrixBase<Eigen::VectorXd>&
 		> ScalarVectorProduct_subspace;
+
+	//!> Vector Projection instance for calculating angles in Banach space
+	VectorProjection projector;
 };
 
 inline

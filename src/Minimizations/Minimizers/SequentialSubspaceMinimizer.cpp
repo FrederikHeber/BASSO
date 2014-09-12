@@ -14,6 +14,7 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
+#include <sstream>
 
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
@@ -49,7 +50,13 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			),
 	N(2),
 	MatrixVectorProduct_subspace(MatrixVectorProduct),
-	ScalarVectorProduct_subspace(ScalarVectorProduct)
+	ScalarVectorProduct_subspace(ScalarVectorProduct),
+	projector(*_inverseproblem->x->getSpace()->getDualSpace()->getNorm(),
+			dynamic_cast<const PowerTypeDualityMapping &>(
+					*_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()
+					),
+			_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower(),
+			ScalarVectorProduct_subspace)
 {}
 
 void SequentialSubspaceMinimizer::setN(
@@ -63,6 +70,36 @@ void SequentialSubspaceMinimizer::setN(
 	const_cast<unsigned int&>(N) = _N;
 	// make state invalid
 	istate.reset();
+}
+
+
+//!> limit for angle columns in angles table
+static const unsigned int MAXANGLES = 4;
+
+static Table::Tuple_t prepareAngleTuple(
+		const double _val_NormX,
+		const double _val_NormY,
+		const unsigned int _N,
+		const unsigned int _dim)
+{
+	Table::Tuple_t angle_tuple;
+	angle_tuple.insert( std::make_pair("p", _val_NormX));
+	angle_tuple.insert( std::make_pair("r", _val_NormY));
+	angle_tuple.insert( std::make_pair("N", (int)_N));
+	angle_tuple.insert( std::make_pair("dim", (int)_dim));
+	angle_tuple.insert( std::make_pair("iteration", (int)0));
+	std::vector<std::string> names;
+	names += "angle","bregman_angle";
+	for (std::vector<std::string>::const_iterator nameiter = names.begin();
+			nameiter != names.end(); ++nameiter)
+		for (unsigned int i=0; i<MAXANGLES; ++i) {
+			std::stringstream componentname;
+			componentname << *nameiter << i+1;
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Adding " << componentname.str();
+			angle_tuple.insert( std::make_pair(componentname.str(), 0.));
+		}
+	return angle_tuple;
 }
 
 SequentialSubspaceMinimizer::ReturnValues
@@ -143,6 +180,11 @@ SequentialSubspaceMinimizer::operator()(
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
 
+	// build angle tuple for search direction angle information
+	Table& angle_table = database.addTable("angles");
+	Table::Tuple_t angle_tuple = prepareAngleTuple(
+			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+
 	/// -# check stopping criterion
 	const double ynorm = NormY(y);
 	bool StopCriterion = false;
@@ -150,6 +192,7 @@ SequentialSubspaceMinimizer::operator()(
 
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+		angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << istate.NumberOuterIterations
 				<< " with residual of " << istate.residuum;
@@ -199,18 +242,42 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
+		SpaceElement_ptr_t newdir =
+				dual_solution->getSpace()->createElement();
+		*newdir =
+				MatrixVectorProduct(
+						A_t.getMatrixRepresentation(),
+						Jw->getVectorRepresentation());
+		// calculate bregman angles for angles database
 		{
-			SpaceElement_ptr_t newdir =
-					dual_solution->getSpace()->createElement();
-			*newdir =
-					MatrixVectorProduct(
-							A_t.getMatrixRepresentation(),
-							Jw->getVectorRepresentation());
-			istate.updateSearchSpace(newdir, istate.m_solution, alpha);
-			per_iteration_tuple.replace( "updated_index", (int)istate.getIndex());
-			BOOST_LOG_TRIVIAL(trace)
-				<< "updated_index is " << istate.getIndex();
+			const IterationState::angles_t angles =
+					istate.calculateBregmanAngles(
+							DualNormX,
+							projector,
+							newdir);
+			for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
+				std::stringstream componentname;
+				componentname << "bregman_angle" << i+1;
+				angle_tuple.replace( componentname.str(), angles[i]);
+			}
 		}
+		// calculate "scalar product" angles for angles database
+		{
+			const IterationState::angles_t angles =
+					istate.calculateAngles(
+							DualNormX,
+							newdir);
+			for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
+				std::stringstream componentname;
+				componentname << "angle" << i+1;
+				angle_tuple.replace( componentname.str(), angles[i]);
+			}
+		}
+		// update search space with new direction
+		istate.updateSearchSpace(newdir, istate.m_solution, alpha);
+		per_iteration_tuple.replace( "updated_index", (int)istate.getIndex());
+		BOOST_LOG_TRIVIAL(trace)
+			<< "updated_index is " << istate.getIndex();
 
 		Eigen::VectorXd tmin(N);
 		tmin.setZero();
@@ -268,8 +335,9 @@ SequentialSubspaceMinimizer::operator()(
 				 A.getMatrixRepresentation(),
 				istate.NumberOuterIterations);
 
-		// submit current tuple
+		// submit current tuples
 		per_iteration_table.addTuple(per_iteration_tuple);
+		angle_table.addTuple(angle_tuple);
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
