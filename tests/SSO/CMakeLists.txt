@@ -61,7 +61,7 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel
 		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
 		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
 set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostParallel
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 24 with relative residual of 0.009.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 19 with relative residual of 0.0089.*")
 
 # test 4: updateToMostOrthogonal
 add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal

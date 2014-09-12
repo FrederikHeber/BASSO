@@ -167,6 +167,8 @@ SequentialSubspaceMinimizer::IterationState::updateIndexToMostParallel(
 
 	// always fill a zero column if present (for the first N steps)
 	const angles_t::const_iterator indexiter =
+			(unsigned int)NumberOuterIterations < getDimension() ?
+			angles.begin()+(unsigned int)NumberOuterIterations :
 			std::max_element(angles.begin(), angles.end());
 
 	// and return its index
