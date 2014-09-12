@@ -109,11 +109,12 @@ SequentialSubspaceMinimizer::IterationState::calculateBregmanAngles(
 						1e-4);
 		const double projected_distance = tmp.second;
 		const double original_distance = _Norm(_newdir);
-		if (fabs(projected_distance) > std::numeric_limits<double>::epsilon()*1e2) {
+		if (fabs(original_distance) > std::numeric_limits<double>::epsilon()*1e2) {
 			angles[l] = fabs(projected_distance / original_distance);
 		} else {
 			angles[l] = 0.;
 		}
+
 		BOOST_LOG_TRIVIAL(info)
 			<< "Bregman Angles #" << l << " is " << angles[l];
 	}
@@ -141,7 +142,7 @@ SequentialSubspaceMinimizer::IterationState::calculateAngles(
 				_newdir->getVectorRepresentation())
 				/ _Norm(U.col(l));
 		const double original_distance = _Norm(_newdir);
-		if (fabs(projected_distance) > std::numeric_limits<double>::epsilon()*1e2) {
+		if (fabs(original_distance) > std::numeric_limits<double>::epsilon()*1e2) {
 			angles[l] = fabs(projected_distance / original_distance);
 		} else {
 			angles[l] = 0.;
