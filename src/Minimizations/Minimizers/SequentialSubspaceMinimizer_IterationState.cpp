@@ -12,7 +12,9 @@
 
 #include <algorithm>
 #include <Eigen/Dense>
+#include <iterator>
 #include <limits>
+#include <list>
 #include <vector>
 
 #include <boost/log/trivial.hpp>
@@ -20,6 +22,18 @@
 #include "Minimizations/types.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
+
+struct unique_number
+{
+	unique_number() : number(0)
+	{}
+
+	unsigned int operator()()
+	{ return number++; }
+
+private:
+	unsigned int number;
+};
 
 SequentialSubspaceMinimizer::IterationState::IterationState() :
 	isInitialized(false),
@@ -75,6 +89,8 @@ SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
 		const double _alpha)
 {
 	index = updateIndex(this, _newdir);
+	BOOST_LOG_TRIVIAL(debug)
+		<< "Updated index is " << index;
 	U.col(index) = _newdir->getVectorRepresentation();
 	alphas(index) = _alpha;
 }
@@ -154,6 +170,20 @@ SequentialSubspaceMinimizer::IterationState::calculateAngles(
 	return angles;
 }
 
+void
+SequentialSubspaceMinimizer::IterationState::replenishIndexset(
+		indexset_t &_indexset) const
+{
+	std::list<unsigned int> templist(getDimension(), 0);
+	std::generate(
+			templist.begin(),
+			templist.end(),
+			unique_number());
+	_indexset.clear();
+	_indexset.insert(templist.begin(), templist.end());
+	assert( current_indexset.size() == getDimension());
+}
+
 unsigned int
 SequentialSubspaceMinimizer::IterationState::updateIndexToMostParallel(
 		const Norm &_Norm,
@@ -166,16 +196,42 @@ SequentialSubspaceMinimizer::IterationState::updateIndexToMostParallel(
 			_projector,
 			_newdir);
 
-	// always fill a zero column if present (for the first N steps)
-	const angles_t::const_iterator indexiter =
-			(unsigned int)NumberOuterIterations < getDimension() ?
-			angles.begin()+(unsigned int)NumberOuterIterations :
-			std::max_element(angles.begin(), angles.end());
+	angles_t::const_iterator indexiter = angles.begin();
+	if (enforceRandomMapping) {
+		// check whether we have to refresh current_indexset
+		if (current_indexset.empty())
+			replenishIndexset(current_indexset);
+
+		// we look for largest element ourselves, constraint to
+		// current_indexset
+		double largest_angle = 0.;
+		for (indexset_t::const_iterator iter = current_indexset.begin();
+				iter != current_indexset.end(); ++iter) {
+			if (angles[*iter] >= largest_angle) {
+				largest_angle = angles[*iter];
+				std::advance(
+						indexiter,
+						*iter - std::distance(angles.begin(), indexiter)
+						);
+			}
+		}
+	} else {
+		// always fill a zero column if present (for the first N steps)
+		indexiter =
+				(unsigned int)NumberOuterIterations < getDimension() ?
+				angles.begin()+(unsigned int)NumberOuterIterations :
+				std::max_element(angles.begin(), angles.end());
+	}
 
 	// and return its index
-	return std::distance(
-			const_cast<const angles_t &>(angles).begin(),
-			indexiter);
+	const unsigned int newindex =
+			std::distance(
+					const_cast<const angles_t &>(angles).begin(),
+					indexiter);
+	// also remove it from set
+	if (enforceRandomMapping)
+		current_indexset.erase(newindex);
+	return newindex;
 }
 
 unsigned int
@@ -190,12 +246,42 @@ SequentialSubspaceMinimizer::IterationState::updateIndexToMostOrthogonal(
 			_projector,
 			_newdir);
 
-	// find min angle (this automatically fills all zero columns)
-	const angles_t::const_iterator indexiter =
-			std::min_element(angles.begin(), angles.end());
+	angles_t::const_iterator indexiter = angles.begin();
+	if (enforceRandomMapping) {
+		// check whether we have to refresh current_indexset
+		if (current_indexset.empty())
+			replenishIndexset(current_indexset);
+
+		// we look for largest element ourselves, constraint to
+		// current_indexset
+		double smallest_angle = 1.;
+		for (indexset_t::const_iterator iter = current_indexset.begin();
+				iter != current_indexset.end(); ++iter) {
+			if (angles[*iter] <= smallest_angle) {
+				smallest_angle = angles[*iter];
+				std::advance(
+						indexiter,
+						*iter - std::distance(
+								const_cast<const angles_t &>(angles).begin(),
+								indexiter)
+						);
+			}
+		}
+	} else {
+		// find min angle (this automatically fills all zero columns)
+		indexiter =
+				(unsigned int)NumberOuterIterations < getDimension() ?
+				angles.begin()+(unsigned int)NumberOuterIterations :
+				std::min_element(angles.begin(), angles.end());
+	}
 
 	// and return its index
-	return std::distance(
-			const_cast<const angles_t &>(angles).begin(),
-			indexiter);
+	const unsigned int newindex =
+			std::distance(
+						const_cast<const angles_t &>(angles).begin(),
+						indexiter);
+	// also remove it from set
+	if (enforceRandomMapping)
+		current_indexset.erase(newindex);
+	return newindex;
 }

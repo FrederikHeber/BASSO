@@ -47,6 +47,7 @@ int main (int argc, char *argv[])
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
 	        ("delta", po::value<double>(), "set the amount of noise")
+	        ("enforceRandomMapping", po::value<bool>(), "whether to enforce update index algorithm in SSO to be a random mapping")
 	        ("help", "produce help message")
 	        ("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
@@ -157,6 +158,13 @@ int main (int argc, char *argv[])
 			<< "Magnitude of noise was set to " << delta;
 	} else {
 		delta = 1e-4;
+	}
+	bool enforceRandomMapping = true;
+	if (vm.count("enforceRandomMapping")) {
+		enforceRandomMapping = vm["enforceRandomMapping"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We do " << (enforceRandomMapping ? "" : "not")
+			<< "enforce the update algorithm to be a random mapping.";
 	}
 	boost::filesystem::path iteration_file;
 	if (vm.count("iteration-file")) {
@@ -444,6 +452,9 @@ int main (int argc, char *argv[])
 					minimizer.get())->setupdateIndexAlgorithm(
 							inverseproblem,
 							updatetype);
+			static_cast<SequentialSubspaceMinimizer*>(
+					minimizer.get())->setEnforceRandomMapping(
+							enforceRandomMapping);
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
 			static_cast<SequentialSubspaceMinimizerNoise*>(

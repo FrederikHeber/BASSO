@@ -11,6 +11,7 @@
 #include "BassoConfig.h"
 
 #include <Eigen/Dense>
+#include <set>
 #include <vector>
 
 #include "Minimizations/Functions/VectorProjection.hpp"
@@ -51,6 +52,14 @@ public:
 			const SpaceElement_ptr_t &_dualstartvalue,
 			const SpaceElement_ptr_t &_truesolution
 			);
+
+	/** Setter for whether the update algorithm is forced to be a random
+	 * mapping.
+	 *
+	 * @param _enforceRandomMapping true - enforce update algorithm to be
+	 *		  random mapping, false - no enforcement
+	 */
+	void setEnforceRandomMapping(const bool _enforceRandomMapping);
 
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
@@ -188,6 +197,9 @@ protected:
 				const VectorProjection &_projector,
 				const SpaceElement_ptr_t &_newdir) const;
 
+		//!> typedef for a set of indices
+		typedef std::set<unsigned int> indexset_t;
+
 	private:
 		/** Prevent copy cstor for IterationState.
 		 *
@@ -200,6 +212,9 @@ protected:
 		friend void SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
 				const InverseProblem_ptr_t &_problem,
 				const enum UpdateAlgorithmType _type);
+		//!> grant function access to setter for enforceRandomMapping
+		friend void SequentialSubspaceMinimizer::setEnforceRandomMapping(
+				const bool _enforceRandomMapping);
 
 		//!> subspace matrix with search directions as column vectors
 		Eigen::MatrixXd U;
@@ -213,6 +228,15 @@ protected:
 		 */
 		unsigned int advanceIndex(
 				const SpaceElement_ptr_t &_newdir) const;
+
+		/** Setter for whether the update algorithm is forced to be a random
+		 * mapping.
+		 *
+		 * @param _enforceRandomMapping true - enforce update algorithm to be
+		 *		  random mapping, false - no enforcement
+		 */
+		void setEnforceRandomMapping(const bool _enforceRandomMapping)
+		{  enforceRandomMapping = _enforceRandomMapping; }
 
 		/** Function that compares new search direction with present ones
 		 * in the state and selects the one that is most parallel,
@@ -243,6 +267,17 @@ protected:
 				const Norm &_Norm,
 				const VectorProjection &_projector,
 				const SpaceElement_ptr_t &_newdir) const;
+
+		/** Helper function for enforcing RandomMapping.
+		 *
+		 * This recreates the full index set.
+		 *
+		 * @param _indexset indexset to replenish
+		 */
+		void
+		replenishIndexset(
+				indexset_t &_indexset) const;
+
 	private:
 		//!> flag to indicate whether inner state has been initialized
 		bool isInitialized;
@@ -257,6 +292,12 @@ protected:
 						const SpaceElement_ptr_t &
 						)> updater_t;
 		updater_t updateIndex;
+
+		//!> bool whether to enforce update index to be a random mapping or not
+		bool enforceRandomMapping;
+
+		//!> current set of indices remaining for enforcing random mapping
+		mutable indexset_t current_indexset;
 	};
 
 protected:

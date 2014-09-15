@@ -395,3 +395,11 @@ SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
 		assert(0);
 	}
 }
+
+void
+SequentialSubspaceMinimizer::setEnforceRandomMapping(
+		const bool _enforceRandomMapping)
+{
+	istate.enforceRandomMapping = _enforceRandomMapping;
+}
+

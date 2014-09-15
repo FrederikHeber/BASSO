@@ -52,6 +52,7 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel
 		--algorithm SSO
 		--number-directions 2
 		--update-algorithm 1
+		--enforceRandomMapping 0
 		--normx 2 
 		--normy 0 
 		--powerx 2
@@ -69,6 +70,7 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
 		--algorithm SSO
 		--number-directions 2
 		--update-algorithm 2
+		--enforceRandomMapping 0
 		--normx 2 
 		--normy 0 
 		--powerx 2
@@ -79,3 +81,39 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
 		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
 set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 25 with relative residual of 0.0047.*")
+
+# test 3: updateToMostParallel_randomMapping
+add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel_randomMapping
+	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm SSO
+		--number-directions 2
+		--update-algorithm 1
+		--enforceRandomMapping 1
+		--normx 2 
+		--normy 0 
+		--powerx 2
+		--powery 2
+		--delta 0.01 
+		--maxiter 100 
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
+set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostParallel_randomMapping
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 21 with relative residual of 0.0083.*")
+
+# test 4: updateToMostOrthogonal_randomMapping
+add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal_randomMapping
+	${PROJECT_BINARY_DIR}/src/Basso 
+		--algorithm SSO
+		--number-directions 2
+		--update-algorithm 2
+		--enforceRandomMapping 1
+		--normx 2 
+		--normy 0 
+		--powerx 2
+		--powery 2
+		--delta 0.01 
+		--maxiter 100 
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
+set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal_randomMapping
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 23 with relative residual of 0.0094.*")
