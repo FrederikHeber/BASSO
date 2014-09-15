@@ -44,8 +44,9 @@ int main (int argc, char *argv[])
 	desc.add_options()
 			("algorithm", po::value<std::string>(), "set the used iteration algorithm")
 	        ("C", po::value<double>(), "set the value for C (landweber)")
+			("compare-against", po::value< boost::filesystem::path >(),
+					"set the file name of the solution to compare against (BregmanDistance)")
 	        ("delta", po::value<double>(), "set the amount of noise")
-	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
 	        ("help", "produce help message")
 	        ("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
@@ -63,9 +64,8 @@ int main (int argc, char *argv[])
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
-			("compare-against", po::value< boost::filesystem::path >(),
-					"set the file name of the solution to compare against (BregmanDistance)")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
+	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
 			("useOptimalStepwidth", po::value<bool>(), "set whether to use optimal calculated step width or theoretical one (Landweber)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 	        ;
@@ -133,14 +133,14 @@ int main (int argc, char *argv[])
 			return 255;
 		}
 		BOOST_LOG_TRIVIAL(debug)
-			<< "algorithm was set to " << algorithm_name << "\n";
+			<< "algorithm was set to " << algorithm_name;
 		type = MinimizerFactory::getTypeForName(algorithm_name);
 	}
 	double C;
 	if (vm.count("C")) {
 		C = vm["C"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "C was set to " << C << "\n";
+			<< "C was set to " << C;
 	} else {
 		C = 0.9;
 	}
@@ -149,47 +149,32 @@ int main (int argc, char *argv[])
 	if (vm.count("compare-against")) {
 		comparison_file = vm["compare-against"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing true solution vector from " << comparison_file << ".\n";
+			<< "Parsing true solution vector from " << comparison_file;
 	}
 	if (vm.count("delta")) {
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Magnitude of noise was set to " << delta << "\n";
+			<< "Magnitude of noise was set to " << delta;
 	} else {
 		delta = 1e-4;
-	}
-	enum SequentialSubspaceMinimizer::UpdateAlgorithmType updatetype =
-			SequentialSubspaceMinimizer::RoundRobin;
-	if (vm.count("update-algorithm")) {
-		const unsigned int temptype = vm["update-algorithm"].as<unsigned int>();
-		if ((temptype >= SequentialSubspaceMinimizer::RoundRobin)
-				&& (temptype < SequentialSubspaceMinimizer::MAX_UpdateAlgorithmType))
-			updatetype =
-					(enum SequentialSubspaceMinimizer::UpdateAlgorithmType)temptype;
-		else {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Illegal update type set.";
-		}
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Searchspace Index update algorithm set to " << updatetype << "\n";
 	}
 	boost::filesystem::path iteration_file;
 	if (vm.count("iteration-file")) {
 		iteration_file = vm["iteration-file"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of iteration-file was set to " << iteration_file << "\n";
+			<< "Filename of iteration-file was set to " << iteration_file;
 	}
 	boost::filesystem::path matrix_file;
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << matrix_file << "\n";
+			<< "Filename of matrix was set to " << matrix_file;
 	}
 	unsigned int maxiter;
 	if (vm.count("maxiter")) {
 		maxiter = vm["maxiter"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations was set to " << maxiter << "\n";
+			<< "Maximum iterations was set to " << maxiter;
 	} else {
 		// set default value
 		maxiter = 50;
@@ -198,7 +183,7 @@ int main (int argc, char *argv[])
 	if (vm.count("normx")) {
 		normx = vm["normx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of X was set to " << normx << "\n";
+			<< "Norm of X was set to " << normx;
 	} else {
 		normx = 2;
 	}
@@ -208,7 +193,7 @@ int main (int argc, char *argv[])
 	if (vm.count("normy")) {
 		normy = vm["normy"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of Y was set to " << normy << "\n";
+			<< "Norm of Y was set to " << normy;
 	} else {
 		normy = 2.;
 	}
@@ -218,7 +203,7 @@ int main (int argc, char *argv[])
 	if (vm.count("number-directions")) {
 		N = vm["number-directions"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of search directions was set to " << N << "\n";
+			<< "Number of search directions was set to " << N;
 	} else {
 		// set default value
 		N = 2;
@@ -227,7 +212,7 @@ int main (int argc, char *argv[])
 	if (vm.count("output-steps")) {
 		outputsteps = vm["output-steps"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Output steps was set to " << outputsteps << "\n";
+			<< "Output steps was set to " << outputsteps;
 	} else {
 		// set default value
 		outputsteps = 0;
@@ -236,7 +221,7 @@ int main (int argc, char *argv[])
 	if (vm.count("powerx")) {
 		powerx = vm["powerx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in X was set to " << powerx << "\n";
+			<< "Power of duality maping in X was set to " << powerx;
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normx as powerx." << "\n.";
@@ -246,7 +231,7 @@ int main (int argc, char *argv[])
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in Y was set to " << powery << "\n";
+			<< "Power of duality maping in Y was set to " << powery;
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normy as powery." << "\n.";
@@ -270,7 +255,7 @@ int main (int argc, char *argv[])
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << rhs_file << "\n";
+			<< "Filename of vector was set to " << rhs_file;
 	}
 	double tau;
 	if (vm.count("tau")) {
@@ -280,9 +265,24 @@ int main (int argc, char *argv[])
 		}
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "tau was set to " << tau << "\n";
+			<< "tau was set to " << tau;
 	} else {
 		tau = 1.1;
+	}
+	enum SequentialSubspaceMinimizer::UpdateAlgorithmType updatetype =
+			SequentialSubspaceMinimizer::RoundRobin;
+	if (vm.count("update-algorithm")) {
+		const unsigned int temptype = vm["update-algorithm"].as<unsigned int>();
+		if ((temptype >= SequentialSubspaceMinimizer::RoundRobin)
+				&& (temptype < SequentialSubspaceMinimizer::MAX_UpdateAlgorithmType))
+			updatetype =
+					(enum SequentialSubspaceMinimizer::UpdateAlgorithmType)temptype;
+		else {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Illegal update type set.";
+		}
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Searchspace Index update algorithm set to " << updatetype;
 	}
 	bool useOptimalStepwidth;
 	if (vm.count("useOptimalStepwidth")) {
@@ -292,7 +292,7 @@ int main (int argc, char *argv[])
 		}
 		useOptimalStepwidth = vm["useOptimalStepwidth"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug) << "useOptimalStepwidth was set to "
-			<< useOptimalStepwidth << "\n";
+			<< useOptimalStepwidth;
 	} else {
 		useOptimalStepwidth = true;
 	}
