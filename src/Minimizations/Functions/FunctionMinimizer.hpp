@@ -76,15 +76,27 @@ template <class T>
 class FunctionMinimizer
 {
 public:
+	/** Constructor of functor FunctionMinimizer.
+	 *
+	 * \note we use default values for Newton methods as suggested by
+	 * [Nocedal, Wright, '99].
+	 *
+	 * @param _functional the function to minimize
+	 * @param _value the external value as workspace for minimization
+	 * @param _constant_positivity Wolfe constant for positivity
+	 * @param _constant_interpolation Wolfe constant for stronger than linear
+	 */
 	FunctionMinimizer(
 			const MinimizationFunctional<T> &_functional,
-			T &_value) :
+			T &_value,
+			const double _constant_positivity = 1e-4,
+			const double _constant_interpolation = 1.) :
 		functional(_functional),
 		value(_value),
 		maxiterations(100),
 		inexactLinesearch(false),
-		constant_positivity(1e-6),
-		constant_interpolation(1.1)
+		constant_positivity(_constant_positivity),
+		constant_interpolation(_constant_interpolation)
 	{}
 	~FunctionMinimizer() {}
 

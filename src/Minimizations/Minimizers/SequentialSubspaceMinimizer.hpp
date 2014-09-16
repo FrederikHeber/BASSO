@@ -71,6 +71,17 @@ public:
 	void setInexactLinesearch(const bool _inexactLinesearch)
 	{ inexactLinesearch = _inexactLinesearch; }
 
+	/** Setter for the constants in the three Wolfe conditions for the
+	 * inexact line search.
+	 *
+	 * @param _wolfe_constants two values: positivity and stronger than linear
+	 */
+	void setWolfeConstants(const std::vector<double> &_wolfe_constants)
+	{
+		constant_positivity = _wolfe_constants[0];
+		constant_interpolation = _wolfe_constants[1];
+	}
+
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
@@ -344,6 +355,11 @@ protected:
 
 	//!> bool whether to do an inexact line search with Wolfe conditions
 	bool inexactLinesearch;
+
+	//!> constant above which the step width must always lie
+	double constant_positivity;
+	//!> constant to scale the linear interpolation
+	double constant_interpolation;
 };
 
 inline

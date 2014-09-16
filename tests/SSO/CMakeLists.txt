@@ -125,6 +125,7 @@ add_test (Basso_SSO_RandomMatrix_InexactLinesearch
 		--number-directions 2
 		--update-algorithm 0
 		--inexact-linesearch 1
+		--wolfe-constants 1e-4 1.
 		--normx 2 
 		--normy 0 
 		--powerx 2

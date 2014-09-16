@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <vector>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
@@ -70,6 +71,7 @@ int main (int argc, char *argv[])
 	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
 			("useOptimalStepwidth", po::value<bool>(), "set whether to use optimal calculated step width or theoretical one (Landweber)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
+			("wolfe-constants", po::value< std::vector<double> >()->multitoken(), "set the two wolfe conditions for positivity and stronger than linear (SSO, inexact line search)")
 	        ;
 
 	po::variables_map vm;
@@ -167,7 +169,7 @@ int main (int argc, char *argv[])
 			<< "We do " << (enforceRandomMapping ? "" : "not")
 			<< " enforce the update algorithm to be a random mapping.";
 	}
-	bool inexactLinesearch = true;
+	bool inexactLinesearch = false;
 	if (vm.count("inexact-linesearch")) {
 		inexactLinesearch = vm["inexact-linesearch"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug)
@@ -311,6 +313,21 @@ int main (int argc, char *argv[])
 			<< useOptimalStepwidth;
 	} else {
 		useOptimalStepwidth = true;
+	}
+	std::vector<double> wolfe_constants;
+	if (vm.count("wolfe-constants")) {
+		wolfe_constants = vm["wolfe-constants"].as< std::vector<double> >();
+		if ((wolfe_constants.size() != 2)
+				|| (wolfe_constants[0] <= 0)
+				|| (wolfe_constants[1] <= 0)) {
+			std::cerr << "Illegal Wolfe constants given, must be two and positive."
+					<< std::endl;
+		}
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting wolfe positivity constant to " << wolfe_constants[0];
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting wolfe stronger than linear constant to "
+			<< wolfe_constants[1];
 	}
 
 	// parse matrix and vector files into instances
@@ -465,6 +482,14 @@ int main (int argc, char *argv[])
 							enforceRandomMapping);
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setInexactLinesearch(
 					inexactLinesearch);
+			if (wolfe_constants.size() == 2) {
+				static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setWolfeConstants(
+						wolfe_constants);
+				// warning in case sanity check fails
+				if (!inexactLinesearch)
+					BOOST_LOG_TRIVIAL(warning)
+						<< "Wolfe constants set although we do perform an exact line search.";
+			}
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
 			static_cast<SequentialSubspaceMinimizerNoise*>(

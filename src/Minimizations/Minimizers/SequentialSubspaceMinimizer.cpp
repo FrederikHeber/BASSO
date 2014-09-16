@@ -58,7 +58,10 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 					*_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()
 					),
 			_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower(),
-			ScalarVectorProduct_subspace)
+			ScalarVectorProduct_subspace),
+	inexactLinesearch(false),
+	constant_positivity(1e-6),
+	constant_interpolation(0.6)
 {}
 
 void SequentialSubspaceMinimizer::setN(
@@ -299,7 +302,10 @@ SequentialSubspaceMinimizer::operator()(
 					istate.getAlphas());
 
 			FunctionMinimizer<Eigen::VectorXd> minimizer(
-				functional, tmin);
+				functional,
+				tmin,
+				constant_positivity,
+				constant_interpolation);
 
 			if (inexactLinesearch)
 				tmin = minimizer(N, TolFun, tmin,
