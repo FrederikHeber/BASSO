@@ -301,7 +301,11 @@ SequentialSubspaceMinimizer::operator()(
 			FunctionMinimizer<Eigen::VectorXd> minimizer(
 				functional, tmin);
 
-			tmin = minimizer(N, TolFun, tmin);
+			if (inexactLinesearch)
+				tmin = minimizer(N, TolFun, tmin,
+						Wolfe_indexset_t(1, istate.getIndex()));
+			else
+				tmin = minimizer(N, TolFun, tmin);
 
 			BOOST_LOG_TRIVIAL(trace)
 				<< "tmin is " << tmin.transpose();

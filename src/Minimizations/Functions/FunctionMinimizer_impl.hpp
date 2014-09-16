@@ -15,11 +15,106 @@
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_vector.h>
 
+#include <boost/log/trivial.hpp>
+
+static
+int checkGradient(
+		const gsl_multimin_fdfminimizer * const _s,
+		const double _Tol)
+{
+	return gsl_multimin_test_gradient (_s->gradient, _Tol);
+}
+
+template <class T>
+int FunctionMinimizer<T>::checkWolfeConditions(
+		const double _startvalue,
+		const gsl_vector * const _startgradient,
+		const Wolfe_indexset_t &_Wolfe_indexset,
+		const gsl_multimin_fdfminimizer * const _s) const
+{
+	bool conditions_fulfilled = true;
+	assert( !_Wolfe_indexset.empty() );
+	for (Wolfe_indexset_t::const_iterator iter = _Wolfe_indexset.begin();
+			iter != _Wolfe_indexset.end(); ++iter) {
+		const double component = gsl_vector_get(_s->x, *iter);
+		// 1. positivity of step width component
+		BOOST_LOG_TRIVIAL(trace)
+			<< "1. Positivity: " << component << " > " << constant_positivity;
+		conditions_fulfilled &=
+				component > constant_positivity;
+		// 2. still descent in the current gradient component
+		BOOST_LOG_TRIVIAL(trace)
+			<< "2. Still descent: " << gsl_vector_get(_s->gradient, *iter)
+			<< " < " << std::numeric_limits<double>::epsilon();
+		conditions_fulfilled &=
+				(gsl_vector_get(_s->gradient, *iter)
+						< std::numeric_limits<double>::epsilon());
+		// 3. stronger descent than linear interpolation
+		const double linearinterpolate = _startvalue
+				+ constant_interpolation * component *
+				gsl_vector_get(_startgradient, *iter);
+		BOOST_LOG_TRIVIAL(trace)
+			<< "3. Stronger than linear: " << _s->f
+			<< " < " << linearinterpolate;
+		conditions_fulfilled &=
+				(_s->f < linearinterpolate);
+	}
+	if (conditions_fulfilled)
+		return GSL_SUCCESS;
+	else
+		return GSL_CONTINUE;
+}
+
 template <class T>
 const T FunctionMinimizer<T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
 		const T &_startvalue)
+{
+	check_function_t checkfunction =
+			boost::bind(&checkGradient,
+					_1, _2);
+	return performMinimization(
+			_N,_Tol,_startvalue,
+			checkfunction);
+}
+
+template <class T>
+const T FunctionMinimizer<T>::operator()(
+		const unsigned int _N,
+		const double _Tol,
+		const T &_startvalue,
+		const Wolfe_indexset_t &_Wolfe_indexset)
+{
+	gsl_vector *x = gsl_vector_alloc (_N);
+	const double functionzero = FunctionMinimizer_FunctionCaller<T>(x, this);
+	gsl_vector *gradientzero = gsl_vector_alloc (_N);
+	FunctionMinimizer_GradientCaller<T>(x, this, gradientzero);
+	gsl_vector_free(x);
+
+	check_function_t checkfunction =
+			boost::bind(&FunctionMinimizer<T>::checkWolfeConditions,
+					boost::cref(*this),
+					functionzero,
+					gradientzero,
+					boost::cref(_Wolfe_indexset),
+					_1);
+	const T returnvalue = performMinimization(
+			_N,_Tol,_startvalue,
+			checkfunction);
+
+	gsl_vector_free(gradientzero);
+
+	return returnvalue;
+}
+
+template <class T>
+const T FunctionMinimizer<T>::performMinimization(
+		const unsigned int _N,
+		const double _Tol,
+		const T &_startvalue,
+		const check_function_t &_checkfunction
+		)
 {
 	size_t iter = 0;
 	int status;
@@ -47,13 +142,13 @@ const T FunctionMinimizer<T>::operator()(
 
 	do
 	{
-	  ++iter;
-	  status = gsl_multimin_fdfminimizer_iterate (s);
+		++iter;
+		status = gsl_multimin_fdfminimizer_iterate (s);
 
-	  if (status)
-		break;
+		if (status)
+			break;
 
-	  status = gsl_multimin_test_gradient (s->gradient, _Tol);
+		status = _checkfunction(s, _Tol);
 
 //				  if (status == GSL_SUCCESS)
 //					printf ("Minimum found at:\n");
@@ -64,7 +159,10 @@ const T FunctionMinimizer<T>::operator()(
 //						  s->f);
 
 	}
-	while (status == GSL_CONTINUE && iter < 100);
+	while (status == GSL_CONTINUE && iter < maxiterations);
+
+	BOOST_LOG_TRIVIAL(debug)
+		<< "Inner iteration took " << iter << " steps";
 
 	// place solution at tmin
 	functional.convertToInternalType(value, s->x);

@@ -49,6 +49,7 @@ int main (int argc, char *argv[])
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("enforceRandomMapping", po::value<bool>(), "whether to enforce update index algorithm in SSO to be a random mapping")
 	        ("help", "produce help message")
+	        ("inexact-linesearch", po::value<bool>(), "set the line search to be inexact or (quasi) exact")
 	        ("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
 	        ("matrix", po::value< boost::filesystem::path >(),
@@ -164,7 +165,14 @@ int main (int argc, char *argv[])
 		enforceRandomMapping = vm["enforceRandomMapping"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "We do " << (enforceRandomMapping ? "" : "not")
-			<< "enforce the update algorithm to be a random mapping.";
+			<< " enforce the update algorithm to be a random mapping.";
+	}
+	bool inexactLinesearch = true;
+	if (vm.count("inexact-linesearch")) {
+		inexactLinesearch = vm["inexact-linesearch"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We do " << (inexactLinesearch ? "not do" : "")
+			<< " an exact line search.";
 	}
 	boost::filesystem::path iteration_file;
 	if (vm.count("iteration-file")) {
@@ -455,6 +463,8 @@ int main (int argc, char *argv[])
 			static_cast<SequentialSubspaceMinimizer*>(
 					minimizer.get())->setEnforceRandomMapping(
 							enforceRandomMapping);
+			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setInexactLinesearch(
+					inexactLinesearch);
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
 			static_cast<SequentialSubspaceMinimizerNoise*>(

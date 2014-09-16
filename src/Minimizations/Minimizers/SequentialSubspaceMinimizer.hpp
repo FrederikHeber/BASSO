@@ -61,6 +61,16 @@ public:
 	 */
 	void setEnforceRandomMapping(const bool _enforceRandomMapping);
 
+	/** Setter for whether an inexact or exact line search should be performed.
+	 *
+	 * Inexact line search will stop the iteration as soon as the Wolfe
+	 * conditions are fulfilled.
+	 *
+	 * @param _inexactLinesearch true - do inexact line search, false - do not
+	 */
+	void setInexactLinesearch(const bool _inexactLinesearch)
+	{ inexactLinesearch = _inexactLinesearch; }
+
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
@@ -331,6 +341,9 @@ protected:
 
 	//!> Vector Projection instance for calculating angles in Banach space
 	VectorProjection projector;
+
+	//!> bool whether to do an inexact line search with Wolfe conditions
+	bool inexactLinesearch;
 };
 
 inline
