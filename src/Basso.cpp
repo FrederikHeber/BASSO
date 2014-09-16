@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
 	} else {
 		delta = 1e-4;
 	}
-	bool enforceRandomMapping = true;
+	bool enforceRandomMapping = false;
 	if (vm.count("enforceRandomMapping")) {
 		enforceRandomMapping = vm["enforceRandomMapping"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug)
