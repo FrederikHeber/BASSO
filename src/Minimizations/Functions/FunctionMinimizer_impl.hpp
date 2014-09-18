@@ -66,10 +66,11 @@ int FunctionMinimizer<T>::checkWolfeConditions(
 }
 
 template <class T>
-const T FunctionMinimizer<T>::operator()(
+const unsigned int
+FunctionMinimizer<T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
-		const T &_startvalue)
+		T &_startvalue)
 {
 	check_function_t checkfunction =
 			boost::bind(&checkGradient,
@@ -80,11 +81,12 @@ const T FunctionMinimizer<T>::operator()(
 }
 
 template <class T>
-const T FunctionMinimizer<T>::operator()(
+const unsigned int
+FunctionMinimizer<T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
-		const T &_startvalue,
-		const Wolfe_indexset_t &_Wolfe_indexset)
+		const Wolfe_indexset_t &_Wolfe_indexset,
+		T &_startvalue)
 {
 	gsl_vector *x = gsl_vector_alloc (_N);
 	const double functionzero = FunctionMinimizer_FunctionCaller<T>(x, this);
@@ -99,24 +101,25 @@ const T FunctionMinimizer<T>::operator()(
 					gradientzero,
 					boost::cref(_Wolfe_indexset),
 					_1);
-	const T returnvalue = performMinimization(
+	const unsigned int iterations = performMinimization(
 			_N,_Tol,_startvalue,
 			checkfunction);
 
 	gsl_vector_free(gradientzero);
 
-	return returnvalue;
+	return iterations;
 }
 
 template <class T>
-const T FunctionMinimizer<T>::performMinimization(
+const unsigned int
+FunctionMinimizer<T>::performMinimization(
 		const unsigned int _N,
 		const double _Tol,
-		const T &_startvalue,
+		T &_startvalue,
 		const check_function_t &_checkfunction
 		)
 {
-	size_t iter = 0;
+	unsigned int iter = 0;
 	int status;
 
 	const gsl_multimin_fdfminimizer_type *minimizer;
@@ -165,12 +168,12 @@ const T FunctionMinimizer<T>::performMinimization(
 		<< "Inner iteration took " << iter << " steps";
 
 	// place solution at tmin
-	functional.convertToInternalType(value, s->x);
+	functional.convertToInternalType(_startvalue, s->x);
 
 	gsl_multimin_fdfminimizer_free (s);
 	gsl_vector_free (x);
 
-	return value;
+	return iter;
 }
 
 

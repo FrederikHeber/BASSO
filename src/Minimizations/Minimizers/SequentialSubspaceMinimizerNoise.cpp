@@ -200,10 +200,13 @@ SequentialSubspaceMinimizerNoise::operator()(
 					FunctionMinimizer<Eigen::VectorXd> minimizer(
 						functional, t0);
 
-					tmin = minimizer(1, TolY, tmin);
+					tmin = t0;
+					const unsigned int iterations =
+							minimizer(1, TolY, tmin);
 
 					BOOST_LOG_TRIVIAL(trace)
-						<< "tmin is " << tmin.transpose();
+						<< "tmin " << tmin.transpose()
+						<< " found in " << iterations << " iterations.";
 				}
 			}
 			per_iteration_tuple.replace( "stepwidth", tmin.norm());

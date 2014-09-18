@@ -60,7 +60,8 @@ VectorProjection::operator()(
 		FunctionMinimizer<double> minimizer(
 				distancefunctional, tmin);
 
-		tmin = minimizer(1, _Tol, tmin);
+//		const unsigned int inner_iterations =
+				minimizer(1, _Tol, tmin);
 		result = distancefunctional(tmin);
 
 		BOOST_LOG_TRIVIAL(trace)

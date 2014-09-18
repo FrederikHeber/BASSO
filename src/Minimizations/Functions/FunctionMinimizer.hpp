@@ -105,28 +105,28 @@ public:
 	 * @param _N dimension of the vector
 	 * @param _Tol tolerance for minimization
 	 * @param _startvalue initial value
-	 * @return minimizer
+	 * @return required iterations
 	 */
-	const T operator()(
+	const unsigned int operator()(
 			const unsigned int _N,
 			const double _Tol,
-			const T &_startvalue);
+			T &_startvalue);
 
 	/** Performs the minimization on the given \a functional with an inexact
 	 * linesearch fulfilling Wolfe conditions on a (sub)set of indices.
 	 *
 	 * @param _N dimension of the vector
 	 * @param _Tol tolerance for minimization
-	 * @param _startvalue initial value
 	 * @param _Wolfe_indexset (sub)set of indices (i.e. those directions that
 	 *        are truly descent directions)
-	 * @return minimizer
+	 * @param _startvalue initial value and minimizer in output
+	 * @return required iterations
 	 */
-	const T operator()(
+	const unsigned int operator()(
 			const unsigned int _N,
 			const double _Tol,
-			const T &_startvalue,
-			const Wolfe_indexset_t &_Wolfe_indexset);
+			const Wolfe_indexset_t &_Wolfe_indexset,
+			T &_startvalue);
 
 	/** Setter for the maximum number of iterations.
 	 *
@@ -189,12 +189,12 @@ private:
 	 * @param _Tol tolerance when to stop (for exact line search)
 	 * @param _startvalue initial value for minimization
 	 * @param _checkfunction bound function to check when to stop
-	 * @return
+	 * @return required iterations
 	 */
-	const T performMinimization(
+	const unsigned int performMinimization(
 			const unsigned int _N,
 			const double _Tol,
-			const T &_startvalue,
+			T &_startvalue,
 			const check_function_t &_checkfunction
 			);
 

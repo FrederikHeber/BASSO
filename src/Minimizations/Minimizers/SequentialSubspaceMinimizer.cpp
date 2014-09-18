@@ -307,14 +307,17 @@ SequentialSubspaceMinimizer::operator()(
 				constant_positivity,
 				constant_interpolation);
 
+			unsigned int inner_iterations = 0;
 			if (inexactLinesearch)
-				tmin = minimizer(N, TolFun, tmin,
-						Wolfe_indexset_t(1, istate.getIndex()));
+				inner_iterations = minimizer(N, TolFun,
+						Wolfe_indexset_t(1, istate.getIndex()),
+						tmin);
 			else
-				tmin = minimizer(N, TolFun, tmin);
+				inner_iterations = minimizer(N, TolFun, tmin);
 
 			BOOST_LOG_TRIVIAL(trace)
-				<< "tmin is " << tmin.transpose();
+			<< "tmin " << tmin.transpose()
+			<< " found in " << inner_iterations << " iterations.";
 		}
 		per_iteration_tuple.replace( "stepwidth", tmin.norm());
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
