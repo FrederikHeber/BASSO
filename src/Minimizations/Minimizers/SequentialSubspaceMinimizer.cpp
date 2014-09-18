@@ -77,7 +77,6 @@ void SequentialSubspaceMinimizer::setN(
 	istate.reset();
 }
 
-
 //!> limit for angle columns in angles table
 static const unsigned int MAXANGLES = 4;
 
@@ -179,11 +178,19 @@ SequentialSubspaceMinimizer::operator()(
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+	if (inexactLinesearch) {
+		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity));
+		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation));
+	}
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+	if (inexactLinesearch) {
+		overall_tuple.insert( std::make_pair("c1", constant_positivity));
+		overall_tuple.insert( std::make_pair("c2", constant_interpolation));
+	}
 
 	// build angle tuple for search direction angle information
 	Table& angle_table = database.addTable("angles");
@@ -301,19 +308,32 @@ SequentialSubspaceMinimizer::operator()(
 					istate.getSearchSpace(),
 					istate.getAlphas());
 
-			FunctionMinimizer<Eigen::VectorXd> minimizer(
-				functional,
-				tmin,
-				constant_positivity,
-				constant_interpolation);
-
 			unsigned int inner_iterations = 0;
-			if (inexactLinesearch)
-				inner_iterations = minimizer(N, TolFun,
+			if (inexactLinesearch) {
+				FunctionMinimizer<Eigen::VectorXd> minimizer(
+					functional,
+					tmin,
+					constant_positivity,
+					constant_interpolation);
+				minimizer.setMaxIterations(istate.getDimension()*100);
+
+				inner_iterations = minimizer(
+						N,
+						TolFun,
 						Wolfe_indexset_t(1, istate.getIndex()),
+						tmin
+						);
+			} else {
+				FunctionMinimizer<Eigen::VectorXd> minimizer(
+						functional, tmin);
+				minimizer.setMaxIterations(istate.getDimension()*100);
+
+				inner_iterations = minimizer(
+						N,
+						TolFun,
 						tmin);
-			else
-				inner_iterations = minimizer(N, TolFun, tmin);
+			}
+			per_iteration_tuple.replace( "inner_iterations", (int)inner_iterations);
 
 			BOOST_LOG_TRIVIAL(trace)
 			<< "tmin " << tmin.transpose()
