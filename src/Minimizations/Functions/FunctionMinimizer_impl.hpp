@@ -148,8 +148,22 @@ FunctionMinimizer<T>::performMinimization(
 		++iter;
 		status = gsl_multimin_fdfminimizer_iterate (s);
 
-		if (status)
+		{
+			std::stringstream iterate;
+			const gsl_vector * const currentiterate =
+					gsl_multimin_fdfminimizer_x(s);
+			iterate << "Current iterate #" << iter << ":";
+			for (unsigned int i=0;i<_N;++i)
+				iterate << " " << gsl_vector_get(currentiterate, i);
+			BOOST_LOG_TRIVIAL(debug)
+				<< iterate.str();
+		}
+
+		if (status == GSL_ENOPROG) {
+			BOOST_LOG_TRIVIAL(warning)
+					<< "gsl_multimin could not improve iterate anymore.";
 			break;
+		}
 
 		status = _checkfunction(s, _Tol);
 
