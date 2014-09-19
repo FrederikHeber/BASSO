@@ -16,6 +16,10 @@ set_tests_properties (BassoUsage
 
 add_subdirectory (simple)
 
-# see [Schoepfer et al., 2006: p.325]
-add_subdirectory (Schoepfer2006_StraightLine)
+# tests for Landweber algorithm
+add_subdirectory (Landweber)
+
+# tests for SSO algorithm
+add_subdirectory (SSO)
+
 
