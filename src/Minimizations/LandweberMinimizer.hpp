@@ -54,7 +54,7 @@ public:
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
 			const Eigen::VectorXd &_solution
-			) const;
+			);
 
 private:
 	/** Calculates tau for modulus of smoothness such that modulus

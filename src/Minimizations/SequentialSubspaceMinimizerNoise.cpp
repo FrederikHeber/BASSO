@@ -137,7 +137,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
 		const Eigen::VectorXd &_solution
-		) const
+		)
 {
 //	NoCols = _A.innerSize();
 //	NoRows = _A.outerSize();

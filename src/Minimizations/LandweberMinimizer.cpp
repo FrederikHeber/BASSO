@@ -68,7 +68,7 @@ LandweberMinimizer::operator()(
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
 		const Eigen::VectorXd &_solution
-		) const
+		)
 {
 	boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();

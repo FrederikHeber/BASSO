@@ -67,7 +67,7 @@ public:
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
 			const Eigen::VectorXd &_solution
-			) const = 0;
+			) = 0;
 
 	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
 	 *
