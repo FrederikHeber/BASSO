@@ -38,6 +38,21 @@ target_link_libraries (SmoothnessModulusUnitTest
 add_test (SmoothnessModulusUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/SmoothnessModulusUnitTest)
 
+########################## VectorProjectionUnitTest #######################
+add_executable (VectorProjectionUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	VectorProjectionUnitTest.cpp) 
+target_link_libraries (VectorProjectionUnitTest 
+	${EXTRA_LIBS}
+	${GSL_LIBRARY} 
+	${Boost_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
+
+add_test (VectorProjectionUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/VectorProjectionUnitTest)
+
 # mark as to fail if required
 #set_tests_properties (BregmanFunctionalUnitTest
 #	PROPERTIES WILL_FAIL true)
