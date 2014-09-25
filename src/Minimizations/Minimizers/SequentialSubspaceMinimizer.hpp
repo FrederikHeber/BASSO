@@ -17,7 +17,6 @@
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 
 class Database;
-class LpNorm;
 
 /** This class implements the sequential subspace optimization by [Schöpfer,
  * Schuster,Louis, 2006].
@@ -60,21 +59,24 @@ public:
 	void resetState()
 	{ istate.reset(); }
 
-protected:
-
 	//!> enumeration of available update index methods
 	enum UpdateAlgorithmType {
 		RoundRobin=0,
+		MostParallel=1,
 		MAX_UpdateAlgorithmType
 	};
 
 	/** Sets the updateIndex function object of IterationState to
 	 * the desired alternative update method.
  	 *
+ 	 * @param _problem inverse problem containing all instances
 	 * @param _type desired variant of the updateIndex() algorithm
  	 */
 	void setupdateIndexAlgorithm(
+			const InverseProblem_ptr_t &_problem,
 			const enum UpdateAlgorithmType _type);
+
+protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all
 	 * variables that define the current state of the iterate.
@@ -122,12 +124,10 @@ protected:
 		/** Method for updating the search space with a new direction.
 		 *
 		 * @param _newdir new search direction
-		 * @param _iterate current iterate
 		 * @param _alpha new offset
 		 */
 		void updateSearchSpace(
 				const SpaceElement_ptr_t &_newdir,
-				const SpaceElement_ptr_t &_iterate,
 				const double _alpha);
 
 		/** Const ref getter for \a U.
@@ -186,6 +186,7 @@ protected:
 				const Norm &_Norm,
 				const VectorProjection &_projector,
 				const SpaceElement_ptr_t &_newdir) const;
+
 	private:
 		/** Prevent copy cstor for IterationState.
 		 *
@@ -196,6 +197,7 @@ protected:
 	private:
 		//!> grant function access to updateIndex
 		friend void SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
+				const InverseProblem_ptr_t &_problem,
 				const enum UpdateAlgorithmType _type);
 
 		//!> subspace matrix with search directions as column vectors
@@ -206,12 +208,24 @@ protected:
 		/** Function that simply advances the index in a round-robin fashion.
 		 *
 		 * @param _newdir new search direction
-		 * @param _iterate current iterate
 		 * @return index+1 mod N
 		 */
 		unsigned int advanceIndex(
-				const SpaceElement_ptr_t &_newdir,
-				const SpaceElement_ptr_t &_iterate) const;
+				const SpaceElement_ptr_t &_newdir) const;
+
+		/** Function that compares new search direction with present ones
+		 * in the state and selects the one that is most parallel.
+		 *
+		 * @param _Norm norm object to calculate norms
+		 * @param _projector VectorProjection instance
+		 * @param _newdir new direction to compare to present ones
+		 * @return index whose search direction is most parallel to \a newdir
+		 */
+		unsigned int
+		updateIndexToMostParallel(
+				const Norm &_Norm,
+				const VectorProjection &_projector,
+				const SpaceElement_ptr_t &_newdir) const;
 
 	private:
 		//!> flag to indicate whether inner state has been initialized
@@ -224,11 +238,11 @@ protected:
 		typedef boost::function<
 				unsigned int (
 						const IterationState * const,
-						const SpaceElement_ptr_t &,
 						const SpaceElement_ptr_t &
 						)> updater_t;
 		updater_t updateIndex;
 	};
+
 protected:
 	// internal variables
 

@@ -24,10 +24,12 @@
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/Functions/VectorProjection.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 using namespace boost::assign;
 
@@ -274,7 +276,7 @@ SequentialSubspaceMinimizer::operator()(
 			}
 		}
 		// update search space with new direction
-		istate.updateSearchSpace(newdir, istate.m_solution, alpha);
+		istate.updateSearchSpace(newdir, alpha);
 		per_iteration_tuple.replace( "updated_index", (int)istate.getIndex());
 		BOOST_LOG_TRIVIAL(trace)
 			<< "updated_index is " << istate.getIndex();
@@ -359,15 +361,28 @@ SequentialSubspaceMinimizer::operator()(
 	return static_cast<ReturnValues &>(istate);
 }
 
-
 void
 SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
+		const InverseProblem_ptr_t &_problem,
 		enum UpdateAlgorithmType _type)
 {
 	switch (_type) {
 	case RoundRobin:
-		istate.updateIndex = &SequentialSubspaceMinimizer::IterationState::advanceIndex;
+		istate.updateIndex = &IterationState::advanceIndex;
 		break;
+	case MostParallel:
+	{
+		const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
+		const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
+		const Norm & DualNormX = *DualSpaceX.getNorm();
+		istate.updateIndex = boost::bind(
+				&IterationState::updateIndexToMostParallel,
+				_1,
+				boost::cref(DualNormX),
+				boost::cref(projector),
+				_2);
+		break;
+	}
 	default:
 		BOOST_LOG_TRIVIAL(error)
 			<< "Unknown updateIndex algorithm.";

@@ -45,6 +45,7 @@ int main (int argc, char *argv[])
 			("algorithm", po::value<std::string>(), "set the used iteration algorithm")
 	        ("C", po::value<double>(), "set the value for C (landweber)")
 	        ("delta", po::value<double>(), "set the amount of noise")
+	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
 	        ("help", "produce help message")
 	        ("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
@@ -157,7 +158,21 @@ int main (int argc, char *argv[])
 	} else {
 		delta = 1e-4;
 	}
-
+	enum SequentialSubspaceMinimizer::UpdateAlgorithmType updatetype =
+			SequentialSubspaceMinimizer::RoundRobin;
+	if (vm.count("update-algorithm")) {
+		const unsigned int temptype = vm["update-algorithm"].as<unsigned int>();
+		if ((temptype >= SequentialSubspaceMinimizer::RoundRobin)
+				&& (temptype < SequentialSubspaceMinimizer::MAX_UpdateAlgorithmType))
+			updatetype =
+					(enum SequentialSubspaceMinimizer::UpdateAlgorithmType)temptype;
+		else {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Illegal update type set.";
+		}
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Searchspace Index update algorithm set to " << updatetype << "\n";
+	}
 	boost::filesystem::path iteration_file;
 	if (vm.count("iteration-file")) {
 		iteration_file = vm["iteration-file"].as<boost::filesystem::path>();
@@ -417,16 +432,24 @@ int main (int argc, char *argv[])
 	try {
 		switch(type) {
 		case MinimizerFactory::landweber:
-			static_cast<LandweberMinimizer*>(minimizer.get())->setC(C);
-			static_cast<LandweberMinimizer*>(minimizer.get())->setuseOptimalStepwidth(
+			static_cast<LandweberMinimizer*>(
+					minimizer.get())->setC(C);
+			static_cast<LandweberMinimizer*>(
+					minimizer.get())->setuseOptimalStepwidth(
 					useOptimalStepwidth);
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);
+			static_cast<SequentialSubspaceMinimizer*>(
+					minimizer.get())->setupdateIndexAlgorithm(
+							inverseproblem,
+							updatetype);
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
-			static_cast<SequentialSubspaceMinimizerNoise*>(minimizer.get())->setTau(tau);
-			static_cast<SequentialSubspaceMinimizerNoise*>(minimizer.get())->setN(N);
+			static_cast<SequentialSubspaceMinimizerNoise*>(
+					minimizer.get())->setTau(tau);
+			static_cast<SequentialSubspaceMinimizerNoise*>(
+					minimizer.get())->setN(N);
 			break;
 		default:
 			std::cerr << "Unknown InstanceType"

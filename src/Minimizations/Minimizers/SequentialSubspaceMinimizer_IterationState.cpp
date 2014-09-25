@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <Eigen/Dense>
 #include <limits>
+#include <vector>
 
 #include <boost/log/trivial.hpp>
 
@@ -71,18 +72,16 @@ SequentialSubspaceMinimizer::IterationState::getAlphas() const
 void
 SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
 		const SpaceElement_ptr_t &_newdir,
-		const SpaceElement_ptr_t &_iterate,
 		const double _alpha)
 {
-	index = updateIndex(this, _newdir, _iterate);
+	index = updateIndex(this, _newdir);
 	U.col(index) = _newdir->getVectorRepresentation();
 	alphas(index) = _alpha;
 }
 
 unsigned int
 SequentialSubspaceMinimizer::IterationState::advanceIndex(
-		const SpaceElement_ptr_t &_newdir,
-		const SpaceElement_ptr_t &_iterate) const
+		const SpaceElement_ptr_t &_newdir) const
 {
 	return ((index + 1) % getDimension());
 }
@@ -152,4 +151,26 @@ SequentialSubspaceMinimizer::IterationState::calculateAngles(
 	}
 
 	return angles;
+}
+
+unsigned int
+SequentialSubspaceMinimizer::IterationState::updateIndexToMostParallel(
+		const Norm &_Norm,
+		const VectorProjection &_projector,
+		const SpaceElement_ptr_t &_newdir) const
+{
+	// calculate the angles
+	const angles_t angles = calculateBregmanAngles(
+			_Norm,
+			_projector,
+			_newdir);
+
+	// always fill a zero column if present (for the first N steps)
+	const angles_t::const_iterator indexiter =
+			std::max_element(angles.begin(), angles.end());
+
+	// and return its index
+	return std::distance(
+			const_cast<const angles_t &>(angles).begin(),
+			indexiter);
 }
