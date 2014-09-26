@@ -28,7 +28,7 @@ std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
 
 Database::Database() :
 		DatabaseFileGiven(false),
-		MAXKEYS(12)
+		MAXKEYS(14)
 {
 	TypeNames[inttype] = "int";
 	TypeNames[doubletype] = "double";
@@ -172,6 +172,12 @@ bool Database::writeSQLitefile()
 				break;
 			case 12:
 				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), now;
+				break;
+			case 13:
+				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), use(valuevector[12]), now;
+				break;
+			case 14:
+				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), use(valuevector[12]), use(valuevector[13]), now;
 				break;
 			default:
 				BOOST_LOG_TRIVIAL(error)
