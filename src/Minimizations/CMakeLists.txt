@@ -14,7 +14,9 @@ add_library (Minimizations
 	SequentialSubspaceMinimizer.cpp
 	SequentialSubspaceMinimizer_HyperplaneProjection.cpp
 	SequentialSubspaceMinimizerNoise.cpp
-	SmoothnessModulus.cpp)
+	SmoothnessModulus.cpp
+	SoftThresholdingOperator.cpp
+	)
 
 install (TARGETS Minimizations DESTINATION bin)
 install (FILES BregmanDistance.hpp DESTINATION include)
@@ -31,3 +33,4 @@ install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer_HyperplaneProjection.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
+install (FILES SoftThresholdingOperator.hpp DESTINATION include)

@@ -60,6 +60,16 @@ target_link_libraries (SmoothnessModulusUnitTest
 add_test (SmoothnessModulusUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/SmoothnessModulusUnitTest)
 
+########################## SoftThresholdingOperatorUnitTest #######################
+add_executable (SoftThresholdingOperatorUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	SoftThresholdingOperatorUnitTest.cpp) 
+target_link_libraries (SoftThresholdingOperatorUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (SoftThresholdingOperatorUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/SoftThresholdingOperatorUnitTest)
 
 # mark as to fail if required
 #set_tests_properties (BregmanFunctionalUnitTest

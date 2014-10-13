@@ -30,7 +30,7 @@ public:
 	 * \param _p p value of the used Lp norm
 	 */
 	DualityMapping(const double _p);
-	~DualityMapping() {}
+	virtual ~DualityMapping() {}
 
 	/** Setter for internal tolerance.
 	 *
@@ -44,11 +44,11 @@ public:
 	 * \param _x point where to evaluate
 	 * \param _power power of duality mapping's weight
 	 */
-	Eigen::VectorXd operator()(
+	virtual Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
 			const double _power) const;
 
-private:
+protected:
 	//!> value p of the Lp norm
 	const double p;
 	//!> tolerance for norm value
