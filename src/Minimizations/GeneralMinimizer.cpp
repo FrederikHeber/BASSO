@@ -27,12 +27,9 @@ GeneralMinimizer::GeneralMinimizer(
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
-	val_NormX(_NormX),
+	DefaultDualityMappings(_NormX, _PowerX, 1e-6),
 	val_NormY(_NormY),
-	val_DualNormX(val_NormX/(val_NormX - 1.)),
-	PowerX(_PowerX),
 	PowerY(_PowerY),
-	DualPowerX(PowerX/(PowerX - 1.)),
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
@@ -42,8 +39,6 @@ GeneralMinimizer::GeneralMinimizer(
 	NormX(val_NormX),
 	NormY(val_NormY),
 	DualNormX(val_DualNormX),
-	J_p(val_NormX),
-	J_q(val_DualNormX),
 	j_r(val_NormY),
 	database(_database),
 	matrix_vector_fctor(

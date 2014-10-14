@@ -16,19 +16,22 @@
 
 #include "DualityMappings/DualityMapping.hpp"
 #include "LpNorm.hpp"
+#include "GeneralMinimizer_DefaultDualityMappings.hpp"
 #include "SmoothnessModulus.hpp"
 
 class Database;
 
 /** This class describes the interface to a general minimizer.
  *
+ * The template class determines the choice of the duality mapping
+ *
  */
-class GeneralMinimizer
+class GeneralMinimizer : public DefaultDualityMappings
 {
 public:
 	GeneralMinimizer(
-			const double _NormX,
 			const double _NormY,
+			const double _NormX,
 			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
@@ -108,18 +111,10 @@ protected:
 			unsigned int _NumberOuterIterations
 			) const;
 public:
-	//!> Lp norm of space X: p
-	const double val_NormX;
 	//!> Lp norm of space Y: r
 	const double val_NormY;
-	//!> Lp norm of dual space to X: q
-	const double val_DualNormX;
-	//!> power of dual map J_p
-	const double PowerX;
 	//!> power of dual map J_r
 	const double PowerY;
-	//!> power of dual map J_q
-	const double DualPowerX;
 	//!> magnitude of noise
 	const double Delta;
 	//!> maximum number of iterations in outer loop
@@ -139,10 +134,6 @@ public:
 	const LpNorm NormY;
 	//!> norm object for dual space X^*
 	const LpNorm DualNormX;
-	//!> duality mapping object for space X
-	const DualityMapping J_p;
-	//!> duality mapping object for dual space X^*
-	const DualityMapping J_q;
 	//!> duality mapping object for space Y (single-valued)
 	const DualityMapping j_r;
 
