@@ -16,10 +16,20 @@
 #include "Minimizations/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
+double BregmanDistance::operator()(
+		const Eigen::VectorXd &_x,
+		const Eigen::VectorXd &_y,
+		const double _power
+		) const
+{
+	const Eigen::VectorXd dual_x = J_p(_x,_power).transpose();
+	return operator()(_x,_y, dual_x, _power);
+}
 
 double BregmanDistance::operator()(
 		const Eigen::VectorXd &_x,
 		const Eigen::VectorXd &_y,
+		const Eigen::VectorXd &_xdual,
 		const double _power
 		) const
 {
@@ -38,7 +48,6 @@ double BregmanDistance::operator()(
 		result += ((_power-1.)/_power) * ::pow(lpnorm(_x), _power);
 		result += (1./_power) * ::pow(lpnorm(_y), _power);
 	}
-	const Eigen::VectorXd dual_x = J_p(_x,_power).transpose();
-	result -= ScalarVectorProduct(dual_x, _y);
+	result -= ScalarVectorProduct(_xdual, _y);
 	return result;
 }
