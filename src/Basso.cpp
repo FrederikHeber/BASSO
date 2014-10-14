@@ -41,6 +41,7 @@ int main (int argc, char *argv[])
 	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
 	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
 	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
+	        ("regularized-norm", po::value<double>(), "set the regularization parameter for the L1 norm (if normx is 1), activated if unequal zero")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
@@ -216,6 +217,20 @@ int main (int argc, char *argv[])
 			<< "Using normy as powery." << "\n.";
 		powery = normy;
 	}
+	MinimizerFactory::DualityContainerType dualitytype =
+			MinimizerFactory::defaulttype;
+	double regularization_parameter = 0.;
+	if ((vm.count("regularized-norm"))
+			&& (vm["regularized-norm"].as<double>() > 0.)) {
+		dualitytype = MinimizerFactory::regularizedl1norm;
+		regularization_parameter = vm["regularized-norm"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Duality Mappings of space X set to regularized L1 norm"
+			<< " with parameter " << regularization_parameter << ".";
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Duality Mappings of space X set to default.";
+	}
 	boost::filesystem::path rhs_file;
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
@@ -331,20 +346,36 @@ int main (int argc, char *argv[])
 	Database database;
 	if (!iteration_file.string().empty())
 		database.setDatabaseFile(iteration_file.string());
-	const MinimizerFactory::DualityContainerType dualitytype =
-			MinimizerFactory::defaulttype;
-	MinimizerFactory::instance_ptr_t minimizer =
-		factory.getInstance(
-			dualitytype,
-			type,
-			normx,
-			normy,
-			powerx,
-			powery,
-			delta,
-			maxiter,
-			database,
-			outputsteps);
+	MinimizerFactory::instance_ptr_t minimizer;
+	// set regularization parametter in case of regularizedl1norm
+	switch (dualitytype) {
+	case MinimizerFactory::regularizedl1norm:
+		minimizer =
+			factory.getRegularizedInstance(
+				type,
+				regularization_parameter,
+				normy,
+				powery,
+				delta,
+				maxiter,
+				database,
+				outputsteps);
+		break;
+	case MinimizerFactory::defaulttype:
+	default:
+		minimizer =
+			factory.getInstance(
+				type,
+				normx,
+				normy,
+				powerx,
+				powery,
+				delta,
+				maxiter,
+				database,
+				outputsteps);
+		break;
+	}
 
 	// calculate initial dual solution
 	Eigen::VectorXd dualx0 =
