@@ -138,6 +138,7 @@ add_subdirectory (tests)
 add_subdirectory (src/Database/unittests)
 add_subdirectory (src/Math/unittests)
 add_subdirectory (src/Minimizations/unittests)
+add_subdirectory (src/Minimizations/DualityMappings/unittests)
 
 ##################### PACKING INSTRUCTIONS ###############################
 
