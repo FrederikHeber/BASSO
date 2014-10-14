@@ -25,9 +25,8 @@
 #include "Minimizations/BregmanDistance.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
-		const double _NormX,
+		const DualityMappingsContainer &_container,
 		const double _NormY,
-		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
@@ -35,9 +34,8 @@ LandweberMinimizer::LandweberMinimizer(
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
-				_NormX,
+				_container,
 				_NormY,
-				_PowerX,
 				_PowerY,
 				_Delta,
 				_maxiter,

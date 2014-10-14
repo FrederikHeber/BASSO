@@ -20,9 +20,8 @@ class LandweberMinimizer : public GeneralMinimizer
 {
 public:
 	LandweberMinimizer(
-			const double _NormX,
+			const DualityMappingsContainer &_container,
 			const double _NormY,
-			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,

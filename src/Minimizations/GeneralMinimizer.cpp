@@ -18,16 +18,15 @@
 #include <sstream>
 
 GeneralMinimizer::GeneralMinimizer(
-		const double _NormX,
+		const DualityMappingsContainer &_container,
 		const double _NormY,
-		const double _PowerX,
 		const double _PowerY,
 		const double _Delta,
 		const unsigned int _maxiter,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
-	DefaultDualityMappings(_NormX, _PowerX, 1e-6),
+	DualityMappingsContainer(_container),
 	val_NormY(_NormY),
 	PowerY(_PowerY),
 	Delta(_Delta),

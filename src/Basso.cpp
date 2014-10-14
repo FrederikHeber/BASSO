@@ -331,8 +331,11 @@ int main (int argc, char *argv[])
 	Database database;
 	if (!iteration_file.string().empty())
 		database.setDatabaseFile(iteration_file.string());
+	const MinimizerFactory::DualityContainerType dualitytype =
+			MinimizerFactory::defaulttype;
 	MinimizerFactory::instance_ptr_t minimizer =
 		factory.getInstance(
+			dualitytype,
 			type,
 			normx,
 			normy,

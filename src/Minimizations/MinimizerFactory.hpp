@@ -37,6 +37,13 @@ public:
 		MAX_InstanceType
 	};
 
+	//!> enumeration of all known dualities (Don't forget to add string literal to TypeNames)
+	enum DualityContainerType {
+		defaulttype=0,
+		regularizedl1norm=1,
+		MAX_DualityContainerType
+	};
+
 	/** Produces the desired instance.
 	 *
 	 * @param _type type of instance
@@ -57,6 +64,31 @@ public:
 			const double _NormX,
 			const double _NormY,
 			const double _PowerX,
+			const double _PowerY,
+			const double _Delta,
+			const unsigned int _maxiter,
+			Database &_database,
+			const unsigned int _outputsteps=0
+			);
+
+	/** Produces the desired instance, minimizing a regularized l1 norm.
+	 *
+	 * @param _type type of instance
+	 * @param _regularization_parameter regularization parameter for the L1
+	 *        norm
+	 * @param _NormY lp norm of target space
+	 * @param _PowerY power type of gauge function of duality mapping in target
+	 * 			space
+	 * @param _Delta noise level
+	 * @param _maxiter maximum number of iterations
+	 * @param _database database to store iteration information to
+	 * @param _outputsteps write temporary solution each .. steps
+	 * @return wrapped instance of desired \a _type
+	 */
+	instance_ptr_t getRegularizedInstance(
+			const enum InstanceType &_type,
+			const double _regularization_parameter,
+			const double _NormY,
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
@@ -105,9 +137,37 @@ protected:
 	static unsigned int getTypeNamesIndex(
 			const std::string &_name);
 
+private:
+	/** Helper function to produce the minimizer itself.
+	 *
+	 * @param _type type of minimizer algorithm
+	 * @param _NormY p value of the Lp space in Y
+	 * @param _PowerY power type of the duality mapping in Y
+	 * @param _Delta noise level
+	 * @param _maxiter maximum number of iterations
+	 * @param _database database to store iteration information to
+	 * @param _outputsteps write temporary solution each .. steps
+	 * @return wrapped instance of desired \a _type
+	 */
+	instance_ptr_t
+	getMinimizerInstance(
+			const enum InstanceType &_type,
+			const double _NormY,
+			const double _PowerY,
+			const double _Delta,
+			const unsigned int _maxiter,
+			Database &_database,
+			const unsigned int _outputsteps
+			);
+
+
 public:
 	//!> name of each known instance type (Don't forget to add enum to InstanceType)
 	static const std::string TypeNames[];
+
+private:
+	//!> static instance to contain DualityMappingsContainer
+	static DualityMappingsContainer *DualityContainer;
 };
 
 

@@ -23,16 +23,13 @@ class Database;
 
 /** This class describes the interface to a general minimizer.
  *
- * The template class determines the choice of the duality mapping
- *
  */
-class GeneralMinimizer : public DefaultDualityMappings
+class GeneralMinimizer : public DualityMappingsContainer
 {
 public:
 	GeneralMinimizer(
+			const DualityMappingsContainer &_container,
 			const double _NormY,
-			const double _NormX,
-			const double _PowerX,
 			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
