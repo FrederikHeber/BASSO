@@ -14,7 +14,7 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "MinimizationExceptions.hpp"
-#include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
 /** This implements a functor calculating the Bregman distance between

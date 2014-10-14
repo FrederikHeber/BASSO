@@ -11,7 +11,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/SoftThresholdingOperator.hpp"
+#include "Minimizations/DualityMappings/SoftThresholdingOperator.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'

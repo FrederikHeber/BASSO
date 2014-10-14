@@ -15,7 +15,7 @@
 #include <iomanip>
 
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMapping.hpp"
 #include "Minimizations/BregmanProjectionFunctional.hpp"
 
 int main()

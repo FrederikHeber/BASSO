@@ -12,8 +12,8 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "LpNorm.hpp"
-#include "MinimizationExceptions.hpp"
+#include "Minimizations/LpNorm.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
 
 DualityMapping::DualityMapping(

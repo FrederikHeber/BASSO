@@ -14,7 +14,7 @@
 #include <Eigen/Dense>
 
 #include "BregmanProjectionFunctional.hpp"
-#include "DualityMapping.hpp"
+#include "DualityMappings/DualityMapping.hpp"
 #include "LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"

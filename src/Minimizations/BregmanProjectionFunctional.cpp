@@ -12,7 +12,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(

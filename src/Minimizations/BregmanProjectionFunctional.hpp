@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMapping.hpp"
 #include "Minimizations/LpNorm.hpp"
 
 /** Functor to calculate BregmanProjectionFunctional functional/distance.

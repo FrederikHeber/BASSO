@@ -11,7 +11,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMapping.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'
