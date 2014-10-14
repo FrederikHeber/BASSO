@@ -14,9 +14,9 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
+#include "DualityMappings/DefaultDualityMappings.hpp"
 #include "DualityMappings/DualityMapping.hpp"
 #include "LpNorm.hpp"
-#include "GeneralMinimizer_DefaultDualityMappings.hpp"
 #include "SmoothnessModulus.hpp"
 
 class Database;

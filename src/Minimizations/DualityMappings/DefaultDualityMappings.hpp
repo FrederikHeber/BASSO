@@ -8,12 +8,15 @@
 #ifndef GENERALMINIMIZER_DEFAULTDUALITYMAPPINGS_HPP_
 #define GENERALMINIMIZER_DEFAULTDUALITYMAPPINGS_HPP_
 
+#include "BassoConfig.h"
+
 #include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 
 /** This equips the minimizer with the default differentiable duality mappings
  * and their inverse mappings.
  */
-struct DefaultDualityMappings
+struct DefaultDualityMappings : public DualityMappingsContainer
 {
 	/** Constructor for class DefaultDualityMappings.
 	 *
@@ -27,25 +30,17 @@ struct DefaultDualityMappings
 			const double _NormX,
 			const double _PowerX,
 			const double _tolerance) :
-		val_NormX(_NormX),
-		val_DualNormX(val_NormX/(val_NormX - 1.)),
-		PowerX(_PowerX),
-		DualPowerX(PowerX/(PowerX - 1.)),
+		DualityMappingsContainer(
+			_NormX,
+			_PowerX,
+			J_p,
+			J_q),
 		J_p(val_NormX),
 		J_q(val_DualNormX)
 	{
 		J_p.setTolerance(_tolerance);
 		J_q.setTolerance(_tolerance);
 	}
-
-	//!> Lp norm of space X: p
-	const double val_NormX;
-	//!> Lp norm of dual space to X: q
-	const double val_DualNormX;
-	//!> power of dual map J_p
-	const double PowerX;
-	//!> power of dual map J_q
-	const double DualPowerX;
 
 	//!> duality mapping object for space X
 	const DualityMapping J_p;

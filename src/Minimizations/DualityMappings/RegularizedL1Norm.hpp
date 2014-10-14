@@ -8,13 +8,16 @@
 #ifndef GENERALMINIMIZER_REGULARIZEDL1NORM_HPP_
 #define GENERALMINIMIZER_REGULARIZEDL1NORM_HPP_
 
+#include "BassoConfig.h"
+
+#include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 #include "Minimizations/DualityMappings/IllegalDualityMapping.hpp"
 #include "Minimizations/DualityMappings/SoftThresholdingOperator.hpp"
 
 /** This equips the minimizer with a soft thresholding operator as required
  * by the regularized L1 norm ansatz.
  */
-struct RegularizedL1Norm
+struct RegularizedL1Norm : public DualityMappingsContainer
 {
 	/** Constructor for class Regularized1Norm.
 	 *
@@ -24,22 +27,13 @@ struct RegularizedL1Norm
 	 */
 	RegularizedL1Norm(
 			const double _NormX,
-			const double _PowerX,
-			const double _tolerance) :
-		val_NormX(_NormX),
-		val_DualNormX(val_NormX/(val_NormX - 1.)),
-		PowerX(_PowerX),
-		DualPowerX(PowerX/(PowerX - 1.))
+			const double _PowerX) :
+		DualityMappingsContainer(
+			_NormX,
+			_PowerX,
+			J_p,
+			J_q)
 	{}
-
-	//!> Lp norm of space X: p
-	const double val_NormX;
-	//!> Lp norm of dual space to X: q
-	const double val_DualNormX;
-	//!> power of dual map J_p
-	const double PowerX;
-	//!> power of dual map J_q
-	const double DualPowerX;
 
 	//!> duality mapping object for space X
 	const IllegalDualityMapping J_p;
