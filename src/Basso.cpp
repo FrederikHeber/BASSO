@@ -342,6 +342,13 @@ int main (int argc, char *argv[])
 			maxiter,
 			database,
 			outputsteps);
+
+	// calculate initial dual solution
+	Eigen::VectorXd dualx0 =
+			(dualitytype == MinimizerFactory::defaulttype) ?
+			minimizer->J_p(x0, powerx) :
+			Eigen::VectorXd::Zero(matrix.outerSize());
+
 	try {
 		switch(type) {
 		case MinimizerFactory::landweber:
@@ -371,6 +378,7 @@ int main (int argc, char *argv[])
 	GeneralMinimizer::ReturnValues result =
 			(*minimizer)(
 					x0,
+					dualx0,
 					matrix,
 					rhs,
 					solution);

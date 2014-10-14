@@ -67,6 +67,7 @@ void LandweberMinimizer::setC(const double _C)
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const Eigen::VectorXd &_x0,
+		const Eigen::VectorXd &_dualx0,
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
 		const Eigen::VectorXd &_solution
@@ -137,8 +138,7 @@ LandweberMinimizer::operator()(
 	StopCriterion = (fabs(returnvalues.residuum/_ynorm) <= TolY);
 
 	// calculate some values prior to loop
-	Eigen::VectorXd dual_solution =
-			J_p(returnvalues.solution, PowerX);
+	Eigen::VectorXd dual_solution = _dualx0;
 	const double modulus_at_one = modul(1);
 	double _ANorm = 0.;
 	if (!useOptimalStepwidth) {

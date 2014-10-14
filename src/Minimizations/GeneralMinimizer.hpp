@@ -58,6 +58,7 @@ public:
 	 * side \a _y.
 	 *
 	 * @param _x0 start value, may be zero vector
+	 * @param _dualx0 dual element to initial \a _x0
 	 * @param _A matrix as discretized operator
 	 * @param _y right-hand side
 	 * @param _solution additional true solution to calculate Bregman
@@ -66,6 +67,7 @@ public:
 	 */
 	virtual ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
+			const Eigen::VectorXd &_dualx0,
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
 			const Eigen::VectorXd &_solution

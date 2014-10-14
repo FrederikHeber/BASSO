@@ -63,6 +63,7 @@ void SequentialSubspaceMinimizerNoise::setTau(
 SequentialSubspaceMinimizerNoise::ReturnValues
 SequentialSubspaceMinimizerNoise::operator()(
 		const Eigen::VectorXd &_x0,
+		const Eigen::VectorXd &_dualx0,
 		const Eigen::MatrixXd &_A,
 		const Eigen::VectorXd &_y,
 		const Eigen::VectorXd &_solution
@@ -106,8 +107,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	// calculate some values prior to loop
 	// Jx=DualityMapping(x,NormX,PowerX,TolX);
-	Eigen::VectorXd dual_solution =
-			J_p(returnvalues.solution, PowerX);
+	Eigen::VectorXd dual_solution = _dualx0;
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Jx_0 is " << dual_solution.transpose();
 //	const double modulus_at_one = modul(1);

@@ -53,6 +53,7 @@ public:
 
 	GeneralMinimizer::ReturnValues operator()(
 			const Eigen::VectorXd &_x0,
+			const Eigen::VectorXd &_dualx0,
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
 			const Eigen::VectorXd &_solution
