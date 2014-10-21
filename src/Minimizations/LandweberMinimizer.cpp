@@ -258,6 +258,7 @@ LandweberMinimizer::operator()(
 			// get alpha from line search
 			alpha = calculateOptimalStepwidth(
 					 returnvalues.solution,
+					 dual_solution,
 					 u,
 					 _A,
 					 _y,

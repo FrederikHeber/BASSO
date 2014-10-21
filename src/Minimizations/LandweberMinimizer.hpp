@@ -80,6 +80,7 @@ public:
 	 * i.e. along u we look for alpha to minimize residual
 	 *
 	 * @param _x current position
+	 * @param _dualx dual element to current position
 	 * @param _u direction for line search
 	 * @param _A matrix
 	 * @param _y right-hand side
@@ -89,6 +90,7 @@ public:
 	 */
 	double calculateOptimalStepwidth(
 			const Eigen::VectorXd &_x,
+			const Eigen::VectorXd &_dualx,
 			const Eigen::VectorXd &_u,
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
