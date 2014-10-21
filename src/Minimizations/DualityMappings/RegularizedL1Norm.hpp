@@ -21,18 +21,16 @@ struct RegularizedL1Norm : public DualityMappingsContainer
 {
 	/** Constructor for class Regularized1Norm.
 	 *
-	 * @param _val_NormX p value of the Lp space
-	 * @param _PowerX power of the Lp duality mapping
-	 * @param _tolerance tolerance value of the duality mappings
+	 * @param _lambda value of the regularization parameter
 	 */
 	RegularizedL1Norm(
-			const double _NormX,
-			const double _PowerX) :
+			const double _lambda) :
 		DualityMappingsContainer(
-			_NormX,
-			_PowerX,
+			1.,	/* always have l1 norm here */
+			1., /* this yields inf for q value */
 			J_p,
-			J_q)
+			J_q),
+			J_q(_lambda)
 	{}
 
 	//!> duality mapping object for space X
