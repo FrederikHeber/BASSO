@@ -20,7 +20,7 @@
 #include "DualityMappings/DualityMapping.hpp"
 #include "Norms/LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
-#include "Minimizations/BregmanDistance.hpp"
+#include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"

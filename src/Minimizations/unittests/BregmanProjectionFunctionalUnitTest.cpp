@@ -10,7 +10,7 @@
 #include <boost/bind.hpp>
 #include <Eigen/Dense>
 
-#include "Minimizations/BregmanProjectionFunctional.hpp"
+#include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( BregmanProjectionFunctionalUnitTest );
