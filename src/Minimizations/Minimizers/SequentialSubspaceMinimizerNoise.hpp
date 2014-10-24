@@ -12,7 +12,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/SequentialSubspaceMinimizer.hpp"
+#include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 
 class Database;
 

@@ -10,11 +10,11 @@
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 #include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
 #include "Minimizations/DualityMappings/RegularizedL1Norm.hpp"
-#include "Minimizations/GeneralMinimizer.hpp"
-#include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
-#include "Minimizations/SequentialSubspaceMinimizer.hpp"
-#include "Minimizations/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/LandweberMinimizer.hpp"
+#include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
+#include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {

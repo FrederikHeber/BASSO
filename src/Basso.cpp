@@ -13,13 +13,12 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
-#include "Minimizations/GeneralMinimizer.hpp"
-#include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
-#include "Minimizations/SequentialSubspaceMinimizer.hpp"
-#include "Minimizations/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/LandweberMinimizer.hpp"
+#include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
+#include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 
 namespace po = boost::program_options;
 

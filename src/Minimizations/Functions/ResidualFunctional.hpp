@@ -12,8 +12,8 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/LandweberMinimizer.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 
 class ResidualFunctional
 {

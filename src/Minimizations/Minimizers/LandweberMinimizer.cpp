@@ -21,8 +21,8 @@
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "MatrixIO/MatrixIO.hpp"
-#include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
 		const DualityMappingsContainer &_container,

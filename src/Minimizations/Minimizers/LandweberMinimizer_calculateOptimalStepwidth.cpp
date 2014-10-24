@@ -14,8 +14,8 @@
 #include <boost/math/tools/minima.hpp>
 #include <limits>
 
-#include "MinimizationExceptions.hpp"
-#include "Functions/ResidualFunctional.hpp"
+#include "Minimizations/Functions/ResidualFunctional.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 double LandweberMinimizer::calculateOptimalStepwidth(
 		const Eigen::VectorXd &_x,

@@ -18,12 +18,12 @@
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Norms/LpNorm.hpp"
-#include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 
 // instantiate required template functions
 CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)

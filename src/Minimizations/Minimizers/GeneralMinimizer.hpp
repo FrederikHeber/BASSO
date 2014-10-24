@@ -14,10 +14,10 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
-#include "DualityMappings/DefaultDualityMappings.hpp"
+#include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Norms/LpNorm.hpp"
-#include "Functions/SmoothnessModulus.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Functions/SmoothnessModulus.hpp"
 
 class Database;
 

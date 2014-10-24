@@ -14,8 +14,8 @@
 #include <boost/math/tools/minima.hpp>
 #include <limits>
 
-#include "MinimizationExceptions.hpp"
-#include "Functions/SmoothnessFunctional.hpp"
+#include "Minimizations/Functions/SmoothnessFunctional.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 
 double LandweberMinimizer::calculateMatchingTau(

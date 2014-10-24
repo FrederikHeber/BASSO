@@ -12,7 +12,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 
 class Database;
 

@@ -7,9 +7,10 @@
 
 #include "BassoConfig.h"
 
+#include "GeneralMinimizer.hpp"
+
 #include "MatrixIO/MatrixIO.hpp"
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/GeneralMinimizer.hpp"
 
 #include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
