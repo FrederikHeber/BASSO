@@ -12,9 +12,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+class Mapping;
 class NormedSpace;
 class SpaceElement;
 
+typedef boost::shared_ptr<Mapping> Mapping_ptr_t;
 typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
 typedef boost::shared_ptr<SpaceElement> SpaceElement_ptr_t;
 

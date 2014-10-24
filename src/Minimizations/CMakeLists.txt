@@ -13,6 +13,7 @@ add_library (Minimizations
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
 	LandweberMinimizer_calculateOptimalStepwidth.cpp
+	Mappings/LinearMapping.cpp
 	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
 	SequentialSubspaceMinimizer_HyperplaneProjection.cpp
@@ -39,6 +40,16 @@ install (FILES GeneralMinimizer_RegularizedL1Norm.hpp DESTINATION include)
 install (FILES LandweberMinimizer.hpp DESTINATION include)
 install (FILES MinimizationExceptions.hpp DESTINATION include)
 install (FILES MinimizerFactory.hpp DESTINATION include)
+
+install (FILES Mappings/LinearMapping.hpp DESTINATION include)
+install (FILES Mappings/Mapping.hpp DESTINATION include)
+
+install (FILES Norms/L1Norm.hpp DESTINATION include)
+install (FILES Norms/LInfinityNorm.hpp DESTINATION include)
+install (FILES Norms/LpNorm.hpp DESTINATION include)
+install (FILES Norms/Norm.hpp DESTINATION include)
+install (FILES Norms/NormExceptions.hpp DESTINATION include)
+
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer_HyperplaneProjection.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)

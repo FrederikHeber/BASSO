@@ -54,7 +54,34 @@ private:
 	void setDualSpace(const NormedSpace_ptr_t& _dualspace)
 	{	const_cast<NormedSpace_ptr_t&>(DualSpace) = _dualspace;	}
 
+	/** Setter of the duality mapping.
+	 *
+	 * This is for the factory only to allow it to connect the various
+	 * spaces among one another.
+	 *
+	 * @param _mapping duality mapping object
+	 */
+	void setDualityMapping(const Mapping_ptr_t &_mapping)
+	{	const_cast<Mapping_ptr_t &>(dualitymapping) = _mapping;	}
+
 public:
+	/** Constructor of NormedSpace.
+	 *
+	 * \warning setSpace() must be called to provide shared_ptr instace of
+	 * this object. Otherwise getSpace() will return null and 
+	 * createElement() does not work, rendering this space unuseable.
+	 *
+	 * @param _dimension dimension of this space
+	 * @param _dualitymapping duality mapping object from space to its dual
+	 */
+	NormedSpace(
+			const unsigned int _dimension,
+			const Mapping_ptr_t &_dualitymapping
+			) :
+		dualitymapping(_dualitymapping),
+		dimension(_dimension)
+	{}
+
 	/** Getter for the this space.
 	 *
 	 * @return shared_ptr for this Space (correctly connected to the only
@@ -69,6 +96,13 @@ public:
 	 */
 	const NormedSpace_ptr_t& getDualSpace() const
 	{ return DualSpace; }
+
+	/** Getter for the duality mapping
+	 *
+	 * @return const reference to duality mapping
+	 */
+	const Mapping_ptr_t& getDualityMapping() const
+	{ return dualitymapping; }
 
 	/** Const getter for the dimension of the representations in this space.
 	 *
@@ -93,6 +127,9 @@ private:
 
 	//!> Reference to the dual of this space.
 	const NormedSpace_ptr_t DualSpace;
+
+	//!> duality mapping from this into the dual space
+	const Mapping_ptr_t dualitymapping;
 
 	//!> dimension of the representations in this vector space
 	const unsigned int dimension;
