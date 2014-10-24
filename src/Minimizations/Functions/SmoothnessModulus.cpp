@@ -12,7 +12,7 @@
 //#include <boost/log/trivial.hpp>
 #include <cmath>
 
-#include "MinimizationExceptions.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 SmoothnessModulus::SmoothnessModulus(const double _p) :
 	p(_p)

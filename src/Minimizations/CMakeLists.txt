@@ -10,6 +10,7 @@ add_library (Minimizations
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/HyperplaneProjection.cpp
+	Functions/SmoothnessModulus.cpp
 	GeneralMinimizer.cpp
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
@@ -18,7 +19,6 @@ add_library (Minimizations
 	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
 	SequentialSubspaceMinimizerNoise.cpp
-	SmoothnessModulus.cpp
 	Spaces/NormedSpace.cpp
 	)
 
@@ -37,6 +37,7 @@ install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
 install (FILES Functions/MinimizationFunctional.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
+install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)
 
 install (FILES GeneralMinimizer.hpp DESTINATION include)
 install (FILES GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)
@@ -56,7 +57,6 @@ install (FILES Norms/NormExceptions.hpp DESTINATION include)
 
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
-install (FILES SmoothnessModulus.hpp DESTINATION include)
 
 install (FILES Spaces/NormedSpace.hpp DESTINATION include)
 

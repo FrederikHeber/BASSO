@@ -11,7 +11,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/MinimizationExceptions.hpp"
-#include "Minimizations/SmoothnessModulus.hpp"
+#include "Minimizations/Functions/SmoothnessModulus.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( SmoothnessModulusUnitTest );
