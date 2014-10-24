@@ -7,6 +7,8 @@
 
 #include "IllegalDualityMapping.hpp"
 
+#include "Minimizations/MinimizationExceptions.hpp"
+
 IllegalDualityMapping::IllegalDualityMapping() :
 	DualityMapping(1.)
 {}
