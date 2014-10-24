@@ -12,10 +12,10 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 
 class SoftThresholdingOperator :
-	public DualityMapping
+	public LpDualityMapping
 {
 public:
 	/** Default constructor of class SoftThresholdingOperator.
@@ -35,7 +35,7 @@ public:
 	 * @param _power \b not used, kept for signature compatibility
 	 * @return componentwise soft threshold of \a _x by \a lambda
 	 */
-	Eigen::VectorXd operator()(
+	const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
 			const double) const;
 

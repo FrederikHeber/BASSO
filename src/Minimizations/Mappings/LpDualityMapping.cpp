@@ -1,5 +1,5 @@
 /*
- * DualityMapping.cpp
+ * LpDualityMapping.cpp
  *
  *  Created on: Mar 28, 2014
  *      Author: heber
@@ -7,7 +7,7 @@
 
 #include "BassoConfig.h"
 
-#include "DualityMapping.hpp"
+#include "LpDualityMapping.hpp"
 
 #include <cmath>
 #include <Eigen/Dense>
@@ -16,7 +16,7 @@
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
 
-DualityMapping::DualityMapping(
+LpDualityMapping::LpDualityMapping(
 		const double _p
 		) :
 	p(_p),
@@ -48,7 +48,7 @@ DualityMapping::DualityMapping(
  * \return dual element corresponding to one element of the duality mapping for
  * 		x
  */
-Eigen::VectorXd DualityMapping::operator()(
+const Eigen::VectorXd LpDualityMapping::operator()(
 		const Eigen::VectorXd &_x,
 		const double _power
 		) const

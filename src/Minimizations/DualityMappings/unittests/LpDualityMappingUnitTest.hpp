@@ -1,18 +1,18 @@
 /*
- * DualityMappingUnitTest.hpp
+ * LpDualityMappingUnitTest.hpp
  *
  *  Created on: Mar 28, 2014
  *      Author: heber
  */
 
-#ifndef DUALITYMAPPINGUNITTEST_HPP_
-#define DUALITYMAPPINGUNITTEST_HPP_
+#ifndef LPDUALITYMAPPINGUNITTEST_HPP_
+#define LPDUALITYMAPPINGUNITTEST_HPP_
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class DualityMappingUnitTest : public CppUnit::TestFixture
+class LpDualityMappingUnitTest : public CppUnit::TestFixture
 {
-  CPPUNIT_TEST_SUITE( DualityMappingUnitTest );
+  CPPUNIT_TEST_SUITE( LpDualityMappingUnitTest );
   CPPUNIT_TEST( throwTest );
   CPPUNIT_TEST( oneNorm );
   CPPUNIT_TEST( twoNorm );
@@ -38,4 +38,4 @@ public:
 };
 
 
-#endif /* DUALITYMAPPINGUNITTEST_HPP_ */
+#endif /* LPDUALITYMAPPINGUNITTEST_HPP_ */

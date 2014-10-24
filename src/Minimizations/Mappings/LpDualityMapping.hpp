@@ -1,12 +1,12 @@
 /*
- * DualityMapping.hpp
+ * LpDualityMapping.hpp
  *
  *  Created on: Mar 27, 2014
  *      Author: heber
  */
 
-#ifndef DUALITYMAPPING_HPP_
-#define DUALITYMAPPING_HPP_
+#ifndef LPDUALITYMAPPING_HPP_
+#define LPDUALITYMAPPING_HPP_
 
 #include "BassoConfig.h"
 
@@ -14,23 +14,23 @@
 
 #include "Minimizations/Norms/LpNorm.hpp"
 
-class DualityMappingUnitTest;
+class LpDualityMappingUnitTest;
 
 /** This class contains a duality mapping instance from a specific
  * lp space to its dual.
  *
  */
-class DualityMapping
+class LpDualityMapping
 {
-	//!> grant unit test DualityMappingUnitTest access to private parts.
-	friend class DualityMappingUnitTest;
+	//!> grant unit test LpDualityMappingUnitTest access to private parts.
+	friend class LpDualityMappingUnitTest;
 public:
-	/** Constructor for class DualityMapping.
+	/** Constructor for class LpDualityMapping.
 	 *
 	 * \param _p p value of the used Lp norm
 	 */
-	DualityMapping(const double _p);
-	virtual ~DualityMapping() {}
+	LpDualityMapping(const double _p);
+	virtual ~LpDualityMapping() {}
 
 	/** Setter for internal tolerance.
 	 *
@@ -44,7 +44,7 @@ public:
 	 * \param _x point where to evaluate
 	 * \param _power power of duality mapping's weight
 	 */
-	virtual Eigen::VectorXd operator()(
+	virtual const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
 			const double _power) const;
 
@@ -57,4 +57,4 @@ protected:
 	LpNorm lpnorm;
 };
 
-#endif /* DUALITYMAPPING_HPP_ */
+#endif /* LPDUALITYMAPPING_HPP_ */

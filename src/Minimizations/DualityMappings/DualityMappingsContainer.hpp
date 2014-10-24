@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 
 /** This class defines a container for the duality mappings for a single
  * space X, to be used for example by the GeneralMinimizer class.
@@ -20,8 +20,8 @@ struct DualityMappingsContainer
 	DualityMappingsContainer(
 			const double _NormX,
 			const double _PowerX,
-			const DualityMapping &_J_p,
-			const DualityMapping &_J_q) :
+			const LpDualityMapping &_J_p,
+			const LpDualityMapping &_J_q) :
 		val_NormX(_NormX),
 		val_DualNormX(val_NormX/(val_NormX - 1.)),
 		PowerX(_PowerX),
@@ -50,9 +50,9 @@ struct DualityMappingsContainer
 	const double DualPowerX;
 
 	//!> reference to duality mapping object for space X
-	const DualityMapping &J_p;
+	const LpDualityMapping &J_p;
 	//!> reference to duality mapping object for dual space X^*
-	const DualityMapping &J_q;
+	const LpDualityMapping &J_q;
 };
 
 

@@ -10,10 +10,10 @@
 #include "Minimizations/MinimizationExceptions.hpp"
 
 IllegalDualityMapping::IllegalDualityMapping() :
-	DualityMapping(1.)
+	LpDualityMapping(1.)
 {}
 
-Eigen::VectorXd
+const Eigen::VectorXd
 IllegalDualityMapping::operator()(
 		const Eigen::VectorXd &_x,
 		const double _power) const

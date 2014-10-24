@@ -15,7 +15,7 @@
 #include <iomanip>
 
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 
 int main()
@@ -36,20 +36,20 @@ int main()
 			<< ", L1: " << v.lpNorm<1>()
 			<< ", l_infty: " << v.lpNorm<Eigen::Infinity>() << std::endl;
 
-	// testing of DualityMapping
+	// testing of LpDualityMapping
 	{
-		DualityMapping J_1(1);
-		std::cout << "DualityMapping J_1 with weight 2 of v is ("
+		LpDualityMapping J_1(1);
+		std::cout << "LpDualityMapping J_1 with weight 2 of v is ("
 				<< J_1(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		DualityMapping J_2(2);
-		std::cout << "DualityMapping J_2 with weight 2 of v is ("
+		LpDualityMapping J_2(2);
+		std::cout << "LpDualityMapping J_2 with weight 2 of v is ("
 				<< J_2(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		DualityMapping J_infty(LpNorm::Infinity);
-		std::cout << "DualityMapping J_infty with weight 2 of v is ("
+		LpDualityMapping J_infty(LpNorm::Infinity);
+		std::cout << "LpDualityMapping J_infty with weight 2 of v is ("
 				<< J_infty(v,2).transpose() << ")" << std::endl;
 	}
 
@@ -91,8 +91,8 @@ int main()
 	{
 		LpNorm lpnorm(1);
 		LpNorm lpdualnorm(LpNorm::Infinity);
-		DualityMapping J_1(1);
-		DualityMapping J_infty(LpNorm::Infinity);
+		LpDualityMapping J_1(1);
+		LpDualityMapping J_infty(LpNorm::Infinity);
 		BregmanProjectionFunctional bregman_1(lpdualnorm, J_infty, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
@@ -109,7 +109,7 @@ int main()
 	}
 	{
 		LpNorm lpnorm(2);
-		DualityMapping J_2(2);
+		LpDualityMapping J_2(2);
 		BregmanProjectionFunctional bregman_2(lpnorm, J_2, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
@@ -127,8 +127,8 @@ int main()
 	{
 		LpNorm lpnorm(LpNorm::Infinity);
 		LpNorm lpdualnorm(1.);
-		DualityMapping J_1(LpNorm::Infinity);
-		DualityMapping J_infty(1.);
+		LpDualityMapping J_1(LpNorm::Infinity);
+		LpDualityMapping J_infty(1.);
 		BregmanProjectionFunctional bregman_infty(lpdualnorm, J_1, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;

@@ -10,17 +10,17 @@
 #include "Math/Helpers.hpp"
 
 SoftThresholdingOperator::SoftThresholdingOperator() :
-	DualityMapping(1.),
+	LpDualityMapping(1.),
 	lambda(0.1)
 {}
 
 SoftThresholdingOperator::SoftThresholdingOperator(
 		const double _lambda) :
-	DualityMapping(1.),
+	LpDualityMapping(1.),
 	lambda(_lambda)
 {}
 
-Eigen::VectorXd
+const Eigen::VectorXd
 SoftThresholdingOperator::operator()(
 		const Eigen::VectorXd &_x,
 		const double) const

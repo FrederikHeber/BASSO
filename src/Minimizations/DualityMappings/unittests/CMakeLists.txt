@@ -1,15 +1,15 @@
 ### TESTS ###
 
-########################## DualityMappingUnitTest #######################
-add_executable (DualityMappingUnitTest 
+########################## LpDualityMappingUnitTest #######################
+add_executable (LpDualityMappingUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
-	DualityMappingUnitTest.cpp) 
-target_link_libraries (DualityMappingUnitTest 
+	LpDualityMappingUnitTest.cpp) 
+target_link_libraries (LpDualityMappingUnitTest 
 	${EXTRA_LIBS}
 	"${CPPUNIT_LIBRARY}")
 
-add_test (DualityMappingUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/DualityMappings/unittests/DualityMappingUnitTest)
+add_test (LpDualityMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/DualityMappings/unittests/LpDualityMappingUnitTest)
 
 ########################## IllegalDualityMappingUnitTest #######################
 add_executable (IllegalDualityMappingUnitTest 

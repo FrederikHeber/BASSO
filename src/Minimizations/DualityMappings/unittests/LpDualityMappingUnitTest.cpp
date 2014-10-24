@@ -1,5 +1,5 @@
 /*
- * DualityMappingUnitTest.cpp
+ * LpDualityMappingUnitTest.cpp
  *
  *  Created on: Mar 28, 2014
  *      Author: heber
@@ -7,32 +7,32 @@
 
 #include "BassoConfig.h"
 
-#include "DualityMappingUnitTest.hpp"
+#include "LpDualityMappingUnitTest.hpp"
 
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( DualityMappingUnitTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( LpDualityMappingUnitTest );
 
 
-void DualityMappingUnitTest::setUp()
+void LpDualityMappingUnitTest::setUp()
 {
 }
 
 
-void DualityMappingUnitTest::tearDown()
+void LpDualityMappingUnitTest::tearDown()
 {
 }
 
-void DualityMappingUnitTest::throwTest()
+void LpDualityMappingUnitTest::throwTest()
 {
 	// we check that assertion is thrown for invalid p value
 //	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
 	CPPUNIT_ASSERT_THROW(
-			DualityMapping J_illegal(-0.5),
+			LpDualityMapping J_illegal(-0.5),
 			NormIllegalValue_exception );
 }
 
@@ -41,17 +41,17 @@ void DualityMappingUnitTest::throwTest()
  * x=ones(2,10)-2.*rand(2,10)
  * gval=zeros(2,10)
  * for i=1:10
- * 	gval(:,i)=DualityMapping(x, p, power, 1e-6)
+ * 	gval(:,i)=LpDualityMapping(x, p, power, 1e-6)
  * endfor
  * gval
  *
  *
  */
 
-void DualityMappingUnitTest::oneNorm()
+void LpDualityMappingUnitTest::oneNorm()
 {
 	const double p = 1.;
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
@@ -117,10 +117,10 @@ void DualityMappingUnitTest::oneNorm()
 	}
 }
 
-void DualityMappingUnitTest::twoNorm()
+void LpDualityMappingUnitTest::twoNorm()
 {
 	const double p = 2.;
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
@@ -186,10 +186,10 @@ void DualityMappingUnitTest::twoNorm()
 	}
 }
 
-void DualityMappingUnitTest::fourNorm()
+void LpDualityMappingUnitTest::fourNorm()
 {
 	const double p = 4.;
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
@@ -267,10 +267,10 @@ void DualityMappingUnitTest::fourNorm()
 	}
 }
 
-void DualityMappingUnitTest::elevenNorm()
+void LpDualityMappingUnitTest::elevenNorm()
 {
 	const double p = 11.;
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
@@ -336,10 +336,10 @@ void DualityMappingUnitTest::elevenNorm()
 	}
 }
 
-void DualityMappingUnitTest::inftyNorm()
+void LpDualityMappingUnitTest::inftyNorm()
 {
 	const double p = LpNorm::Infinity;
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
@@ -393,7 +393,7 @@ void DualityMappingUnitTest::inftyNorm()
 	}
 }
 
-void DualityMappingUnitTest::otherNorm()
+void LpDualityMappingUnitTest::otherNorm()
 {
 	Eigen::MatrixXd X(2,10);
 	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
@@ -401,7 +401,7 @@ void DualityMappingUnitTest::otherNorm()
 	{
 		const double p = 1.1;
 		const double power = p/(p-1.);
-		DualityMapping J_p(p);
+		LpDualityMapping J_p(p);
 		Eigen::MatrixXd expected(2,10);
 		expected << 6.7370e-02,-1.1768e+01,5.8495e-06,7.9058e-03,1.2227e-04,-4.5604e-02,-4.8991e+01,1.4229e+01,-1.8862e-03,-1.8659e+00,
 				7.5131e-02,1.1372e+01,6.8236e-06,-7.7396e-03,-1.5377e-04,-4.8586e-02,-4.8231e+01,-1.4140e+01,-2.3411e-03,-1.8928e+00;
@@ -415,7 +415,7 @@ void DualityMappingUnitTest::otherNorm()
 	{
 		const double p = 1.5;
 		const double power = p/(p-1.);
-		DualityMapping J_p(p);
+		LpDualityMapping J_p(p);
 		Eigen::MatrixXd expected(2,10);
 		expected << 0.256915,-1.021804,0.034798,0.229659,0.049314,-0.266507,-1.298931,0.991715,-0.089537,-0.628823,
 				0.443146,0.861111,0.075169,-0.206506,-0.155126,-0.365816,-1.201262,-0.960995,-0.263710,-0.675422;
@@ -429,7 +429,7 @@ void DualityMappingUnitTest::otherNorm()
 	{
 		const double p = 5.;
 		const double power = p/(p-1.);
-		DualityMapping J_p(p);
+		LpDualityMapping J_p(p);
 		Eigen::MatrixXd expected(2,10);
 		expected << 1.1238e-02,-8.3485e-01,1.5078e-03,6.2202e-01,8.2305e-05,-6.5131e-02,-7.2415e-01,6.1077e-01,-1.4879e-04,-3.7023e-01,
 				8.8056e-01,2.1239e-01,7.1486e-01,-2.6582e-01,-7.8907e-01,-8.2077e-01,-3.8747e-01,-4.7485e-01,-8.4246e-01,-6.5592e-01;
@@ -443,7 +443,7 @@ void DualityMappingUnitTest::otherNorm()
 	{
 		const double p = 20.;
 		const double power = p/(p-1.);
-		DualityMapping J_p(p);
+		LpDualityMapping J_p(p);
 		Eigen::MatrixXd expected(2,10);
 		expected << 9.8144e-10,-9.8730e-01,1.8154e-13,9.3566e-01,1.1623e-19,-5.7242e-06,-9.5207e-01,7.7562e-01,-1.4377e-18,-6.1100e-02,
 				9.7424e-01,1.4816e-03,9.3184e-01,-1.6496e-02,-9.5135e-01,-9.6554e-01,-4.8824e-02,-2.3461e-01,-9.6456e-01,-9.2434e-01;
@@ -456,9 +456,9 @@ void DualityMappingUnitTest::otherNorm()
 	}
 }
 
-void DualityMappingUnitTest::setTolerance()
+void LpDualityMappingUnitTest::setTolerance()
 {
-	DualityMapping J_infty(0);
+	LpDualityMapping J_infty(0);
 	CPPUNIT_ASSERT_EQUAL(BASSOTOLERANCE, J_infty.tolerance);
 	const double value = 1e-1;
 	J_infty.setTolerance(value);

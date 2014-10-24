@@ -13,7 +13,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Norms/LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"

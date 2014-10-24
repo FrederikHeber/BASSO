@@ -12,13 +12,13 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 
-/** This class acts as a placeholder for a DualityMapping and ensures that this
+/** This class acts as a placeholder for a LpDualityMapping and ensures that this
  * function is never called in an algorithm.
  */
 class IllegalDualityMapping :
-	public DualityMapping
+	public LpDualityMapping
 {
 public:
 	/** Constructor of class IllegalDualityMapping.
@@ -31,7 +31,7 @@ public:
 	 * @param _power power of the duality mapping
 	 * @return componentwise soft threshold of \a _x by \a _ lambda
 	 */
-	Eigen::VectorXd operator()(
+	const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
 			const double _power) const;
 };

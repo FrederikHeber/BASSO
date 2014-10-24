@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 
 /** This equips the minimizer with the default differentiable duality mappings
@@ -43,9 +43,9 @@ struct DefaultDualityMappings : public DualityMappingsContainer
 	}
 
 	//!> duality mapping object for space X
-	const DualityMapping J_p;
+	const LpDualityMapping J_p;
 	//!> duality mapping object for dual space X^*
-	const DualityMapping J_q;
+	const LpDualityMapping J_q;
 };
 
 

@@ -12,12 +12,12 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const LpNorm &_lpdualnorm,
-		const DualityMapping &_J_q,
+		const LpDualityMapping &_J_q,
 		const OperationCounter<
 			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
 			const Eigen::MatrixBase<Eigen::MatrixXd>&,

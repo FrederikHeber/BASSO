@@ -75,7 +75,7 @@ void BregmanProjectionFunctionalUnitTest::oneNorm()
 	// due to large/small values we look at relative precision
 	const double p = 1.;
 	LpNorm lpdualnorm(p);
-	DualityMapping J_1(p);
+	LpDualityMapping J_1(p);
 	Eigen::MatrixXd U(2,2);
 	U << 0.68025,0.66385,-0.84814,-0.76287;
 	Eigen::VectorXd alpha(2,1);
@@ -132,7 +132,7 @@ void BregmanProjectionFunctionalUnitTest::oneoneNorm()
 {
 	const double p = 1.1;
 	LpNorm lpdualnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd U(2,2);
 	U <<   -0.37133, -0.95779, 0.40013, 0.93263;
 	Eigen::VectorXd alpha(2,1);
@@ -189,7 +189,7 @@ void BregmanProjectionFunctionalUnitTest::twoNorm()
 {
 	const double p = 2.;
 	LpNorm lpdualnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd U(2,2);
 	U <<   -0.37133, -0.95779, 0.40013, 0.93263;
 	Eigen::VectorXd alpha(2,1);
@@ -247,7 +247,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 	// due to large/small values we look at relative precision
 	const double p = LpNorm::Infinity;
 	LpNorm lpdualnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd U(2,2);
 	U <<   -0.37133, -0.95779, 0.40013, 0.93263;
 	Eigen::VectorXd alpha(2,1);

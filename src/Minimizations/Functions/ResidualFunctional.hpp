@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/LandweberMinimizer.hpp"
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 
 class ResidualFunctional
 {

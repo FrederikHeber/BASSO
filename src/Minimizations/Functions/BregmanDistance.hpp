@@ -14,7 +14,7 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 /** This implements a functor calculating the Bregman distance between
@@ -26,7 +26,7 @@ class BregmanDistance
 public:
 	BregmanDistance(
 			const LpNorm &_lpnorm,
-			const DualityMapping &_J_p,
+			const LpDualityMapping &_J_p,
 			const double _p,
 			const OperationCounter<
 					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
@@ -99,8 +99,8 @@ private:
 	const double p;
 	//!> lp Norm object
 	const LpNorm &lpnorm;
-	//!> DualityMapping object
-	const DualityMapping &J_p;
+	//!> LpDualityMapping object
+	const LpDualityMapping &J_p;
 	//!> counting and timing object for VectorVectorMultiplication
 	const OperationCounter<
 						Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,

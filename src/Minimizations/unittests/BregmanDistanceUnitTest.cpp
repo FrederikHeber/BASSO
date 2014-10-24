@@ -70,7 +70,7 @@ void BregmanDistanceUnitTest::oneoneNorm()
 {
 	const double p = 1.1;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -113,7 +113,7 @@ void BregmanDistanceUnitTest::onefiveNorm()
 {
 	const double p = 1.5;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -156,7 +156,7 @@ void BregmanDistanceUnitTest::twoNorm()
 {
 	const double p = 2.;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -199,7 +199,7 @@ void BregmanDistanceUnitTest::threeNorm()
 {
 	const double p = 3.;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -242,7 +242,7 @@ void BregmanDistanceUnitTest::sixNorm()
 {
 	const double p = 6.;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -286,7 +286,7 @@ void BregmanDistanceUnitTest::inftyNorm()
 {
 	const double p = LpNorm::Infinity;
 	LpNorm lpnorm(p);
-	DualityMapping J_p(p);
+	LpDualityMapping J_p(p);
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,

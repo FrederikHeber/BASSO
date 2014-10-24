@@ -3,7 +3,6 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Minimizations 
-	DualityMappings/DualityMapping.cpp
 	DualityMappings/IllegalDualityMapping.cpp
 	DualityMappings/SoftThresholdingOperator.cpp
 	Elements/SpaceElement.cpp
@@ -16,6 +15,7 @@ add_library (Minimizations
 	LandweberMinimizer_calculateMatchingTau.cpp
 	LandweberMinimizer_calculateOptimalStepwidth.cpp
 	Mappings/LinearMapping.cpp
+	Mappings/LpDualityMapping.cpp
 	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
 	SequentialSubspaceMinimizerNoise.cpp
@@ -23,7 +23,6 @@ add_library (Minimizations
 	)
 
 install (TARGETS Minimizations DESTINATION bin)
-install (FILES DualityMappings/DualityMapping.hpp DESTINATION include)
 install (FILES DualityMappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES DualityMappings/SoftThresholdingOperator.hpp DESTINATION include)
 
@@ -47,6 +46,7 @@ install (FILES MinimizationExceptions.hpp DESTINATION include)
 install (FILES MinimizerFactory.hpp DESTINATION include)
 
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
+install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 
 install (FILES Norms/IllegalNorm.hpp DESTINATION include)

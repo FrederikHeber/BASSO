@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Log/Logging.hpp"
-#include "Minimizations/DualityMappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 double BregmanDistance::operator()(
