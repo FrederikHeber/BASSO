@@ -77,6 +77,13 @@ public:
 	const unsigned int getDimension() const
 	{ return dimension; }
 
+	/** Creates a single element in this normed space.
+	 *
+	 * @param _dimension
+	 * @return element instance
+	 */
+	SpaceElement_ptr_t createElement() const;
+
 private:
 	/** Weak reference to this space due to interface constraints.
 	 * Otherwise this NormedSpace instance is never deleted as itself

@@ -8,6 +8,7 @@ add_library (Minimizations
 	DualityMappings/DualityMapping.cpp
 	DualityMappings/IllegalDualityMapping.cpp
 	DualityMappings/SoftThresholdingOperator.cpp
+	Elements/SpaceElement.cpp
 	GeneralMinimizer.cpp
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
@@ -17,6 +18,7 @@ add_library (Minimizations
 	SequentialSubspaceMinimizer_HyperplaneProjection.cpp
 	SequentialSubspaceMinimizerNoise.cpp
 	SmoothnessModulus.cpp
+	Spaces/NormedSpace.cpp
 	)
 
 install (TARGETS Minimizations DESTINATION bin)
@@ -25,6 +27,9 @@ install (FILES BregmanProjectionFunctional.hpp DESTINATION include)
 install (FILES DualityMappings/DualityMapping.hpp DESTINATION include)
 install (FILES DualityMappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES DualityMappings/SoftThresholdingOperator.hpp DESTINATION include)
+
+install (FILES Elements/SpaceElement.hpp DESTINATION include)
+
 install (FILES Functions/FunctionMinimizer.hpp DESTINATION include)
 install (FILES Functions/FunctionMinimizer_impl.hpp DESTINATION include)
 install (FILES Functions/MinimizationFunctional.hpp DESTINATION include)

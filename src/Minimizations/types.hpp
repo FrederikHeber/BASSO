@@ -13,8 +13,10 @@
 #include <boost/shared_ptr.hpp>
 
 class NormedSpace;
+class SpaceElement;
 
 typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
+typedef boost::shared_ptr<SpaceElement> SpaceElement_ptr_t;
 
 
 
