@@ -14,6 +14,7 @@
 #include <string>
 
 class Database;
+class DualityMappingsContainer;
 class GeneralMinimizer;
 
 /** This class is a factory for GeneralMinimizers, producing
