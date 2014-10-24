@@ -18,7 +18,7 @@
 class LpDualityMappingUnitTest;
 
 /** This class contains a duality mapping instance from a specific
- * lp space to its dual.
+ * l_p space with 1 < p < infty to its dual.
  *
  */
 class LpDualityMapping : public PowerTypeDualityMapping
@@ -31,7 +31,6 @@ public:
 	 * \param _p p value of the used Lp norm
 	 */
 	LpDualityMapping(const double _p);
-	virtual ~LpDualityMapping() {}
 
 	/** Evaluates duality mapping at \a _x.
 	 *

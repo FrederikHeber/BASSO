@@ -48,75 +48,6 @@ void LpDualityMappingUnitTest::throwTest()
  *
  */
 
-void LpDualityMappingUnitTest::oneNorm()
-{
-	const double p = 1.;
-	LpDualityMapping J_p(p);
-	Eigen::MatrixXd X(2,10);
-	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
-			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
-	{
-		const double power = .9;
-		Eigen::MatrixXd expected(2,10);
-		expected << 1.02083,-0.96920,1.12155,1.04250,1.08886,-1.02434,-0.95529,0.96710,-1.05935,-0.98687,
-				1.02083,0.96920,1.12155,-1.04250,-1.08886,-1.02434,-0.95529,-0.96710,-1.05935,-0.98687;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 1.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 1,-1,1,1,1,-1,-1,1,-1,-1,
-				1,1,1,-1,-1,-1,-1,-1,-1,-1;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 1.1;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0.97959,-1.03178,0.89162,0.95923,0.91839,-0.97624,-1.04680,1.03401,-0.94398,-1.01331,
-				0.97959,1.03178,0.89162,-0.95923,-0.91839,-0.97624,-1.04680,-1.03401,-0.94398,-1.01331;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 2.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0.81369,-1.36733,0.31755,0.65951,0.42686,-0.78623,-1.58000,1.39722,-0.56184,-1.14131,
-				0.81369,1.36733,0.31755,-0.65951,-0.42686,-0.78623,-1.58000,-1.39722,-0.56184,-1.14131;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 10.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 1.5636e-01,-1.6706e+01,3.2830e-05,2.3603e-02,4.7052e-04,-1.1480e-01,-6.1364e+01,2.0295e+01,-5.5782e-03,-3.2857e+00,
-				1.5636e-01,1.6706e+01,3.2830e-05,-2.3603e-02,-4.7052e-04,-1.1480e-01,-6.1364e+01,-2.0295e+01,-5.5782e-03,-3.2857e+00;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-}
-
 void LpDualityMappingUnitTest::twoNorm()
 {
 	const double p = 2.;
@@ -336,63 +267,6 @@ void LpDualityMappingUnitTest::elevenNorm()
 	}
 }
 
-void LpDualityMappingUnitTest::inftyNorm()
-{
-	const double p = LpNorm::Infinity;
-	LpDualityMapping J_p(p);
-	Eigen::MatrixXd X(2,10);
-	X << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929,
-			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
-	{
-		const double power = 1.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0,-1,0,1,-0,-0,-1,1,-0,-0,
-				1,0,1,0,-1,-1,0,0,-1,-1;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 1.1;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0.00000,-0.97787,0.00000,0.90404,-0.00000,-0.00000,-0.98407,0.96776,-0.00000,-0.00000,
-				0.95162,0.00000,0.87448,0.00000,-0.90959,-0.93554,0.00000,0.00000,-0.93373,-0.95199;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 2.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0.00000,-0.79951,0.00000,0.36466,-0.00000,-0.00000,-0.85163,0.72059,-0.00000,-0.00000,
-				0.60900,0.00000,0.26151,0.00000,-0.38768,-0.51362,0.00000,0.00000,-0.50376,-0.61138;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( expected.col(i).isApprox(compare, 1e-4)  );
-		}
-	}
-	{
-		const double power = 10.;
-		Eigen::MatrixXd expected(2,10);
-		expected << 0.00000,-0.13348,0.00000,0.00011,-0.00000,-0.00000,-0.23564,0.05238,-0.00000,-0.00000,
-				0.01152,0.00000,0.00001,0.00000,-0.00020,-0.00249,0.00000,0.00000,-0.00209,-0.01193;
-		for (size_t i=0; i<10; ++i) {
-			const Eigen::VectorXd compare = J_p(X.col(i), power);
-//			std::cout << "# " << i << ": Expecting " << expected.col(i).transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-			CPPUNIT_ASSERT( (expected.col(i) - compare).lpNorm<2>() < 1e-4  );
-		}
-	}
-}
-
 void LpDualityMappingUnitTest::otherNorm()
 {
 	Eigen::MatrixXd X(2,10);
@@ -458,9 +332,9 @@ void LpDualityMappingUnitTest::otherNorm()
 
 void LpDualityMappingUnitTest::setTolerance()
 {
-	LpDualityMapping J_infty(0);
-	CPPUNIT_ASSERT_EQUAL(BASSOTOLERANCE, J_infty.tolerance);
+	LpDualityMapping J_p(2.5);
+	CPPUNIT_ASSERT_EQUAL(BASSOTOLERANCE, J_p.tolerance);
 	const double value = 1e-1;
-	J_infty.setTolerance(value);
-	CPPUNIT_ASSERT_EQUAL(value, J_infty.tolerance);
+	J_p.setTolerance(value);
+	CPPUNIT_ASSERT_EQUAL(value, J_p.tolerance);
 }

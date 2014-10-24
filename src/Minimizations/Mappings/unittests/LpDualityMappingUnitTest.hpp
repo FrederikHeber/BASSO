@@ -14,11 +14,9 @@ class LpDualityMappingUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( LpDualityMappingUnitTest );
   CPPUNIT_TEST( throwTest );
-  CPPUNIT_TEST( oneNorm );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( fourNorm );
   CPPUNIT_TEST( elevenNorm );
-  CPPUNIT_TEST( inftyNorm );
   CPPUNIT_TEST( otherNorm );
   CPPUNIT_TEST( setTolerance );
   CPPUNIT_TEST_SUITE_END();
@@ -28,11 +26,9 @@ public:
   void tearDown();
 
   void throwTest();
-  void oneNorm();
   void twoNorm();
   void fourNorm();
   void elevenNorm();
-  void inftyNorm();
   void otherNorm();
   void setTolerance();
 };

@@ -41,13 +41,8 @@ double BregmanDistance::operator()(
 			<< "Calculating Bregman distance between "
 			<< _x.transpose() << " and " << _y.transpose();
 	double result = 0.;
-	if (p == LpNorm::Infinity) {
-		result += _x.array().abs().maxCoeff();
-		result += _y.array().abs().maxCoeff();
-	} else {
-		result += ((_power-1.)/_power) * ::pow(lpnorm(_x), _power);
-		result += (1./_power) * ::pow(lpnorm(_y), _power);
-	}
+	result += ((_power-1.)/_power) * ::pow(lpnorm(_x), _power);
+	result += (1./_power) * ::pow(lpnorm(_y), _power);
 	result -= ScalarVectorProduct(_xdual, _y);
 	return result;
 }

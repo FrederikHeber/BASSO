@@ -11,7 +11,9 @@ add_library (Minimizations
 	Functions/HyperplaneProjection.cpp
 	Functions/SmoothnessModulus.cpp
 	Mappings/LinearMapping.cpp
+	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
+	Mappings/LInfinityDualityMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/LandweberMinimizer_calculateMatchingTau.cpp
@@ -39,7 +41,9 @@ install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)
 
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
+install (FILES Mappings/L1DualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
+install (FILES Mappings/LInfinityDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 

@@ -16,7 +16,6 @@
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
 
-
 /** General function to calculate the duality mapping.
  *
  *	In [Schöpfer et al., '06] some formulas for the duality mapping in

@@ -12,6 +12,8 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( BregmanDistanceUnitTest );
