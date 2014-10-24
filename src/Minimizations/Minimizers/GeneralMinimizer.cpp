@@ -18,6 +18,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Minimizations/Norms/NormFactory.hpp"
+
 GeneralMinimizer::GeneralMinimizer(
 		const DualityMappingsContainer &_container,
 		const double _NormY,
@@ -36,9 +38,12 @@ GeneralMinimizer::GeneralMinimizer(
 	TolY(Delta),
 	TolFun(1e-12),
 	outputsteps(_outputsteps),
-	NormX(val_NormX),
-	NormY(val_NormY),
-	DualNormX(val_DualNormX),
+	internal_NormX(NormFactory::createInstance(val_NormX)),
+	internal_NormY(NormFactory::createInstance(val_NormY)),
+	internal_DualNormX(NormFactory::createInstance(val_DualNormX)),
+	NormX(*internal_NormX),
+	NormY(*internal_NormY),
+	DualNormX(*internal_DualNormX),
 	j_r(val_NormY),
 	database(_database),
 	matrix_vector_fctor(

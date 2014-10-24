@@ -16,7 +16,7 @@
 
 #include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Functions/SmoothnessModulus.hpp"
 
 class Database;
@@ -125,12 +125,23 @@ public:
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
 
+private:
+
 	//!> norm object for space X
-	const LpNorm NormX;
+	const Norm_ptr_t internal_NormX;
 	//!> norm object for space Y
-	const LpNorm NormY;
+	const Norm_ptr_t internal_NormY;
 	//!> norm object for dual space X^*
-	const LpNorm DualNormX;
+	const Norm_ptr_t internal_DualNormX;
+
+public:
+	//!> norm object for space X
+	const Norm& NormX;
+	//!> norm object for space Y
+	const Norm& NormY;
+	//!> norm object for dual space X^*
+	const Norm& DualNormX;
+
 	//!> duality mapping object for space Y (single-valued)
 	const LpDualityMapping j_r;
 

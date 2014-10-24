@@ -19,6 +19,8 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
 
 namespace po = boost::program_options;
 
@@ -420,18 +422,20 @@ int main (int argc, char *argv[])
 	minimizer->resetState();
 
 	// give result
-	LpNorm NormY(normy);
-	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-		std::cout << "Solution after "
-				<< result.NumberOuterIterations
-				<< " with relative residual of " << result.residuum/NormY(rhs)
+	{
+		Norm_ptr_t NormY = NormFactory::createInstance(normy);
+		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+			std::cout << "Solution after "
+					<< result.NumberOuterIterations
+					<< " with relative residual of " << result.residuum/(*NormY)(rhs)
+					<< std::endl;
+		} else {
+			std::cout << "Solution after " << result.NumberOuterIterations
+				<< " with relative residual of " << result.residuum/(*NormY)(rhs)
+				<< " is " << std::scientific << std::setprecision(8)
+				<< result.solution.transpose()
 				<< std::endl;
-	} else {
-		std::cout << "Solution after " << result.NumberOuterIterations
-			<< " with relative residual of " << result.residuum/NormY(rhs)
-			<< " is " << std::scientific << std::setprecision(8)
-			<< result.solution.transpose()
-			<< std::endl;
+		}
 	}
 
 	// writing solution

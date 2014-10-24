@@ -21,6 +21,7 @@ add_library (Minimizations
 	MinimizerFactory.cpp
 	Minimizers/SequentialSubspaceMinimizer.cpp
 	Minimizers/SequentialSubspaceMinimizerNoise.cpp
+	Norms/NormFactory.cpp
 	Spaces/NormedSpace.cpp
 	)
 
@@ -63,6 +64,7 @@ install (FILES Norms/LInfinityNorm.hpp DESTINATION include)
 install (FILES Norms/LpNorm.hpp DESTINATION include)
 install (FILES Norms/Norm.hpp DESTINATION include)
 install (FILES Norms/NormExceptions.hpp DESTINATION include)
+install (FILES Norms/NormFactory.hpp DESTINATION include)
 install (FILES Norms/RegularizedL1Norm.hpp DESTINATION include)
 
 install (FILES Spaces/NormedSpace.hpp DESTINATION include)

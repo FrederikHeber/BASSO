@@ -28,6 +28,11 @@ public:
 //		NormedSpaceRef(_ref)
 //	{}
 
+	/** Virtual destructor.
+	 *
+	 */
+	virtual ~Norm() {}
+
 	/** Evaluates the norm for a given \a _element.
 	 *
 	 * @param _element element of the space, whose norm to evaluated
