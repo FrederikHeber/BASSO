@@ -11,6 +11,12 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
+#include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
+#include "Minimizations/Norms/L1Norm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Norms/LInfinityNorm.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( BregmanProjectionFunctionalUnitTest );
@@ -73,9 +79,8 @@ void BregmanProjectionFunctionalUnitTest::tearDown()
 void BregmanProjectionFunctionalUnitTest::oneNorm()
 {
 	// due to large/small values we look at relative precision
-	const double p = 1.;
-	LpNorm lpdualnorm(p);
-	LpDualityMapping J_1(p);
+	L1Norm lpdualnorm;
+	L1DualityMapping J_1;
 	Eigen::MatrixXd U(2,2);
 	U << 0.68025,0.66385,-0.84814,-0.76287;
 	Eigen::VectorXd alpha(2,1);
@@ -245,9 +250,8 @@ void BregmanProjectionFunctionalUnitTest::twoNorm()
 void BregmanProjectionFunctionalUnitTest::inftyNorm()
 {
 	// due to large/small values we look at relative precision
-	const double p = LpNorm::Infinity;
-	LpNorm lpdualnorm(p);
-	LpDualityMapping J_p(p);
+	LInfinityNorm lpdualnorm;
+	LInfinityDualityMapping J_infty;
 	Eigen::MatrixXd U(2,2);
 	U <<   -0.37133, -0.95779, 0.40013, 0.93263;
 	Eigen::VectorXd alpha(2,1);
@@ -262,7 +266,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		expected << 0.62787,0.81287,0.56263,1.81008,2.18416,0.87617,0.23439,1.53412,1.30917,0.92277;
 		Eigen::MatrixXd expected_gradient(2,10);
 		expected_gradient << -0.29146,0.41462,0.35594,-0.40109,-0.40850,0.42878,0.37504,-0.36182,-0.39367,-0.37006,-1.35863,0.36329,0.31127,-1.53800,-1.55528,0.39627,0.36054,-1.54011,-1.52070,-1.46569;
-		BregmanProjectionFunctional d_p(lpdualnorm, J_p, *MatrixVectorProduct, *ScalarVectorProduct);
+		BregmanProjectionFunctional d_p(lpdualnorm, J_infty, *MatrixVectorProduct, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 1e-4);
@@ -276,7 +280,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		expected << 0.52893,0.40382,0.29723,1.50379,2.03986,0.54061,-0.14379,1.13591,0.92445,0.55934;
 		Eigen::MatrixXd expected_gradient(2,10);
 		expected_gradient << -0.039371,0.411033,0.173492,-0.575250,-0.689305,0.575867,0.288415,-0.414030,-0.478035,-0.256964,-0.708385,0.354918,-0.159334,-1.943942,-2.209787,0.739118,0.137097,-1.674771,-1.717351,-1.202072;
-		BregmanProjectionFunctional d_p(lpdualnorm, J_p, *MatrixVectorProduct, *ScalarVectorProduct);
+		BregmanProjectionFunctional d_p(lpdualnorm, J_infty, *MatrixVectorProduct, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 1e-4);
@@ -290,7 +294,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		expected << 5.1825e-01,4.2115e-03,2.0604e-01,5.2869e+00,2.9000e+01,2.4914e+00,-4.1038e-01,8.9170e-01,9.7075e-01,3.3062e-01;
 		Eigen::MatrixXd expected_gradient(2,10);
 		expected_gradient << 1.4897e-02,3.8049e-01,1.5072e-02,-1.3199e+01,-6.4800e+01,8.3874e+00,3.8602e-02,-1.3447e+00,-2.6001e+00,2.5507e-03,-5.6841e-01,2.8373e-01,-5.6796e-01,-3.1368e+01,-1.5164e+02,1.8947e+01,-5.0726e-01,-4.0753e+00,-6.6636e+00,-5.9719e-01;
-		BregmanProjectionFunctional d_p(lpdualnorm, J_p, *MatrixVectorProduct, *ScalarVectorProduct);
+		BregmanProjectionFunctional d_p(lpdualnorm, J_infty, *MatrixVectorProduct, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 2e-4);

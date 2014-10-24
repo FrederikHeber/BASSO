@@ -12,6 +12,7 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
+#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
@@ -286,9 +287,8 @@ void BregmanDistanceUnitTest::sixNorm()
 
 void BregmanDistanceUnitTest::inftyNorm()
 {
-	const double p = LpNorm::Infinity;
-	LpNorm lpnorm(p);
-	LpDualityMapping J_p(p);
+	LInfinityNorm linftynorm;
+	LInfinityDualityMapping J_infty;
 	Eigen::MatrixXd X(2,10);
 	Eigen::MatrixXd Y(2,10);
 	X << -0.921969,-0.023463,0.879205,-0.085334,0.075672,0.712906,-0.643552,-0.996276,0.676741,-0.937033,
@@ -299,7 +299,7 @@ void BregmanDistanceUnitTest::inftyNorm()
 		const double power = 1.1;
 		Eigen::VectorXd expected(10);
 		expected << 1.0810,  0.64814,  2.1952e-04,  0.56462,  0.098692,  0.59401,  0.96001,  0.50682,  1.6295,  0.49481;
-		BregmanDistance d_p(lpnorm, J_p, power, *ScalarVectorProduct);
+		BregmanDistance d_p(linftynorm, J_infty, power, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(X.col(i),Y.col(i),power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(X.col(i),Y.col(i),power) ) ) < 1e-4);
@@ -309,7 +309,7 @@ void BregmanDistanceUnitTest::inftyNorm()
 		const double power = 2.;
 		Eigen::VectorXd expected(10);
 		expected << 1.0692,  0.45130,  0.0019967,  0.50228,  0.21875,  0.55424,  0.65475,  0.75182,  1.2210,  0.53347;
-		BregmanDistance d_p(lpnorm, J_p, power, *ScalarVectorProduct);
+		BregmanDistance d_p(linftynorm, J_infty, power, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(X.col(i),Y.col(i),power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(X.col(i),Y.col(i),power) ) ) < 1e-4);
@@ -319,7 +319,7 @@ void BregmanDistanceUnitTest::inftyNorm()
 		const double power = 10.;
 		Eigen::VectorXd expected(10);
 		expected << 0.65969,  0.017060,  0.0078148,  0.14910,  0.0087956,  0.26450,  0.020548,  1.0873,  0.096628,  0.43669;
-		BregmanDistance d_p(lpnorm, J_p, power, *ScalarVectorProduct);
+		BregmanDistance d_p(linftynorm, J_infty, power, *ScalarVectorProduct);
 		for (size_t i=0; i<10; ++i) {
 //			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(X.col(i),Y.col(i),power) << ".\n";
 			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(X.col(i),Y.col(i),power) ) ) < 1e-4);

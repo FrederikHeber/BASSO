@@ -15,7 +15,12 @@
 #include <iomanip>
 
 #include "MatrixIO/OperationCounter.hpp"
+#include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Norms/L1Norm.hpp"
+#include "Minimizations/Norms/LInfinityNorm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 
 int main()
@@ -38,17 +43,17 @@ int main()
 
 	// testing of LpDualityMapping
 	{
-		LpDualityMapping J_1(1);
+		L1DualityMapping J_1;
 		std::cout << "LpDualityMapping J_1 with weight 2 of v is ("
 				<< J_1(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		LpDualityMapping J_2(2);
+		LpDualityMapping J_2(2.);
 		std::cout << "LpDualityMapping J_2 with weight 2 of v is ("
 				<< J_2(v,2).transpose() << ")" << std::endl;
 	}
 	{
-		LpDualityMapping J_infty(LpNorm::Infinity);
+		LInfinityDualityMapping J_infty;
 		std::cout << "LpDualityMapping J_infty with weight 2 of v is ("
 				<< J_infty(v,2).transpose() << ")" << std::endl;
 	}
@@ -89,10 +94,10 @@ int main()
 
 	// testing of BregmanProjectionFunctional
 	{
-		LpNorm lpnorm(1);
-		LpNorm lpdualnorm(LpNorm::Infinity);
-		LpDualityMapping J_1(1);
-		LpDualityMapping J_infty(LpNorm::Infinity);
+		L1Norm lpnorm;
+		LInfinityNorm lpdualnorm;
+		L1DualityMapping J_1;
+		LInfinityDualityMapping J_infty;
 		BregmanProjectionFunctional bregman_1(lpdualnorm, J_infty, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
@@ -125,10 +130,10 @@ int main()
 				<< bregman_2.gradient(t,x,U,alpha,q) << "" << std::endl;
 	}
 	{
-		LpNorm lpnorm(LpNorm::Infinity);
-		LpNorm lpdualnorm(1.);
-		LpDualityMapping J_1(LpNorm::Infinity);
-		LpDualityMapping J_infty(1.);
+		LInfinityNorm lpnorm;
+		L1Norm lpdualnorm;
+		L1DualityMapping J_1;
+		LInfinityDualityMapping J_infty;
 		BregmanProjectionFunctional bregman_infty(lpdualnorm, J_1, MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;

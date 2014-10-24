@@ -16,8 +16,8 @@
 #include "Minimizations/Norms/LpNorm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
-		const LpNorm &_lpdualnorm,
-		const LpDualityMapping &_J_q,
+		const Norm &_dualnorm,
+		const PowerTypeDualityMapping &_J_q,
 		const OperationCounter<
 			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
 			const Eigen::MatrixBase<Eigen::MatrixXd>&,
@@ -29,7 +29,7 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 			const Eigen::MatrixBase<Eigen::VectorXd>&
 			> &_ScalarVectorProduct
 		) :
-	lpdualnorm(_lpdualnorm),
+	dualnorm(_dualnorm),
 	J_q(_J_q),
 	MatrixVectorProduct(_MatrixVectorProduct),
 	ScalarVectorProduct(_ScalarVectorProduct)
@@ -48,7 +48,7 @@ double BregmanProjectionFunctional::operator()(
 	// fval=1/q*norm(x,p)^q+alpha'*t;
 	const Eigen::VectorXd alpha_transposed = _alpha.transpose();
 	const double fval =
-			1./(double)_q * ::pow(lpdualnorm(resx), _q)
+			1./(double)_q * ::pow(dualnorm(resx), _q)
 			+ ScalarVectorProduct(alpha_transposed, _t);
 	return fval;
 }

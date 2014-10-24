@@ -14,8 +14,8 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
 /** This implements a functor calculating the Bregman distance between
  * two points in a Lp space.
@@ -25,8 +25,8 @@ class BregmanDistance
 {
 public:
 	BregmanDistance(
-			const LpNorm &_lpnorm,
-			const LpDualityMapping &_J_p,
+			const Norm &_norm,
+			const PowerTypeDualityMapping &_J_p,
 			const double _p,
 			const OperationCounter<
 					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
@@ -34,7 +34,7 @@ public:
 					const Eigen::MatrixBase<Eigen::VectorXd>&
 					>& _ScalarVectorProduct) :
 				p(_p),
-				lpnorm(_lpnorm),
+				norm(_norm),
 				J_p(_J_p),
 				ScalarVectorProduct(_ScalarVectorProduct)
 	{}
@@ -98,9 +98,9 @@ private:
 	//!> value p of the Lp norm
 	const double p;
 	//!> lp Norm object
-	const LpNorm &lpnorm;
+	const Norm &norm;
 	//!> LpDualityMapping object
-	const LpDualityMapping &J_p;
+	const PowerTypeDualityMapping &J_p;
 	//!> counting and timing object for VectorVectorMultiplication
 	const OperationCounter<
 						Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,

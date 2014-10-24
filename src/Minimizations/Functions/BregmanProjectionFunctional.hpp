@@ -13,8 +13,8 @@
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
 /** Functor to calculate BregmanProjectionFunctional functional/distance.
  *
@@ -28,8 +28,8 @@ public:
 	 * @param _J_q duality mapping from dual space to space
 	 */
 	BregmanProjectionFunctional(
-			const LpNorm &_lpdualnorm,
-			const LpDualityMapping &_J_q,
+			const Norm &_dualnorm,
+			const PowerTypeDualityMapping &_J_q,
 			const OperationCounter<
 				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
 				const Eigen::MatrixBase<Eigen::MatrixXd>&,
@@ -76,9 +76,9 @@ public:
 
 private:
 	//!> lp Norm object
-	const LpNorm &lpdualnorm;
+	const Norm &dualnorm;
 	//!> LpDualityMapping object
-	const LpDualityMapping &J_q;
+	const PowerTypeDualityMapping &J_q;
 	//!> counting and timing object for MatrixVectorMultiplication
 	const OperationCounter<
 			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
