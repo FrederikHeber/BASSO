@@ -49,11 +49,13 @@ install (FILES MinimizerFactory.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 
+install (FILES Norms/IllegalNorm.hpp DESTINATION include)
 install (FILES Norms/L1Norm.hpp DESTINATION include)
 install (FILES Norms/LInfinityNorm.hpp DESTINATION include)
 install (FILES Norms/LpNorm.hpp DESTINATION include)
 install (FILES Norms/Norm.hpp DESTINATION include)
 install (FILES Norms/NormExceptions.hpp DESTINATION include)
+install (FILES Norms/RegularizedL1Norm.hpp DESTINATION include)
 
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
