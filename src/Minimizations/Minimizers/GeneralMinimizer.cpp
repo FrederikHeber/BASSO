@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 
 GeneralMinimizer::GeneralMinimizer(
 		const DualityMappingsContainer &_container,
@@ -41,10 +42,11 @@ GeneralMinimizer::GeneralMinimizer(
 	internal_NormX(NormFactory::createInstance(val_NormX)),
 	internal_NormY(NormFactory::createInstance(val_NormY)),
 	internal_DualNormX(NormFactory::createInstance(val_DualNormX)),
+	internal_j_r(PowerTypeDualityMappingFactory::createInstance(val_NormY)),
 	NormX(*internal_NormX),
 	NormY(*internal_NormY),
 	DualNormX(*internal_DualNormX),
-	j_r(val_NormY),
+	j_r(*internal_j_r),
 	database(_database),
 	matrix_vector_fctor(
 			boost::bind(

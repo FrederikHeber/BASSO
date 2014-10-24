@@ -14,6 +14,7 @@ add_library (Minimizations
 	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
 	Mappings/LInfinityDualityMapping.cpp
+	Mappings/PowerTypeDualityMappingFactory.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/LandweberMinimizer_calculateMatchingTau.cpp
@@ -47,6 +48,7 @@ install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LInfinityDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
+install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)
