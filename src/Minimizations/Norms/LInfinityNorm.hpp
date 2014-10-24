@@ -1,0 +1,52 @@
+/*
+ * LInfinityNorm.hpp
+ *
+ *  Created on: Oct 24, 2014
+ *      Author: heber
+ */
+
+#ifndef LINFINITYNORM_HPP_
+#define LINFINITYNORM_HPP_
+
+#include "BassoConfig.h"
+
+#include <Eigen/Dense>
+
+#include "Norm.hpp"
+
+#include "Minimizations/Elements/SpaceElement.hpp"
+
+/** This class implements the l_infinity norm.
+ *
+ */
+class LInfinityNorm : public Norm
+{
+public:
+//	/** Constructor of class LInfinityNorm.
+//	 *
+//	 * @param _ref reference to the space this norm is associated with
+//	 */
+//	LInfinityNorm(const boost::shared_ptr<NormedSpace> _ref) :
+//		Norm(_ref)
+//	{}
+
+	/** Evaluates the norm for a given \a _element.
+	 *
+	 * @param _element element of the space, whose norm to evaluated
+	 * @return norm of \a element
+	 */
+	const double operator()(const SpaceElement_ptr_t &_x) const
+	{
+//		assert( NormedSpaceRef == x->getSpace() );
+		return operator()(_x->getVectorRepresentation());
+	}
+
+	double operator()(const Eigen::VectorXd &_x) const
+	{
+		// infinity norm
+		return _x.lpNorm<Eigen::Infinity>();
+	}
+};
+
+
+#endif /* LINFINITYNORM_HPP_ */

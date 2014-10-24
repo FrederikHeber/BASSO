@@ -13,7 +13,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Norms/NormExceptions.hpp"
 
 class LpNorm
 {
@@ -22,8 +22,8 @@ public:
 		p(_p)
 	{
 		if (p < 0.)
-			throw MinimizationIllegalValue_exception()
-				<< MinimizationIllegalValue_name("p");
+			throw NormIllegalValue_exception()
+				<< NormIllegalValue_name("p");
 
 	}
 	~LpNorm() {}

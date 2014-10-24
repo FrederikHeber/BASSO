@@ -54,6 +54,16 @@ private:
 	void setDualSpace(const NormedSpace_ptr_t& _dualspace)
 	{	const_cast<NormedSpace_ptr_t&>(DualSpace) = _dualspace;	}
 
+	/** Setter of the norm.
+	 *
+	 * This is for the factory only to allow it to connect the various
+	 * spaces among one another.
+	 *
+	 * @param _norm norm object
+	 */
+	void setNorm(const Norm_ptr_t& _norm)
+	{	const_cast<Norm_ptr_t &>(norm) = _norm;	}
+
 	/** Setter of the duality mapping.
 	 *
 	 * This is for the factory only to allow it to connect the various
@@ -72,12 +82,15 @@ public:
 	 * createElement() does not work, rendering this space unuseable.
 	 *
 	 * @param _dimension dimension of this space
+	 * @param _norm norm object of the space
 	 * @param _dualitymapping duality mapping object from space to its dual
 	 */
 	NormedSpace(
 			const unsigned int _dimension,
+			const Norm_ptr_t &_norm,
 			const Mapping_ptr_t &_dualitymapping
 			) :
+		norm(_norm),
 		dualitymapping(_dualitymapping),
 		dimension(_dimension)
 	{}
@@ -96,6 +109,13 @@ public:
 	 */
 	const NormedSpace_ptr_t& getDualSpace() const
 	{ return DualSpace; }
+
+	/** Const getter for the norm in this space.
+	 *
+	 * @return norm object of this space
+	 */
+	const Norm_ptr_t& getNorm() const
+	{ return norm; }
 
 	/** Getter for the duality mapping
 	 *
@@ -127,6 +147,9 @@ private:
 
 	//!> Reference to the dual of this space.
 	const NormedSpace_ptr_t DualSpace;
+
+	//!> Norm object
+	const Norm_ptr_t norm;
 
 	//!> duality mapping from this into the dual space
 	const Mapping_ptr_t dualitymapping;

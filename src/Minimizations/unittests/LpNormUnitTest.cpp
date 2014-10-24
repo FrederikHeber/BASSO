@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Norms/LpNorm.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Norms/NormExceptions.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LpNormUnitTest );
@@ -31,7 +31,7 @@ void LpNormUnitTest::throwTest()
 //	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
 	CPPUNIT_ASSERT_THROW(
 			LpNorm norm(-0.5),
-			MinimizationIllegalValue_exception );
+			NormIllegalValue_exception );
 }
 
 /** We generate test vectors as follows via octave:

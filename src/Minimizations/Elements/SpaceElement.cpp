@@ -13,6 +13,7 @@
 #include <cassert>
 #include <iostream>
 
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 SpaceElement::SpaceElement(const NormedSpace_ptr_t &_ref) :
@@ -37,6 +38,12 @@ const bool SpaceElement::isApproxToConstant(
 		const double _tolerance) const
 {
 	return vector.isApproxToConstant(_constant, _tolerance);
+}
+
+const double SpaceElement::Norm() const
+{
+	return NormedSpaceRef->getNorm()->operator()(
+			SpaceElement_ptr_t(SelfRef));
 }
 
 SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const

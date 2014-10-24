@@ -73,6 +73,12 @@ public:
 			const double _constant,
 			const double _tolerance) const;
 
+	/** Calculates the norm of this element in the given Space.
+	 *
+	 * @return norm of the element
+	 */
+	const double Norm() const;
+
 	/** Scalar multiplication.
 	 *
 	 * @param _alpha scalar factor
