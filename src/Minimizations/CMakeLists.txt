@@ -38,4 +38,7 @@ install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizer_HyperplaneProjection.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
+
+install (FILES Spaces/NormedSpace.hpp DESTINATION include)
+
 install (FILES types.hpp DESTINATION include)

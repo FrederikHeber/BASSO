@@ -12,6 +12,10 @@
 
 #include <boost/shared_ptr.hpp>
 
+class NormedSpace;
+
+typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
+
 
 
 #endif /* TYPES_HPP_ */
