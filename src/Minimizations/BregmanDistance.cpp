@@ -14,7 +14,7 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/DualityMappings/DualityMapping.hpp"
-#include "Minimizations/LpNorm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 
 double BregmanDistance::operator()(
 		const Eigen::VectorXd &_x,

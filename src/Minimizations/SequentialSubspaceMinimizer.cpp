@@ -18,7 +18,7 @@
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "DualityMappings/DualityMapping.hpp"
-#include "LpNorm.hpp"
+#include "Norms/LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/BregmanDistance.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"

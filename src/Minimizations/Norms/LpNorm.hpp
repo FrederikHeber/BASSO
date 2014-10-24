@@ -13,7 +13,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "MinimizationExceptions.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 
 class LpNorm
 {

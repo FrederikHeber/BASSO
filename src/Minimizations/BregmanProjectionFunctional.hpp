@@ -14,7 +14,7 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/DualityMappings/DualityMapping.hpp"
-#include "Minimizations/LpNorm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 
 /** Functor to calculate BregmanProjectionFunctional functional/distance.
  *

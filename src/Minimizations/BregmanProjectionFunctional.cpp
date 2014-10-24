@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/DualityMappings/DualityMapping.hpp"
-#include "Minimizations/LpNorm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const LpNorm &_lpdualnorm,

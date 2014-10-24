@@ -15,7 +15,7 @@
 
 #include "BregmanProjectionFunctional.hpp"
 #include "DualityMappings/DualityMapping.hpp"
-#include "LpNorm.hpp"
+#include "Norms/LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"

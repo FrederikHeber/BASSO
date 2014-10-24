@@ -9,7 +9,7 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/LpNorm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'

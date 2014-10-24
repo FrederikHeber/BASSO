@@ -16,7 +16,7 @@
 
 #include "DualityMappings/DefaultDualityMappings.hpp"
 #include "DualityMappings/DualityMapping.hpp"
-#include "LpNorm.hpp"
+#include "Norms/LpNorm.hpp"
 #include "SmoothnessModulus.hpp"
 
 class Database;
