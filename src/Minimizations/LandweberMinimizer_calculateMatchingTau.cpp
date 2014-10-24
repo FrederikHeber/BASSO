@@ -15,37 +15,15 @@
 #include <limits>
 
 #include "MinimizationExceptions.hpp"
+#include "Functions/SmoothnessFunctional.hpp"
 
-class function_smoothness
-{
-public:
-	function_smoothness(
-			const SmoothnessModulus &_modul,
-			const double _lambda
-			) :
-		modul(_modul),
-		lambda(_lambda)
-	{}
-	~function_smoothness() {}
-
-	double operator()(double _arg) const
-	{
-		const double result = (modul)(_arg);
-		const double norm = result/_arg - lambda;
-		return norm*norm;
-	}
-
-private:
-	const SmoothnessModulus &modul;
-	const double lambda;
-};
 
 double LandweberMinimizer::calculateMatchingTau(
 		const SmoothnessModulus &_modul,
 		const double _lambda
 		) const
 {
-	function_smoothness smoothness(_modul, _lambda);
+	SmoothnessFunctional smoothness(_modul, _lambda);
 	double tau = .5;
 	double minval = -1000.;
 	double maxval = 1000.;
@@ -54,7 +32,7 @@ double LandweberMinimizer::calculateMatchingTau(
 	std::pair<double, double> minpair =
 			boost::math::tools::brent_find_minima(
 					boost::bind(
-							&function_smoothness::operator(),
+							&SmoothnessFunctional::operator(),
 							boost::cref(smoothness),
 							_1),
 					minval,
