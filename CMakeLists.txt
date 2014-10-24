@@ -137,8 +137,10 @@ enable_testing ()	# must reside here
 add_subdirectory (tests)
 add_subdirectory (src/Database/unittests)
 add_subdirectory (src/Math/unittests)
-add_subdirectory (src/Minimizations/unittests)
 add_subdirectory (src/Minimizations/DualityMappings/unittests)
+add_subdirectory (src/Minimizations/Functions/unittests)
+add_subdirectory (src/Minimizations/Mappings/unittests)
+add_subdirectory (src/Minimizations/Norms/unittests)
 
 ##################### PACKING INSTRUCTIONS ###############################
 

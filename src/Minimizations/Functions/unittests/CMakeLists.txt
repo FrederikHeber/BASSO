@@ -12,7 +12,7 @@ target_link_libraries (BregmanDistanceUnitTest
 	${LIBRT_LIBRARIES}) 
 
 add_test (BregmanDistanceUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanDistanceUnitTest)
+	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/BregmanDistanceUnitTest)
 
 ########################## BregmanProjectionFunctionalUnitTest #######################
 add_executable (BregmanProjectionFunctionalUnitTest 
@@ -25,18 +25,7 @@ target_link_libraries (BregmanProjectionFunctionalUnitTest
 	${LIBRT_LIBRARIES})
 
 add_test (BregmanProjectionFunctionalUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/BregmanProjectionFunctionalUnitTest)
-
-########################## LpNormUnitTest #######################
-add_executable (LpNormUnitTest 
-	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
-	LpNormUnitTest.cpp) 
-target_link_libraries (LpNormUnitTest 
-	${EXTRA_LIBS}
-	"${CPPUNIT_LIBRARY}") 
-
-add_test (LpNormUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/LpNormUnitTest)
+	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/BregmanProjectionFunctionalUnitTest)
 
 ########################## SmoothnessModulusUnitTest #######################
 add_executable (SmoothnessModulusUnitTest 
@@ -47,7 +36,7 @@ target_link_libraries (SmoothnessModulusUnitTest
 	"${CPPUNIT_LIBRARY}")
 
 add_test (SmoothnessModulusUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/unittests/SmoothnessModulusUnitTest)
+	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/SmoothnessModulusUnitTest)
 
 # mark as to fail if required
 #set_tests_properties (BregmanFunctionalUnitTest
