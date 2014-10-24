@@ -1,12 +1,12 @@
 /*
- * SequentialSubspaceMinimizer_HyperplaneProjection.hpp
+ * HyperplaneProjection.hpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
  */
 
-#ifndef SEQUENTIALSUBSPACEMINIMIZER_HYPERPLANEPROJECTION_HPP_
-#define SEQUENTIALSUBSPACEMINIMIZER_HYPERPLANEPROJECTION_HPP_
+#ifndef HYPERPLANEPROJECTION_HPP_
+#define HYPERPLANEPROJECTION_HPP_
 
 #include "BassoConfig.h"
 
@@ -61,4 +61,4 @@ struct HyperplaneProjection :
 
 
 
-#endif /* SEQUENTIALSUBSPACEMINIMIZER_HYPERPLANEPROJECTION_HPP_ */
+#endif /* HYPERPLANEPROJECTION_HPP_ */

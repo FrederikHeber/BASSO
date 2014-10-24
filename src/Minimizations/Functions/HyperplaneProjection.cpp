@@ -1,5 +1,5 @@
 /*
- * SequentialSubspaceMinimizer_HyperplaneProjection.cpp
+ * HyperplaneProjection.cpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
@@ -9,7 +9,7 @@
 
 #include <boost/log/trivial.hpp>
 
-#include "SequentialSubspaceMinimizer_HyperplaneProjection.hpp"
+#include "HyperplaneProjection.hpp"
 
 HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,

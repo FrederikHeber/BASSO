@@ -18,8 +18,8 @@
 #include "Norms/LpNorm.hpp"
 #include "MinimizationExceptions.hpp"
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
-#include "Minimizations/SequentialSubspaceMinimizer_HyperplaneProjection.hpp"
 
 // instantiate required template functions
 CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)

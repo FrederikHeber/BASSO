@@ -9,6 +9,7 @@ add_library (Minimizations
 	DualityMappings/IllegalDualityMapping.cpp
 	DualityMappings/SoftThresholdingOperator.cpp
 	Elements/SpaceElement.cpp
+	Functions/HyperplaneProjection.cpp
 	GeneralMinimizer.cpp
 	LandweberMinimizer.cpp
 	LandweberMinimizer_calculateMatchingTau.cpp
@@ -16,7 +17,6 @@ add_library (Minimizations
 	Mappings/LinearMapping.cpp
 	MinimizerFactory.cpp
 	SequentialSubspaceMinimizer.cpp
-	SequentialSubspaceMinimizer_HyperplaneProjection.cpp
 	SequentialSubspaceMinimizerNoise.cpp
 	SmoothnessModulus.cpp
 	Spaces/NormedSpace.cpp
@@ -33,9 +33,11 @@ install (FILES Elements/SpaceElement.hpp DESTINATION include)
 
 install (FILES Functions/FunctionMinimizer.hpp DESTINATION include)
 install (FILES Functions/FunctionMinimizer_impl.hpp DESTINATION include)
+install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
 install (FILES Functions/MinimizationFunctional.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
+
 install (FILES GeneralMinimizer.hpp DESTINATION include)
 install (FILES GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)
 install (FILES GeneralMinimizer_RegularizedL1Norm.hpp DESTINATION include)
@@ -53,7 +55,6 @@ install (FILES Norms/Norm.hpp DESTINATION include)
 install (FILES Norms/NormExceptions.hpp DESTINATION include)
 
 install (FILES SequentialSubspaceMinimizer.hpp DESTINATION include)
-install (FILES SequentialSubspaceMinimizer_HyperplaneProjection.hpp DESTINATION include)
 install (FILES SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
 install (FILES SmoothnessModulus.hpp DESTINATION include)
 
