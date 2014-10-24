@@ -62,13 +62,72 @@ void BregmanProjectionFunctionalUnitTest::tearDown()
  * fval=zeros(1,10)
  * gval=zeros(2,10)
  * for i=1:10
- * 	[fval(:,i),gval(:,i)]=BregmanProjectionFunctional(t(:,i),X(:,i),U,alphas,inf,10.,1e-6)
+ * 	[fval(:,i),gval(:,i)]=BregmanFunctional(t(:,i),X(:,i),U,alphas,inf,10.,1e-6)
  * endfor
  * fval
  * gval
  *
- * BregmanFunction ist aus Frank Schöpfer's Code und unverändert.
+ * BregmanFunctional ist aus Frank Schöpfer's Code und unverändert.
  */
+
+void BregmanProjectionFunctionalUnitTest::oneNorm()
+{
+	// due to large/small values we look at relative precision
+	const double p = 1.;
+	LpNorm lpnorm(LpNorm::Infinity);
+	LpNorm lpdualnorm(p);
+	DualityMapping J_1(p);
+	Eigen::MatrixXd U(2,2);
+	U << 0.68025,0.66385,-0.84814,-0.76287;
+	Eigen::VectorXd alpha(2,1);
+	alpha <<   -0.087261, -0.235115;
+	Eigen::MatrixXd t(2,10);
+	Eigen::MatrixXd X(2,10);
+	t << -0.091707,-0.897343,-0.127139,0.300883,-0.454444,0.967974,-0.262831,-0.668766,-0.670414,-0.455131,0.543059,0.865680,-0.300487,0.028029,-0.441100,0.019350,-0.775496,-0.908793,0.977006,-0.275997;
+	X << -0.379750,-0.943336,-0.883381,0.807463,-0.697762,-0.066113,0.894920,-0.081799,0.728086,0.113930,-0.690921,0.420590,0.819499,-0.726720,0.284505,0.338650,-0.116910,0.517283,0.074392,0.520657;
+	{
+		const double power = 1.1;
+		Eigen::VectorXd expected(10);
+		expected << 0.82176,1.01381,1.07100,0.91063,0.59857,1.76535,2.71796,1.92243,0.52698,0.70196;
+		Eigen::MatrixXd expected_gradient(2,10);
+		expected_gradient << -0.255682,1.472781,1.452913,-1.620815,-0.244916,1.543453,-1.763641,-1.700792,0.076645,-1.558400,-0.334443,1.221157,1.202610,-1.666661,-0.328093,1.287128,-1.799987,-1.741318,-0.138450,-1.608398;
+		BregmanProjectionFunctional d_p(lpdualnorm, J_1, *MatrixVectorProduct, *ScalarVectorProduct);
+		for (size_t i=0; i<10; ++i) {
+//			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
+			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 1e-4);
+//			std::cout << "# " << i << ": Expecting " << expected_gradient.col(i).transpose() << " and got " << d_p.gradient(t.col(i),X.col(i),U,alpha,power).transpose() << ".\n";
+			CPPUNIT_ASSERT( (lpnorm(expected_gradient.col(i) - d_p.gradient(t.col(i),X.col(i),U,alpha,power) ))/lpnorm(expected_gradient.col(i)) < 1e-4);
+		}
+	}
+	{
+		const double power = 2.;
+		Eigen::VectorXd expected(10);
+		expected << 0.41314,0.62818,0.66478,0.50207,0.28553,1.73849,3.38035,1.75062,0.13821,0.33762;
+		Eigen::MatrixXd expected_gradient(2,10);
+		expected_gradient << -0.260570,1.788871,1.563169,-1.668112,-0.176782,2.834724,-3.938726,-2.715546,0.044809,-1.130629,-0.337326,1.516221,1.305532,-1.710812,-0.287911,2.492506,-3.830390,-2.688573,-0.157226,-1.209081;
+		BregmanProjectionFunctional d_p(lpdualnorm, J_1, *MatrixVectorProduct, *ScalarVectorProduct);
+		for (size_t i=0; i<10; ++i) {
+//			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
+			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 1e-4);
+//			std::cout << "# " << i << ": Expecting " << expected_gradient.col(i).transpose() << " and got " << d_p.gradient(t.col(i),X.col(i),U,alpha,power).transpose() << ".\n";
+			CPPUNIT_ASSERT( (lpnorm(expected_gradient.col(i) - d_p.gradient(t.col(i),X.col(i),U,alpha,power) ))/lpnorm(expected_gradient.col(i)) < 1e-4);
+		}
+	}
+	{
+		const double power = 10.;
+		Eigen::VectorXd expected(10);
+		expected << 1.7741e-02,6.5155e-01,2.9734e-01,1.0730e-01,1.4355e-01,6.5141e+01,1.0328e+03,2.2887e+01,-1.6213e-01,1.0680e-01;
+		Eigen::MatrixXd expected_gradient(2,10);
+		expected_gradient << -3.1075e-01,9.5844e+00,2.9642e+00,-2.1581e+00,-8.7846e-02,5.2139e+02,-6.2629e+03,-2.0108e+02,-6.7892e-02,-1.3647e-01,-3.6692e-01,8.7932e+00,2.6134e+00,-2.1682e+00,-2.3546e-01,4.8655e+02,-5.8464e+03,-1.8786e+02,-2.2369e-01,-2.8105e-01;
+		BregmanProjectionFunctional d_p(lpdualnorm, J_1, *MatrixVectorProduct, *ScalarVectorProduct);
+		for (size_t i=0; i<10; ++i) {
+//			std::cout << "# " << i << ": Expecting " << expected(i) << " and got " << d_p(t.col(i),X.col(i),U,alpha,power) << ".\n";
+			CPPUNIT_ASSERT( fabs( (expected(i) - d_p(t.col(i),X.col(i),U,alpha,power) )/expected(i) ) < 4e-4);
+//			std::cout << "# " << i << ": Expecting " << expected_gradient.col(i).transpose() << " and got " << d_p.gradient(t.col(i),X.col(i),U,alpha,power).transpose() << ".\n";
+			CPPUNIT_ASSERT( (lpnorm(expected_gradient.col(i) - d_p.gradient(t.col(i),X.col(i),U,alpha,power) ))/lpnorm(expected_gradient.col(i)) < 1e-4);
+		}
+	}
+}
 
 void BregmanProjectionFunctionalUnitTest::oneoneNorm()
 {
