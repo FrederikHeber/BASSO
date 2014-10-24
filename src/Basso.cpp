@@ -15,6 +15,7 @@
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/GeneralMinimizer.hpp"
 #include "Minimizations/LandweberMinimizer.hpp"
+#include "Minimizations/MinimizationExceptions.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Minimizations/SequentialSubspaceMinimizer.hpp"
