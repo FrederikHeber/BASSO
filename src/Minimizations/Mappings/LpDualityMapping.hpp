@@ -41,6 +41,12 @@ public:
 			const Eigen::VectorXd &_x,
 			const double _power) const;
 
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	PowerTypeDualityMapping_ptr_t getAdjointMapping() const;
+
 protected:
 	//!> value p of the Lp norm
 	const double p;

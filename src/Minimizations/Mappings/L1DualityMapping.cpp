@@ -12,6 +12,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Math/Helpers.hpp"
 
@@ -44,4 +45,11 @@ const Eigen::VectorXd L1DualityMapping::operator()(
 	L1Norm norm;
 	const double factor = ::pow(norm(_x), (double)_power-1.);
 	return factor*Helpers::signum(_x);
+}
+
+PowerTypeDualityMapping_ptr_t L1DualityMapping::getAdjointMapping() const
+{
+	// adjoint mapping is from l_infinity
+	PowerTypeDualityMapping_ptr_t instance(new LInfinityDualityMapping);
+	return instance;
 }

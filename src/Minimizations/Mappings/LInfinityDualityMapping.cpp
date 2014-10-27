@@ -12,6 +12,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+#include "Minimizations/Mappings/L1DualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
@@ -50,4 +51,12 @@ const Eigen::VectorXd LInfinityDualityMapping::operator()(
 	temp[0] = 1.;
 	const Eigen::VectorXd Jx = Helpers::circshift(temp, rowMax); // no -1 here, as index starts at 0 here, not 1
 	return Jx * factor;
+}
+
+PowerTypeDualityMapping_ptr_t
+LInfinityDualityMapping::getAdjointMapping() const
+{
+	// adjoint mapping is from l_1
+	PowerTypeDualityMapping_ptr_t instance(new L1DualityMapping);
+	return instance;
 }

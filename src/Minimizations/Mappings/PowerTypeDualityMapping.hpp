@@ -53,6 +53,12 @@ public:
 			const double _power
 			) const;
 
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	virtual PowerTypeDualityMapping_ptr_t getAdjointMapping() const = 0;
+
 	/** Returns the tolerance.
 	 *
 	 * @return tolerance tolerance threshold
