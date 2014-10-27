@@ -364,7 +364,7 @@ int main (int argc, char *argv[])
 	case MinimizerFactory::defaulttype:
 	default:
 		minimizer =
-			factory.getInstance(
+			factory.createInstance(
 				type,
 				normx,
 				normy,

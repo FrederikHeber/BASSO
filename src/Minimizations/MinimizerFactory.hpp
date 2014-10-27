@@ -60,7 +60,7 @@ public:
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
 	 */
-	instance_ptr_t getInstance(
+	instance_ptr_t createInstance(
 			const enum InstanceType &_type,
 			const double _NormX,
 			const double _NormY,

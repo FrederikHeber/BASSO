@@ -26,7 +26,7 @@ const std::string MinimizerFactory::TypeNames[] = {
 DualityMappingsContainer *MinimizerFactory::DualityContainer = NULL;
 
 MinimizerFactory::instance_ptr_t
-MinimizerFactory::getInstance(
+MinimizerFactory::createInstance(
 		const enum InstanceType &_type,
 		const double _NormX,
 		const double _NormY,
