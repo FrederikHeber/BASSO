@@ -49,23 +49,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 		const double _power
 		) const
 {
-	if (p == LpNorm::Infinity) {	// single-valued selection
-		// [xNorm,k]=max(abs(x));
-		unsigned int rowMax;
-		unsigned int colMax;
-		double factor = _x.array().abs().maxCoeff(&rowMax, &colMax);
-		factor = ::pow(factor, (double)_power-1.) * Helpers::sign(_x[rowMax]);
-		// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
-		Eigen::VectorXd temp = Eigen::VectorXd::Zero(_x.innerSize());
-		temp[0] = 1.;
-		const Eigen::VectorXd Jx = Helpers::circshift(temp, rowMax); // no -1 here, as index starts at 0 here, not 1
-		return Jx * factor;
-	} else if (p <= 1.) {	// single-valued selection
-		// J=norm(x,1)^(q-1)*sign(x);
-		LpNorm norm1(1);
-		const double factor = ::pow(norm1(_x), (double)_power-1.);
-		return factor*Helpers::signum(_x);
-	} else if (p == _power) {
+	if (p == _power) {
 		// J=abs(x).^(p-1).*sign(x);
 		Eigen::VectorXd Jx = _x.array().abs();
 		for (int i=0;i<Jx.innerSize();++i)

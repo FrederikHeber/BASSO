@@ -210,13 +210,13 @@ LandweberMinimizer::operator()(
 				BOOST_LOG_TRIVIAL(trace)
 					<< "A_p " << A_p;
 				double R_p = 0.;
-				if (val_NormX == LpNorm::Infinity) {
+				if (val_NormX == std::numeric_limits<double>::infinity()) {
 					R_p = returnvalues.residual.array().abs().maxCoeff();
 				} else {
 					R_p = ::pow(returnvalues.residuum, val_NormX);
 				}
 				double R_r = 0.;
-				if (val_NormY == LpNorm::Infinity) {
+				if (val_NormY == std::numeric_limits<double>::infinity()) {
 					R_r = returnvalues.residual.array().abs().maxCoeff();
 				} else {
 					R_r = ::pow(returnvalues.residuum, val_NormY);
@@ -244,7 +244,7 @@ LandweberMinimizer::operator()(
 				BOOST_LOG_TRIVIAL(trace)
 					<< "x_p " << x_p;
 				double R_r = 0.;
-				if (val_NormY == LpNorm::Infinity) {
+				if (val_NormY == std::numeric_limits<double>::infinity()) {
 					R_r = returnvalues.residual.array().abs().maxCoeff()
 							/ returnvalues.residuum;
 				} else {

@@ -12,10 +12,10 @@
 
 #include <Eigen/Dense>
 
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/L1DualityMapping.hpp"
 
 class SoftThresholdingOperator :
-	public LpDualityMapping
+	public L1DualityMapping
 {
 public:
 	/** Default constructor of class SoftThresholdingOperator.

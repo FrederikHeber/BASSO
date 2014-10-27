@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <Eigen/Dense>
+#include <limits>
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"

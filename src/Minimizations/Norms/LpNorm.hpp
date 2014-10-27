@@ -12,10 +12,12 @@
 
 #include <cmath>
 #include <Eigen/Dense>
+#include <limits>
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
 
 class LpNorm : public Norm
 {
@@ -23,7 +25,7 @@ public:
 	LpNorm(const double _p) :
 		p(_p)
 	{
-		if (p < 0.)
+		if ((p <= 1.) || (p == std::numeric_limits<double>::infinity()))
 			throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("p");
 
@@ -53,8 +55,6 @@ public:
 			return _x.lpNorm<Eigen::Infinity>();
 		}
 	}
-
-	enum { Infinity = 0};
 
 	/** Getter for the p value of a possible lp norm.
 	 *

@@ -10,13 +10,11 @@
 #include "Math/Helpers.hpp"
 
 SoftThresholdingOperator::SoftThresholdingOperator() :
-	LpDualityMapping(1.),
 	lambda(0.1)
 {}
 
 SoftThresholdingOperator::SoftThresholdingOperator(
 		const double _lambda) :
-	LpDualityMapping(1.),
 	lambda(_lambda)
 {}
 

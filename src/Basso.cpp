@@ -2,9 +2,10 @@
 #include "BassoConfig.h"
 
 // A simple program that computes the square root of a number
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <fstream>
+#include <limits>
 #include <string>
 
 #include <boost/filesystem/path.hpp>
@@ -38,8 +39,8 @@ int main (int argc, char *argv[])
 	        ("matrix", po::value< boost::filesystem::path >(),
 	        		"set the forward operator matrix file")
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
-	        ("normx", po::value<double>(), "set the norm of the space X")
-	        ("normy", po::value<double>(), "set the norm of the space Y")
+	        ("normx", po::value<double>(), "set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
+	        ("normy", po::value<double>(), "set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
 	        ("number-directions", po::value<unsigned int>(), "set the number of search directions (SSO)")
 	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
 	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
@@ -174,6 +175,8 @@ int main (int argc, char *argv[])
 	} else {
 		normx = 2;
 	}
+	if (normx == 0.) // translate infinity
+		normx = std::numeric_limits<double>::infinity();
 	double normy;
 	if (vm.count("normy")) {
 		normy = vm["normy"].as<double>();
@@ -182,6 +185,8 @@ int main (int argc, char *argv[])
 	} else {
 		normy = 2.;
 	}
+	if (normy == 0.) // translate infinity
+		normy = std::numeric_limits<double>::infinity();
 	unsigned int N;
 	if (vm.count("number-directions")) {
 		N = vm["number-directions"].as<unsigned int>();

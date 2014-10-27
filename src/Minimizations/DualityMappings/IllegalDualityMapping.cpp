@@ -10,7 +10,7 @@
 #include "Minimizations/MinimizationExceptions.hpp"
 
 IllegalDualityMapping::IllegalDualityMapping() :
-	LpDualityMapping(1.)
+	LpDualityMapping(2.)
 {}
 
 const Eigen::VectorXd
