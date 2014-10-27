@@ -10,6 +10,8 @@ add_library (Minimizations
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/HyperplaneProjection.cpp
 	Functions/SmoothnessModulus.cpp
+	InverseProblems/InverseProblem.cpp
+	InverseProblems/InverseProblemFactory.cpp
 	Mappings/LinearMapping.cpp
 	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
@@ -43,6 +45,9 @@ install (FILES Functions/MinimizationFunctional.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)
+
+install (FILES InverseProblems/InverseProblem.hpp DESTINATION include)
+install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
 
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/L1DualityMapping.hpp DESTINATION include)

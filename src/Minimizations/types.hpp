@@ -12,12 +12,14 @@
 
 #include <boost/shared_ptr.hpp>
 
+class InverseProblem;
 class Mapping;
 class Norm;
 class NormedSpace;
 class PowerTypeDualityMapping;
 class SpaceElement;
 
+typedef boost::shared_ptr<InverseProblem> InverseProblem_ptr_t;
 typedef boost::shared_ptr<Mapping> Mapping_ptr_t;
 typedef boost::shared_ptr<Norm> Norm_ptr_t;
 typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
