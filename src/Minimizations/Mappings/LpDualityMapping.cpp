@@ -12,9 +12,9 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+#include "Math/Helpers.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
-#include "Math/Helpers.hpp"
 
 LpDualityMapping::LpDualityMapping(
 		const double _p
@@ -83,7 +83,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 PowerTypeDualityMapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value
-	const double q = p/(p-1.);
+	const double q = Helpers::ConjugateValue(p);
 	// and create instance with it
 	PowerTypeDualityMapping_ptr_t instance(new LpDualityMapping(q));
 	return instance;

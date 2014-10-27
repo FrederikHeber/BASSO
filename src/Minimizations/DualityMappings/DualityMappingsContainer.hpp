@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include "Math/Helpers.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 
 /** This class defines a container for the duality mappings for a single
@@ -23,9 +24,9 @@ struct DualityMappingsContainer
 			const PowerTypeDualityMapping &_J_p,
 			const PowerTypeDualityMapping &_J_q) :
 		val_NormX(_NormX),
-		val_DualNormX(val_NormX/(val_NormX - 1.)),
+		val_DualNormX(Helpers::ConjugateValue(val_NormX)),
 		PowerX(_PowerX),
-		DualPowerX(PowerX/(PowerX - 1.)),
+		DualPowerX(Helpers::ConjugateValue(PowerX)),
 		J_p(_J_p),
 		J_q(_J_q)
 	{}

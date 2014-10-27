@@ -75,7 +75,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 	double G;
 	if (val_NormX > 2) {
 		PowerX = val_NormX;
-		DualPowerX = PowerX/(PowerX - 1.);
+		DualPowerX = Helpers::ConjugateValue(PowerX);
 		G = ::pow(2., 2. - val_DualNormX);
 	} else {
 		PowerX = 2.;

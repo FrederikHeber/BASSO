@@ -14,6 +14,7 @@
 #include <limits>
 
 #include "Log/Logging.hpp"
+#include "Math/Helpers.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
@@ -42,7 +43,7 @@ double BregmanDistance::operator()(
 			<< "Calculating Bregman distance between "
 			<< _x.transpose() << " and " << _y.transpose();
 	double result = 0.;
-	result += ((_power-1.)/_power) * ::pow(norm(_x), _power);
+	result += (1./Helpers::ConjugateValue(_power)) * ::pow(norm(_x), _power);
 	result += (1./_power) * ::pow(norm(_y), _power);
 	result -= ScalarVectorProduct(_xdual, _y);
 	return result;
