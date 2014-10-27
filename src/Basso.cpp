@@ -428,7 +428,7 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		Norm_ptr_t NormY = NormFactory::createInstance(normy);
+		Norm_ptr_t NormY = NormFactory::createLpInstance(normy);
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations

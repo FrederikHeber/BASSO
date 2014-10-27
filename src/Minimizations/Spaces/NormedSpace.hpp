@@ -14,15 +14,15 @@
 
 #include <boost/weak_ptr.hpp>
 
-class LpSpaceFactory;
+class NormedSpaceFactory;
 
 class NormedSpace
 {
 private:
 	//!> grant factory access to default cstor.
-	friend class LpSpaceFactory;
+	friend class NormedSpaceFactory;
 
-	/** Private default constructor to which only LpSpaceFactory has access.
+	/** Private default constructor to which only NormedSpaceFactory has access.
 	 *
 	 * @param _dimension dimension of this space
 	 */
@@ -36,7 +36,7 @@ private:
 	 * with shared_ptr's. We must not create a shared_ptr with \a this as
 	 * this shared_ptr already exists and must be supplied elsewhere.
 	 *
-	 * \warning The LpSpaceFactory function should make sure that a correct
+	 * \warning The NormedSpaceFactory function should make sure that a correct
 	 * space (with the shared_ptr ref) has been created.
 	 *
 	 * @param _space space reference
