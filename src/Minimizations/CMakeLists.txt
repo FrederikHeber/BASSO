@@ -14,6 +14,7 @@ add_library (Minimizations
 	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
 	Mappings/LInfinityDualityMapping.cpp
+	Mappings/PowerTypeDualityMapping.cpp
 	Mappings/PowerTypeDualityMappingFactory.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp

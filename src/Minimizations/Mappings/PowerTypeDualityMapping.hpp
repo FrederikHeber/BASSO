@@ -12,6 +12,8 @@
 
 #include <Eigen/Dense>
 
+#include "Minimizations/types.hpp"
+
 /** This class defines mappings from a space to its dual space with
  * elements being the gradient of the norm of the source space.
  */
@@ -40,6 +42,16 @@ public:
 	virtual const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x,
 			const double _power) const = 0;
+
+	/** Mapping function.
+	 *
+	 * @param _sourceelement element to map/transform
+	 * @return new transformed/mapped element
+	 */
+	SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_sourceelement,
+			const double _power
+			) const;
 
 	/** Returns the tolerance.
 	 *
