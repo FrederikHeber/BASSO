@@ -12,6 +12,7 @@
 
 #include <Eigen/Dense>
 
+#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 class LpDualityMappingUnitTest;
@@ -20,7 +21,7 @@ class LpDualityMappingUnitTest;
  * lp space to its dual.
  *
  */
-class LpDualityMapping
+class LpDualityMapping : public PowerTypeDualityMapping
 {
 	//!> grant unit test LpDualityMappingUnitTest access to private parts.
 	friend class LpDualityMappingUnitTest;
@@ -31,13 +32,6 @@ public:
 	 */
 	LpDualityMapping(const double _p);
 	virtual ~LpDualityMapping() {}
-
-	/** Setter for internal tolerance.
-	 *
-	 * \param _tolerance value to set to
-	 */
-	void setTolerance(const double _tolerance) const
-	{ tolerance = _tolerance; }
 
 	/** Evaluates duality mapping at \a _x.
 	 *
@@ -51,8 +45,6 @@ public:
 protected:
 	//!> value p of the Lp norm
 	const double p;
-	//!> tolerance for norm value
-	mutable double tolerance;
 	//!> lp norm object
 	LpNorm lpnorm;
 };

@@ -41,6 +41,7 @@ install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
+install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)

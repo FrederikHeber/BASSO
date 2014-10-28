@@ -20,13 +20,9 @@ LpDualityMapping::LpDualityMapping(
 		const double _p
 		) :
 	p(_p),
-	tolerance(BASSOTOLERANCE),
 	lpnorm(p)
 {
-	// no negative p values
-	if (p < 0.)
-		throw MinimizationIllegalValue_exception()
-			<< MinimizationIllegalValue_name("p");
+	// we don't need to throw, norm will do this
 }
 
 /** General function to calculate the duality mapping.
