@@ -7,7 +7,7 @@
 
 #include "IllegalDualityMapping.hpp"
 
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 IllegalDualityMapping::IllegalDualityMapping() :
 	LpDualityMapping(2.)

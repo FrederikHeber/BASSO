@@ -10,7 +10,7 @@
 #include <cassert>
 #include <Eigen/Dense>
 
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Functions/SmoothnessModulus.hpp"
 
 // Registers the fixture into the 'registry'

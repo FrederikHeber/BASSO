@@ -7,10 +7,11 @@
 
 #include "BassoConfig.h"
 
+#include "MinimizerFactory.hpp"
+
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 #include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
 #include "Minimizations/DualityMappings/RegularizedL1Norm.hpp"
-#include "Minimizations/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"

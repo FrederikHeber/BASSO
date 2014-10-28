@@ -14,7 +14,7 @@
 
 #include "Math/Helpers.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 LpDualityMapping::LpDualityMapping(
 		const double _p,

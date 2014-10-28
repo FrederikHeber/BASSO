@@ -15,7 +15,7 @@
 #include <limits>
 
 #include "Minimizations/Functions/ResidualFunctional.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 double LandweberMinimizer::calculateOptimalStepwidth(
 		const Eigen::VectorXd &_x,

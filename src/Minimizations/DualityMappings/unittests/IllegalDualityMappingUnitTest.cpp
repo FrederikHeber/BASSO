@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/DualityMappings/IllegalDualityMapping.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( IllegalDualityMappingUnitTest );

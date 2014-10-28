@@ -14,7 +14,7 @@
 
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"
 
 /** General function to calculate the duality mapping.

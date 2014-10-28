@@ -15,7 +15,7 @@
 #include <limits>
 
 #include "Minimizations/Functions/SmoothnessFunctional.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 
 double LandweberMinimizer::calculateMatchingTau(

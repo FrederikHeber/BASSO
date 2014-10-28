@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 

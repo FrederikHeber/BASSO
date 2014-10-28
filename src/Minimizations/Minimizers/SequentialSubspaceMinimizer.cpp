@@ -22,7 +22,7 @@
 #include "Minimizations/Functions/FunctionMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
-#include "Minimizations/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 // instantiate required template functions
