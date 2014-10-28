@@ -27,6 +27,14 @@ SpaceElement_ptr_t LinearMapping::operator()(
 	return targetelement;
 }
 
+const Eigen::VectorXd LinearMapping::operator()(
+		const Eigen::VectorXd &_sourcevector
+		) const
+{
+	const Eigen::VectorXd targetvector = matrix * _sourcevector;
+	return targetvector;
+}
+
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
 	SpaceElement_ptr_t newelement; // TargetSpaceRef->createElement());

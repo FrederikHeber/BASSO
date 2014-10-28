@@ -83,6 +83,15 @@ public:
 				const SpaceElement_ptr_t &_sourceelement
 				) const;
 
+	/** Mapping function.
+	 *
+	 * @param _sourcevector vector to map/transform
+	 * @return new transformed/mapped vector
+	 */
+	const Eigen::VectorXd operator()(
+			const Eigen::VectorXd &_sourcevector
+			) const;
+
 	/** Creates the adjoint mapping to this mapping.
 	 *
 	 * @return mapping instance with adjoint

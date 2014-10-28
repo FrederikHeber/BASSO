@@ -47,6 +47,15 @@ public:
 //	virtual const NormedSpace_ptr_t& getTargetSpace() const
 //	{ return TargetSpaceRef; }
 
+	/** Dummy setter for tolerance.
+	 *
+	 * TODO: remove this as soon as PowerTypeDualityMapping is accessed directly again.
+	 *
+	 * \param _tolerance value to set to
+	 */
+	virtual void setTolerance(const double _tolerance) const
+	{}
+
 	/** Mapping function.
 	 *
 	 * @param _sourceelement element to map/transform
@@ -54,6 +63,15 @@ public:
 	 */
 	virtual SpaceElement_ptr_t operator()(
 			const SpaceElement_ptr_t &_sourceelement
+			) const = 0;
+
+	/** Mapping function.
+	 *
+	 * @param _sourceelement element to map/transform
+	 * @return new transformed/mapped element
+	 */
+	virtual const Eigen::VectorXd operator()(
+			const Eigen::VectorXd &_sourceelement
 			) const = 0;
 
 	/** Creates the adjoint mapping to this mapping.
