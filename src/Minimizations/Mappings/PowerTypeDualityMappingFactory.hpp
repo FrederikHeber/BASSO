@@ -21,7 +21,7 @@ struct PowerTypeDualityMappingFactory
 	 * @param _power power type of the weight function
 	 * @return
 	 */
-	static PowerTypeDualityMapping_ptr_t createInstance(
+	static Mapping_ptr_t createInstance(
 			const double _p,
 			const double _power);
 };

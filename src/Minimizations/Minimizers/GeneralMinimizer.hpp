@@ -15,7 +15,7 @@
 #include "MatrixIO/OperationCounter.hpp"
 
 #include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Functions/SmoothnessModulus.hpp"
 
@@ -135,7 +135,7 @@ private:
 	const Norm_ptr_t internal_DualNormX;
 
 	//!> duality mapping object for space Y (single-valued)
-	const PowerTypeDualityMapping_ptr_t internal_j_r;
+	const Mapping_ptr_t internal_j_r;
 
 public:
 	//!> norm object for space X
@@ -146,7 +146,7 @@ public:
 	const Norm& DualNormX;
 
 	//!> duality mapping object for space Y (single-valued)
-	const PowerTypeDualityMapping& j_r;
+	const Mapping& j_r;
 
 protected:
 

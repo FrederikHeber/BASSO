@@ -17,7 +17,7 @@
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 
-PowerTypeDualityMapping_ptr_t
+Mapping_ptr_t
 PowerTypeDualityMappingFactory::createInstance(
 		const double _p,
 		const double _power)
@@ -30,5 +30,5 @@ PowerTypeDualityMappingFactory::createInstance(
 	} else if (_p == 1.) {
 		mapping = new L1DualityMapping(_power);
 	}
-	return PowerTypeDualityMapping_ptr_t(mapping);
+	return Mapping_ptr_t(mapping);
 }
