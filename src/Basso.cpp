@@ -14,6 +14,7 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/MinimizationExceptions.hpp"
 #include "Minimizations/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
@@ -341,6 +342,29 @@ int main (int argc, char *argv[])
 			<< "We solve for Ax = y with A = "
 			<< matrix << " and y = "
 			<< rhs.transpose() << std::endl;
+	}
+
+	// prepare inverse problem
+	InverseProblem_ptr_t inverseproblem;
+	switch (dualitytype) {
+	case MinimizerFactory::regularizedl1norm:
+		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
+				regularization_parameter,
+				normy,
+				powery,
+				matrix,
+				rhs);
+		break;
+	case MinimizerFactory::defaulttype:
+	default:
+		inverseproblem = InverseProblemFactory::createLpInstance(
+				normx,
+				powerx,
+				normy,
+				powery,
+				matrix,
+				rhs);
+		break;
 	}
 
 	// prepare start value
