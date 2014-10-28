@@ -21,9 +21,9 @@ InverseProblem::InverseProblem(
 		const SpaceElement_ptr_t &_y
 		) :
 	A(_A),
-	y(_y),
-	x( A->getSourceSpace()->createElement() )
+	y(_y) /* ,
+	x( A->getSourceSpace()->createElement() ) */
 {
-	assert( A->getTargetSpace() == y->getSpace() );
+//	assert( A->getTargetSpace() == y->getSpace() );
 }
 

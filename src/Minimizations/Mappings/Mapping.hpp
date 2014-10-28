@@ -22,30 +22,30 @@ class Mapping
 public:
 	/** Constructor for a mapping.
 	 *
-	 * @param _SourceSpaceRef source space reference
-	 * @param _TargetSpaceRef target space reference
+//	 * @param _SourceSpaceRef source space reference
+//	 * @param _TargetSpaceRef target space reference
 	 */
 	Mapping(
-			const NormedSpace_ptr_t &_SourceSpaceRef,
-			const NormedSpace_ptr_t &_TargetSpaceRef
-			) :
-		SourceSpaceRef(_SourceSpaceRef),
-		TargetSpaceRef(_TargetSpaceRef)
+//			const NormedSpace_ptr_t &_SourceSpaceRef,
+//			const NormedSpace_ptr_t &_TargetSpaceRef
+			) // :
+//		SourceSpaceRef(_SourceSpaceRef),
+//		TargetSpaceRef(_TargetSpaceRef)
 	{}
 
-	/** Getter for the source space of this mapping.
-	 *
-	 * @return ref to source space
-	 */
-	const NormedSpace_ptr_t& getSourceSpace() const
-	{ return SourceSpaceRef; }
-
-	/** Getter for the target space of this mapping.
-	 *
-	 * @return ref to target space
-	 */
-	const NormedSpace_ptr_t& getTargetSpace() const
-	{ return TargetSpaceRef; }
+//	/** Getter for the source space of this mapping.
+//	 *
+//	 * @return ref to source space
+//	 */
+//	const NormedSpace_ptr_t& getSourceSpace() const
+//	{ return SourceSpaceRef; }
+//
+//	/** Getter for the target space of this mapping.
+//	 *
+//	 * @return ref to target space
+//	 */
+//	const NormedSpace_ptr_t& getTargetSpace() const
+//	{ return TargetSpaceRef; }
 
 	/** Mapping function.
 	 *
@@ -62,12 +62,12 @@ public:
 	 */
 	virtual Mapping_ptr_t getAdjointMapping() const = 0;
 
-protected:
-	//!> reference to space from which this mappings projects
-	const NormedSpace_ptr_t SourceSpaceRef;
-
-	//!> reference to space into which this mappings projects
-	const NormedSpace_ptr_t TargetSpaceRef;
+//protected:
+//	//!> reference to space from which this mappings projects
+//	const NormedSpace_ptr_t SourceSpaceRef;
+//
+//	//!> reference to space into which this mappings projects
+//	const NormedSpace_ptr_t TargetSpaceRef;
 };
 
 

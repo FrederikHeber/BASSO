@@ -13,8 +13,7 @@
 #include <cassert>
 #include <Eigen/Dense>
 
-#include "Mapping.hpp"
-
+#include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 class SpaceElement;
@@ -29,18 +28,18 @@ class LinearMapping : public Mapping
 public:
 	/** Constructor for LinearMapping.
 	 *
-	 * @param _SourceSpaceRef source space
-	 * @param _TargetSpaceRef target space
+//	 * @param _SourceSpaceRef source space
+//	 * @param _TargetSpaceRef target space
 	 */
 	LinearMapping(
-			const NormedSpace_ptr_t _SourceSpaceRef,
-			const NormedSpace_ptr_t _TargetSpaceRef
-			) :
-		Mapping(_SourceSpaceRef,_TargetSpaceRef),
-		matrix(Eigen::MatrixXd::Zero(
-				_SourceSpaceRef->getDimension(),
-				_TargetSpaceRef->getDimension())
-		)
+//			const NormedSpace_ptr_t _SourceSpaceRef,
+//			const NormedSpace_ptr_t _TargetSpaceRef
+			) // :
+//		Mapping(_SourceSpaceRef,_TargetSpaceRef),
+//		matrix(Eigen::MatrixXd::Zero(
+//				_SourceSpaceRef->getDimension(),
+//				_TargetSpaceRef->getDimension())
+//		)
 	{}
 
 	/** Constructor for LinearMapping with a given matrix
@@ -50,15 +49,15 @@ public:
 	 * @param _matrix finite-dimensional representation of the mapping
 	 */
 	LinearMapping(
-			const NormedSpace_ptr_t _SourceSpaceRef,
-			const NormedSpace_ptr_t _TargetSpaceRef,
+//			const NormedSpace_ptr_t _SourceSpaceRef,
+//			const NormedSpace_ptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd &_matrix
 			) :
-		Mapping(_SourceSpaceRef,_TargetSpaceRef),
+//		Mapping(_SourceSpaceRef,_TargetSpaceRef),
 		matrix(_matrix)
 	{
-		assert( matrix.innerSize() == SourceSpaceRef->getDimension() );
-		assert( matrix.outerSize() == TargetSpaceRef->getDimension() );
+//		assert( matrix.innerSize() == SourceSpaceRef->getDimension() );
+//		assert( matrix.outerSize() == TargetSpaceRef->getDimension() );
 	}
 
 	/** Matrix multiplication from the right.
@@ -70,12 +69,10 @@ public:
 
 	/** Matrix multiplication from the right.
 	 *
-	 * @param _sourcevector element to map/transform
-	 * @return mapped/transformed vector
+	 * @param _vector element to map/transform
+	 * @return new transformed/mapped vector
 	 */
-	const Eigen::VectorXd operator*(
-				const Eigen::VectorXd &_sourcevector
-				) const;
+	const Eigen::VectorXd operator*(const Eigen::VectorXd &_vector) const;
 
 	/** Matrix multiplication from the right.
 	 *

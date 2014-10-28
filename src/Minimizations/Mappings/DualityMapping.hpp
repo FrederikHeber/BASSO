@@ -20,9 +20,9 @@ class DualityMapping : public Mapping
 {
 public:
 	DualityMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef
-			) :
-		Mapping(_NormedSpaceRef,_NormedSpaceRef.getDualSpace())
+//			const NormedSpace_ptr_t &_NormedSpaceRef
+			) // :
+//		Mapping(_NormedSpaceRef,_NormedSpaceRef.getDualSpace())
 	{}
 
 	/** Evaluates duality mapping at \a _x.
