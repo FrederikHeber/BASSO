@@ -44,6 +44,7 @@ struct InverseProblemFactory
 	/** Creates an inverse problem in regalurized L1 space.
 	 *
 	 * @param _lambda regularization parameter
+	 * @param _powerx power for the duality mapping X -> dualX
 	 * @param _r p value of the space Y
 	 * @param _powery power for the duality mapping Y -> dualY
 	 * @param _matrix matrix as the finite-dimensional representation of
@@ -53,6 +54,7 @@ struct InverseProblemFactory
 	 */
 	static InverseProblem_ptr_t createRegularizedL1Instance(
 			const double _lambda,
+			const double _powerx,
 			const double _r,
 			const double _powery,
 			const Eigen::MatrixXd &_matrix,

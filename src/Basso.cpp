@@ -350,6 +350,7 @@ int main (int argc, char *argv[])
 	case MinimizerFactory::regularizedl1norm:
 		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
 				regularization_parameter,
+				powerx,
 				normy,
 				powery,
 				matrix,

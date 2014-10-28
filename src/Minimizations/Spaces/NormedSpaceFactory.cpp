@@ -11,14 +11,18 @@
 #include "NormedSpaceFactory.hpp"
 
 #include "Math/Helpers.hpp"
-//#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Mappings/IllegalDualityMapping.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
+#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 
 NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 		const unsigned int _dimension,
-		const double _p)
+		const double _p,
+		const double _power)
 {
 	// create two empty spaces
 	NormedSpace_ptr_t instance(
@@ -42,19 +46,20 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance
-//	Mapping_ptr_t mapping(
-//			new Mapping(instance, dualinstance, p));
-//	instance->setDualityMapping(mapping);
-//	Mapping_ptr_t dualmapping =
-//			mapping->getAdjointMapping();
-//	dualinstance->setDualityMapping(dualmapping);
+	Mapping_ptr_t mapping =
+			PowerTypeDualityMappingFactory::createInstance(_p, _power);
+	instance->setDualityMapping(mapping);
+	Mapping_ptr_t dualmapping =
+			mapping->getAdjointMapping();
+	dualinstance->setDualityMapping(dualmapping);
 
 	return instance;
 }
 
 NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 		const unsigned int _dimension,
-		const double _lambda)
+		const double _lambda,
+		const double _power)
 {
 	// create two empty spaces
 	NormedSpace_ptr_t instance(
@@ -78,13 +83,19 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 	Norm_ptr_t dualnorm = NormFactory::createIllegalInstance();
 	dualinstance->setNorm(dualnorm);
 
-	// create duality mapping instance
-//	Mapping_ptr_t mapping(
-//			new Mapping(instance, dualinstance, p));
-//	instance->setDualityMapping(mapping);
-//	Mapping_ptr_t dualmapping =
-//			mapping->getAdjointMapping();
-//	dualinstance->setDualityMapping(dualmapping);
+	// create duality mapping instance: we only have the mapping from
+	// the dual space into the source space, not the other way round as
+	// the source space is not smooth (hence not single-valued duality
+	// mapping exists).
+	Mapping_ptr_t mapping(
+				new IllegalDualityMapping
+	);
+	instance->setDualityMapping(mapping);
+	Mapping_ptr_t dualmapping(
+			new SoftThresholdingMapping( /* dualinstance, instance, */
+					_lambda)
+	);
+	dualinstance->setDualityMapping(dualmapping);
 
 	return instance;
 }
