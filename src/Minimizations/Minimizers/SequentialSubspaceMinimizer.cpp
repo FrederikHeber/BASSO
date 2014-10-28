@@ -111,8 +111,7 @@ SequentialSubspaceMinimizer::operator()(
 		old_distance = Delta_p(
 			returnvalues.solution, 
 			_solution, 
-			dual_solution,
-			PowerX)
+			dual_solution)
 			+ 1e4*BASSOTOLERANCE; // make sure its larger
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Starting Bregman distance is " << old_distance;
@@ -169,8 +168,7 @@ SequentialSubspaceMinimizer::operator()(
 					Delta_p(
 							returnvalues.solution,
 							_solution,
-							dual_solution,
-							PowerX);
+							dual_solution);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p^{x^*_n}(x_n,x) is "
@@ -189,7 +187,7 @@ SequentialSubspaceMinimizer::operator()(
 				<< "R_n is " << returnvalues.residual.transpose();
 
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
-		Eigen::VectorXd Jw = j_r(returnvalues.residual, PowerY);
+		const Eigen::VectorXd Jw = j_r(returnvalues.residual);
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw.transpose();
 
@@ -217,6 +215,7 @@ SequentialSubspaceMinimizer::operator()(
 			BregmanProjectionFunctional bregman(
 					DualNormX,
 					J_q,
+					DualPowerX,
 					MatrixVectorProduct_subspace,
 					ScalarVectorProduct_subspace);
 
@@ -224,8 +223,7 @@ SequentialSubspaceMinimizer::operator()(
 					bregman,
 					dual_solution,
 					state.U,
-					state.alphas,
-					DualPowerX);
+					state.alphas);
 
 			FunctionMinimizer<Eigen::VectorXd> minimizer(
 				functional, tmin);
@@ -240,8 +238,7 @@ SequentialSubspaceMinimizer::operator()(
 		dual_solution -= MatrixVectorProduct(state.U,tmin);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution.transpose();
-		returnvalues.solution =
-				J_q(dual_solution , DualPowerX);
+		returnvalues.solution = J_q(dual_solution);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n+1 is " << returnvalues.solution.transpose();
 

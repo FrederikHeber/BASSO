@@ -126,13 +126,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 					<< "x_n is " << returnvalues.solution.transpose();
 			BOOST_LOG_TRIVIAL(trace)
 					<< "R_n is " << returnvalues.residual.transpose();
+			const Eigen::VectorXd Jw = j_r( returnvalues.residual);
 			BOOST_LOG_TRIVIAL(trace)
-				<< "j_r (residual) is "
-				<< j_r( returnvalues.residual, PowerY).transpose();
+					<< "j_r (residual) is " << Jw.transpose();
 
 			// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-			Eigen::VectorXd u =
-					_A.transpose()*j_r(returnvalues.residual, PowerY);
+			Eigen::VectorXd u = _A.transpose() * Jw;
 			BOOST_LOG_TRIVIAL(trace)
 				<< "u is " << u.transpose();
 
@@ -171,6 +170,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					BregmanProjectionFunctional bregman(
 							DualNormX,
 							J_q,
+							DualPowerX,
 							MatrixVectorProduct_subspace,
 							ScalarVectorProduct_subspace);
 
@@ -178,8 +178,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 							bregman,
 							dual_solution,
 							state.U,
-							state.alphas,
-							DualPowerX);
+							state.alphas);
 
 					// TODO: current alpha needs to be modified for minimization!
 					Eigen::VectorXd steps(1);
@@ -200,8 +199,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			dual_solution -= tmin*u;
 			BOOST_LOG_TRIVIAL(trace)
 					<< "x^*_n+1 is " << dual_solution.transpose();
-			returnvalues.solution =
-					J_q(dual_solution , DualPowerX);
+			returnvalues.solution = J_q(dual_solution);
 			BOOST_LOG_TRIVIAL(trace)
 					<< "x_n+1 is " << returnvalues.solution.transpose();
 

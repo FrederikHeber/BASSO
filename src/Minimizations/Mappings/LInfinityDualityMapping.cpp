@@ -37,15 +37,14 @@
  * 		x
  */
 const Eigen::VectorXd LInfinityDualityMapping::operator()(
-		const Eigen::VectorXd &_x,
-		const double _power
+		const Eigen::VectorXd &_x
 		) const
 {
 	// [xNorm,k]=max(abs(x));
 	unsigned int rowMax;
 	unsigned int colMax;
 	double factor = _x.array().abs().maxCoeff(&rowMax, &colMax);
-	factor = ::pow(factor, (double)_power-1.) * Helpers::sign(_x[rowMax]);
+	factor = ::pow(factor, (double)power-1.) * Helpers::sign(_x[rowMax]);
 	// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
 	Eigen::VectorXd temp = Eigen::VectorXd::Zero(_x.innerSize());
 	temp[0] = 1.;
@@ -56,7 +55,11 @@ const Eigen::VectorXd LInfinityDualityMapping::operator()(
 PowerTypeDualityMapping_ptr_t
 LInfinityDualityMapping::getAdjointMapping() const
 {
+	// calculate dual power
+	const double dualpower = Helpers::ConjugateValue(power);
 	// adjoint mapping is from l_1
-	PowerTypeDualityMapping_ptr_t instance(new L1DualityMapping);
+	PowerTypeDualityMapping_ptr_t instance(
+			new L1DualityMapping(dualpower)
+	);
 	return instance;
 }

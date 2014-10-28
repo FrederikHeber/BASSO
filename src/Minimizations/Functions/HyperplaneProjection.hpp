@@ -33,7 +33,6 @@ struct HyperplaneProjection :
 	const Eigen::VectorXd &x;
 	const Eigen::MatrixXd &U;
 	const Eigen::VectorXd &alpha;
-	const double q;
 
 	/** Constructor to initialize refs.
 	 *
@@ -42,8 +41,7 @@ struct HyperplaneProjection :
 		BregmanProjectionFunctional &_bregman,
 		const Eigen::VectorXd &_x,
 		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha,
-		const double _q
+		const Eigen::VectorXd &_alpha
 		);
 
 	double operator()(const Eigen::VectorXd &_value) const;

@@ -388,7 +388,7 @@ int main (int argc, char *argv[])
 	// calculate initial dual solution
 	Eigen::VectorXd dualx0 =
 			(dualitytype == MinimizerFactory::defaulttype) ?
-			minimizer->J_p(x0, powerx) :
+			minimizer->J_p(x0) :
 			Eigen::VectorXd::Zero(matrix.outerSize());
 
 	try {

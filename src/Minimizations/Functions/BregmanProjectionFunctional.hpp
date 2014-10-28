@@ -30,6 +30,7 @@ public:
 	BregmanProjectionFunctional(
 			const Norm &_dualnorm,
 			const PowerTypeDualityMapping &_J_q,
+			const double _dualpower,
 			const OperationCounter<
 				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
 				const Eigen::MatrixBase<Eigen::MatrixXd>&,
@@ -48,15 +49,13 @@ public:
 	 * \param _x current dual of solution
 	 * \param _U search space spanned by column vectors
 	 * \param _alpha offsets of affine subspace
-	 * \param _q power of the weight of the duality mapping
 	 */
 	double operator()(
 			const Eigen::VectorXd &_t,
 			const Eigen::VectorXd &_dualx,
 			const Eigen::MatrixXd &_U,
-			const Eigen::VectorXd &_alpha,
-			const double _q
-			);
+			const Eigen::VectorXd &_alpha
+			) const;
 
 	/** Implements BregmanProjectionFunctional functional.
 	 *
@@ -64,17 +63,17 @@ public:
 	 * \param _x current dual of solution
 	 * \param _U search space spanned by column vectors
 	 * \param _alpha offsets of affine subspace
-	 * \param _q power of the weight of the duality mapping
 	 */
 	Eigen::VectorXd gradient(
 			const Eigen::VectorXd &_t,
 			const Eigen::VectorXd &_dualx,
 			const Eigen::MatrixXd &_U,
-			const Eigen::VectorXd &_alpha,
-			const double _q
-			);
+			const Eigen::VectorXd &_alpha
+			) const;
 
 private:
+	//!> power type of the weight function of \a J_q
+	const double dualpower;
 	//!> lp Norm object
 	const Norm &dualnorm;
 	//!> LpDualityMapping object

@@ -32,8 +32,7 @@ public:
 	 * @return componentwise soft threshold of \a _x by \a _ lambda
 	 */
 	const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x,
-			const double _power) const;
+			const Eigen::VectorXd &_x) const;
 };
 
 

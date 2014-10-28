@@ -15,8 +15,7 @@ IllegalDualityMapping::IllegalDualityMapping() :
 
 const Eigen::VectorXd
 IllegalDualityMapping::operator()(
-		const Eigen::VectorXd &_x,
-		const double _power) const
+		const Eigen::VectorXd &_x) const
 {
 	// we just throw as this function must now be called
 	throw MinimizationIllegalValue_exception()

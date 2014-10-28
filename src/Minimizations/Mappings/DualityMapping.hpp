@@ -24,15 +24,6 @@ public:
 			) // :
 //		Mapping(_NormedSpaceRef,_NormedSpaceRef.getDualSpace())
 	{}
-
-	/** Evaluates duality mapping at \a _x.
-	 *
-	 * \param _x point where to evaluate
-	 * \param _power power of duality mapping's weight
-	 */
-	virtual SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_x,
-			const double _power) const = 0;
 };
 
 

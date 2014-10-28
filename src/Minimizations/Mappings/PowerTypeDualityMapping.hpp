@@ -22,8 +22,10 @@ class PowerTypeDualityMapping
 public:
 	/** Default constructor for class PowerTypeDualityMapping.
 	 *
+	 * @param _power power type of this duality mapping
 	 */
-	PowerTypeDualityMapping() :
+	PowerTypeDualityMapping(const double _power) :
+		power(_power),
 		tolerance(BASSOTOLERANCE)
 	{}
 
@@ -40,8 +42,7 @@ public:
 	 * \param _power power of duality mapping's weight
 	 */
 	virtual const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x,
-			const double _power) const = 0;
+			const Eigen::VectorXd &_x) const = 0;
 
 	/** Mapping function.
 	 *
@@ -49,8 +50,7 @@ public:
 	 * @return new transformed/mapped element
 	 */
 	SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_sourceelement,
-			const double _power
+			const SpaceElement_ptr_t &_sourceelement
 			) const;
 
 	/** Creates the adjoint mapping to this mapping.
@@ -66,7 +66,16 @@ public:
 	const double getTolerance() const
 	{ return tolerance; }
 
+	/** Returns the power type of th mapping's weight function.
+	 *
+	 * @return power type
+	 */
+	const double getPower() const
+	{ return power; }
+
 protected:
+	//!> power type of the weight function of this duality mapping
+	const double power;
 	//!> tolerance for norm value
 	mutable double tolerance;
 };

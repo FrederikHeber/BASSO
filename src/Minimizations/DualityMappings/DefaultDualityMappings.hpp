@@ -35,8 +35,8 @@ struct DefaultDualityMappings : public DualityMappingsContainer
 			_PowerX,
 			J_p,
 			J_q),
-		J_p(val_NormX),
-		J_q(val_DualNormX)
+		J_p(val_NormX, _PowerX),
+		J_q(val_DualNormX, DualPowerX)
 	{
 		J_p.setTolerance(_tolerance);
 		J_q.setTolerance(_tolerance);

@@ -32,12 +32,10 @@ public:
 	/** Evaluates for the given \a _x the soft thresholding result with respect
 	 * to \a _lambda.
 	 * @param _x vector to soft-threshold
-	 * @param _power \b not used, kept for signature compatibility
 	 * @return componentwise soft threshold of \a _x by \a lambda
 	 */
 	const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x,
-			const double) const;
+			const Eigen::VectorXd &_x) const;
 
 	/** Setter for soft thresholding parameter \a lambda.
 	 *

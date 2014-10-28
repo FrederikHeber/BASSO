@@ -27,17 +27,12 @@ public:
 	BregmanDistance(
 			const Norm &_norm,
 			const PowerTypeDualityMapping &_J_p,
-			const double _p,
+			const double _power,
 			const OperationCounter<
 					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
 					const Eigen::MatrixBase<Eigen::VectorXd>&,
 					const Eigen::MatrixBase<Eigen::VectorXd>&
-					>& _ScalarVectorProduct) :
-				p(_p),
-				norm(_norm),
-				J_p(_J_p),
-				ScalarVectorProduct(_ScalarVectorProduct)
-	{}
+					>& _ScalarVectorProduct);
 	~BregmanDistance() {}
 
 	/** Calculate the Bregman distance between \a _x and \a _y.
@@ -57,13 +52,11 @@ public:
 	 *
 	 * @param _x first argument
 	 * @param _y second argument
-	 * @param _power power of duality mapping
 	 * @return Bregman distance between first and second argument
 	 */
 	double operator()(
 			const Eigen::VectorXd &_x,
-			const Eigen::VectorXd &_y,
-			const double _power
+			const Eigen::VectorXd &_y
 			) const;
 
 	/** Calculate the Bregman distance between \a _x and \a _y with dual \a _xdual.
@@ -84,19 +77,17 @@ public:
 	 * @param _x first argument
 	 * @param _y second argument
 	 * @param _xdual dual element to the first argument
-	 * @param _power power of duality mapping
 	 * @return Bregman distance between first and second argument
 	 */
 	double operator()(
 			const Eigen::VectorXd &_x,
 			const Eigen::VectorXd &_y,
-			const Eigen::VectorXd &_xdual,
-			const double _power
+			const Eigen::VectorXd &_xdual
 			) const;
 
 private:
-	//!> value p of the Lp norm
-	const double p;
+	//!> power type of the weight function of the duality mapping \a J_p
+	const double power;
 	//!> lp Norm object
 	const Norm &norm;
 	//!> LpDualityMapping object

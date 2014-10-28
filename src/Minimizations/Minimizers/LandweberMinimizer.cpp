@@ -144,14 +144,13 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "_ANorm " << _ANorm;
 	}
-	BregmanDistance Delta_p(NormX, J_p, val_NormX, ScalarVectorProduct);
+	BregmanDistance Delta_p(NormX, J_p, PowerX, ScalarVectorProduct);
 	double old_distance = 0.;
 	if (!_solution.isZero()) {
 		old_distance = Delta_p(
 			returnvalues.solution,
 			_solution,
-			dual_solution,
-			PowerX) + 1e4*BASSOTOLERANCE; // make sure its larger
+			dual_solution) + 1e4*BASSOTOLERANCE; // make sure its larger
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Starting Bregman distance is " << old_distance;
 	}
@@ -172,8 +171,7 @@ LandweberMinimizer::operator()(
 					Delta_p(
 							returnvalues.solution,
 							_solution,
-							dual_solution,
-							PowerX);
+							dual_solution);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p^{x^*_n}(x_n,x) is "
@@ -190,13 +188,12 @@ LandweberMinimizer::operator()(
 				<< "x_n is " << returnvalues.solution.transpose();
 		BOOST_LOG_TRIVIAL(trace)
 				<< "R_n is " << returnvalues.residual.transpose();
+		const Eigen::VectorXd Jw = j_r( returnvalues.residual);
 		BOOST_LOG_TRIVIAL(trace)
-			<< "j_r (residual) is "
-			<< j_r( returnvalues.residual, PowerY).transpose();
-		const Eigen::VectorXd u =
-				_A.transpose() * j_r( returnvalues.residual, PowerY);
+				<< "j_r (residual) is " << Jw.transpose();
+		const Eigen::VectorXd u = _A.transpose() * Jw;
 		BOOST_LOG_TRIVIAL(trace)
-			<< "u is " << u.transpose();
+				<< "u is " << u.transpose();
 
 		double alpha = 0.;
 		// use step width used in theoretical proof
@@ -275,8 +272,7 @@ LandweberMinimizer::operator()(
 				<< "x^*_n+1 is " << dual_solution.transpose();
 
 		// finally map back from X^{\conj} to X: x_{n+1}
-		returnvalues.solution =
-				J_q(dual_solution, DualPowerX);
+		returnvalues.solution = J_q(dual_solution);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n+1 is " << returnvalues.solution.transpose();
 

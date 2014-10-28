@@ -32,5 +32,5 @@ void IllegalDualityMappingUnitTest::IllegalCall()
 	IllegalDualityMapping J_illegal;
 	Eigen::VectorXd x(10);
 	x << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
-	CPPUNIT_ASSERT_THROW( J_illegal(x, .9), MinimizationIllegalValue_exception);
+	CPPUNIT_ASSERT_THROW( J_illegal(x), MinimizationIllegalValue_exception);
 }

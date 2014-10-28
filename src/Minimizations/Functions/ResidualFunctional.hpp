@@ -39,7 +39,7 @@ public:
 		Eigen::VectorXd dual_solution = dualx;
 		dual_solution -= _arg * u;
 		Eigen::VectorXd x =
-				landweber.J_q(dual_solution, landweber.DualPowerX);
+				landweber.J_q(dual_solution);
 		// calculate residual at candidate position (goes into hx[0])
 		Eigen::VectorXd residual;
 		return landweber.calculateResidual( x, A, y, residual );

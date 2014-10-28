@@ -14,12 +14,12 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 SpaceElement_ptr_t PowerTypeDualityMapping::operator()(
-		const SpaceElement_ptr_t &_sourceelement,
-		const double _power
+		const SpaceElement_ptr_t &_sourceelement
 		) const
 {
 	SpaceElement_ptr_t targetelement =
 			_sourceelement->getSpace()->getDualSpace()->createElement();
-	*targetelement = operator()(_sourceelement->getVectorRepresentation(), _power);
+	*targetelement =
+			operator()(_sourceelement->getVectorRepresentation());
 	return targetelement;
 }

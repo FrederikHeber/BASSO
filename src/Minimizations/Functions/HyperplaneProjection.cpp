@@ -15,14 +15,12 @@ HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,
 	const Eigen::VectorXd &_x,
 	const Eigen::MatrixXd &_U,
-	const Eigen::VectorXd &_alpha,
-	const double _q
+	const Eigen::VectorXd &_alpha
 	) :
 		bregman(_bregman),
 		x(_x),
 		U(_U),
-		alpha(_alpha),
-		q(_q)
+		alpha(_alpha)
 {}
 
 double
@@ -34,8 +32,7 @@ HyperplaneProjection::operator()(
 					_value,
 					x,
 					U,
-					alpha,
-					q);
+					alpha);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "func() evaluates to " << returnvalue;
 	return returnvalue;
@@ -50,8 +47,7 @@ HyperplaneProjection::gradient(
 					_value,
 					x,
 					U,
-					alpha,
-					q);
+					alpha);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "grad() evaluates to " << grad.transpose();
 	return grad;

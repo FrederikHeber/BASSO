@@ -36,20 +36,23 @@
  * 		x
  */
 const Eigen::VectorXd L1DualityMapping::operator()(
-		const Eigen::VectorXd &_x,
-		const double _power
+		const Eigen::VectorXd &_x
 		) const
 {
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
 	L1Norm norm;
-	const double factor = ::pow(norm(_x), (double)_power-1.);
+	const double factor = ::pow(norm(_x), (double)power-1.);
 	return factor*Helpers::signum(_x);
 }
 
 PowerTypeDualityMapping_ptr_t L1DualityMapping::getAdjointMapping() const
 {
+	// calculate dual power
+	const double dualpower = Helpers::ConjugateValue(power);
 	// adjoint mapping is from l_infinity
-	PowerTypeDualityMapping_ptr_t instance(new LInfinityDualityMapping);
+	PowerTypeDualityMapping_ptr_t instance(
+			new LInfinityDualityMapping(dualpower)
+	);
 	return instance;
 }

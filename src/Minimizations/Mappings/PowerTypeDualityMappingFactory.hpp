@@ -14,7 +14,16 @@
 
 struct PowerTypeDualityMappingFactory
 {
-	static PowerTypeDualityMapping_ptr_t createInstance(const double _p);
+	/** Factory function creating a power type duality mapping, i.e. for
+	 *  a Lp norm.
+	 *
+	 * @param _p value of the Lp norm
+	 * @param _power power type of the weight function
+	 * @return
+	 */
+	static PowerTypeDualityMapping_ptr_t createInstance(
+			const double _p,
+			const double _power);
 };
 
 

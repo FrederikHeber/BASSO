@@ -29,17 +29,26 @@ public:
 	/** Constructor for class LpDualityMapping.
 	 *
 	 * \param _p p value of the used Lp norm
+	 * @param _power power type of this duality mapping
+	 */
+	LpDualityMapping(
+			const double _p,
+			const double _power);
+
+	/** Constructor for class LpDualityMapping.
+	 *
+	 * Here, we use \a _p also for the power of the weight function.
+	 *
+	 * \param _p p value of the used Lp norm
 	 */
 	LpDualityMapping(const double _p);
 
 	/** Evaluates duality mapping at \a _x.
 	 *
 	 * \param _x point where to evaluate
-	 * \param _power power of duality mapping's weight
 	 */
 	virtual const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x,
-			const double _power) const;
+			const Eigen::VectorXd &_x) const;
 
 	/** Creates the adjoint mapping to this mapping.
 	 *

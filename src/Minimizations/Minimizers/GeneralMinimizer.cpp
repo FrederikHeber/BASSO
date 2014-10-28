@@ -42,7 +42,9 @@ GeneralMinimizer::GeneralMinimizer(
 	internal_NormX(NormFactory::createLpInstance(val_NormX)),
 	internal_NormY(NormFactory::createLpInstance(val_NormY)),
 	internal_DualNormX(NormFactory::createLpInstance(val_DualNormX)),
-	internal_j_r(PowerTypeDualityMappingFactory::createInstance(val_NormY)),
+	internal_j_r(
+			PowerTypeDualityMappingFactory::createInstance(val_NormY,PowerY)
+	),
 	NormX(*internal_NormX),
 	NormY(*internal_NormY),
 	DualNormX(*internal_DualNormX),

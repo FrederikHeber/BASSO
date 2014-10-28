@@ -62,6 +62,13 @@ public:
 	 */
 	virtual Mapping_ptr_t getAdjointMapping() const = 0;
 
+	/** Returns the power type in case of a PowerTypeDualityMapping.
+	 *
+	 * @return 0 - not a PowerTypeDualityMapping, else - power type
+	 */
+	virtual const double getPower() const
+	{ return 0.; }
+
 //protected:
 //	//!> reference to space from which this mappings projects
 //	const NormedSpace_ptr_t SourceSpaceRef;

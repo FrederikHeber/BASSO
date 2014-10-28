@@ -18,15 +18,17 @@
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 
 PowerTypeDualityMapping_ptr_t
-PowerTypeDualityMappingFactory::createInstance(const double _p)
+PowerTypeDualityMappingFactory::createInstance(
+		const double _p,
+		const double _power)
 {
 	PowerTypeDualityMapping *mapping = NULL;
 	if (_p == std::numeric_limits<double>::infinity()) {
-		mapping = new LInfinityDualityMapping;
+		mapping = new LInfinityDualityMapping(_power);
 	} else if (_p > 1.) {
-		mapping = new LpDualityMapping(_p);
+		mapping = new LpDualityMapping(_p,_power);
 	} else if (_p == 1.) {
-		mapping = new L1DualityMapping;
+		mapping = new L1DualityMapping(_power);
 	}
 	return PowerTypeDualityMapping_ptr_t(mapping);
 }

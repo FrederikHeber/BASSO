@@ -17,10 +17,19 @@
 #include "Minimizations/MinimizationExceptions.hpp"
 
 LpDualityMapping::LpDualityMapping(
+		const double _p,
+		const double _power) :
+	PowerTypeDualityMapping(_power),
+	p(_p),
+	lpnorm(_p)
+{}
+
+LpDualityMapping::LpDualityMapping(
 		const double _p
 		) :
+	PowerTypeDualityMapping(_p),
 	p(_p),
-	lpnorm(p)
+	lpnorm(_p)
 {
 	// we don't need to throw, norm will do this
 }
@@ -45,19 +54,18 @@ LpDualityMapping::LpDualityMapping(
  * 		x
  */
 const Eigen::VectorXd LpDualityMapping::operator()(
-		const Eigen::VectorXd &_x,
-		const double _power
+		const Eigen::VectorXd &_x
 		) const
 {
-	if (p == _power) {
+	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
 		Eigen::VectorXd Jx = _x.array().abs();
 		for (int i=0;i<Jx.innerSize();++i)
 			Jx[i] = ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
 		return Jx;
-	} else if (p < (double)_power) {
+	} else if (p < (double)power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
-		const double pnorm = ::pow(lpnorm(_x), (double)_power-p);
+		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
 		Eigen::VectorXd Jx = _x.array().abs();
 		for (int i=0;i<Jx.innerSize();++i)
 			Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
@@ -70,7 +78,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 			return Jx;
 		} else {
 			// J=n^(q-p)*abs(x).^(p-1).*sign(x);
-			const double exponent = (double)_power-p;
+			const double exponent = (double)power-p;
 			const double pnorm = ::pow(norm, exponent);
 			Eigen::VectorXd Jx = _x.array().abs();
 			for (int i=0;i<Jx.innerSize();++i)
@@ -84,7 +92,9 @@ PowerTypeDualityMapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value
 	const double q = Helpers::ConjugateValue(p);
+	const double dualpower = Helpers::ConjugateValue(power);
 	// and create instance with it
-	PowerTypeDualityMapping_ptr_t instance(new LpDualityMapping(q));
+	PowerTypeDualityMapping_ptr_t instance(
+			new LpDualityMapping(q,dualpower));
 	return instance;
 }
