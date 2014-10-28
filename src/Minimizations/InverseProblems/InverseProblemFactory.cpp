@@ -25,9 +25,9 @@ InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 {
 	// first, create the spaces
 	NormedSpace_ptr_t X =
-			NormedSpaceFactory::createInstance(_matrix.outerSize(),_p);
+			NormedSpaceFactory::createLpInstance(_matrix.outerSize(),_p);
 	NormedSpace_ptr_t Y =
-			NormedSpaceFactory::createInstance(_matrix.innerSize(),_r);
+			NormedSpaceFactory::createLpInstance(_matrix.innerSize(),_r);
 
 	// then create the SpaceElement
 	SpaceElement_ptr_t y = Y->createElement();
@@ -41,3 +41,27 @@ InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 	return instance;
 }
 
+InverseProblem_ptr_t InverseProblemFactory::createRegularizedL1Instance(
+		const double _lambda,
+		const double _r,
+		const double _powery,
+		const Eigen::MatrixXd &_matrix,
+		const Eigen::VectorXd &_rhs)
+{
+	// first, create the spaces
+	NormedSpace_ptr_t X =
+			NormedSpaceFactory::createRegularizedL1Instance(_matrix.outerSize(), _lambda);
+	NormedSpace_ptr_t Y =
+			NormedSpaceFactory::createLpInstance(_matrix.innerSize(),_r);
+
+	// then create the SpaceElement
+	SpaceElement_ptr_t y = Y->createElement();
+	*y = _rhs;
+
+	// and the LinearMapping
+	Mapping_ptr_t A( new LinearMapping(_matrix) ); // X,Y,
+
+	InverseProblem_ptr_t instance( new InverseProblem(A,y) );
+
+	return instance;
+}

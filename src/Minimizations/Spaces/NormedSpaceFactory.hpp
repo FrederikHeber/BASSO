@@ -24,9 +24,19 @@ struct NormedSpaceFactory
 	 * @param _p p value of the norm of the space
 	 * @return NormedSpace instance according to parameters
 	 */
-	static NormedSpace_ptr_t createInstance(
+	static NormedSpace_ptr_t createLpInstance(
 			const unsigned int _dimension,
 			const double _p);
+
+	/** Factory functor that creates the regularized L1 instance.
+	 *
+	 * @param _dimension dimension of the space
+	 * @param _lambda regularization parameter
+	 * @return NormedSpace instance according to parameters
+	 */
+	static NormedSpace_ptr_t createRegularizedL1Instance(
+			const unsigned int _dimension,
+			const double _lambda);
 };
 
 
