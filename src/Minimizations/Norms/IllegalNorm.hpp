@@ -46,6 +46,12 @@ public:
 		throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("IllegalNorm");
 	}
+
+	virtual const double getPvalue() const
+	{
+		throw NormIllegalValue_exception()
+				<< NormIllegalValue_name("IllegalNorm");
+	}
 };
 
 

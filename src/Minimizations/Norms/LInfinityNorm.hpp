@@ -11,9 +11,11 @@
 #include "BassoConfig.h"
 
 #include <Eigen/Dense>
+#include <limits>
 
 #include "Norm.hpp"
 
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 
 /** This class implements the l_infinity norm.
@@ -41,11 +43,18 @@ public:
 		return operator()(_x->getVectorRepresentation());
 	}
 
-	double operator()(const Eigen::VectorXd &_x) const
+	const double operator()(const Eigen::VectorXd &_x) const
 	{
 		// infinity norm
 		return _x.lpNorm<Eigen::Infinity>();
 	}
+
+	/** Getter for the p value of a possible lp norm.
+	 *
+	 * @return p value: 0 - not an lp norm, else - p of lp norm
+	 */
+	virtual const double getPvalue() const
+	{ return std::numeric_limits<double>::infinity(); }
 };
 
 

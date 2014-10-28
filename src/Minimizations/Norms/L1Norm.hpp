@@ -15,6 +15,7 @@
 
 #include "Norm.hpp"
 
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 
 /** This class implements the l_1 norm.
@@ -44,6 +45,13 @@ public:
 			value += fabs(_x[i]);
 		return value;
 	}
+
+	/** Getter for the p value of a possible lp norm.
+	 *
+	 * @return p value: 0 - not an lp norm, else - p of lp norm
+	 */
+	virtual const double getPvalue() const
+	{ return 1.; }
 };
 
 
