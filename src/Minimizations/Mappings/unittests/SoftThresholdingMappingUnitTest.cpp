@@ -1,5 +1,5 @@
 /*
- * SoftThresholdingOperatorUnitTest.cpp
+ * SoftThresholdingMappingUnitTest.cpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
@@ -7,23 +7,23 @@
 
 #include "BassoConfig.h"
 
-#include "SoftThresholdingOperatorUnitTest.hpp"
+#include "SoftThresholdingMappingUnitTest.hpp"
 
 #include <Eigen/Dense>
 
-#include "Minimizations/DualityMappings/SoftThresholdingOperator.hpp"
+#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( SoftThresholdingOperatorUnitTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( SoftThresholdingMappingUnitTest );
 
 
-void SoftThresholdingOperatorUnitTest::setUp()
+void SoftThresholdingMappingUnitTest::setUp()
 {
 }
 
 
-void SoftThresholdingOperatorUnitTest::tearDown()
+void SoftThresholdingMappingUnitTest::tearDown()
 {
 }
 
@@ -32,16 +32,16 @@ void SoftThresholdingOperatorUnitTest::tearDown()
  * x=ones(2,10)-2.*rand(2,10)
  * gval=zeros(2,10)
  * for i=1:10
- * 	gval(:,i)=SoftThresholdingOperator(x, p, power, 1e-6)
+ * 	gval(:,i)=SoftThresholdingMapping(x, p, power, 1e-6)
  * endfor
  * gval
  *
  *
  */
 
-void SoftThresholdingOperatorUnitTest::oneNorm()
+void SoftThresholdingMappingUnitTest::oneNorm()
 {
-	SoftThresholdingOperator S;
+	SoftThresholdingMapping S;
 	Eigen::VectorXd x(10);
 	x << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
 	{

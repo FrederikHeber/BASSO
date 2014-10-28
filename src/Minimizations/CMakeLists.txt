@@ -3,8 +3,6 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Minimizations 
-	DualityMappings/IllegalDualityMapping.cpp
-	DualityMappings/SoftThresholdingOperator.cpp
 	Elements/SpaceElement.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
@@ -12,12 +10,14 @@ add_library (Minimizations
 	Functions/SmoothnessModulus.cpp
 	InverseProblems/InverseProblem.cpp
 	InverseProblems/InverseProblemFactory.cpp
+	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
 	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
 	Mappings/LInfinityDualityMapping.cpp
 	Mappings/PowerTypeDualityMapping.cpp
 	Mappings/PowerTypeDualityMappingFactory.cpp
+	Mappings/SoftThresholdingMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/LandweberMinimizer_calculateMatchingTau.cpp
@@ -31,8 +31,6 @@ add_library (Minimizations
 	)
 
 install (TARGETS Minimizations DESTINATION bin)
-install (FILES DualityMappings/IllegalDualityMapping.hpp DESTINATION include)
-install (FILES DualityMappings/SoftThresholdingOperator.hpp DESTINATION include)
 
 install (FILES Elements/SpaceElement.hpp DESTINATION include)
 
@@ -49,6 +47,7 @@ install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)
 install (FILES InverseProblems/InverseProblem.hpp DESTINATION include)
 install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
 
+install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/L1DualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
@@ -56,6 +55,7 @@ install (FILES Mappings/LInfinityDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)
+install (FILES Mappings/SoftThresholdingMapping.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)

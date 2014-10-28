@@ -37,14 +37,14 @@ public:
 //	 *
 //	 * @return ref to source space
 //	 */
-//	const NormedSpace_ptr_t& getSourceSpace() const
+//	virtual const NormedSpace_ptr_t& getSourceSpace() const
 //	{ return SourceSpaceRef; }
 //
 //	/** Getter for the target space of this mapping.
 //	 *
 //	 * @return ref to target space
 //	 */
-//	const NormedSpace_ptr_t& getTargetSpace() const
+//	virtual const NormedSpace_ptr_t& getTargetSpace() const
 //	{ return TargetSpaceRef; }
 
 	/** Mapping function.

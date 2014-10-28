@@ -11,8 +11,8 @@
 #include "BassoConfig.h"
 
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
-#include "Minimizations/DualityMappings/IllegalDualityMapping.hpp"
-#include "Minimizations/DualityMappings/SoftThresholdingOperator.hpp"
+#include "Minimizations/Mappings/IllegalDualityMapping.hpp"
+#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 
 /** This equips the minimizer with a soft thresholding operator as required
  * by the regularized L1 norm ansatz.
@@ -36,7 +36,7 @@ struct RegularizedL1Norm : public DualityMappingsContainer
 	//!> duality mapping object for space X
 	const IllegalDualityMapping J_p;
 	//!> duality mapping object for dual space X^*
-	const SoftThresholdingOperator J_q;
+	const SoftThresholdingMapping J_q;
 };
 
 

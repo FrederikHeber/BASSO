@@ -1,27 +1,27 @@
 /*
- * SoftThresholdingOperator.cpp
+ * SoftThresholdingMapping.cpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
  */
 
-#include "SoftThresholdingOperator.hpp"
+#include "SoftThresholdingMapping.hpp"
 
 #include "Math/Helpers.hpp"
 
-SoftThresholdingOperator::SoftThresholdingOperator() :
+SoftThresholdingMapping::SoftThresholdingMapping() :
 	L1DualityMapping(2.),
 	lambda(0.1)
 {}
 
-SoftThresholdingOperator::SoftThresholdingOperator(
+SoftThresholdingMapping::SoftThresholdingMapping(
 		const double _lambda) :
 	L1DualityMapping(2.),
 	lambda(_lambda)
 {}
 
 const Eigen::VectorXd
-SoftThresholdingOperator::operator()(
+SoftThresholdingMapping::operator()(
 		const Eigen::VectorXd &_x) const
 {
 	Eigen::VectorXd result(_x);

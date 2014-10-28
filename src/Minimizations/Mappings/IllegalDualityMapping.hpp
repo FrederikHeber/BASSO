@@ -26,6 +26,27 @@ public:
 	 */
 	IllegalDualityMapping();
 
+//	/** Getter for the source space of this mapping.
+//	 *
+//	 * @return ref to source space
+//	 */
+//	const NormedSpace_ptr_t& getSourceSpace() const;
+//
+//	/** Getter for the target space of this mapping.
+//	 *
+//	 * @return ref to target space
+//	 */
+//	const NormedSpace_ptr_t& getTargetSpace() const;
+
+	/** Mapping function.
+	 *
+	 * @param _sourceelement element to map/transform
+	 * @return new transformed/mapped element
+	 */
+	SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_sourceelement
+			) const;
+
 	/** This function throws an assertion and must never be called.
 	 * @param _x
 	 * @param _power power of the duality mapping
@@ -33,6 +54,12 @@ public:
 	 */
 	const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x) const;
+
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	Mapping_ptr_t getAdjointMapping() const;
 };
 
 

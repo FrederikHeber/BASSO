@@ -1,12 +1,12 @@
 /*
- * SoftThresholdingOperator.hpp
+ * SoftThresholdingMapping.hpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
  */
 
-#ifndef SOFTTHRESHOLDINGOPERATOR_HPP_
-#define SOFTTHRESHOLDINGOPERATOR_HPP_
+#ifndef SOFTTHRESHOLDINGMAPPING_HPP_
+#define SOFTTHRESHOLDINGMAPPING_HPP_
 
 #include "BassoConfig.h"
 
@@ -14,20 +14,20 @@
 
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
 
-class SoftThresholdingOperator :
+class SoftThresholdingMapping :
 	public L1DualityMapping
 {
 public:
-	/** Default constructor of class SoftThresholdingOperator.
+	/** Default constructor of class SoftThresholdingMapping.
 	 *
 	 */
-	SoftThresholdingOperator();
+	SoftThresholdingMapping();
 
-	/** Default constructor of class SoftThresholdingOperator.
+	/** Default constructor of class SoftThresholdingMapping.
 	 *
 	 * @param _lambda soft thresholding parameter
 	 */
-	SoftThresholdingOperator(const double _lambda);
+	SoftThresholdingMapping(const double _lambda);
 
 	/** Evaluates for the given \a _x the soft thresholding result with respect
 	 * to \a _lambda.
@@ -46,10 +46,17 @@ public:
 		const_cast<double &>(lambda) = _lambda;
 	}
 
+	/** Getter for the regularization parameter.
+	 *
+	 * @return regularization parameter
+	 */
+	const double getLambda() const
+	{ return lambda; }
+
 private:
 	//!> soft thresholding parameter
 	const double lambda;
 };
 
 
-#endif /* SOFTTHRESHOLDINGOPERATOR_HPP_ */
+#endif /* SOFTTHRESHOLDINGMAPPING_HPP_ */

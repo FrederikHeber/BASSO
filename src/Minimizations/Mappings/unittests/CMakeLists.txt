@@ -1,5 +1,16 @@
 ### TESTS ###
 
+########################## IllegalDualityMappingUnitTest #######################
+add_executable (IllegalDualityMappingUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	IllegalDualityMappingUnitTest.cpp) 
+target_link_libraries (IllegalDualityMappingUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (IllegalDualityMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/IllegalDualityMappingUnitTest)
+
 ########################## LpDualityMappingUnitTest #######################
 add_executable (LpDualityMappingUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
@@ -32,3 +43,14 @@ target_link_libraries (LInfinityDualityMappingUnitTest
 
 add_test (LInfinityDualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LInfinityDualityMappingUnitTest)
+
+########################## SoftThresholdingMappingUnitTest #######################
+add_executable (SoftThresholdingMappingUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	SoftThresholdingMappingUnitTest.cpp) 
+target_link_libraries (SoftThresholdingMappingUnitTest 
+	${EXTRA_LIBS}
+	"${CPPUNIT_LIBRARY}")
+
+add_test (SoftThresholdingMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/SoftThresholdingMappingUnitTest)
