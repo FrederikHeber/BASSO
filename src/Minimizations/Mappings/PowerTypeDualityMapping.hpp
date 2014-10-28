@@ -13,11 +13,12 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/types.hpp"
+#include "Minimizations/Mappings/DualityMapping.hpp"
 
 /** This class defines mappings from a space to its dual space with
  * elements being the gradient of the norm of the source space.
  */
-class PowerTypeDualityMapping
+class PowerTypeDualityMapping : public DualityMapping
 {
 public:
 	/** Default constructor for class PowerTypeDualityMapping.
@@ -57,7 +58,7 @@ public:
 	 *
 	 * @return mapping instance with adjoint
 	 */
-	virtual PowerTypeDualityMapping_ptr_t getAdjointMapping() const = 0;
+	virtual Mapping_ptr_t getAdjointMapping() const = 0;
 
 	/** Returns the tolerance.
 	 *

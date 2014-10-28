@@ -45,7 +45,7 @@ public:
 	 *
 	 * @return mapping instance with adjoint
 	 */
-	PowerTypeDualityMapping_ptr_t getAdjointMapping() const;
+	Mapping_ptr_t getAdjointMapping() const;
 
 protected:
 	//!> lp norm object

@@ -52,8 +52,7 @@ const Eigen::VectorXd LInfinityDualityMapping::operator()(
 	return Jx * factor;
 }
 
-PowerTypeDualityMapping_ptr_t
-LInfinityDualityMapping::getAdjointMapping() const
+Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const
 {
 	// calculate dual power
 	const double dualpower = Helpers::ConjugateValue(power);

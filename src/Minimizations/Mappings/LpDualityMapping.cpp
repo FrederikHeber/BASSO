@@ -88,7 +88,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 	}
 }
 
-PowerTypeDualityMapping_ptr_t LpDualityMapping::getAdjointMapping() const
+Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value
 	const double q = Helpers::ConjugateValue(p);
