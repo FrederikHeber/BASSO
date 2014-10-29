@@ -18,7 +18,9 @@
 #include <iostream>
 #include <sstream>
 
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -93,6 +95,18 @@ double GeneralMinimizer::calculateResidual(
 		) const
 {
 	_residual = MatrixVectorProduct(_A,_x0) - _y;
+	return NormY(_residual);
+}
+
+double GeneralMinimizer::calculateResidual(
+		const InverseProblem_ptr_t &_problem,
+		SpaceElement_ptr_t &_residual
+		) const
+{
+	*_residual =  MatrixVectorProduct(
+			dynamic_cast<const LinearMapping &>(*_problem->A).getMatrixRepresentation(),
+			_problem->x->getVectorRepresentation());
+	*_residual -= _problem->y;
 	return NormY(_residual);
 }
 

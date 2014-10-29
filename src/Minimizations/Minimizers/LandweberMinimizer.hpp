@@ -58,6 +58,13 @@ public:
 			const Eigen::VectorXd &_solution
 			);
 
+	GeneralMinimizer::ReturnValues operator()(
+			const InverseProblem_ptr_t &_problem,
+			const SpaceElement_ptr_t &_startvalue,
+			const SpaceElement_ptr_t &_dualstartvalue,
+			const SpaceElement_ptr_t &_truesolution
+			);
+
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...

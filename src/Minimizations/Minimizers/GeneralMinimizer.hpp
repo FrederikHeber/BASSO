@@ -47,6 +47,10 @@ public:
 		Eigen::VectorXd solution;
 		//!> residual vector
 		Eigen::VectorXd residual;
+		//!> solution vector
+		SpaceElement_ptr_t m_solution;
+		//!> residual vector
+		SpaceElement_ptr_t m_residual;
 		//!> remaining residuum, i.e. norm of residual
 		double residuum;
 		//!> number of outer iterations till solution
@@ -73,6 +77,25 @@ public:
 			const Eigen::VectorXd &_solution
 			) = 0;
 
+	/** Solve the inverse problem _A * x = _y for x with given
+	 * tart value \a _x0, discretized operator \A _A and right-hand
+	 * side \a _y.
+	 *
+	 * @param _x0 start value, may be zero vector
+	 * @param _dualx0 dual element to initial \a _x0
+	 * @param _A matrix as discretized operator
+	 * @param _y right-hand side
+	 * @param _solution additional true solution to calculate Bregman
+	 * 			distance
+	 * @return structure with solution and iteration information
+	 */
+	virtual ReturnValues operator()(
+			const InverseProblem_ptr_t &_problem,
+			const SpaceElement_ptr_t &_startvalue,
+			const SpaceElement_ptr_t &_dualstartvalue,
+			const SpaceElement_ptr_t &_truesolution
+			) = 0;
+
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
@@ -92,6 +115,19 @@ public:
 			const Eigen::MatrixXd &_A,
 			const Eigen::VectorXd &_y,
 			Eigen::VectorXd &_residual
+			) const;
+
+	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
+	 *
+	 * \param _x0 current iteration point
+	 * \param _A matrix of inverse problem
+	 * \param _y right-hand side
+	 * \param _residual residual vector, updated after call
+	 * \return norm of residual
+	 */
+	double calculateResidual(
+			const InverseProblem_ptr_t &_problem,
+			SpaceElement_ptr_t &_residual
 			) const;
 
 protected:
