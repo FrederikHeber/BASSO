@@ -13,6 +13,8 @@
 
 #include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( SoftThresholdingMappingUnitTest );
@@ -41,12 +43,19 @@ void SoftThresholdingMappingUnitTest::tearDown()
 
 void SoftThresholdingMappingUnitTest::oneNorm()
 {
-	SoftThresholdingMapping S;
+	const double power = 2.;
 	Eigen::VectorXd x(10);
 	x << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
 	{
 		const double lambda = .9;
-		S.setLambda(lambda);
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						x.innerSize(), lambda, power);
+		// Note that we have the duality mapping (the soft thresholding)
+		// only in the dual space, not in the original back as this
+		// space is not smooth and jence its duality mapping not single-
+		// valued.
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.,0.,0.,0.,0.,0.,0.,0.,0.,0.;
 		const Eigen::VectorXd compare = S(x);
@@ -56,7 +65,10 @@ void SoftThresholdingMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .4;
-		S.setLambda(lambda);
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						x.innerSize(), lambda, power);
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.,-0.399513,0.,0.,0.,0.,-0.451628,0.320586,0.,-0.129929;
 		const Eigen::VectorXd compare = S(x);
@@ -66,7 +78,10 @@ void SoftThresholdingMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .1;
-		S.setLambda(lambda);
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						x.innerSize(), lambda, power);
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.104691,-0.699513,0.,0.264664,0.,-0.172607,-0.751628,0.620586,0.,-0.429929;
 		const Eigen::VectorXd compare = S(x);
@@ -76,7 +91,10 @@ void SoftThresholdingMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .001;
-		S.setLambda(lambda);
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						x.innerSize(), lambda, power);
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.203691,-0.798513,0.055042,0.363664,0.038179,-0.271607,-0.850628,0.719586,-0.057074,-0.528929;
 		const Eigen::VectorXd compare = S(x);
@@ -86,7 +104,10 @@ void SoftThresholdingMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .0;
-		S.setLambda(lambda);
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						x.innerSize(), lambda, power);
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(x);
 		const Eigen::VectorXd compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()

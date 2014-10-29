@@ -22,6 +22,8 @@
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 int main()
 {
@@ -41,21 +43,34 @@ int main()
 			<< ", L1: " << v.lpNorm<1>()
 			<< ", l_infty: " << v.lpNorm<Eigen::Infinity>() << std::endl;
 
+	const double power = 2.;
 	// testing of LpDualityMapping
 	{
-		L1DualityMapping J_1(2.);
+		const double p = 1.;
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		Mapping_ptr_t J_1 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_1 with weight 2 of v is ("
-				<< J_1(v).transpose() << ")" << std::endl;
+				<< (*J_1)(v) << ")" << std::endl;
 	}
 	{
-		LpDualityMapping J_2(2.);
+		const double p = 2.;
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		Mapping_ptr_t J_2 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_2 with weight 2 of v is ("
-				<< J_2(v).transpose() << ")" << std::endl;
+				<< (*J_2)(v) << ")" << std::endl;
 	}
 	{
-		LInfinityDualityMapping J_infty(2.);
+		const double p = std::numeric_limits<double>::infinity();
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		Mapping_ptr_t J_infty = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_infty with weight 2 of v is ("
-				<< J_infty(v).transpose() << ")" << std::endl;
+				<< (*J_infty)(v) << ")" << std::endl;
 	}
 
 	boost::function<
@@ -94,12 +109,17 @@ int main()
 
 	// testing of BregmanProjectionFunctional
 	{
-		const unsigned int q = 2; 		// power of weight of duality mapping
-//		L1Norm lpnorm;
-		LInfinityNorm lpdualnorm;
-//		L1DualityMapping J_1;
-		LInfinityDualityMapping J_infty(q);
-		BregmanProjectionFunctional bregman_1(lpdualnorm, J_infty, q, MatrixVectorProduct, ScalarVectorProduct);
+		const double p = 1.;
+		const double power = 2.;
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
+		BregmanProjectionFunctional bregman_1(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),
+				MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -113,10 +133,17 @@ int main()
 				<< bregman_1.gradient(t,x,U,alpha)<< "" << std::endl;
 	}
 	{
-		const unsigned int q = 2; 		// power of weight of duality mapping
-		LpNorm lpnorm(2);
-		LpDualityMapping J_2(2,q);
-		BregmanProjectionFunctional bregman_2(lpnorm, J_2, q, MatrixVectorProduct, ScalarVectorProduct);
+		const double p = 2.;
+		const double power = 2.;
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
+		BregmanProjectionFunctional bregman_2(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),
+				MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);
@@ -130,12 +157,17 @@ int main()
 				<< bregman_2.gradient(t,x,U,alpha) << "" << std::endl;
 	}
 	{
-		const unsigned int q = 2; 		// power of weight of duality mapping
-//		LInfinityNorm lpnorm;
-		L1Norm lpdualnorm;
-		L1DualityMapping J_1(q);
-//		LInfinityDualityMapping J_infty;
-		BregmanProjectionFunctional bregman_infty(lpdualnorm, J_1, q, MatrixVectorProduct, ScalarVectorProduct);
+		const double p = std::numeric_limits<double>::infinity();
+		const double power = 2.;
+		NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						v.innerSize(), p, power);
+		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
+		BregmanProjectionFunctional bregman_infty(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),
+				MatrixVectorProduct, ScalarVectorProduct);
 		Eigen::VectorXd t(2);
 		t << 4,3;
 		Eigen::VectorXd x(2);

@@ -13,7 +13,6 @@
 class LpDualityMappingUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( LpDualityMappingUnitTest );
-  CPPUNIT_TEST( throwTest );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( fourNorm );
   CPPUNIT_TEST( elevenNorm );
@@ -25,7 +24,6 @@ public:
   void setUp();
   void tearDown();
 
-  void throwTest();
   void twoNorm();
   void fourNorm();
   void elevenNorm();
