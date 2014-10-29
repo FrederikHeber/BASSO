@@ -419,9 +419,9 @@ LandweberMinimizer::operator()(
 	double old_distance = 0.;
 	if (!_truesolution->isZero()) {
 		old_distance = Delta_p(
-				returnvalues.m_solution->getVectorRepresentation(),
-				_truesolution->getVectorRepresentation(),
-				dual_solution->getVectorRepresentation()) + 1e4*BASSOTOLERANCE; // make sure its larger
+				returnvalues.m_solution,
+				_truesolution,
+				dual_solution) + 1e4*BASSOTOLERANCE; // make sure its larger
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Starting Bregman distance is " << old_distance;
 	}
@@ -440,9 +440,9 @@ LandweberMinimizer::operator()(
 		if (!_truesolution->isZero()) {
 			const double new_distance =
 					Delta_p(
-							returnvalues.m_solution->getVectorRepresentation(),
-							_truesolution->getVectorRepresentation(),
-							dual_solution->getVectorRepresentation());
+							returnvalues.m_solution,
+							_truesolution,
+							dual_solution);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << returnvalues.NumberOuterIterations << ": "
 				<< "Delta_p^{x^*_n}(x_n,x) is "
