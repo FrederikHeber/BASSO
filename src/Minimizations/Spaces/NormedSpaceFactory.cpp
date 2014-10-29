@@ -51,7 +51,8 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 
 	// create duality mapping instance
 	Mapping_ptr_t mapping =
-			PowerTypeDualityMappingFactory::createInstance(_p, _power);
+			PowerTypeDualityMappingFactory::createInstance(
+					instance, _p, _power);
 	instance->setDualityMapping(mapping);
 	Mapping_ptr_t dualmapping =
 			mapping->getAdjointMapping();
@@ -96,7 +97,8 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 	);
 	instance->setDualityMapping(mapping);
 	Mapping_ptr_t dualmapping(
-			new SoftThresholdingMapping( /* dualinstance, instance, */
+			new SoftThresholdingMapping(
+					dualinstance,
 					_lambda)
 	);
 	dualinstance->setDualityMapping(dualmapping);
