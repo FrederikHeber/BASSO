@@ -25,7 +25,8 @@ public:
 	 *
 	 * @param _power power type of this duality mapping
 	 */
-	PowerTypeDualityMapping(const double _power) :
+	PowerTypeDualityMapping(
+			const double _power) :
 		power(_power),
 		tolerance(BASSOTOLERANCE)
 	{}

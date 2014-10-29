@@ -115,6 +115,6 @@ Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
 	const double dualpower = Helpers::ConjugateValue(power);
 	// and create instance with it
 	PowerTypeDualityMapping_ptr_t instance(
-			new LpDualityMapping(q,dualpower));
+			new LpDualityMapping(getTargetSpace(),q,dualpower));
 	return instance;
 }

@@ -50,9 +50,11 @@ Mapping_ptr_t L1DualityMapping::getAdjointMapping() const
 {
 	// calculate dual power
 	const double dualpower = Helpers::ConjugateValue(power);
-	// adjoint mapping is from l_infinity
+	// adjoint mapping is from l_infinity (from target to source, and
+	// source is dual, where we assume spaces to be reflexive)
 	PowerTypeDualityMapping_ptr_t instance(
-			new LInfinityDualityMapping(dualpower)
+			new LInfinityDualityMapping(
+					getTargetSpace(), dualpower)
 	);
 	return instance;
 }

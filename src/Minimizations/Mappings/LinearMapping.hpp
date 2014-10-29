@@ -70,8 +70,8 @@ public:
 		Mapping(_SourceSpaceRef,_TargetSpaceRef),
 		matrix(_matrix)
 	{
-//		assert( matrix.innerSize() == SourceSpaceRef->getDimension() );
-//		assert( matrix.outerSize() == TargetSpaceRef->getDimension() );
+		assert( matrix.outerSize() == SourceSpaceRef->getDimension() );
+		assert( matrix.innerSize() == TargetSpaceRef->getDimension() );
 	}
 
 	/** Matrix multiplication from the right.

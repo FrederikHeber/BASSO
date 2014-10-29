@@ -20,8 +20,8 @@ SpaceElement_ptr_t LinearMapping::operator()(
 		const SpaceElement_ptr_t &_sourceelement
 		) const
 {
-//	assert( _sourceelement->getSpace() == SourceSpaceRef );
-	SpaceElement_ptr_t targetelement; // = TargetSpaceRef->createElement();
+	assert( _sourceelement->getSpace() == SourceSpaceRef );
+	SpaceElement_ptr_t targetelement = TargetSpaceRef->createElement();
 	*targetelement =
 			matrix * _sourceelement->getVectorRepresentation();
 	return targetelement;
@@ -37,7 +37,7 @@ const Eigen::VectorXd LinearMapping::operator()(
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
-	SpaceElement_ptr_t newelement; // TargetSpaceRef->createElement());
+	SpaceElement_ptr_t newelement = TargetSpaceRef->createElement();
 	*newelement =
 			matrix * _element->getVectorRepresentation();
 	return newelement;
@@ -53,8 +53,8 @@ LinearMapping::operator*(const Eigen::VectorXd &_vector) const
 Mapping_ptr_t LinearMapping::getAdjointMapping() const
 {
 	LinearMapping * adjoint = new LinearMapping(
-//				TargetSpaceRef->getDualSpace(),
-//				SourceSpaceRef->getDualSpace()
+				TargetSpaceRef->getDualSpace(),
+				SourceSpaceRef->getDualSpace()
 			);
 	adjoint->matrix = matrix.transpose();
 	return Mapping_ptr_t(adjoint);

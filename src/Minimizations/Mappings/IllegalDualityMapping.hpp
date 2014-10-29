@@ -26,17 +26,17 @@ public:
 	 */
 	IllegalDualityMapping();
 
-//	/** Getter for the source space of this mapping.
-//	 *
-//	 * @return ref to source space
-//	 */
-//	const NormedSpace_ptr_t& getSourceSpace() const;
-//
-//	/** Getter for the target space of this mapping.
-//	 *
-//	 * @return ref to target space
-//	 */
-//	const NormedSpace_ptr_t& getTargetSpace() const;
+	/** Getter for the source space of this mapping.
+	 *
+	 * @return ref to source space
+	 */
+	const NormedSpace_ptr_t& getSourceSpace() const;
+
+	/** Getter for the target space of this mapping.
+	 *
+	 * @return ref to target space
+	 */
+	const NormedSpace_ptr_t& getTargetSpace() const;
 
 	/** Mapping function.
 	 *

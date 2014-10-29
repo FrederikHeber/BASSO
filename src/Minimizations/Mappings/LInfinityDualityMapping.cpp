@@ -58,7 +58,7 @@ Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const
 	const double dualpower = Helpers::ConjugateValue(power);
 	// adjoint mapping is from l_1
 	PowerTypeDualityMapping_ptr_t instance(
-			new L1DualityMapping(dualpower)
+			new L1DualityMapping(getTargetSpace(),dualpower)
 	);
 	return instance;
 }

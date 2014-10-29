@@ -30,7 +30,8 @@ public:
 	 *
 	 * @param _power power type of this duality mapping
 	 */
-	L1DualityMapping(const double _power) :
+	L1DualityMapping(
+			const double _power) :
 		PowerTypeDualityMapping(_power)
 	{}
 
