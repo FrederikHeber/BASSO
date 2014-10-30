@@ -24,6 +24,7 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -74,7 +75,7 @@ int main (int argc, char *argv[])
 					"set the file name to write solution vector to")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
 	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
-			("useOptimalStepwidth", po::value<bool>(), "set whether to use optimal calculated step width or theoretical one (Landweber)")
+			("stepwidth-algorithm", po::value<unsigned int>(), "set which step width algorithm to use (Landweber)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 			("wolfe-constants", po::value< std::vector<double> >()->multitoken(), "set the two wolfe conditions for positivity and stronger than linear (SSO, inexact line search)")
 	        ;
@@ -350,17 +351,18 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Searchspace Index update algorithm set to " << updatetype;
 	}
-	bool useOptimalStepwidth;
-	if (vm.count("useOptimalStepwidth")) {
+	unsigned int stepwidth_type = 1;
+	if (vm.count("stepwidth-algorithm")) {
 		if (type != MinimizerFactory::landweber) {
 			BOOST_LOG_TRIVIAL(warning)
-					<< "useOptimalStepwidth is set, but not landweber chosen, ignoring";
+					<< "stepwidth-algorithm is set, but not landweber chosen, ignoring";
 		}
-		useOptimalStepwidth = vm["useOptimalStepwidth"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug) << "useOptimalStepwidth was set to "
-			<< useOptimalStepwidth;
+		stepwidth_type = vm["stepwidth-algorithm"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug) << "stepwidth-algorithm was set to "
+			<< stepwidth_type << "\n";
 	} else {
-		useOptimalStepwidth = true;
+		// use minimizing residual by default
+		stepwidth_type = 1;
 	}
 	std::vector<double> wolfe_constants;
 	if (vm.count("wolfe-constants")) {
@@ -508,6 +510,7 @@ int main (int argc, char *argv[])
 			maxiter,
 			maxinneriter,
 			database,
+			(const enum DetermineStepWidthFactory::stepwidth_enumeration)stepwidth_type,
 			outputsteps);
 	minimizer->MaxWalltime =
 			static_cast<boost::chrono::duration<double> >(maxwalltime);
@@ -524,9 +527,6 @@ int main (int argc, char *argv[])
 		case MinimizerFactory::landweber:
 			static_cast<LandweberMinimizer*>(
 					minimizer.get())->setC(C);
-			static_cast<LandweberMinimizer*>(
-					minimizer.get())->setuseOptimalStepwidth(
-					useOptimalStepwidth);
 			break;
 		case MinimizerFactory::sequentialsubspace:
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);

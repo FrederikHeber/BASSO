@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
 class Database;
 
@@ -25,6 +26,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 			const unsigned int _outputsteps=0
 			);
 
@@ -40,22 +42,12 @@ public:
 	 */
 	void setC(const double _C);
 
-	/** Setter for useOptimalStepwidth.
-	 *
-	 * This is to have a definite place where useOptimalStepwidth is
-	 * changed. Hence, it is const and cannot accidentally be changed in
-	 * the code, but it can still be set after the instance has been created.
-	 *
-	 * @param _useOptimalStepwidth new value of useOptimalStepwidth
-	 */
-	void setuseOptimalStepwidth(const bool _useOptimalStepwidth);
-
 	GeneralMinimizer::ReturnValues operator()(
 			const InverseProblem_ptr_t &_problem,
 			const SpaceElement_ptr_t &_startvalue,
 			const SpaceElement_ptr_t &_dualstartvalue,
 			const SpaceElement_ptr_t &_truesolution
-			);
+	);
 
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
@@ -68,8 +60,8 @@ public:
 public:
 	//!> positive dampening constant for iteration
 	const double C;
-	//!> whether to use optimal step width calculation or a theoretical one
-	const bool useOptimalStepwidth;
+	//!> which step width procedure to use
+	const enum DetermineStepWidthFactory::stepwidth_enumeration stepwidth_type;
 };
 
 

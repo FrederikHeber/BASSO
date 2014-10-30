@@ -14,6 +14,7 @@
 #include <string>
 
 #include "Minimizations/types.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
 class Database;
 class DualityMappingsContainer;
@@ -48,6 +49,7 @@ public:
 	 * @param _maxiter maximum number of iterations
 	 * @param _maxinneriter maximum number of inner iterations
 	 * @param _database database to store iteration information to
+	 * @param _stepwidth_type which step width procedure to use (landweber)
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
 	 */
@@ -58,6 +60,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 			const unsigned int _outputsteps=0
 			);
 

@@ -29,6 +29,8 @@ add_library (Minimizations
 	Minimizers/SequentialSubspaceMinimizer.cpp
 	Minimizers/SequentialSubspaceMinimizer_IterationState.cpp
 	Minimizers/SequentialSubspaceMinimizerNoise.cpp
+	Minimizers/StepWidths/ConstantRegularizedL1NormStepWidth.cpp
+	Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.cpp
 	Minimizers/StepWidths/DetermineStepWidthFactory.cpp
 	Minimizers/StepWidths/LandweberFixedStepWidth.cpp
 	Minimizers/StepWidths/ResidualMinimizingStepwidth.cpp
@@ -77,8 +79,10 @@ install (FILES Minimizers/MinimizationExceptions.hpp DESTINATION include)
 install (FILES Minimizers/MinimizerFactory.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/ConstantRegularizedL1NormStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/DetermineStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/DetermineStepWidthFactory.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/LandweberFixedStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/ResidualMinimizingStepwidth.hpp DESTINATION include)
 

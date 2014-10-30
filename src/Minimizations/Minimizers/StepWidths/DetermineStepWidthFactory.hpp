@@ -19,9 +19,18 @@
  */
 struct DetermineStepWidthFactory
 {
+	//!> enumeration of all available step width calculators
+	enum stepwidth_enumeration {
+		LandweberFixes=0,
+		MinimizingResidual=1,
+		ConstantRegularizedL1Norm=2,
+		DynamicRegularizedL1Norm=3,
+		MAX_stepwidth_enumeration
+	};
+
 	static DetermineStepWidth_ptr_t createInstance(
 			const InverseProblem_ptr_t &_problem,
-			const bool _useOptimalStepWidth,
+			const enum stepwidth_enumeration _stepwidth_type,
 			const double _C,
 			const ResidualFunctional::calculateResidual_t &_residualizer);
 };

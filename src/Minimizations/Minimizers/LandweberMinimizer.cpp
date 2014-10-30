@@ -39,6 +39,7 @@ LandweberMinimizer::LandweberMinimizer(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
+		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
@@ -50,14 +51,8 @@ LandweberMinimizer::LandweberMinimizer(
 				_outputsteps
 				),
 	C(0.9),
-	useOptimalStepwidth(true)
+	stepwidth_type(_stepwidth_type)
 {}
-
-void LandweberMinimizer::setuseOptimalStepwidth(
-	const bool _useOptimalStepwidth)
-{
-	const_cast<bool &>(useOptimalStepwidth) = _useOptimalStepwidth;
-}
 
 void LandweberMinimizer::setC(const double _C)
 {
@@ -150,7 +145,7 @@ LandweberMinimizer::operator()(
 	DetermineStepWidth_ptr_t stepwidth =
 			DetermineStepWidthFactory::createInstance(
 					_problem,
-					useOptimalStepwidth,
+					stepwidth_type,
 					C,
 					residualizer);
 
@@ -207,10 +202,10 @@ LandweberMinimizer::operator()(
 				0.
 				);
 		per_iteration_tuple.replace( "stepwidth", alpha);
-
-		// iterate: J_p (x_{n+1})
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Step width is " << alpha;
+
+		// iterate: J_p (x_{n+1})
 		*dual_solution -= alpha * u;
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution;
