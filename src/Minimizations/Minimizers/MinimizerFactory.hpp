@@ -50,33 +50,6 @@ public:
 	/** Produces the desired instance.
 	 *
 	 * @param _type type of instance
-	 * @param _NormX lp norm of source space
-	 * @param _NormY lp norm of target space
-	 * @param _PowerX power type of gauge function of duality mapping in source
-	 * 			space
-	 * @param _PowerY power type of gauge function of duality mapping in target
-	 * 			space
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _database database to store iteration information to
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @return wrapped instance of desired \a _type
-	 */
-	instance_ptr_t createInstance(
-			const enum InstanceType &_type,
-			const double _NormX,
-			const double _NormY,
-			const double _PowerX,
-			const double _PowerY,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps=0
-			);
-
-	/** Produces the desired instance.
-	 *
-	 * @param _type type of instance
 	 * @param _inverseproblem inverse problem to solve
 	 * @param _Delta noise level
 	 * @param _maxiter maximum number of iterations
@@ -87,31 +60,6 @@ public:
 	instance_ptr_t createInstance(
 			const enum InstanceType &_type,
 			const InverseProblem_ptr_t &_inverseproblem,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps=0
-			);
-
-	/** Produces the desired instance, minimizing a regularized l1 norm.
-	 *
-	 * @param _type type of instance
-	 * @param _regularization_parameter regularization parameter for the L1
-	 *        norm
-	 * @param _NormY lp norm of target space
-	 * @param _PowerY power type of gauge function of duality mapping in target
-	 * 			space
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _database database to store iteration information to
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @return wrapped instance of desired \a _type
-	 */
-	instance_ptr_t getRegularizedInstance(
-			const enum InstanceType &_type,
-			const double _regularization_parameter,
-			const double _NormY,
-			const double _PowerY,
 			const double _Delta,
 			const unsigned int _maxiter,
 			Database &_database,
@@ -179,28 +127,6 @@ protected:
 			const std::string &_name);
 
 private:
-	/** Helper function to produce the minimizer itself.
-	 *
-	 * @param _type type of minimizer algorithm
-	 * @param _NormY p value of the Lp space in Y
-	 * @param _PowerY power type of the duality mapping in Y
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _database database to store iteration information to
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @return wrapped instance of desired \a _type
-	 */
-	instance_ptr_t
-	getMinimizerInstance(
-			const enum InstanceType &_type,
-			const double _NormY,
-			const double _PowerY,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps
-			);
-
 	/** Helper function to produce the minimizer itself.
 	 *
 	 * @param _type type of minimizer algorithm
