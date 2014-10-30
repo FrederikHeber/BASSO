@@ -36,7 +36,7 @@ InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 	*y = _rhs;
 
 	// and the LinearMapping
-	Mapping_ptr_t A( new LinearMapping(_matrix) ); // X,Y,
+	Mapping_ptr_t A( new LinearMapping(X,Y,_matrix) );
 
 	InverseProblem_ptr_t instance( new InverseProblem(A,y) );
 
@@ -64,7 +64,7 @@ InverseProblem_ptr_t InverseProblemFactory::createRegularizedL1Instance(
 	*y = _rhs;
 
 	// and the LinearMapping
-	Mapping_ptr_t A( new LinearMapping(_matrix) ); // X,Y,
+	Mapping_ptr_t A( new LinearMapping(X,Y,_matrix) );
 
 	InverseProblem_ptr_t instance( new InverseProblem(A,y) );
 
