@@ -94,10 +94,13 @@ LandweberMinimizer::operator()(
 			dynamic_cast<const LinearMapping &>(*A_adjoint);
 
 	// G constant used in theoretical step width
-	const double G =
+	const double G = 0.;
+	if (!useOptimalStepwidth) {
+		const_cast<double &>(G) =
 			NormX.getPvalue() < 2. ?
 			::pow(2., 2. - DualNormX.getPvalue()) :
 			 DualNormX.getPvalue() - 1.;
+	}
 	BOOST_LOG_TRIVIAL(trace)
 		<< "G is " << G;
 
