@@ -9,9 +9,6 @@
 
 #include "MinimizerFactory.hpp"
 
-#include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
-#include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
-#include "Minimizations/DualityMappings/RegularizedL1Norm.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
@@ -25,8 +22,6 @@ const std::string MinimizerFactory::TypeNames[] = {
 		"SSO_noise"
 };
 
-DualityMappingsContainer *MinimizerFactory::DualityContainer = NULL;
-
 MinimizerFactory::instance_ptr_t MinimizerFactory::createInstance(
 		const enum InstanceType &_type,
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -36,15 +31,6 @@ MinimizerFactory::instance_ptr_t MinimizerFactory::createInstance(
 		const unsigned int _outputsteps
 		)
 {
-	// create DualityMappingsContainer instance
-	if (DualityContainer != NULL)
-		delete DualityContainer;
-	DualityContainer = new DefaultDualityMappings(
-			_inverseproblem->x->getSpace()->getNorm()->getPvalue(),
-			_inverseproblem->x->getSpace()->getDualityMapping()->getPower(),
-			1e-6
-			);
-
 	// return the instance depending on the type
 	return getMinimizerInstance(
 					_type,
@@ -65,16 +51,6 @@ MinimizerFactory::instance_ptr_t MinimizerFactory::getRegularizedInstance(
 		const unsigned int _outputsteps
 		)
 {
-	// create DualityMappingsContainer instance
-	if (DualityContainer != NULL)
-		delete DualityContainer;
-	const Mapping_ptr_t &J_q = _inverseproblem->y->getSpace()->getDualityMapping();
-	const SoftThresholdingMapping & S =
-			dynamic_cast<SoftThresholdingMapping &>(*J_q);
-	DualityContainer = new RegularizedL1Norm(
-			S.getLambda()
-			);
-
 	// return the instance depending on the type
 	return getMinimizerInstance(
 					_type,

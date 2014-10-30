@@ -14,7 +14,6 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
-#include "Minimizations/DualityMappings/DefaultDualityMappings.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Functions/SmoothnessModulus.hpp"

@@ -29,6 +29,14 @@
 
 namespace po = boost::program_options;
 
+
+//!> enumeration of all known dualities (Don't forget to add string literal to TypeNames)
+enum DualityContainerType {
+	defaulttype=0,
+	regularizedl1norm=1,
+	MAX_DualityContainerType
+};
+
 int main (int argc, char *argv[])
 {
 	// set up command-line-parameters
@@ -229,12 +237,12 @@ int main (int argc, char *argv[])
 			<< "Using normy as powery." << "\n.";
 		powery = normy;
 	}
-	MinimizerFactory::DualityContainerType dualitytype =
-			MinimizerFactory::defaulttype;
+	DualityContainerType dualitytype =
+			defaulttype;
 	double regularization_parameter = 0.;
 	if ((vm.count("regularized-norm"))
 			&& (vm["regularized-norm"].as<double>() > 0.)) {
-		dualitytype = MinimizerFactory::regularizedl1norm;
+		dualitytype = regularizedl1norm;
 		regularization_parameter = vm["regularized-norm"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Duality Mappings of space X set to regularized L1 norm"
@@ -350,7 +358,7 @@ int main (int argc, char *argv[])
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem;
 	switch (dualitytype) {
-	case MinimizerFactory::regularizedl1norm:
+	case regularizedl1norm:
 		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
 				regularization_parameter,
 				powerx,
@@ -359,7 +367,7 @@ int main (int argc, char *argv[])
 				matrix,
 				rhs);
 		break;
-	case MinimizerFactory::defaulttype:
+	case defaulttype:
 	default:
 		inverseproblem = InverseProblemFactory::createLpInstance(
 				normx,
@@ -392,7 +400,7 @@ int main (int argc, char *argv[])
 	MinimizerFactory::instance_ptr_t minimizer;
 	// set regularization parametter in case of regularizedl1norm
 	switch (dualitytype) {
-	case MinimizerFactory::regularizedl1norm:
+	case regularizedl1norm:
 		minimizer =
 			factory.getRegularizedInstance(
 				type,
@@ -402,7 +410,7 @@ int main (int argc, char *argv[])
 				database,
 				outputsteps);
 		break;
-	case MinimizerFactory::defaulttype:
+	case defaulttype:
 	default:
 		minimizer =
 			factory.createInstance(
@@ -417,7 +425,7 @@ int main (int argc, char *argv[])
 
 	// calculate initial dual solution
 	SpaceElement_ptr_t dualx0 =
-			(dualitytype == MinimizerFactory::defaulttype) ?
+			(dualitytype == defaulttype) ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
 			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 

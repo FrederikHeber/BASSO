@@ -40,13 +40,6 @@ public:
 		MAX_InstanceType
 	};
 
-	//!> enumeration of all known dualities (Don't forget to add string literal to TypeNames)
-	enum DualityContainerType {
-		defaulttype=0,
-		regularizedl1norm=1,
-		MAX_DualityContainerType
-	};
-
 	/** Produces the desired instance.
 	 *
 	 * @param _type type of instance
@@ -150,10 +143,6 @@ private:
 public:
 	//!> name of each known instance type (Don't forget to add enum to InstanceType)
 	static const std::string TypeNames[];
-
-private:
-	//!> static instance to contain DualityMappingsContainer
-	static DualityMappingsContainer *DualityContainer;
 };
 
 
