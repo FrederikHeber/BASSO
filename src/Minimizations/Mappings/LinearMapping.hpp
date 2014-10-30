@@ -26,20 +26,34 @@ class LinearMapping : public Mapping
 	//!> allow SpaceElement access to matrix
 	friend class SpaceElement;
 public:
+	/** Default constructor for LinearMapping.
+	 *
+	 */
+	LinearMapping()
+	{}
+
 	/** Constructor for LinearMapping.
 	 *
-//	 * @param _SourceSpaceRef source space
-//	 * @param _TargetSpaceRef target space
+	 * @param _SourceSpaceRef source space
+	 * @param _TargetSpaceRef target space
 	 */
 	LinearMapping(
-//			const NormedSpace_ptr_t _SourceSpaceRef,
-//			const NormedSpace_ptr_t _TargetSpaceRef
-			) // :
-//		Mapping(_SourceSpaceRef,_TargetSpaceRef),
-//		matrix(Eigen::MatrixXd::Zero(
-//				_SourceSpaceRef->getDimension(),
-//				_TargetSpaceRef->getDimension())
-//		)
+			const NormedSpace_ptr_t _SourceSpaceRef,
+			const NormedSpace_ptr_t _TargetSpaceRef
+			) :
+		Mapping(_SourceSpaceRef,_TargetSpaceRef),
+		matrix(Eigen::MatrixXd::Zero(
+				_SourceSpaceRef->getDimension(),
+				_TargetSpaceRef->getDimension())
+		)
+	{}
+
+	/** Constructor for LinearMapping with a given matrix
+	 *
+	 * @param _matrix finite-dimensional representation of the mapping
+	 */
+	LinearMapping(const Eigen::MatrixXd &_matrix) :
+		matrix(_matrix)
 	{}
 
 	/** Constructor for LinearMapping with a given matrix
@@ -49,11 +63,11 @@ public:
 	 * @param _matrix finite-dimensional representation of the mapping
 	 */
 	LinearMapping(
-//			const NormedSpace_ptr_t _SourceSpaceRef,
-//			const NormedSpace_ptr_t _TargetSpaceRef,
+			const NormedSpace_ptr_t _SourceSpaceRef,
+			const NormedSpace_ptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd &_matrix
 			) :
-//		Mapping(_SourceSpaceRef,_TargetSpaceRef),
+		Mapping(_SourceSpaceRef,_TargetSpaceRef),
 		matrix(_matrix)
 	{
 //		assert( matrix.innerSize() == SourceSpaceRef->getDimension() );

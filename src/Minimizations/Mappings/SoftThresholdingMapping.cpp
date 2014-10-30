@@ -15,8 +15,21 @@ SoftThresholdingMapping::SoftThresholdingMapping() :
 {}
 
 SoftThresholdingMapping::SoftThresholdingMapping(
+		const NormedSpace_ptr_t &_NormedSpaceRef) :
+	L1DualityMapping(_NormedSpaceRef, 2.),
+	lambda(0.1)
+{}
+
+SoftThresholdingMapping::SoftThresholdingMapping(
 		const double _lambda) :
 	L1DualityMapping(2.),
+	lambda(_lambda)
+{}
+
+SoftThresholdingMapping::SoftThresholdingMapping(
+		const NormedSpace_ptr_t &_NormedSpaceRef,
+		const double _lambda) :
+	L1DualityMapping(_NormedSpaceRef, 2.),
 	lambda(_lambda)
 {}
 

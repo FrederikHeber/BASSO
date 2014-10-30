@@ -20,17 +20,23 @@
 class Mapping
 {
 public:
+	/** Default constructor for a mapping.
+	 *
+	 */
+	Mapping()
+	{}
+
 	/** Constructor for a mapping.
 	 *
-//	 * @param _SourceSpaceRef source space reference
-//	 * @param _TargetSpaceRef target space reference
+	 * @param _SourceSpaceRef source space reference
+	 * @param _TargetSpaceRef target space reference
 	 */
 	Mapping(
-//			const NormedSpace_ptr_t &_SourceSpaceRef,
-//			const NormedSpace_ptr_t &_TargetSpaceRef
-			) // :
-//		SourceSpaceRef(_SourceSpaceRef),
-//		TargetSpaceRef(_TargetSpaceRef)
+			const NormedSpace_ptr_t &_SourceSpaceRef,
+			const NormedSpace_ptr_t &_TargetSpaceRef
+			) :
+		SourceSpaceRef(_SourceSpaceRef),
+		TargetSpaceRef(_TargetSpaceRef)
 	{}
 
 //	/** Getter for the source space of this mapping.
@@ -87,12 +93,12 @@ public:
 	virtual const double getPower() const
 	{ return 0.; }
 
-//protected:
-//	//!> reference to space from which this mappings projects
-//	const NormedSpace_ptr_t SourceSpaceRef;
-//
-//	//!> reference to space into which this mappings projects
-//	const NormedSpace_ptr_t TargetSpaceRef;
+protected:
+	//!> reference to space from which this mappings projects
+	const NormedSpace_ptr_t SourceSpaceRef;
+
+	//!> reference to space into which this mappings projects
+	const NormedSpace_ptr_t TargetSpaceRef;
 };
 
 

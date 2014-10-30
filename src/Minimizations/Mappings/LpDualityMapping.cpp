@@ -25,9 +25,29 @@ LpDualityMapping::LpDualityMapping(
 {}
 
 LpDualityMapping::LpDualityMapping(
+		const NormedSpace_ptr_t &_NormedSpaceRef,
+		const double _p,
+		const double _power) :
+	PowerTypeDualityMapping(_NormedSpaceRef, _power),
+	p(_p),
+	lpnorm(_p)
+{}
+
+LpDualityMapping::LpDualityMapping(
 		const double _p
 		) :
 	PowerTypeDualityMapping(_p),
+	p(_p),
+	lpnorm(_p)
+{
+	// we don't need to throw, norm will do this
+}
+
+LpDualityMapping::LpDualityMapping(
+		const NormedSpace_ptr_t &_NormedSpaceRef,
+		const double _p
+		) :
+	PowerTypeDualityMapping(_NormedSpaceRef, _p),
 	p(_p),
 	lpnorm(_p)
 {

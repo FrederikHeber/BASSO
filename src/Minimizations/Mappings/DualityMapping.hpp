@@ -15,14 +15,27 @@
 
 /** This class defines mappings from a space to its dual space with
  * elements being the gradient of the norm of the source space.
+ *
+ * Hence, only one space needs to be given as the other is automatically
+ * the space's dual space.
  */
 class DualityMapping : public Mapping
 {
 public:
+	/** Default constructor for DualityMapping
+	 *
+	 */
+	DualityMapping()
+	{}
+
+	/** Constructor for class DualityMapping.
+	 *
+	 * @param _NormedSpaceRef reference to space
+	 */
 	DualityMapping(
-//			const NormedSpace_ptr_t &_NormedSpaceRef
-			) // :
-//		Mapping(_NormedSpaceRef,_NormedSpaceRef.getDualSpace())
+			const NormedSpace_ptr_t &_NormedSpaceRef
+			) :
+		Mapping(_NormedSpaceRef,_NormedSpaceRef->getDualSpace())
 	{}
 };
 

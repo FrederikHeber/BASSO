@@ -34,6 +34,17 @@ public:
 		PowerTypeDualityMapping(_power)
 	{}
 
+	/** Constructor for class L1DualityMapping.
+	 *
+	 * @param _NormedSpaceRef reference to space
+	 * @param _power power type of this duality mapping
+	 */
+	L1DualityMapping(
+			const NormedSpace_ptr_t &_NormedSpaceRef,
+			const double _power) :
+		PowerTypeDualityMapping(_NormedSpaceRef, _power)
+	{}
+
 	/** Evaluates duality mapping at \a _x.
 	 *
 	 * \param _x point where to evaluate

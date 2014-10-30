@@ -30,6 +30,19 @@ public:
 		tolerance(BASSOTOLERANCE)
 	{}
 
+	/** Default constructor for class PowerTypeDualityMapping.
+	 *
+	 * @param _NormedSpaceRef reference to space
+	 * @param _power power type of this duality mapping
+	 */
+	PowerTypeDualityMapping(
+			const NormedSpace_ptr_t &_NormedSpaceRef,
+			const double _power) :
+		DualityMapping(_NormedSpaceRef),
+		power(_power),
+		tolerance(BASSOTOLERANCE)
+	{}
+
 	/** Setter for internal tolerance.
 	 *
 	 * \param _tolerance value to set to
