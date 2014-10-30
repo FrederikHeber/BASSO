@@ -89,17 +89,6 @@ GeneralMinimizer::GeneralMinimizer(
 }
 
 double GeneralMinimizer::calculateResidual(
-		const Eigen::VectorXd &_x0,
-		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
-		Eigen::VectorXd &_residual
-		) const
-{
-	_residual = MatrixVectorProduct(_A,_x0) - _y;
-	return NormY(_residual);
-}
-
-double GeneralMinimizer::calculateResidual(
 		const InverseProblem_ptr_t &_problem,
 		SpaceElement_ptr_t &_residual
 		) const
