@@ -29,24 +29,11 @@ public:
 	/** Constructor for class LpDualityMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space
-	 * \param _p p value of the used Lp norm
 	 * @param _power power type of this duality mapping
 	 */
 	LpDualityMapping(
 			const NormedSpace_ptr_t &_NormedSpaceRef,
-			const double _p,
 			const double _power);
-
-	/** Constructor for class LpDualityMapping.
-	 *
-	 * Here, we use \a _p also for the power of the weight function.
-	 *
-	 * @param _NormedSpaceRef reference to space
-	 * \param _p p value of the used Lp norm
-	 */
-	LpDualityMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef,
-			const double _p);
 
 	/** Evaluates duality mapping at \a _x.
 	 *

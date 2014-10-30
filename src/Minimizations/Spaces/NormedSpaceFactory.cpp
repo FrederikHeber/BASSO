@@ -52,7 +52,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	// create duality mapping instance
 	Mapping_ptr_t mapping =
 			PowerTypeDualityMappingFactory::createInstance(
-					instance, _p, _power);
+					instance, _power);
 	instance->setDualityMapping(mapping);
 	Mapping_ptr_t dualmapping =
 			mapping->getAdjointMapping();
