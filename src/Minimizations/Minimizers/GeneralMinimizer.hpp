@@ -150,6 +150,10 @@ private:
 	//!> norm object for dual space X^*
 	const Norm_ptr_t internal_DualNormX;
 
+	//!> duality mapping object for space X (single-valued)
+	const Mapping_ptr_t internal_J_p;
+	//!> duality mapping object for space X^* (single-valued)
+	const Mapping_ptr_t internal_J_q;
 	//!> duality mapping object for space Y (single-valued)
 	const Mapping_ptr_t internal_j_r;
 
@@ -161,6 +165,10 @@ public:
 	//!> norm object for dual space X^*
 	const Norm& DualNormX;
 
+	//!> duality mapping object for space X (single-valued)
+	const Mapping& J_p;
+	//!> duality mapping object for space X^* (single-valued)
+	const Mapping& J_q;
 	//!> duality mapping object for space Y (single-valued)
 	const Mapping& j_r;
 

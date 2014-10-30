@@ -45,12 +45,16 @@ GeneralMinimizer::GeneralMinimizer(
 	internal_NormX(_inverseproblem->x->getSpace()->getNorm()),
 	internal_NormY(_inverseproblem->y->getSpace()->getNorm()),
 	internal_DualNormX(_inverseproblem->x->getSpace()->getDualSpace()->getNorm()),
-	internal_j_r(
-			_inverseproblem->y->getSpace()->getDualityMapping()
+	internal_J_p(_inverseproblem->x->getSpace()->getDualityMapping()),
+	internal_J_q(
+			_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()
 	),
+	internal_j_r(_inverseproblem->y->getSpace()->getDualityMapping()),
 	NormX(*internal_NormX),
 	NormY(*internal_NormY),
 	DualNormX(*internal_DualNormX),
+	J_p(*internal_J_p),
+	J_q(*internal_J_q),
 	j_r(*internal_j_r),
 	database(_database),
 	matrix_vector_fctor(
@@ -73,11 +77,11 @@ GeneralMinimizer::GeneralMinimizer(
 	ScalarVectorProduct(scalar_vector_fctor)
 {
 	BOOST_LOG_TRIVIAL(debug)
-		<< "p is " << val_NormX
-		<< ", q is " << val_DualNormX
+		<< "p is " << _inverseproblem->x->getSpace()->getNorm()->getPvalue()
+		<< ", q is " << _inverseproblem->x->getSpace()->getDualSpace()->getNorm()->getPvalue()
 		<< ", r is " << val_NormY
-		<< ", power of J_p is " <<  PowerX
-		<< ", power of J_q is " <<  DualPowerX
+		<< ", power of J_p is " <<  _inverseproblem->x->getSpace()->getDualityMapping()->getPower()
+		<< ", power of J_q is " <<  _inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()
 		<< ", power of J_r is " <<  PowerY;
 
 	// set tolerances values

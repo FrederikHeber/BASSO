@@ -46,7 +46,7 @@ LandweberMinimizer::LandweberMinimizer(
 				_outputsteps
 				),
 	C(0.9),
-	modul(val_DualNormX),
+	modul(_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()),
 	useOptimalStepwidth(true)
 {}
 
@@ -96,8 +96,8 @@ LandweberMinimizer::operator()(
 	// G constant used in theoretical step width
 	const double G =
 			NormX.getPvalue() < 2. ?
-			::pow(2., 2. - val_DualNormX) :
-			 val_DualNormX - 1.;
+			::pow(2., 2. - DualNormX.getPvalue()) :
+			 DualNormX.getPvalue() - 1.;
 	BOOST_LOG_TRIVIAL(trace)
 		<< "G is " << G;
 

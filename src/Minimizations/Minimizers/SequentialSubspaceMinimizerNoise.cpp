@@ -80,7 +80,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 	const Norm & NormX = *SpaceX.getNorm();
 	const Norm & DualNormX = *DualSpaceX.getNorm();
 	const Norm & NormY = *SpaceY.getNorm();
-//	const Mapping & J_p = *SpaceX.getDualityMapping();
+	const Mapping & J_p = *SpaceX.getDualityMapping();
 	const Mapping & J_q = *DualSpaceX.getDualityMapping();
 	const Mapping & j_r = *SpaceY.getDualityMapping();
 	const SpaceElement_ptr_t &y = _problem->y;
@@ -93,8 +93,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	// G constant used in theoretical step width
 	const double G =
 			NormX.getPvalue() < 2. ?
-			::pow(2., 2. - val_DualNormX) :
-			 val_DualNormX - 1.;
+			::pow(2., 2. - DualNormX.getPvalue()) :
+			 DualNormX.getPvalue() - 1.;
 	BOOST_LOG_TRIVIAL(trace)
 		<< "G is " << G;
 
@@ -194,13 +194,13 @@ SequentialSubspaceMinimizerNoise::operator()(
 			tmin.setZero();
 			if (dual_solution->isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
-				tmin[0] = ::pow(beta, PowerX - 1.);
+				tmin[0] = ::pow(beta, J_p.getPower() - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "tmin is " << tmin;
 			} else {
 				// t0=(beta/G)^(PowerX-1);
 				Eigen::VectorXd t0(1);
-				t0[0] = ::pow(beta/G, PowerX - 1.);
+				t0[0] = ::pow(beta/G, J_p.getPower() - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "t0[0] is " << t0[0];
 				{
