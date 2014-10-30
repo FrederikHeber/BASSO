@@ -41,6 +41,12 @@ struct NormedSpaceFactory
 			const unsigned int _dimension,
 			const double _lambda,
 			const double _power);
+
+	/** This is a placeholder instance to let entities such as
+	 * DualityMappings receive a NormedSpace_ptr_t and to be
+	 * able to call getDualSpace() properly.
+	 */
+	static const NormedSpace_ptr_t DummySpace;
 };
 
 

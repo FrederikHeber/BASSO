@@ -18,6 +18,10 @@
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
+// static instance
+const NormedSpace_ptr_t NormedSpaceFactory::DummySpace =
+		NormedSpaceFactory::createLpInstance(
+				0, 2., 2.);
 
 NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 		const unsigned int _dimension,

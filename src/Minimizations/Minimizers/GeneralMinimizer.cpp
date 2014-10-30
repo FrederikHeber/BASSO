@@ -20,6 +20,7 @@
 
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 GeneralMinimizer::GeneralMinimizer(
 		const DualityMappingsContainer &_container,
@@ -43,7 +44,8 @@ GeneralMinimizer::GeneralMinimizer(
 	internal_NormY(NormFactory::createLpInstance(val_NormY)),
 	internal_DualNormX(NormFactory::createLpInstance(val_DualNormX)),
 	internal_j_r(
-			PowerTypeDualityMappingFactory::createInstance(val_NormY,PowerY)
+			PowerTypeDualityMappingFactory::createInstance(
+					NormedSpaceFactory::DummySpace, val_NormY,PowerY)
 	),
 	NormX(*internal_NormX),
 	NormY(*internal_NormY),

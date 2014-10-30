@@ -12,6 +12,7 @@
 
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 /** This equips the minimizer with the default differentiable duality mappings
  * and their inverse mappings.
@@ -35,8 +36,8 @@ struct DefaultDualityMappings : public DualityMappingsContainer
 			_PowerX,
 			J_p,
 			J_q),
-		J_p(val_NormX, _PowerX),
-		J_q(val_DualNormX, DualPowerX)
+		J_p(NormedSpaceFactory::DummySpace, val_NormX, _PowerX),
+		J_q(NormedSpaceFactory::DummySpace, val_DualNormX, DualPowerX)
 	{
 		J_p.setTolerance(_tolerance);
 		J_q.setTolerance(_tolerance);

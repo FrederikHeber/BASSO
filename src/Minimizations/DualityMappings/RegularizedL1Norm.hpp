@@ -13,6 +13,7 @@
 #include "Minimizations/DualityMappings/DualityMappingsContainer.hpp"
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 /** This equips the minimizer with a soft thresholding operator as required
  * by the regularized L1 norm ansatz.
@@ -30,7 +31,7 @@ struct RegularizedL1Norm : public DualityMappingsContainer
 			1., /* this yields inf for q value */
 			J_p,
 			J_q),
-			J_q(_lambda)
+			J_q(NormedSpaceFactory::DummySpace, _lambda)
 	{}
 
 	//!> duality mapping object for space X
