@@ -15,6 +15,7 @@
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/types.hpp"
 
 /** Functor to calculate BregmanProjectionFunctional functional/distance.
  *
@@ -24,8 +25,11 @@ class BregmanProjectionFunctional
 public:
 	/** Constructor for BregmanProjectionFunctional.
 	 *
-	 * @param _lpdualnorm norm object of dual space
+	 * @param _dualnorm norm object of dual space
 	 * @param _J_q duality mapping from dual space to space
+	 * @param _dualpower power of this duality mapping
+	 * @param _MatrixVectorProduct counter for matrix vector products
+	 * @param _ScalarVectorProduct counter for scalar vector products
 	 */
 	BregmanProjectionFunctional(
 			const Norm &_dualnorm,
@@ -41,6 +45,26 @@ public:
 				const Eigen::MatrixBase<Eigen::VectorXd>&,
 				const Eigen::MatrixBase<Eigen::VectorXd>&
 				> &_ScalarVectorProduct);
+
+	/** Constructor for BregmanProjectionFunctional.
+	 *
+	 * @param _problem inverse problem with refs to norm and duality mapping
+	 * @param _MatrixVectorProduct counter for matrix vector products
+	 * @param _ScalarVectorProduct counter for scalar vector products
+	 */
+	BregmanProjectionFunctional(
+			const InverseProblem_ptr_t &_problem,
+			const OperationCounter<
+				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> &_MatrixVectorProduct,
+			const OperationCounter<
+				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> &_ScalarVectorProduct);
+
 	~BregmanProjectionFunctional() {}
 
 	/** Implements BregmanProjectionFunctional functional.
@@ -64,9 +88,37 @@ public:
 	 * \param _U search space spanned by column vectors
 	 * \param _alpha offsets of affine subspace
 	 */
+	double operator()(
+			const Eigen::VectorXd &_t,
+			const SpaceElement_ptr_t &_dualx,
+			const Eigen::MatrixXd &_U,
+			const Eigen::VectorXd &_alpha
+			) const;
+
+	/** Implements BregmanProjectionFunctional functional.
+	 *
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
+	 */
 	Eigen::VectorXd gradient(
 			const Eigen::VectorXd &_t,
 			const Eigen::VectorXd &_dualx,
+			const Eigen::MatrixXd &_U,
+			const Eigen::VectorXd &_alpha
+			) const;
+
+	/** Implements BregmanProjectionFunctional functional.
+	 *
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
+	 */
+	Eigen::VectorXd gradient(
+			const Eigen::VectorXd &_t,
+			const SpaceElement_ptr_t &_dualx,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha
 			) const;
