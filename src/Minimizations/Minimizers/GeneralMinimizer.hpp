@@ -42,10 +42,6 @@ public:
 	struct ReturnValues
 	{
 		//!> solution vector
-		Eigen::VectorXd solution;
-		//!> residual vector
-		Eigen::VectorXd residual;
-		//!> solution vector
 		SpaceElement_ptr_t m_solution;
 		//!> residual vector
 		SpaceElement_ptr_t m_residual;
