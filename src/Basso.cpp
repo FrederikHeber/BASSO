@@ -14,6 +14,8 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
@@ -23,6 +25,7 @@
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 namespace po = boost::program_options;
 
@@ -368,11 +371,18 @@ int main (int argc, char *argv[])
 		break;
 	}
 
+	// prepare true solution
+	SpaceElement_ptr_t truesolution =
+			inverseproblem->x->getSpace()->createElement();
+	*truesolution = solution;
+
+
 	// prepare start value
-	Eigen::VectorXd x0(matrix.outerSize());
-	x0.setZero();
-	if (x0.innerSize() < 10)
-		std::cout << "Starting at x0 = " << x0.transpose() << std::endl;
+	SpaceElement_ptr_t x0 =
+			inverseproblem->x->getSpace()->createElement();
+	x0->setZero();
+	if (x0->getSpace()->getDimension() < 10)
+		std::cout << "Starting at x0 = " << x0 << std::endl;
 
 	// call minimizer
 	MinimizerFactory factory;
@@ -406,10 +416,10 @@ int main (int argc, char *argv[])
 	}
 
 	// calculate initial dual solution
-	Eigen::VectorXd dualx0 =
+	SpaceElement_ptr_t dualx0 =
 			(dualitytype == MinimizerFactory::defaulttype) ?
-			minimizer->J_p(x0) :
-			Eigen::VectorXd::Zero(matrix.outerSize());
+			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
+			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 
 	try {
 		switch(type) {
@@ -439,16 +449,15 @@ int main (int argc, char *argv[])
 	}
 	GeneralMinimizer::ReturnValues result =
 			(*minimizer)(
+					inverseproblem,
 					x0,
 					dualx0,
-					matrix,
-					rhs,
-					solution);
+					truesolution);
 	minimizer->resetState();
 
 	// give result
 	{
-		Norm_ptr_t NormY = NormFactory::createLpInstance(normy);
+		Norm_ptr_t NormY = inverseproblem->y->getSpace()->getNorm();
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
@@ -458,7 +467,7 @@ int main (int argc, char *argv[])
 			std::cout << "Solution after " << result.NumberOuterIterations
 				<< " with relative residual of " << result.residuum/(*NormY)(rhs)
 				<< " is " << std::scientific << std::setprecision(8)
-				<< result.solution.transpose()
+				<< inverseproblem->x
 				<< std::endl;
 		}
 	}
@@ -478,7 +487,7 @@ int main (int argc, char *argv[])
 			std::ofstream ost(solution_file.string().c_str());
 			if (ost.good())
 				try {
-					ost << result.solution;
+					ost << result.m_solution->getVectorRepresentation();
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write solution to file.\n";
 				}
