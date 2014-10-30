@@ -386,9 +386,7 @@ int main (int argc, char *argv[])
 		minimizer =
 			factory.getRegularizedInstance(
 				type,
-				regularization_parameter,
-				normy,
-				powery,
+				inverseproblem,
 				delta,
 				maxiter,
 				database,
@@ -399,10 +397,7 @@ int main (int argc, char *argv[])
 		minimizer =
 			factory.createInstance(
 				type,
-				normx,
-				normy,
-				powerx,
-				powery,
+				inverseproblem,
 				delta,
 				maxiter,
 				database,
