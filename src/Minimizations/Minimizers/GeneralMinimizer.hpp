@@ -80,14 +80,6 @@ public:
 	 */
 	virtual void resetState() = 0;
 
-	/** Calculate residual \a _A * \a _x0 - \a _y in given norm \a _NormY.
-	 *
-	 * \param _x0 current iteration point
-	 * \param _A matrix of inverse problem
-	 * \param _y right-hand side
-	 * \param _residual residual vector, updated after call
-	 * \return norm of residual
-	 */
 	double calculateResidual(
 			const InverseProblem_ptr_t &_problem,
 			SpaceElement_ptr_t &_residual
@@ -107,10 +99,6 @@ protected:
 			unsigned int _NumberOuterIterations
 			) const;
 public:
-	//!> Lp norm of space Y: r
-	const double val_NormY;
-	//!> power of dual map J_r
-	const double PowerY;
 	//!> magnitude of noise
 	const double Delta;
 	//!> maximum number of iterations in outer loop
@@ -123,37 +111,6 @@ public:
 	const double TolFun;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
-
-private:
-
-	//!> norm object for space X
-	const Norm_ptr_t internal_NormX;
-	//!> norm object for space Y
-	const Norm_ptr_t internal_NormY;
-	//!> norm object for dual space X^*
-	const Norm_ptr_t internal_DualNormX;
-
-	//!> duality mapping object for space X (single-valued)
-	const Mapping_ptr_t internal_J_p;
-	//!> duality mapping object for space X^* (single-valued)
-	const Mapping_ptr_t internal_J_q;
-	//!> duality mapping object for space Y (single-valued)
-	const Mapping_ptr_t internal_j_r;
-
-public:
-	//!> norm object for space X
-	const Norm& NormX;
-	//!> norm object for space Y
-	const Norm& NormY;
-	//!> norm object for dual space X^*
-	const Norm& DualNormX;
-
-	//!> duality mapping object for space X (single-valued)
-	const Mapping& J_p;
-	//!> duality mapping object for space X^* (single-valued)
-	const Mapping& J_q;
-	//!> duality mapping object for space Y (single-valued)
-	const Mapping& j_r;
 
 protected:
 

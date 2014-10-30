@@ -32,28 +32,12 @@ GeneralMinimizer::GeneralMinimizer(
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
-	val_NormY(_inverseproblem->y->getSpace()->getNorm()->getPvalue()),
-	PowerY(_inverseproblem->y->getSpace()->getDualityMapping()->getPower()),
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
 	TolX(1e-6),
 	TolY(Delta),
 	TolFun(1e-12),
 	outputsteps(_outputsteps),
-	internal_NormX(_inverseproblem->x->getSpace()->getNorm()),
-	internal_NormY(_inverseproblem->y->getSpace()->getNorm()),
-	internal_DualNormX(_inverseproblem->x->getSpace()->getDualSpace()->getNorm()),
-	internal_J_p(_inverseproblem->x->getSpace()->getDualityMapping()),
-	internal_J_q(
-			_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()
-	),
-	internal_j_r(_inverseproblem->y->getSpace()->getDualityMapping()),
-	NormX(*internal_NormX),
-	NormY(*internal_NormY),
-	DualNormX(*internal_DualNormX),
-	J_p(*internal_J_p),
-	J_q(*internal_J_q),
-	j_r(*internal_j_r),
 	database(_database),
 	matrix_vector_fctor(
 			boost::bind(
@@ -74,18 +58,10 @@ GeneralMinimizer::GeneralMinimizer(
 	),
 	ScalarVectorProduct(scalar_vector_fctor)
 {
-	BOOST_LOG_TRIVIAL(debug)
-		<< "p is " << _inverseproblem->x->getSpace()->getNorm()->getPvalue()
-		<< ", q is " << _inverseproblem->x->getSpace()->getDualSpace()->getNorm()->getPvalue()
-		<< ", r is " << val_NormY
-		<< ", power of J_p is " <<  _inverseproblem->x->getSpace()->getDualityMapping()->getPower()
-		<< ", power of J_q is " <<  _inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()
-		<< ", power of J_r is " <<  PowerY;
-
 	// set tolerances values
-	J_p.setTolerance(TolX);
-	J_q.setTolerance(TolX);
-	j_r.setTolerance(TolY);
+	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
+	_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->setTolerance(TolX);
+	_inverseproblem->y->getSpace()->getDualityMapping()->setTolerance(TolY);
 }
 
 double GeneralMinimizer::calculateResidual(
@@ -97,6 +73,7 @@ double GeneralMinimizer::calculateResidual(
 			dynamic_cast<const LinearMapping &>(*_problem->A).getMatrixRepresentation(),
 			_problem->x->getVectorRepresentation());
 	*_residual -= _problem->y;
+	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
 }
 
