@@ -15,6 +15,7 @@
 
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
@@ -30,6 +31,25 @@ BregmanDistance::BregmanDistance(
 			power(_power),
 			norm(_norm),
 			J_p(_J_p),
+			ScalarVectorProduct(_ScalarVectorProduct)
+{
+	if ((power != 0.) && (power <= 1.))
+		throw MinimizationIllegalValue_exception()
+			<< MinimizationIllegalValue_name("power");
+}
+
+BregmanDistance::BregmanDistance(
+		const InverseProblem_ptr_t &_problem,
+		const OperationCounter<
+				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				>& _ScalarVectorProduct) :
+			power(_problem->x->getSpace()->getDualityMapping()->getPower()),
+			norm(*_problem->x->getSpace()->getNorm()),
+			J_p(dynamic_cast<const PowerTypeDualityMapping&>(
+							*_problem->x->getSpace()->getDualityMapping())
+			),
 			ScalarVectorProduct(_ScalarVectorProduct)
 {
 	if ((power != 0.) && (power <= 1.))

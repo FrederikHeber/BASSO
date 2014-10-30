@@ -17,6 +17,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/types.hpp"
 
 /** This implements a functor calculating the Bregman distance between
  * two points in a Lp space.
@@ -25,6 +26,13 @@
 class BregmanDistance
 {
 public:
+	/** Constructor for class BregmanDistance.
+	 *
+	 * @param _norm ref to norm
+	 * @param _J_p ref to duality mapping
+	 * @param _power power of duality mapping
+	 * @param _ScalarVectorProduct counter for scalar vector products
+	 */
 	BregmanDistance(
 			const Norm &_norm,
 			const PowerTypeDualityMapping &_J_p,
@@ -34,6 +42,20 @@ public:
 					const Eigen::MatrixBase<Eigen::VectorXd>&,
 					const Eigen::MatrixBase<Eigen::VectorXd>&
 					>& _ScalarVectorProduct);
+
+	/** Constructor for class BregmanDistance.
+	 *
+	 * @param _problem inverse problem with refs to norm and duality mapping
+	 * @param _ScalarVectorProduct counter for scalar vector products
+	 */
+	BregmanDistance(
+			const InverseProblem_ptr_t &_problem,
+			const OperationCounter<
+					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+					const Eigen::MatrixBase<Eigen::VectorXd>&,
+					const Eigen::MatrixBase<Eigen::VectorXd>&
+					>& _ScalarVectorProduct);
+
 	~BregmanDistance() {}
 
 	/** Calculate the Bregman distance between \a _x and \a _y.
