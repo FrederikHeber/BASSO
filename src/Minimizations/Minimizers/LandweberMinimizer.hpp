@@ -28,6 +28,16 @@ public:
 			Database &_database,
 			const unsigned int _outputsteps=0
 			);
+
+	LandweberMinimizer(
+			const DualityMappingsContainer &_container,
+			const InverseProblem_ptr_t &_inverseproblem,
+			const double _Delta,
+			const unsigned int _maxiter,
+			Database &_database,
+			const unsigned int _outputsteps=0
+			);
+
 	~LandweberMinimizer() {}
 
 	/** Setter for C.

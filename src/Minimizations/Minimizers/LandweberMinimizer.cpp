@@ -52,6 +52,27 @@ LandweberMinimizer::LandweberMinimizer(
 	useOptimalStepwidth(true)
 {}
 
+LandweberMinimizer::LandweberMinimizer(
+		const DualityMappingsContainer &_container,
+		const InverseProblem_ptr_t &_inverseproblem,
+		const double _Delta,
+		const unsigned int _maxiter,
+		Database &_database,
+		const unsigned int _outputsteps
+		) :
+	GeneralMinimizer(
+				_container,
+				_inverseproblem,
+				_Delta,
+				_maxiter,
+				_database,
+				_outputsteps
+				),
+	C(0.9),
+	modul(val_DualNormX),
+	useOptimalStepwidth(true)
+{}
+
 void LandweberMinimizer::setuseOptimalStepwidth(
 	const bool _useOptimalStepwidth)
 {

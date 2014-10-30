@@ -54,6 +54,27 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	ScalarVectorProduct_subspace(ScalarVectorProduct)
 {}
 
+SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
+		const DualityMappingsContainer &_container,
+		const InverseProblem_ptr_t &_inverseproblem,
+		const double _Delta,
+		const unsigned int _maxiter,
+		Database &_database,
+		const unsigned int _outputsteps
+		) :
+	GeneralMinimizer(
+			_container,
+			_inverseproblem,
+			_Delta,
+			_maxiter,
+			_database,
+			_outputsteps
+			),
+	N(2),
+	MatrixVectorProduct_subspace(MatrixVectorProduct),
+	ScalarVectorProduct_subspace(ScalarVectorProduct)
+{}
+
 void SequentialSubspaceMinimizer::setN(
 		const unsigned int _N
 		)

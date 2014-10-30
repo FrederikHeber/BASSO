@@ -51,6 +51,25 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 	tau(1.1)
 {}
 
+SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
+		const DualityMappingsContainer &_container,
+		const InverseProblem_ptr_t &_inverseproblem,
+		const double _Delta,
+		const unsigned int _maxiter,
+		Database &_database,
+		const unsigned int _outputsteps
+		) :
+	SequentialSubspaceMinimizer(
+		_container,
+		_inverseproblem,
+		_Delta,
+		_maxiter,
+		_database,
+		_outputsteps
+		),
+	tau(1.1)
+{}
+
 void SequentialSubspaceMinimizerNoise::setTau(
 		const double _tau
 		)
