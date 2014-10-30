@@ -57,6 +57,11 @@ public:
 	 */
 	void resetState() {}
 
+private:
+	void setRegularizationParameter(
+			const double mutual_coherence,
+			const SpaceElement_ptr_t &_solution) const;
+
 public:
 	//!> positive dampening constant for iteration
 	const double C;

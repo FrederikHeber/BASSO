@@ -28,10 +28,12 @@
 #include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
+#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Norms/RegularizedL1Norm.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -103,6 +105,24 @@ LandweberMinimizer::operator()(
 			_problem,
 			returnvalues.m_residual);
 	const double ynorm = NormY(y);
+
+	// set initial lambda
+	if (stepwidth_type >=
+			DetermineStepWidthFactory::ConstantRegularizedL1Norm) {
+		double mutual_coherence = 0.;
+		for (unsigned int i=0;i<A.getSourceSpace()->getDimension();++i) {
+			for (unsigned int j=i+1;j<A.getSourceSpace()->getDimension();++j) {
+				const double temp =
+						A.getMatrixRepresentation().col(i).transpose() *
+						A.getMatrixRepresentation().col(j);
+				if (mutual_coherence < temp)
+					mutual_coherence = temp;
+			}
+		}
+		setRegularizationParameter(
+				mutual_coherence,
+				returnvalues.m_solution);
+	}
 
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
@@ -257,4 +277,32 @@ LandweberMinimizer::operator()(
 	overall_table.addTuple(overall_tuple);
 
 	return returnvalues;
+}
+
+void LandweberMinimizer::setRegularizationParameter(
+		const double mutual_coherence,
+		const SpaceElement_ptr_t &_solution) const
+{
+	// count the number of zeros in _solution
+	unsigned int zeros = 0;
+	for (unsigned int i=0;i<_solution->getSpace()->getDimension();++i)
+		if (fabs(_solution->getVectorRepresentation()[i]) < std::numeric_limits<double>::epsilon())
+			++zeros;
+	const double lambda = 1. + 1./mutual_coherence - 2. * (double)zeros;
+	const RegularizedL1Norm &regularizednorm =
+			dynamic_cast<const RegularizedL1Norm &>(
+					*_solution->getSpace()->getNorm()
+					);
+	const_cast<RegularizedL1Norm &>(regularizednorm).setLambda(lambda);
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Lambda of NormX is now "
+			<< regularizednorm.getLambda();
+	const SoftThresholdingMapping &mapping =
+			dynamic_cast<const SoftThresholdingMapping &>(
+					*_solution->getSpace()->getDualSpace()->getDualityMapping()
+					);
+	const_cast<SoftThresholdingMapping &>(mapping).setLambda(lambda);
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Lambda of SoftThresholdingMapping in X^* is now "
+			<< mapping.getLambda();
 }
