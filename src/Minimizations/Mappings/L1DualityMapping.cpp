@@ -41,8 +41,8 @@ const Eigen::VectorXd L1DualityMapping::operator()(
 {
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
-	L1Norm norm;
-	const double factor = ::pow(norm(_x), (double)power-1.);
+	const Norm &l1norm = *getSourceSpace()->getNorm();
+	const double factor = ::pow(l1norm(_x), (double)power-1.);
 	return factor*Helpers::signum(_x);
 }
 

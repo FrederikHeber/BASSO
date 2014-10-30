@@ -20,18 +20,14 @@ LpDualityMapping::LpDualityMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _p,
 		const double _power) :
-	PowerTypeDualityMapping(_NormedSpaceRef, _power),
-	p(_p),
-	lpnorm(_p)
+	PowerTypeDualityMapping(_NormedSpaceRef, _power)
 {}
 
 LpDualityMapping::LpDualityMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _p
 		) :
-	PowerTypeDualityMapping(_NormedSpaceRef, _p),
-	p(_p),
-	lpnorm(_p)
+	PowerTypeDualityMapping(_NormedSpaceRef, _p)
 {
 	// we don't need to throw, norm will do this
 }
@@ -59,6 +55,8 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 		const Eigen::VectorXd &_x
 		) const
 {
+	const Norm &lpnorm = *getSourceSpace()->getNorm();
+	const double p = lpnorm.getPvalue();
 	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
 		Eigen::VectorXd Jx = _x.array().abs();
@@ -93,6 +91,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value
+	const double p = getSourceSpace()->getNorm()->getPvalue();
 	const double q = Helpers::ConjugateValue(p);
 	const double dualpower = Helpers::ConjugateValue(power);
 	// and create instance with it

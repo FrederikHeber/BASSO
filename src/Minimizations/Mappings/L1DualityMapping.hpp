@@ -13,7 +13,6 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/L1Norm.hpp"
 
 class L1DualityMappingUnitTest;
 
@@ -49,10 +48,6 @@ public:
 	 * @return mapping instance with adjoint
 	 */
 	Mapping_ptr_t getAdjointMapping() const;
-
-protected:
-	//!> lp norm object
-	L1Norm l1norm;
 };
 
 #endif /* L1DUALITYMAPPING_HPP_ */

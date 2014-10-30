@@ -13,7 +13,6 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/LInfinityNorm.hpp"
 
 class LInfinityDualityMappingUnitTest;
 
@@ -49,10 +48,6 @@ public:
 	 * @return mapping instance with adjoint
 	 */
 	Mapping_ptr_t getAdjointMapping() const;
-
-protected:
-	//!> lp norm object
-	LInfinityNorm linftynorm;
 };
 
 #endif /* LINFINITYDUALITYMAPPING_HPP_ */

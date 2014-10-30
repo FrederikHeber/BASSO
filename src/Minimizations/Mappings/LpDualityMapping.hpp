@@ -60,12 +60,6 @@ public:
 	 * @return mapping instance with adjoint
 	 */
 	Mapping_ptr_t getAdjointMapping() const;
-
-protected:
-	//!> value p of the Lp norm
-	const double p;
-	//!> lp norm object
-	LpNorm lpnorm;
 };
 
 #endif /* LPDUALITYMAPPING_HPP_ */
