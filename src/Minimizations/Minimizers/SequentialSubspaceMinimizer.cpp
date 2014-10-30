@@ -32,7 +32,6 @@
 CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
-		const DualityMappingsContainer &_container,
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
@@ -40,7 +39,6 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
-			_container,
 			_inverseproblem,
 			_Delta,
 			_maxiter,

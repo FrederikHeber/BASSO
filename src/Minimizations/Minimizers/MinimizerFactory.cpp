@@ -102,7 +102,6 @@ MinimizerFactory::getMinimizerInstance(
 	switch(_type) {
 	case landweber:
 		instance = new LandweberMinimizer(
-				*DualityContainer,
 				_inverseproblem,
 				_Delta,
 				_maxiter,
@@ -112,7 +111,6 @@ MinimizerFactory::getMinimizerInstance(
 		break;
 	case sequentialsubspace:
 			instance = new SequentialSubspaceMinimizer(
-					*DualityContainer,
 					_inverseproblem,
 					_Delta,
 					_maxiter,
@@ -122,7 +120,6 @@ MinimizerFactory::getMinimizerInstance(
 			break;
 	case sequentialsubspace_noise:
 			instance = new SequentialSubspaceMinimizerNoise(
-					*DualityContainer,
 					_inverseproblem,
 					_Delta,
 					_maxiter,

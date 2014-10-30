@@ -31,7 +31,6 @@
 CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
-		const DualityMappingsContainer &_container,
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
@@ -39,7 +38,6 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const unsigned int _outputsteps
 		) :
 	SequentialSubspaceMinimizer(
-		_container,
 		_inverseproblem,
 		_Delta,
 		_maxiter,

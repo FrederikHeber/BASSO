@@ -30,7 +30,6 @@
 #include "Minimizations/Norms/Norm.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
-		const DualityMappingsContainer &_container,
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
@@ -38,7 +37,6 @@ LandweberMinimizer::LandweberMinimizer(
 		const unsigned int _outputsteps
 		) :
 	GeneralMinimizer(
-				_container,
 				_inverseproblem,
 				_Delta,
 				_maxiter,

@@ -24,7 +24,6 @@ class SequentialSubspaceMinimizerNoise : public SequentialSubspaceMinimizer
 {
 public:
 	SequentialSubspaceMinimizerNoise(
-			const DualityMappingsContainer &_container,
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,

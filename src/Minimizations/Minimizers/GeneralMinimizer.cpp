@@ -26,14 +26,12 @@
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 GeneralMinimizer::GeneralMinimizer(
-		const DualityMappingsContainer &_container,
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
-	DualityMappingsContainer(_container),
 	val_NormY(_inverseproblem->y->getSpace()->getNorm()->getPvalue()),
 	PowerY(_inverseproblem->y->getSpace()->getDualityMapping()->getPower()),
 	Delta(_Delta),

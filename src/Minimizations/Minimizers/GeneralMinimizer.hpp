@@ -24,11 +24,10 @@ class Database;
 /** This class describes the interface to a general minimizer.
  *
  */
-class GeneralMinimizer : public DualityMappingsContainer
+class GeneralMinimizer
 {
 public:
 	GeneralMinimizer(
-			const DualityMappingsContainer &_container,
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
