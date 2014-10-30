@@ -399,29 +399,14 @@ int main (int argc, char *argv[])
 		database.setDatabaseFile(iteration_file.string());
 	MinimizerFactory::instance_ptr_t minimizer;
 	// set regularization parametter in case of regularizedl1norm
-	switch (dualitytype) {
-	case regularizedl1norm:
-		minimizer =
-			factory.getRegularizedInstance(
-				type,
-				inverseproblem,
-				delta,
-				maxiter,
-				database,
-				outputsteps);
-		break;
-	case defaulttype:
-	default:
-		minimizer =
-			factory.createInstance(
-				type,
-				inverseproblem,
-				delta,
-				maxiter,
-				database,
-				outputsteps);
-		break;
-	}
+	minimizer =
+		factory.createInstance(
+			type,
+			inverseproblem,
+			delta,
+			maxiter,
+			database,
+			outputsteps);
 
 	// calculate initial dual solution
 	SpaceElement_ptr_t dualx0 =

@@ -59,25 +59,6 @@ public:
 			const unsigned int _outputsteps=0
 			);
 
-	/** Produces the desired instance, minimizing a regularized l1 norm.
-	 *
-	 * @param _type type of instance
-	 * @param _inverseproblem inverse problem to solve
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _database database to store iteration information to
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @return wrapped instance of desired \a _type
-	 */
-	instance_ptr_t getRegularizedInstance(
-			const enum InstanceType &_type,
-			const InverseProblem_ptr_t &_inverseproblem,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps=0
-			);
-
 	/** Helper function to check whether the given \a _name designates a
 	 * known type.
 	 *
@@ -118,27 +99,6 @@ protected:
 	 */
 	static unsigned int getTypeNamesIndex(
 			const std::string &_name);
-
-private:
-	/** Helper function to produce the minimizer itself.
-	 *
-	 * @param _type type of minimizer algorithm
-	 * @param _inverseproblem inverse problem to solve
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _database database to store iteration information to
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @return wrapped instance of desired \a _type
-	 */
-	instance_ptr_t
-	getMinimizerInstance(
-			const enum InstanceType &_type,
-			const InverseProblem_ptr_t &_inverseproblem,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps
-			);
 
 public:
 	//!> name of each known instance type (Don't forget to add enum to InstanceType)

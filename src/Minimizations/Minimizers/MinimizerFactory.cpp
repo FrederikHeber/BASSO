@@ -22,49 +22,8 @@ const std::string MinimizerFactory::TypeNames[] = {
 		"SSO_noise"
 };
 
-MinimizerFactory::instance_ptr_t MinimizerFactory::createInstance(
-		const enum InstanceType &_type,
-		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		Database &_database,
-		const unsigned int _outputsteps
-		)
-{
-	// return the instance depending on the type
-	return getMinimizerInstance(
-					_type,
-					_inverseproblem,
-					_Delta,
-					_maxiter,
-					_database,
-					_outputsteps
-			);
-}
-
-MinimizerFactory::instance_ptr_t MinimizerFactory::getRegularizedInstance(
-		const enum InstanceType &_type,
-		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		Database &_database,
-		const unsigned int _outputsteps
-		)
-{
-	// return the instance depending on the type
-	return getMinimizerInstance(
-					_type,
-					_inverseproblem,
-					_Delta,
-					_maxiter,
-					_database,
-					_outputsteps
-			);
-}
-
-
 MinimizerFactory::instance_ptr_t
-MinimizerFactory::getMinimizerInstance(
+MinimizerFactory::createInstance(
 		const enum InstanceType &_type,
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
