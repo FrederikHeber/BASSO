@@ -11,6 +11,8 @@
 
 #include "HyperplaneProjection.hpp"
 
+#include "Minimizations/Elements/SpaceElement.hpp"
+
 HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,
 	const Eigen::VectorXd &_x,
@@ -19,6 +21,18 @@ HyperplaneProjection::HyperplaneProjection(
 	) :
 		bregman(_bregman),
 		x(_x),
+		U(_U),
+		alpha(_alpha)
+{}
+
+HyperplaneProjection::HyperplaneProjection(
+	BregmanProjectionFunctional &_bregman,
+	const SpaceElement_ptr_t &_x,
+	const Eigen::MatrixXd &_U,
+	const Eigen::VectorXd &_alpha
+	) :
+		bregman(_bregman),
+		x(_x->getVectorRepresentation()),
 		U(_U),
 		alpha(_alpha)
 {}

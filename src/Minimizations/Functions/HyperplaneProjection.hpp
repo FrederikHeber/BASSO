@@ -14,6 +14,7 @@
 
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/types.hpp"
 
 /** Structure containing all parameters to call BregmanProjectionFunctional functions.
  *
@@ -40,6 +41,16 @@ struct HyperplaneProjection :
 	HyperplaneProjection(
 		BregmanProjectionFunctional &_bregman,
 		const Eigen::VectorXd &_x,
+		const Eigen::MatrixXd &_U,
+		const Eigen::VectorXd &_alpha
+		);
+
+	/** Constructor to initialize refs.
+	 *
+	 */
+	HyperplaneProjection(
+		BregmanProjectionFunctional &_bregman,
+		const SpaceElement_ptr_t &_x,
 		const Eigen::MatrixXd &_U,
 		const Eigen::VectorXd &_alpha
 		);
