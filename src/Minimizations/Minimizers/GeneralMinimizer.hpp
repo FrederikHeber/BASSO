@@ -29,16 +29,6 @@ class GeneralMinimizer : public DualityMappingsContainer
 public:
 	GeneralMinimizer(
 			const DualityMappingsContainer &_container,
-			const double _NormY,
-			const double _PowerY,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps=0
-			);
-
-	GeneralMinimizer(
-			const DualityMappingsContainer &_container,
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
@@ -66,26 +56,6 @@ public:
 		//!> number of outer iterations till solution
 		int NumberOuterIterations;
 	};
-
-	/** Solve the inverse problem _A * x = _y for x with given
-	 * tart value \a _x0, discretized operator \A _A and right-hand
-	 * side \a _y.
-	 *
-	 * @param _x0 start value, may be zero vector
-	 * @param _dualx0 dual element to initial \a _x0
-	 * @param _A matrix as discretized operator
-	 * @param _y right-hand side
-	 * @param _solution additional true solution to calculate Bregman
-	 * 			distance
-	 * @return structure with solution and iteration information
-	 */
-	virtual ReturnValues operator()(
-			const Eigen::VectorXd &_x0,
-			const Eigen::VectorXd &_dualx0,
-			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y,
-			const Eigen::VectorXd &_solution
-			) = 0;
 
 	/** Solve the inverse problem _A * x = _y for x with given
 	 * tart value \a _x0, discretized operator \A _A and right-hand

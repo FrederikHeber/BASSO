@@ -25,16 +25,6 @@ class SequentialSubspaceMinimizer : public GeneralMinimizer
 public:
 	SequentialSubspaceMinimizer(
 			const DualityMappingsContainer &_container,
-			const double _NormY,
-			const double _PowerY,
-			const double _Delta,
-			const unsigned int _maxiter,
-			Database &_database,
-			const unsigned int _outputsteps
-			);
-
-	SequentialSubspaceMinimizer(
-			const DualityMappingsContainer &_container,
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
@@ -53,14 +43,6 @@ public:
 	 * @param _N new value of N, N in [1, infty)
 	 */
 	void setN(const unsigned int _N);
-
-	GeneralMinimizer::ReturnValues operator()(
-			const Eigen::VectorXd &_x0,
-			const Eigen::VectorXd &_dualx0,
-			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y,
-			const Eigen::VectorXd &_solution
-			);
 
 	GeneralMinimizer::ReturnValues operator()(
 			const InverseProblem_ptr_t &_problem,
