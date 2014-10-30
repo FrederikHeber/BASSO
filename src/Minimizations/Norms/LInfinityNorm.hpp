@@ -24,13 +24,14 @@
 class LInfinityNorm : public Norm
 {
 public:
-//	/** Constructor of class LInfinityNorm.
-//	 *
-//	 * @param _ref reference to the space this norm is associated with
-//	 */
-//	LInfinityNorm(const boost::shared_ptr<NormedSpace> _ref) :
-//		Norm(_ref)
-//	{}
+	/** Constructor of class LInfinityNorm.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 */
+	LInfinityNorm(
+			const NormedSpace_ptr_t& _ref) :
+		Norm(_ref)
+	{}
 
 	/** Evaluates the norm for a given \a _element.
 	 *
@@ -39,7 +40,7 @@ public:
 	 */
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
-//		assert( NormedSpaceRef == x->getSpace() );
+		assert( NormedSpaceRef == _x->getSpace() );
 		return operator()(_x->getVectorRepresentation());
 	}
 

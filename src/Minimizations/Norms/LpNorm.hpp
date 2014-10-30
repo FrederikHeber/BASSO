@@ -22,7 +22,15 @@
 class LpNorm : public Norm
 {
 public:
-	LpNorm(const double _p) :
+	/** Constructor of class L1Norm.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 * @param _p p value of the norm
+	 */
+	LpNorm(
+			const NormedSpace_ptr_t& _ref,
+			const double _p) :
+		Norm(_ref),
 		p(_p)
 	{
 		if ((p <= 1.) || (p == std::numeric_limits<double>::infinity()))
@@ -39,7 +47,7 @@ public:
 	 */
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
-//		assert( NormedSpaceRef == x->getSpace() );
+		assert( NormedSpaceRef == _x->getSpace() );
 		return operator()(_x->getVectorRepresentation());
 	}
 

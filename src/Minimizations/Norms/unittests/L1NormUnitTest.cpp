@@ -11,7 +11,7 @@
 
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
-#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/types.hpp"
 
 // Registers the fixture into the 'registry'
@@ -37,7 +37,8 @@ void L1NormUnitTest::tearDown()
 
 void L1NormUnitTest::oneNorm()
 {
-	L1Norm norm;
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(1.);
+	const Norm &norm = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,

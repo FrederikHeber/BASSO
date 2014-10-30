@@ -8,9 +8,11 @@
 #include "LInfinityNormUnitTest.hpp"
 
 #include <Eigen/Dense>
+#include <limits>
 
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LInfinityNormUnitTest );
@@ -27,7 +29,9 @@ void LInfinityNormUnitTest::tearDown()
 
 void LInfinityNormUnitTest::inftyNorm()
 {
-	LInfinityNorm norm;
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(
+			std::numeric_limits<double>::infinity());
+	const Norm &norm = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,

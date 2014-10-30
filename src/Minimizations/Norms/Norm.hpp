@@ -20,13 +20,13 @@
 class Norm
 {
 public:
-//	/** Constructor for class Norm.
-//	 *
-//	 * @param _ref reference to the space this norm is associated with
-//	 */
-//	Norm(const NormedSpace_ptr_t _ref) :
-//		NormedSpaceRef(_ref)
-//	{}
+	/** Constructor for class Norm.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 */
+	Norm(const NormedSpace_ptr_t& _ref) :
+		NormedSpaceRef(_ref)
+	{}
 
 	/** Virtual destructor.
 	 *
@@ -54,9 +54,9 @@ public:
 	virtual const double getPvalue() const
 	{ return 0.; }
 
-//protected:
-//	//!> internal reference to the space this norm belongs to
-//	const NormedSpace_ptr_t NormedSpaceRef;
+protected:
+	//!> internal reference to the space this norm belongs to
+	const NormedSpace_ptr_t NormedSpaceRef;
 };
 
 

@@ -25,11 +25,13 @@ public:
 	/** Constructor for class Norm.
 	 *
 	 * @param _ref reference to the space this norm is associated with
+	 * @param _ref reference to the space this norm is associated with
 	 */
 	RegularizedL1Norm(
-//			const boost::shared_ptr<NormedSpace> _ref,
+			const NormedSpace_ptr_t& _ref,
 			const double _lambda = 0.1) :
-		l2norm(2.),
+		L1Norm(_ref),
+		l2norm(_ref, 2.),
 		lambda(_lambda)
 	{}
 
@@ -40,7 +42,7 @@ public:
 	 */
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
-//		assert( NormedSpaceRef == x->getSpace() );
+		assert( NormedSpaceRef == _x->getSpace() );
 		return operator()(_x->getVectorRepresentation());
 	}
 

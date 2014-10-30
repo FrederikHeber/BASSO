@@ -44,9 +44,9 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	const double q = Helpers::ConjugateValue(_p);
 
 	// create norm instances and hand over to spaces
-	Norm_ptr_t norm = NormFactory::createLpInstance(_p);
+	Norm_ptr_t norm = NormFactory::createLpInstance(instance, _p);
 	instance->setNorm(norm);
-	Norm_ptr_t dualnorm = NormFactory::createLpInstance(q);
+	Norm_ptr_t dualnorm = NormFactory::createLpInstance(dualinstance, q);
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance
@@ -82,10 +82,11 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 //	const double q = std::numeric_limits<double>::infinity();
 
 	// create norm instances and hand over to spaces
-	Norm_ptr_t norm = NormFactory::createRegularizedL1Instance(_lambda);
+	Norm_ptr_t norm = NormFactory::createRegularizedL1Instance(
+			instance, _lambda);
 	instance->setNorm(norm);
 	// TODO: I don't know the dual norm to regularized l1 norm yet
-	Norm_ptr_t dualnorm = NormFactory::createIllegalInstance();
+	Norm_ptr_t dualnorm = NormFactory::createIllegalInstance(dualinstance);
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance: we only have the mapping from

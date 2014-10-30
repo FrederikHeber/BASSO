@@ -27,13 +27,14 @@
 class IllegalNorm : public Norm
 {
 public:
-//	/** Constructor of class L1Norm.
-//	 *
-//	 * @param _ref reference to the space this norm is associated with
-//	 */
-//	L1Norm(const boost::shared_ptr<NormedSpace> _ref) :
-//		Norm(_ref)
-//	{}
+	/** Constructor of class L1Norm.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 */
+	IllegalNorm(
+			const NormedSpace_ptr_t& _ref) :
+		Norm(_ref)
+	{}
 
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{

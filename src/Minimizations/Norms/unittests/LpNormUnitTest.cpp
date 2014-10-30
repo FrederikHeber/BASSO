@@ -11,6 +11,7 @@
 
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LpNormUnitTest );
@@ -30,7 +31,7 @@ void LpNormUnitTest::throwTest()
 	// we check that assertion is thrown for invalid p value
 //	std::cout << "The following assertion is intended and does not indicate a failure of the test." << std::endl;
 	CPPUNIT_ASSERT_THROW(
-			LpNorm norm(-0.5),
+			NormFactory::createLpInstance(-0.5),
 			NormIllegalValue_exception );
 }
 
@@ -50,7 +51,8 @@ void LpNormUnitTest::otherNorm()
 			0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
 	{
 		const double p = 1.1;
-		LpNorm normp(p);
+		Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+		const Norm &normp = *norm_ptr;
 		Eigen::VectorXd expected(10);
 		expected << 0.54787,1.54111,0.94243,0.60454,0.23918,1.00005,0.92045,1.62903,0.51839,0.72887;
 		for (size_t i=0; i<10; ++i) {
@@ -62,7 +64,8 @@ void LpNormUnitTest::otherNorm()
 	}
 	{
 		const double p = 1.5;
-		LpNorm normp(p);
+		Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+		const Norm &normp = *norm_ptr;
 		Eigen::VectorXd expected(10);
 		expected << 0.52787,1.30455,0.84915,0.52703,0.20456,0.93607,0.89030,1.38333,0.44386,0.64248;
 		for (size_t i=0; i<10; ++i) {
@@ -74,7 +77,8 @@ void LpNormUnitTest::otherNorm()
 	}
 	{
 		const double p = 5.64763763;
-		LpNorm normp(p);
+		Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+		const Norm &normp = *norm_ptr;
 		Eigen::VectorXd expected(10);
 		expected << 0.52088,0.94207,0.78015,0.44718,0.15949,0.90374,0.88042,1.02691,0.34837,0.56325;
 		for (size_t i=0; i<10; ++i) {
@@ -89,7 +93,8 @@ void LpNormUnitTest::otherNorm()
 void LpNormUnitTest::twoNorm()
 {
 	const double p = 2.;
-	LpNorm normp(p);
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+	const Norm &normp = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
@@ -145,7 +150,8 @@ void LpNormUnitTest::twoNorm()
 void LpNormUnitTest::threeNorm()
 {
 	const double p = 3.;
-	LpNorm normp(p);
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+	const Norm &normp = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
@@ -201,7 +207,8 @@ void LpNormUnitTest::threeNorm()
 void LpNormUnitTest::fourNorm()
 {
 	const double p = 4.;
-	LpNorm normp(p);
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+	const Norm &normp = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
@@ -257,7 +264,8 @@ void LpNormUnitTest::fourNorm()
 void LpNormUnitTest::elevenNorm()
 {
 	const double p = 11.;
-	LpNorm normp(p);
+	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(p);
+	const Norm &normp = *norm_ptr;
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
