@@ -18,21 +18,17 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 double LandweberMinimizer::calculateOptimalStepwidth(
-		const Eigen::VectorXd &_x,
-		const Eigen::VectorXd &_dualx,
-		const Eigen::VectorXd &_u,
-		const Eigen::MatrixXd &_A,
-		const Eigen::VectorXd &_y,
+		const InverseProblem_ptr_t &_problem,
+		const SpaceElement_ptr_t &_dualx,
+		const SpaceElement_ptr_t &_u,
 		const double _alpha) const
 {
 	double alpha = _alpha;
 	ResidualFunctional res(
-			_x,	// x_n
+			_problem,
 			_dualx,	// x^*_n
 			_u, // u_n
-			_A, // A
-			_y, // y
-			*this // landweber
+			*this // minimizer
 			);
 	double minval = -1000.;
 	double maxval = 1000.;

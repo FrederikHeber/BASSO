@@ -12,6 +12,7 @@
 
 #include <Eigen/Dense>
 
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 
@@ -19,39 +20,26 @@ class ResidualFunctional
 {
 public:
 	ResidualFunctional(
-			const Eigen::VectorXd &_x,
-			const Eigen::VectorXd &_dualx,
-			const Eigen::VectorXd &_u,
-			const Eigen::MatrixXd &_A,
-			const Eigen::VectorXd &_y,
-			const LandweberMinimizer &_landweber
+			const InverseProblem_ptr_t &_problem,
+			const SpaceElement_ptr_t &_dualx,
+			const SpaceElement_ptr_t &_u,
+			const GeneralMinimizer &_mininizer
 			) :
-				x(_x),
-				dualx(_dualx),
-				u(_u),
-				A(_A),
-				y(_y),
-				landweber(_landweber)
+		problem(_problem),
+		dualx(_dualx),
+		u(_u),
+		mininizer(_mininizer),
+		residualvector(_problem->y->getSpace()->createElement())
 	{}
 
-	double operator()(double _arg) const
-	{
-		Eigen::VectorXd dual_solution = dualx;
-		dual_solution -= _arg * u;
-		Eigen::VectorXd x =
-				landweber.J_q(dual_solution);
-		// calculate residual at candidate position (goes into hx[0])
-		Eigen::VectorXd residual;
-		return landweber.calculateResidual( x, A, y, residual );
-	}
+	double operator()(double _arg) const;
 
 private:
-	const Eigen::VectorXd &x;
-	const Eigen::VectorXd &dualx;
-	const Eigen::VectorXd &u;
-	const Eigen::MatrixXd &A;
-	const Eigen::VectorXd &y;
-	const LandweberMinimizer &landweber;
+	const InverseProblem_ptr_t &problem;
+	const SpaceElement_ptr_t &dualx;
+	const SpaceElement_ptr_t &u;
+	const GeneralMinimizer &mininizer;
+	mutable SpaceElement_ptr_t residualvector;
 };
 
 

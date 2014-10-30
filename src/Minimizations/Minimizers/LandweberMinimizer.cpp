@@ -267,12 +267,10 @@ LandweberMinimizer::operator()(
 		} else {
 			// get alpha from line search
 			alpha = calculateOptimalStepwidth(
-					 returnvalues.m_solution->getVectorRepresentation(),
-					 dual_solution->getVectorRepresentation(),
-					 u->getVectorRepresentation(),
-					 A.getMatrixRepresentation(),
-					 y->getVectorRepresentation(),
-					 alpha);
+						_problem,
+						dual_solution,
+						u,
+						alpha);
 		}
 
 		per_iteration_tuple.replace( "stepwidth", alpha);

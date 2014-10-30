@@ -7,6 +7,7 @@ add_library (Minimizations
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/HyperplaneProjection.cpp
+	Functions/ResidualFunctional.cpp
 	Functions/SmoothnessModulus.cpp
 	InverseProblems/InverseProblem.cpp
 	InverseProblems/InverseProblemFactory.cpp
