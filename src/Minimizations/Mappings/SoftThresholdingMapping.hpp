@@ -20,20 +20,9 @@ class SoftThresholdingMapping :
 public:
 	/** Default constructor of class SoftThresholdingMapping.
 	 *
-	 */
-	SoftThresholdingMapping();
-
-	/** Default constructor of class SoftThresholdingMapping.
-	 *
 	 * @param _NormedSpaceRef reference to space
 	 */
 	SoftThresholdingMapping(const NormedSpace_ptr_t &_NormedSpaceRef);
-
-	/** Default constructor of class SoftThresholdingMapping.
-	 *
-	 * @param _lambda soft thresholding parameter
-	 */
-	SoftThresholdingMapping(const double _lambda);
 
 	/** Default constructor of class SoftThresholdingMapping.
 	 *

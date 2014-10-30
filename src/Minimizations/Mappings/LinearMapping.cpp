@@ -37,6 +37,7 @@ const Eigen::VectorXd LinearMapping::operator()(
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
+	assert( _element->getSpace() == SourceSpaceRef );
 	SpaceElement_ptr_t newelement = TargetSpaceRef->createElement();
 	*newelement =
 			matrix * _element->getVectorRepresentation();

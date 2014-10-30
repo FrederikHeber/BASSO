@@ -26,12 +26,6 @@ class LinearMapping : public Mapping
 	//!> allow SpaceElement access to matrix
 	friend class SpaceElement;
 public:
-	/** Default constructor for LinearMapping.
-	 *
-	 */
-	LinearMapping()
-	{}
-
 	/** Constructor for LinearMapping.
 	 *
 	 * @param _SourceSpaceRef source space
@@ -46,14 +40,6 @@ public:
 				_SourceSpaceRef->getDimension(),
 				_TargetSpaceRef->getDimension())
 		)
-	{}
-
-	/** Constructor for LinearMapping with a given matrix
-	 *
-	 * @param _matrix finite-dimensional representation of the mapping
-	 */
-	LinearMapping(const Eigen::MatrixXd &_matrix) :
-		matrix(_matrix)
 	{}
 
 	/** Constructor for LinearMapping with a given matrix

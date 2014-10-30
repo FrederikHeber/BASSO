@@ -22,12 +22,6 @@
 class DualityMapping : public Mapping
 {
 public:
-	/** Default constructor for DualityMapping
-	 *
-	 */
-	DualityMapping()
-	{}
-
 	/** Constructor for class DualityMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space

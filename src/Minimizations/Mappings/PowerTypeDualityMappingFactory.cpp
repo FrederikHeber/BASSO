@@ -19,22 +19,6 @@
 
 Mapping_ptr_t
 PowerTypeDualityMappingFactory::createInstance(
-		const double _p,
-		const double _power)
-{
-	PowerTypeDualityMapping *mapping = NULL;
-	if (_p == std::numeric_limits<double>::infinity()) {
-		mapping = new LInfinityDualityMapping(_power);
-	} else if (_p > 1.) {
-		mapping = new LpDualityMapping(_p,_power);
-	} else if (_p == 1.) {
-		mapping = new L1DualityMapping(_power);
-	}
-	return Mapping_ptr_t(mapping);
-}
-
-Mapping_ptr_t
-PowerTypeDualityMappingFactory::createInstance(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _p,
 		const double _power)

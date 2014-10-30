@@ -20,12 +20,6 @@
 class Mapping
 {
 public:
-	/** Default constructor for a mapping.
-	 *
-	 */
-	Mapping()
-	{}
-
 	/** Constructor for a mapping.
 	 *
 	 * @param _SourceSpaceRef source space reference

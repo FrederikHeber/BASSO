@@ -28,15 +28,6 @@ class L1DualityMapping : public PowerTypeDualityMapping
 public:
 	/** Constructor for class L1DualityMapping.
 	 *
-	 * @param _power power type of this duality mapping
-	 */
-	L1DualityMapping(
-			const double _power) :
-		PowerTypeDualityMapping(_power)
-	{}
-
-	/** Constructor for class L1DualityMapping.
-	 *
 	 * @param _NormedSpaceRef reference to space
 	 * @param _power power type of this duality mapping
 	 */

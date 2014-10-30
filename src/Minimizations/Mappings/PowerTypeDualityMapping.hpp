@@ -23,16 +23,6 @@ class PowerTypeDualityMapping : public DualityMapping
 public:
 	/** Default constructor for class PowerTypeDualityMapping.
 	 *
-	 * @param _power power type of this duality mapping
-	 */
-	PowerTypeDualityMapping(
-			const double _power) :
-		power(_power),
-		tolerance(BASSOTOLERANCE)
-	{}
-
-	/** Default constructor for class PowerTypeDualityMapping.
-	 *
 	 * @param _NormedSpaceRef reference to space
 	 * @param _power power type of this duality mapping
 	 */

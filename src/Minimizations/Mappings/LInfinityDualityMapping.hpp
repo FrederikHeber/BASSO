@@ -28,15 +28,6 @@ class LInfinityDualityMapping : public PowerTypeDualityMapping
 public:
 	/** Constructor for class LInfinityDualityMapping.
 	 *
-	 * @param _power power type of this duality mapping
-	 */
-	LInfinityDualityMapping(
-			const double _power) :
-		PowerTypeDualityMapping(_power)
-	{}
-
-	/** Constructor for class LInfinityDualityMapping.
-	 *
 	 * @param _NormedSpaceRef reference to space
 	 * @param _power power type of this duality mapping
 	 */

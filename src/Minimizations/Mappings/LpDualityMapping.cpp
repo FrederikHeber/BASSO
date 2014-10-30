@@ -17,14 +17,6 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 LpDualityMapping::LpDualityMapping(
-		const double _p,
-		const double _power) :
-	PowerTypeDualityMapping(_power),
-	p(_p),
-	lpnorm(_p)
-{}
-
-LpDualityMapping::LpDualityMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _p,
 		const double _power) :
@@ -32,16 +24,6 @@ LpDualityMapping::LpDualityMapping(
 	p(_p),
 	lpnorm(_p)
 {}
-
-LpDualityMapping::LpDualityMapping(
-		const double _p
-		) :
-	PowerTypeDualityMapping(_p),
-	p(_p),
-	lpnorm(_p)
-{
-	// we don't need to throw, norm will do this
-}
 
 LpDualityMapping::LpDualityMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
