@@ -65,36 +65,9 @@ public:
 	 */
 	void resetState() {}
 
-private:
-	/** Calculates tau for modulus of smoothness such that modulus
-	 * over tau matches given \a _lambda
-	 */
-	double calculateMatchingTau(
-			const SmoothnessModulus &_modul,
-			const double _lambda) const;
-
-public:
-	/** Calculate optimal step width via a line search.
-	 *
-	 * i.e. along u we look for alpha to minimize residual
-	 *
-	 * @param _problem inverse problem with current solution
-	 * @param _dualx dual element to current position
-	 * @param _u direction for line search
-	 * @return optimal step \f$ \alpha \f$ width to minimize
-	 * 		\f$ || A (x - \alpha u) - y ||_Y \f$
-	 */
-	double calculateOptimalStepwidth(
-			const InverseProblem_ptr_t &_problem,
-			const SpaceElement_ptr_t &_dualx,
-			const SpaceElement_ptr_t &_u,
-			const double _alpha = 0) const;
-
 public:
 	//!> positive dampening constant for iteration
 	const double C;
-	//!> smoothness modulus object for dual Space X^*
-	const SmoothnessModulus modul;
 	//!> whether to use optimal step width calculation or a theoretical one
 	const bool useOptimalStepwidth;
 };

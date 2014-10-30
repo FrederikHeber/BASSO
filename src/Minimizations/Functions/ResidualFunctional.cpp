@@ -19,6 +19,6 @@ double ResidualFunctional::operator()(double _arg) const
 			(*problem->x->getSpace()->getDualSpace()->getDualityMapping())(
 					dual_solution);
 	// calculate residual at candidate position (goes into hx[0])
-	return mininizer.calculateResidual( problem, residualvector );
+	return residualizer( problem, residualvector );
 }
 

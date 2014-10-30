@@ -25,12 +25,13 @@ add_library (Minimizations
 	Mappings/SoftThresholdingMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
-	Minimizers/LandweberMinimizer_calculateMatchingTau.cpp
-	Minimizers/LandweberMinimizer_calculateOptimalStepwidth.cpp
 	Minimizers/MinimizerFactory.cpp
 	Minimizers/SequentialSubspaceMinimizer.cpp
 	Minimizers/SequentialSubspaceMinimizer_IterationState.cpp
 	Minimizers/SequentialSubspaceMinimizerNoise.cpp
+	Minimizers/StepWidths/DetermineStepWidthFactory.cpp
+	Minimizers/StepWidths/LandweberFixedStepWidth.cpp
+	Minimizers/StepWidths/ResidualMinimizingStepwidth.cpp
 	Norms/NormFactory.cpp
 	Spaces/NormedSpaceFactory.cpp
 	Spaces/NormedSpace.cpp
@@ -76,6 +77,10 @@ install (FILES Minimizers/MinimizationExceptions.hpp DESTINATION include)
 install (FILES Minimizers/MinimizerFactory.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/DetermineStepWidth.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/DetermineStepWidthFactory.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/LandweberFixedStepWidth.hpp DESTINATION include)
+install (FILES Minimizers/StepWidths/ResidualMinimizingStepwidth.hpp DESTINATION include)
 
 install (FILES Norms/IllegalNorm.hpp DESTINATION include)
 install (FILES Norms/L1Norm.hpp DESTINATION include)

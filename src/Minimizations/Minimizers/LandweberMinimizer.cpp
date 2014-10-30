@@ -10,6 +10,7 @@
 #include "LandweberMinimizer.hpp"
 
 #include <algorithm>
+#include <boost/bind.hpp>
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
@@ -24,9 +25,12 @@
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
+#include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
@@ -46,7 +50,6 @@ LandweberMinimizer::LandweberMinimizer(
 				_outputsteps
 				),
 	C(0.9),
-	modul(_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()),
 	useOptimalStepwidth(true)
 {}
 
@@ -81,7 +84,7 @@ LandweberMinimizer::operator()(
 	const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
 	const NormedSpace & SpaceY = *_problem->A->getTargetSpace();
 	const Norm & NormX = *SpaceX.getNorm();
-	const Norm & DualNormX = *DualSpaceX.getNorm();
+//	const Norm & DualNormX = *DualSpaceX.getNorm();
 	const Norm & NormY = *SpaceY.getNorm();
 	const Mapping & J_p = *SpaceX.getDualityMapping();
 	const Mapping & J_q = *DualSpaceX.getDualityMapping();
@@ -92,17 +95,6 @@ LandweberMinimizer::operator()(
 	const Mapping_ptr_t A_adjoint = A.getAdjointMapping();
 	const LinearMapping &A_t =
 			dynamic_cast<const LinearMapping &>(*A_adjoint);
-
-	// G constant used in theoretical step width
-	const double G = 0.;
-	if (!useOptimalStepwidth) {
-		const_cast<double &>(G) =
-			NormX.getPvalue() < 2. ?
-			::pow(2., 2. - DualNormX.getPvalue()) :
-			 DualNormX.getPvalue() - 1.;
-	}
-	BOOST_LOG_TRIVIAL(trace)
-		<< "G is " << G;
 
 	/// -# initialize return structure
 	ReturnValues returnvalues;
@@ -136,13 +128,6 @@ LandweberMinimizer::operator()(
 	// calculate some values prior to loop
 	SpaceElement_ptr_t dual_solution = DualSpaceX.createElement();
 	*dual_solution = _dualstartvalue;
-	const double modulus_at_one = modul(1);
-	double ANorm = 0.;
-	if (!useOptimalStepwidth) {
-		ANorm = A.Norm(); //::pow(2, 1.+ 1./val_NormY);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "ANorm " << ANorm;
-	}
 	BregmanDistance Delta_p(
 			NormX,
 			dynamic_cast<const PowerTypeDualityMapping &>(J_p),
@@ -157,6 +142,17 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Starting Bregman distance is " << old_distance;
 	}
+
+	// step width algorithm
+	ResidualFunctional::calculateResidual_t residualizer =
+			boost::bind(&LandweberMinimizer::calculateResidual,
+					boost::cref(*this), _1, _2);
+	DetermineStepWidth_ptr_t stepwidth =
+			DetermineStepWidthFactory::createInstance(
+					_problem,
+					useOptimalStepwidth,
+					C,
+					residualizer);
 
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
@@ -199,71 +195,17 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 				<< "u is " << u;
 
-		double alpha = 0.;
 		// use step width used in theoretical proof
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
-		if (!useOptimalStepwidth) {
-			if (dual_solution->isApproxToConstant(0, TolX)) {
-				const double q_p = ::pow(DualNormX.getPvalue(), NormX.getPvalue() - 1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "q_p " << q_p;
-				const double A_p = ::pow(ANorm,NormX.getPvalue());
-				BOOST_LOG_TRIVIAL(trace)
-					<< "A_p " << A_p;
-				double R_p = 0.;
-				if (NormX.getPvalue() == std::numeric_limits<double>::infinity()) {
-					R_p = returnvalues.m_residual->getVectorRepresentation().array().abs().maxCoeff();
-				} else {
-					R_p = ::pow(returnvalues.residuum, NormX.getPvalue());
-				}
-				double R_r = 0.;
-				if (NormY.getPvalue() == std::numeric_limits<double>::infinity()) {
-					R_r = returnvalues.m_residual->getVectorRepresentation().array().abs().maxCoeff();
-				} else {
-					R_r = ::pow(returnvalues.residuum, NormY.getPvalue());
-				}
-				BOOST_LOG_TRIVIAL(trace)
-					<< "R_p " << R_p << ", R_r " << R_r;
-				alpha = // C
-						0.9 * (q_p / A_p) * (R_p/R_r);
-			} else {
-				const double xnorm = NormX(returnvalues.m_solution);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "xnorm " << xnorm;
-				const double two_q = ::pow(2., DualNormX.getPvalue());
-				BOOST_LOG_TRIVIAL(trace)
-					<< "two_q " << two_q;
-				alpha = C/(two_q * G * ANorm)
-						* (returnvalues.residuum / xnorm);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "initial lambda " << alpha;
-				const double lambda = std::min(modulus_at_one, alpha);
-				// find intermediate value in smoothness modulus to match lambda
-				const double tau = calculateMatchingTau(modul, lambda);
-				// calculate step width
-				const double x_p = ::pow( xnorm, NormX.getPvalue()-1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "x_p " << x_p;
-				double R_r = 0.;
-				if (NormY.getPvalue() == std::numeric_limits<double>::infinity()) {
-					R_r = returnvalues.m_residual->getVectorRepresentation().array().abs().maxCoeff()
-							/ returnvalues.residuum;
-				} else {
-					R_r = ::pow(returnvalues.residuum, NormY.getPvalue() - 1.);
-				}
-				BOOST_LOG_TRIVIAL(trace)
-					<< "R_r " << R_r;
-				alpha = (tau/ANorm) * (x_p / R_r);
-			}
-		} else {
-			// get alpha from line search
-			alpha = calculateOptimalStepwidth(
-						_problem,
-						dual_solution,
-						u,
-						alpha);
-		}
-
+		double alpha = (*stepwidth)(
+				dual_solution,
+				u,
+				returnvalues.m_solution,
+				returnvalues.m_residual,
+				returnvalues.residuum,
+				TolX,
+				0.
+				);
 		per_iteration_tuple.replace( "stepwidth", alpha);
 
 		// iterate: J_p (x_{n+1})

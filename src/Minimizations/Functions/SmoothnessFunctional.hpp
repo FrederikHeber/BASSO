@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-class SmoothnessModulus;
+#include "Minimizations/Functions/SmoothnessModulus.hpp"
 
 /** This class is a functor evaluating a given smoothness modulus
  * in order to match with a given lambda.

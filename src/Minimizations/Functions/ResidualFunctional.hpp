@@ -10,25 +10,30 @@
 
 #include "BassoConfig.h"
 
+#include <boost/function.hpp>
 #include <Eigen/Dense>
 
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 
 class ResidualFunctional
 {
 public:
+	//!> typedef for the residual calculation function
+	typedef boost::function<double (
+			const InverseProblem_ptr_t&,
+			SpaceElement_ptr_t &)> calculateResidual_t;
+
 	ResidualFunctional(
 			const InverseProblem_ptr_t &_problem,
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,
-			const GeneralMinimizer &_mininizer
+			const calculateResidual_t &_residualizer
 			) :
 		problem(_problem),
 		dualx(_dualx),
 		u(_u),
-		mininizer(_mininizer),
+		residualizer(_residualizer),
 		residualvector(_problem->y->getSpace()->createElement())
 	{}
 
@@ -38,7 +43,7 @@ private:
 	const InverseProblem_ptr_t &problem;
 	const SpaceElement_ptr_t &dualx;
 	const SpaceElement_ptr_t &u;
-	const GeneralMinimizer &mininizer;
+	const calculateResidual_t &residualizer;
 	mutable SpaceElement_ptr_t residualvector;
 };
 

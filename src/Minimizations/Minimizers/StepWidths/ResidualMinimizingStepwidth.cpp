@@ -1,13 +1,14 @@
 /*
- * LandweberMinimizer_calculateOptimalStepwidth.cpp
+ * ResidualMinimizingStepwidth.cpp
  *
- *  Created on: Apr 14, 2014
+ *  Created on: Oct 30, 2014
  *      Author: heber
  */
 
+
 #include "BassoConfig.h"
 
-#include "LandweberMinimizer.hpp"
+#include "ResidualMinimizingStepwidth.hpp"
 
 #include <Eigen/Dense>
 #include <boost/bind.hpp>
@@ -15,20 +16,23 @@
 #include <limits>
 
 #include "Minimizations/Functions/ResidualFunctional.hpp"
-#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
-double LandweberMinimizer::calculateOptimalStepwidth(
-		const InverseProblem_ptr_t &_problem,
+const double ResidualMinimizingStepwidth::operator()(
 		const SpaceElement_ptr_t &_dualx,
 		const SpaceElement_ptr_t &_u,
-		const double _alpha) const
+		const SpaceElement_ptr_t &_solution,
+		const SpaceElement_ptr_t &_residual,
+		const double _residuum,
+		const double _TolX,
+		const double _alpha
+		) const
 {
 	double alpha = _alpha;
 	ResidualFunctional res(
-			_problem,
+			problem,
 			_dualx,	// x^*_n
 			_u, // u_n
-			*this // minimizer
+			residualizer // residual calculator
 			);
 	double minval = -1000.;
 	double maxval = 1000.;
@@ -48,6 +52,8 @@ double LandweberMinimizer::calculateOptimalStepwidth(
 
 	return alpha;
 }
+
+
 
 
 
