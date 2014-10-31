@@ -107,21 +107,31 @@ LandweberMinimizer::operator()(
 	const double ynorm = NormY(y);
 
 	// set initial lambda
-	if (stepwidth_type >=
-			DetermineStepWidthFactory::ConstantRegularizedL1Norm) {
-		double mutual_coherence = 0.;
+	double mutual_coherence = 0.;
+	bool setLambdaAdaptively = false;
+	if ((stepwidth_type >=
+			DetermineStepWidthFactory::ConstantRegularizedL1Norm)
+			&& (dynamic_cast<const RegularizedL1Norm &>(*A.getSourceSpace()->getNorm()).getLambda() == 0.)) {
 		for (unsigned int i=0;i<A.getSourceSpace()->getDimension();++i) {
 			for (unsigned int j=i+1;j<A.getSourceSpace()->getDimension();++j) {
-				const double temp =
-						A.getMatrixRepresentation().col(i).transpose() *
+				const Eigen::VectorXd col_i =
+						A.getMatrixRepresentation().col(i);
+				const Eigen::VectorXd col_j =
 						A.getMatrixRepresentation().col(j);
+				const double col_i_norm = col_i.norm();
+				const double col_j_norm = col_j.norm();
+				double temp = fabs(col_i.transpose() * col_j);
+				temp *= 1./(col_i_norm*col_j_norm);
 				if (mutual_coherence < temp)
 					mutual_coherence = temp;
 			}
 		}
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Mutual coherence of A is " << mutual_coherence;
 		setRegularizationParameter(
 				mutual_coherence,
-				returnvalues.m_solution);
+				_truesolution);
+		setLambdaAdaptively = true;
 	}
 
 	// build data tuple for iteration information
@@ -235,6 +245,11 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n+1 is " << returnvalues.m_solution;
 		*_problem->x = returnvalues.m_solution;
+		if (setLambdaAdaptively) {
+			setRegularizationParameter(
+					mutual_coherence,
+					_truesolution);
+		}
 
 		// update residual
 		returnvalues.residuum = calculateResidual(
@@ -284,25 +299,32 @@ void LandweberMinimizer::setRegularizationParameter(
 		const SpaceElement_ptr_t &_solution) const
 {
 	// count the number of zeros in _solution
-	unsigned int zeros = 0;
+	unsigned int nonzerocomponents = 0;
 	for (unsigned int i=0;i<_solution->getSpace()->getDimension();++i)
-		if (fabs(_solution->getVectorRepresentation()[i]) < std::numeric_limits<double>::epsilon())
-			++zeros;
-	const double lambda = 1. + 1./mutual_coherence - 2. * (double)zeros;
-	const RegularizedL1Norm &regularizednorm =
-			dynamic_cast<const RegularizedL1Norm &>(
-					*_solution->getSpace()->getNorm()
-					);
-	const_cast<RegularizedL1Norm &>(regularizednorm).setLambda(lambda);
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Lambda of NormX is now "
-			<< regularizednorm.getLambda();
-	const SoftThresholdingMapping &mapping =
-			dynamic_cast<const SoftThresholdingMapping &>(
-					*_solution->getSpace()->getDualSpace()->getDualityMapping()
-					);
-	const_cast<SoftThresholdingMapping &>(mapping).setLambda(lambda);
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Lambda of SoftThresholdingMapping in X^* is now "
-			<< mapping.getLambda();
+		if (fabs(_solution->getVectorRepresentation()[i]) > std::numeric_limits<double>::epsilon())
+			++nonzerocomponents;
+	// strict positivity criterion
+	if ( nonzerocomponents < .5*(1. + 1./mutual_coherence) ) {
+		const double lambda =
+				1./(1. + 1./mutual_coherence - 2. * (double)nonzerocomponents);
+		const RegularizedL1Norm &regularizednorm =
+				dynamic_cast<const RegularizedL1Norm &>(
+						*_solution->getSpace()->getNorm()
+						);
+		const_cast<RegularizedL1Norm &>(regularizednorm).setLambda(lambda);
+		BOOST_LOG_TRIVIAL(trace)
+				<< "Lambda of NormX is now "
+				<< regularizednorm.getLambda();
+		const SoftThresholdingMapping &mapping =
+				dynamic_cast<const SoftThresholdingMapping &>(
+						*_solution->getSpace()->getDualSpace()->getDualityMapping()
+						);
+		const_cast<SoftThresholdingMapping &>(mapping).setLambda(lambda);
+		BOOST_LOG_TRIVIAL(trace)
+				<< "Lambda of SoftThresholdingMapping in X^* is now "
+				<< mapping.getLambda();
+	} else {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Cannot set lambda adaptively as criterion is not fulfilled.";
+	}
 }

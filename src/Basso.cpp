@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
 	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
 	        ("powerx", po::value<double>(), "set the power type of the duality mapping's weight of the space X")
 	        ("powery", po::value<double>(), "set the power type of the duality mapping's weight of the space Y")
-	        ("regularized-norm", po::value<double>(), "set the regularization parameter for the L1 norm (if normx is 1), activated if unequal zero")
+	        ("regularization-parameter", po::value<double>(), "set the regularization parameter for the L1 norm (if normx is 1) (adaptive if set to zero)")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
@@ -307,16 +307,14 @@ int main (int argc, char *argv[])
 	DualityContainerType dualitytype =
 			defaulttype;
 	double regularization_parameter = 0.;
-	if ((vm.count("regularized-norm"))
-			&& (vm["regularized-norm"].as<double>() > 0.)) {
-		dualitytype = regularizedl1norm;
-		regularization_parameter = vm["regularized-norm"].as<double>();
+	if (vm.count("regularization-parameter")) {
+		regularization_parameter = vm["regularization-parameter"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Duality Mappings of space X set to regularized L1 norm"
-			<< " with parameter " << regularization_parameter << ".";
+			<< "Regularization parameter of regularized L1 norm set to "
+			<< regularization_parameter << ".";
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Duality Mappings of space X set to default.";
+			<< "No regularization parameter set.";
 	}
 	boost::filesystem::path rhs_file;
 	if (vm.count("rhs")) {
@@ -378,6 +376,31 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Setting wolfe stronger than linear constant to "
 			<< wolfe_constants[1];
+	}
+	// set dualitytype
+	if (regularization_parameter > 0.)
+		dualitytype = regularizedl1norm;
+	else
+		dualitytype = defaulttype;
+
+	// check sensibility
+	if (((normx == 1.) && !vm.count("regularization-parameter"))
+		|| ((normx != 1.) && vm.count("regularization-parameter"))) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Either regularization parameter set but not l1 norm "
+				<< "specified or the other way round.";
+		return 255;
+	}
+	if (vm.count("regularization-parameter")) {
+		if (((vm.count("stepwidth-algorithm")
+				&& (type != MinimizerFactory::landweber)))
+				|| ((!vm.count("stepwidth-algorithm")
+						&& (type == MinimizerFactory::landweber)))) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Either stepwidth algorithm chosen but not Landweber "
+					<< "or the other way round";
+			return 255;
+		}
 	}
 
 	// parse matrix and vector files into instances
@@ -501,7 +524,7 @@ int main (int argc, char *argv[])
 		database.setDatabaseFile(iteration_file.string());
 	database.setReplacePresentParameterTuples(database_replace);
 	MinimizerFactory::instance_ptr_t minimizer;
-	// set regularization parametter in case of regularizedl1norm
+	// set regularization parameter in case of regularizedl1norm
 	minimizer =
 		factory.createInstance(
 			type,
