@@ -12,6 +12,7 @@
 
 #include <limits>
 
+#include "Minimizations/Norms/DualRegularizedL1Norm.hpp"
 #include "Minimizations/Norms/IllegalNorm.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
@@ -57,6 +58,13 @@ Norm_ptr_t NormFactory::createRegularizedL1Instance(
 		const double _lambda)
 {
 	return Norm_ptr_t(new RegularizedL1Norm(_ref, _lambda));
+}
+
+Norm_ptr_t NormFactory::createDualRegularizedL1Instance(
+		const NormedSpace_ptr_t& _ref,
+		const double _lambda)
+{
+	return Norm_ptr_t(new DualRegularizedL1Norm(_ref, _lambda));
 }
 
 Norm_ptr_t NormFactory::createIllegalInstance(

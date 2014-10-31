@@ -85,8 +85,9 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 	Norm_ptr_t norm = NormFactory::createRegularizedL1Instance(
 			instance, _lambda);
 	instance->setNorm(norm);
-	// TODO: I don't know the dual norm to regularized l1 norm yet
-	Norm_ptr_t dualnorm = NormFactory::createIllegalInstance(dualinstance);
+	Norm_ptr_t dualnorm =
+			NormFactory::createDualRegularizedL1Instance(
+					dualinstance, _lambda);
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance: we only have the mapping from

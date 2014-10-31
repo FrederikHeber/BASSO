@@ -56,6 +56,16 @@ public:
 			const NormedSpace_ptr_t& _ref,
 			const double _lambda);
 
+	/** Creates a dual norm to regularized l1 norm.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 * @param _lambda regularization parameter
+	 * @return Norm instance
+	 */
+	static Norm_ptr_t createDualRegularizedL1Instance(
+			const NormedSpace_ptr_t& _ref,
+			const double _lambda);
+
 	/** Creates an illegal norm.
 	 *
 	 * @param _ref reference to the space this norm is associated with
