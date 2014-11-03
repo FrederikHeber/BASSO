@@ -14,22 +14,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3")
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 0)
 
-######################## BassoConfig.hpp #################################
-
-# configure a header file to pass some CMake settings
-# to the source code
-configure_file (
-	"${PROJECT_SOURCE_DIR}/BassoConfig.h.in"
-	"${PROJECT_BINARY_DIR}/BassoConfig.h"
-)
-
-# add the binary tree to the search path for include files
-# so that we will find BassoConfig.h
-include_directories ("${PROJECT_BINARY_DIR}")
-
-# install targets for config
-install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
-
 ######################## CHECK HEADERS  ##################################
 
 # does the system provide the log and exp functions?
@@ -56,14 +40,21 @@ endif (CPPUNIT_FOUND)
 set (BLA_VENDOR "Generic")
 FIND_PACKAGE(BLAS REQUIRED)
 if (BLAS_FOUND)
-	# find gsl for function minimization
-	set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-	FIND_PACKAGE(GSL REQUIRED)
-	if (GSL_FOUND)
-		include_directories( "${GSL_INCLUDE_DIR}" )
-		set (GSL_LIBRARY ${GSL_LIBRARIES} ${BLAS_blas_LIBRARY})
-	endif (GSL_FOUND)
+       # find gsl for function minimization
+       set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+       FIND_PACKAGE(GSL REQUIRED)
+       if (GSL_FOUND)
+               include_directories( "${GSL_INCLUDE_DIR}" )
+               set (GSL_LIBRARY ${GSL_LIBRARIES} ${BLAS_blas_LIBRARY})
+       endif (GSL_FOUND)
 endif (BLAS_FOUND)
+
+# find NLopt
+set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+find_package (NLopt)
+if (NLOPT_FOUND)
+               include_directories( "${NLOPT_INCLUDE_DIR}" )
+endif (NLOPT_FOUND)
 
 # find (p)thread
 find_package (Threads)
@@ -96,6 +87,22 @@ set (POCO_SQL_LIBRARIES
 	${Poco_SQLite_LIBRARY_RELEASE}
 	${Poco_Foundation_LIBRARY_RELEASE}
 	)
+
+######################## BassoConfig.hpp #################################
+
+# configure a header file to pass some CMake settings
+# to the source code
+configure_file (
+	"${PROJECT_SOURCE_DIR}/BassoConfig.h.in"
+	"${PROJECT_BINARY_DIR}/BassoConfig.h"
+)
+
+# add the binary tree to the search path for include files
+# so that we will find BassoConfig.h
+include_directories ("${PROJECT_BINARY_DIR}")
+
+# install targets for config
+install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 
 ################## BRANCH INTO SUBDIRECTORIES ############################
 

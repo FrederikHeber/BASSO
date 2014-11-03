@@ -2,6 +2,7 @@
 add_executable (Basso Basso.cpp)
 target_link_libraries ( Basso 
 	${EXTRA_LIBS} 
+	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
 	${Boost_LIBRARIES}
