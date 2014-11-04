@@ -12,7 +12,7 @@
 #include <boost/log/trivial.hpp>
 
 #include "Minimizations/Functions/BregmanDistance.hpp"
-#include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
 
 VectorProjection::VectorProjection(
@@ -57,7 +57,7 @@ VectorProjection::operator()(
 				_tobeprojected,
 				p);
 
-		FunctionMinimizer<double> minimizer(
+		FunctionalMinimizer<double> minimizer(
 				distancefunctional, tmin);
 
 //		const unsigned int inner_iterations =
@@ -72,4 +72,4 @@ VectorProjection::operator()(
 }
 
 // instantiate template functions
-CONSTRUCT_FUNCTIONMINIMIZER(double)
+CONSTRUCT_FUNCTIONALMINIMIZER(double)

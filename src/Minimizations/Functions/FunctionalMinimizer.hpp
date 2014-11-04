@@ -1,12 +1,12 @@
 /*
- * FunctionMinimizer.hpp
+ * FunctionalMinimizer.hpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
  */
 
-#ifndef FUNCTIONMINIMIZER_HPP_
-#define FUNCTIONMINIMIZER_HPP_
+#ifndef FUNCTIONALMINIMIZER_HPP_
+#define FUNCTIONALMINIMIZER_HPP_
 
 #include "BassoConfig.h"
 
@@ -25,7 +25,7 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * specific type T and implement the virtual functions.
  *
  * \code
- * #include "FunctionMinimizer.hpp"
+ * #include "FunctionalMinimizer.hpp"
  * #include "MinimizationFunctional.hpp"
  *
  * class MyFunctional :
@@ -43,13 +43,13 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * // a temporary value for the minizer to work on with parameter dim to init
  * MyType temp(dim);
  * //initializing the minimizer with the functional and temporary
- * FunctionMinimizer<MyType> minimizer(functional, temp);
+ * FunctionalMinimizer<MyType> minimizer(functional, temp);
  * \endcode
  *
  * Finally, do not forget to instantiate template functions below via the
  * defined macro in your code, e.g.
  * \code
- * CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
+ * CONSTRUCT_FUNCTIONALMINIMIZER(Eigen::VectorXd)
  * \endcode
  *
  * Then, you may finally call the minimizer to do its work:
@@ -73,11 +73,11 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * descent than the linear interpolation -- must hold.
  */
 template <class T>
-class FunctionMinimizer
+class FunctionalMinimizer
 {
 	typedef typename MinimizationFunctional<T>::array_type array_type;
 public:
-	/** Constructor of functor FunctionMinimizer.
+	/** Constructor of functor FunctionalMinimizer.
 	 *
 	 * \note we use default values for Newton methods as suggested by
 	 * [Nocedal, Wright, '99].
@@ -87,7 +87,7 @@ public:
 	 * @param _constant_positivity Wolfe constant for positivity
 	 * @param _constant_interpolation Wolfe constant for stronger than linear
 	 */
-	FunctionMinimizer(
+	FunctionalMinimizer(
 			const MinimizationFunctional<T> &_functional,
 			T &_value,
 			const double _constant_positivity = 1e-4,
@@ -99,7 +99,7 @@ public:
 		constant_positivity(_constant_positivity),
 		constant_interpolation(_constant_interpolation)
 	{}
-	~FunctionMinimizer() {}
+	~FunctionalMinimizer() {}
 
 	/** Performs the minimization on the given \a functional.
 	 *
@@ -242,13 +242,13 @@ private:
 
 template <class T>
 double
-FunctionMinimizer_FunctionCaller(
+FunctionalMinimizer_FunctionCaller(
 		const gsl_vector *x,
 		void *adata)
 {
 	// obtain minimizer object
-	struct FunctionMinimizer<T> *minimizer =
-			static_cast<FunctionMinimizer<T> *>(adata);
+	struct FunctionalMinimizer<T> *minimizer =
+			static_cast<FunctionalMinimizer<T> *>(adata);
 	// convert given value to something interpretable
 	{
 		std::vector<double> tempvector(x->size);
@@ -266,14 +266,14 @@ FunctionMinimizer_FunctionCaller(
 
 template <class T>
 void
-FunctionMinimizer_GradientCaller(
+FunctionalMinimizer_GradientCaller(
 		const gsl_vector *x,
 		void *adata,
 		gsl_vector *g)
 {
 	// obtain minimizer object
-	struct FunctionMinimizer<T> *minimizer =
-			static_cast<FunctionMinimizer<T> *>(adata);
+	struct FunctionalMinimizer<T> *minimizer =
+			static_cast<FunctionalMinimizer<T> *>(adata);
 	// convert given value to something interpretable
 	{
 		std::vector<double> tempvector(x->size);
@@ -297,15 +297,15 @@ FunctionMinimizer_GradientCaller(
 
 template <class T>
 void
-FunctionMinimizer_FunctionGradientCaller(
+FunctionalMinimizer_FunctionGradientCaller(
 		const gsl_vector *x,
 		void *adata,
 		double *f,
 		gsl_vector *g)
 {
 	// obtain minimizer object
-	struct FunctionMinimizer<T> *minimizer =
-			static_cast<FunctionMinimizer<T> *>(adata);
+	struct FunctionalMinimizer<T> *minimizer =
+			static_cast<FunctionalMinimizer<T> *>(adata);
 	// convert given value to something interpretable
 	{
 		std::vector<double> tempvector(x->size);
@@ -330,12 +330,12 @@ FunctionMinimizer_FunctionGradientCaller(
 }
 
 //!> use this macro to make sure wrapper functions for gsl are instantiated
-#define CONSTRUCT_FUNCTIONMINIMIZER(type) \
-		template double FunctionMinimizer_FunctionCaller<type>(const gsl_vector *x,void *adata); \
-		template void FunctionMinimizer_GradientCaller<type>(const gsl_vector *x,void *adata,gsl_vector *g); \
-		template void FunctionMinimizer_FunctionGradientCaller<type>(const gsl_vector *x,void *adata,double *f,gsl_vector *g);
+#define CONSTRUCT_FUNCTIONALMINIMIZER(type) \
+		template double FunctionalMinimizer_FunctionCaller<type>(const gsl_vector *x,void *adata); \
+		template void FunctionalMinimizer_GradientCaller<type>(const gsl_vector *x,void *adata,gsl_vector *g); \
+		template void FunctionalMinimizer_FunctionGradientCaller<type>(const gsl_vector *x,void *adata,double *f,gsl_vector *g);
 
-#include "Minimizations/Functions/FunctionMinimizer_impl.hpp"
+#include "Minimizations/Functions/FunctionalMinimizer_impl.hpp"
 
 
-#endif /* FUNCTIONMINIMIZER_HPP_ */
+#endif /* FUNCTIONALMINIMIZER_HPP_ */

@@ -1,16 +1,16 @@
 /*
- * FunctionMinimizer_impl.hpp
+ * FunctionalMinimizer_impl.hpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
  */
 
-#ifndef FUNCTIONMINIMIZER_IMPL_HPP_
-#define FUNCTIONMINIMIZER_IMPL_HPP_
+#ifndef FUNCTIONALMINIMIZER_IMPL_HPP_
+#define FUNCTIONALMINIMIZER_IMPL_HPP_
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/FunctionalMinimizer.hpp"
 
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_vector.h>
@@ -26,7 +26,7 @@ int checkGradient(
 }
 
 template <class T>
-int FunctionMinimizer<T>::checkWolfeConditions(
+int FunctionalMinimizer<T>::checkWolfeConditions(
 		const double _startvalue,
 		const gsl_vector * const _startgradient,
 		const Wolfe_indexset_t &_Wolfe_indexset,
@@ -67,7 +67,7 @@ int FunctionMinimizer<T>::checkWolfeConditions(
 
 template <class T>
 const unsigned int
-FunctionMinimizer<T>::operator()(
+FunctionalMinimizer<T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
 		T &_startvalue)
@@ -82,20 +82,20 @@ FunctionMinimizer<T>::operator()(
 
 template <class T>
 const unsigned int
-FunctionMinimizer<T>::operator()(
+FunctionalMinimizer<T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
 		const Wolfe_indexset_t &_Wolfe_indexset,
 		T &_startvalue)
 {
 	gsl_vector *x = gsl_vector_alloc (_N);
-	const double functionzero = FunctionMinimizer_FunctionCaller<T>(x, this);
+	const double functionzero = FunctionalMinimizer_FunctionCaller<T>(x, this);
 	gsl_vector *gradientzero = gsl_vector_alloc (_N);
-	FunctionMinimizer_GradientCaller<T>(x, this, gradientzero);
+	FunctionalMinimizer_GradientCaller<T>(x, this, gradientzero);
 	gsl_vector_free(x);
 
 	check_function_t checkfunction =
-			boost::bind(&FunctionMinimizer<T>::checkWolfeConditions,
+			boost::bind(&FunctionalMinimizer<T>::checkWolfeConditions,
 					boost::cref(*this),
 					functionzero,
 					gradientzero,
@@ -112,7 +112,7 @@ FunctionMinimizer<T>::operator()(
 
 template <class T>
 const unsigned int
-FunctionMinimizer<T>::performMinimization(
+FunctionalMinimizer<T>::performMinimization(
 		const unsigned int _N,
 		const double _Tol,
 		T &_startvalue,
@@ -129,9 +129,9 @@ FunctionMinimizer<T>::performMinimization(
 	gsl_multimin_function_fdf my_func;
 
 	my_func.n = _N;
-	my_func.f = &FunctionMinimizer_FunctionCaller<T>;
-	my_func.df = &FunctionMinimizer_GradientCaller<T>;
-	my_func.fdf = &FunctionMinimizer_FunctionGradientCaller<T>;
+	my_func.f = &FunctionalMinimizer_FunctionCaller<T>;
+	my_func.df = &FunctionalMinimizer_GradientCaller<T>;
+	my_func.fdf = &FunctionalMinimizer_FunctionGradientCaller<T>;
 	my_func.params = this;
 
 	/* Starting point, x = (0,0) */
@@ -195,7 +195,7 @@ FunctionMinimizer<T>::performMinimization(
 
 template <class T>
 void
-FunctionMinimizer<T>::convertToInternalType(
+FunctionalMinimizer<T>::convertToInternalType(
 		const array_type & _t,
 		gsl_vector * const _x) const
 {
@@ -205,7 +205,7 @@ FunctionMinimizer<T>::convertToInternalType(
 
 template <class T>
 void
-FunctionMinimizer<T>::convertFromInternalType(
+FunctionalMinimizer<T>::convertFromInternalType(
 		const gsl_vector * const _x,
 		array_type &_t) const
 {
@@ -214,4 +214,4 @@ FunctionMinimizer<T>::convertFromInternalType(
 }
 
 
-#endif /* FUNCTIONMINIMIZER_IMPL_HPP_ */
+#endif /* FUNCTIONALMINIMIZER_IMPL_HPP_ */

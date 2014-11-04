@@ -16,7 +16,7 @@
  * Here, T is some multi-dimensional object that must be convertible
  * into a array_type.
  *
- * This needs to be implemented for use with class \ref FunctionMinimizer
+ * This needs to be implemented for use with class \ref FunctionalMinimizer
  */
 template <class T>
 struct MinimizationFunctional

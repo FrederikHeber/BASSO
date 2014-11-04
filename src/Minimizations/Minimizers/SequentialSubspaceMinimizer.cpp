@@ -21,7 +21,7 @@
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
-#include "Minimizations/Functions/FunctionMinimizer.hpp"
+#include "Minimizations/Functions/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
@@ -34,7 +34,7 @@
 using namespace boost::assign;
 
 // instantiate required template functions
-CONSTRUCT_FUNCTIONMINIMIZER(Eigen::VectorXd)
+CONSTRUCT_FUNCTIONALMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -310,7 +310,7 @@ SequentialSubspaceMinimizer::operator()(
 
 			unsigned int inner_iterations = 0;
 			if (inexactLinesearch) {
-				FunctionMinimizer<Eigen::VectorXd> minimizer(
+				FunctionalMinimizer<Eigen::VectorXd> minimizer(
 					functional,
 					tmin,
 					constant_positivity,
@@ -324,7 +324,7 @@ SequentialSubspaceMinimizer::operator()(
 						tmin
 						);
 			} else {
-				FunctionMinimizer<Eigen::VectorXd> minimizer(
+				FunctionalMinimizer<Eigen::VectorXd> minimizer(
 						functional, tmin);
 				minimizer.setMaxIterations(istate.getDimension()*100);
 
