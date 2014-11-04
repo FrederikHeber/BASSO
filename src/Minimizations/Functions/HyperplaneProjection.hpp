@@ -30,6 +30,8 @@
 struct HyperplaneProjection :
 		public MinimizationFunctional<Eigen::VectorXd>
 {
+	typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
+
 	BregmanProjectionFunctional &bregman;
 	const Eigen::VectorXd &x;
 	const Eigen::MatrixXd &U;
@@ -59,13 +61,15 @@ struct HyperplaneProjection :
 
 	const Eigen::VectorXd gradient(const Eigen::VectorXd &_value) const;
 
-	void convertToInternalType(
-			Eigen::VectorXd &_t,
-			const gsl_vector * const x) const;
-
-	void convertFromInternalType(
+	void convertToArrayType(
 			const Eigen::VectorXd &_t,
-			gsl_vector * x) const;
+			array_type & _x
+			) const;
+
+	void convertFromArrayType(
+			const array_type & _x,
+			Eigen::VectorXd &_t
+			) const;
 };
 
 

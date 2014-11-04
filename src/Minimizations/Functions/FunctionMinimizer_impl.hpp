@@ -136,7 +136,9 @@ FunctionMinimizer<T>::performMinimization(
 
 	/* Starting point, x = (0,0) */
 	x = gsl_vector_alloc (_N);
-	functional.convertFromInternalType(_startvalue, x);
+	std::vector<double> tempvector(_N);
+	functional.convertToArrayType(_startvalue, tempvector);
+	convertToInternalType(tempvector, x);
 
 	minimizer = gsl_multimin_fdfminimizer_vector_bfgs;
 	s = gsl_multimin_fdfminimizer_alloc (minimizer, _N);
@@ -182,12 +184,33 @@ FunctionMinimizer<T>::performMinimization(
 		<< "Inner iteration took " << iter << " steps";
 
 	// place solution at tmin
-	functional.convertToInternalType(_startvalue, s->x);
+	convertFromInternalType(s->x, tempvector);
+	functional.convertFromArrayType(tempvector, _startvalue);
 
 	gsl_multimin_fdfminimizer_free (s);
 	gsl_vector_free (x);
 
 	return iter;
+}
+
+template <class T>
+void
+FunctionMinimizer<T>::convertToInternalType(
+		const array_type & _t,
+		gsl_vector * const _x) const
+{
+	for(unsigned int i=0;i<_x->size;++i)
+		gsl_vector_set(_x,i, _t[i]);
+}
+
+template <class T>
+void
+FunctionMinimizer<T>::convertFromInternalType(
+		const gsl_vector * const _x,
+		array_type &_t) const
+{
+	for(unsigned int i=0;i<_x->size;++i)
+		_t[i] = gsl_vector_get(_x,i);
 }
 
 

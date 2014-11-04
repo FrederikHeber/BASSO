@@ -75,6 +75,7 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
 template <class T>
 class FunctionMinimizer
 {
+	typedef typename MinimizationFunctional<T>::array_type array_type;
 public:
 	/** Constructor of functor FunctionMinimizer.
 	 *
@@ -198,6 +199,31 @@ private:
 			const check_function_t &_checkfunction
 			);
 
+public:
+	/** We need to know how to convert the array_type to the internal
+	 * type of the minimization library, here gsl_vector.
+	 *
+	 * Hence, this functions needs to be implemented.
+	 *
+	 * @param _t value of the internal type
+	 * @param x ptr to gsl_vector (which gsl minimization uses)
+	 */
+	void convertToInternalType(
+			const array_type & _t,
+			gsl_vector * const _x) const;
+
+	/** We need to know how to convert the internal type of the
+	 * minimization to an array_type.
+	 *
+	 * Hence, this functions needs to be implemented.
+	 *
+	 * @param _t value of the internal type
+	 * @param x ptr to gsl_vector (which gsl minimization uses)
+	 */
+	void convertFromInternalType(
+			const gsl_vector * const _x,
+			array_type &_t) const;
+
 private:
 	//!> set maximum number of iterations
 	unsigned int maxiterations;
@@ -224,10 +250,14 @@ FunctionMinimizer_FunctionCaller(
 	struct FunctionMinimizer<T> *minimizer =
 			static_cast<FunctionMinimizer<T> *>(adata);
 	// convert given value to something interpretable
-	minimizer->functional.convertToInternalType(
-			minimizer->value,
-			x);
-	// evaluate the function
+	{
+		std::vector<double> tempvector(x->size);
+		minimizer->convertFromInternalType(x, tempvector);
+		minimizer->functional.convertFromArrayType(
+				tempvector,
+				minimizer->value);
+	}
+	// evaluate the function (with array_type)
 	const double tmp =
 			minimizer->functional(minimizer->value);
 	// return the value
@@ -245,14 +275,24 @@ FunctionMinimizer_GradientCaller(
 	struct FunctionMinimizer<T> *minimizer =
 			static_cast<FunctionMinimizer<T> *>(adata);
 	// convert given value to something interpretable
-	minimizer->functional.convertToInternalType(
-			minimizer->value,
-			x);
+	{
+		std::vector<double> tempvector(x->size);
+		minimizer->convertFromInternalType(x, tempvector);
+		minimizer->functional.convertFromArrayType(
+				tempvector,
+				minimizer->value);
+	}
 	// evaluate the gradient
 	const T tmpgradient =
 			minimizer->functional.gradient(minimizer->value);
 	// convert gradient and store in g
-	minimizer->functional.convertFromInternalType(tmpgradient, g);
+	{
+		std::vector<double> tempvector(g->size);
+		minimizer->functional.convertToArrayType(
+				tmpgradient,
+				tempvector);
+		minimizer->convertToInternalType(tempvector, g);
+	}
 }
 
 template <class T>
@@ -267,14 +307,26 @@ FunctionMinimizer_FunctionGradientCaller(
 	struct FunctionMinimizer<T> *minimizer =
 			static_cast<FunctionMinimizer<T> *>(adata);
 	// convert given value to something interpretable
-	minimizer->functional.convertToInternalType(minimizer->value, x);
+	{
+		std::vector<double> tempvector(x->size);
+		minimizer->convertFromInternalType(x, tempvector);
+		minimizer->functional.convertFromArrayType(
+				tempvector,
+				minimizer->value);
+	}
 	// evaluate the function and store in f
 	*f = minimizer->functional(minimizer->value);
 	// evaluate the gradient
 	const T tmpgradient =
 			minimizer->functional.gradient(minimizer->value);
 	// convert gradient and store in g
-	minimizer->functional.convertFromInternalType(tmpgradient, g);
+	{
+		std::vector<double> tempvector(g->size);
+		minimizer->functional.convertToArrayType(
+				tmpgradient,
+				tempvector);
+		minimizer->convertToInternalType(tempvector, g);
+	}
 }
 
 //!> use this macro to make sure wrapper functions for gsl are instantiated

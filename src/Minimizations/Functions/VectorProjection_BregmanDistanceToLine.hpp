@@ -23,6 +23,7 @@
 class BregmanDistanceToLine :
 		 public MinimizationFunctional<double>
 {
+	typedef typename MinimizationFunctional<double>::array_type array_type;
 public:
 	const BregmanDistance &distance;
 	const Norm &dualnorm;
@@ -48,13 +49,15 @@ public:
 
 	const double gradient(const double &_value) const;
 
-	void convertToInternalType(
-			double &_t,
-			const gsl_vector * const x) const;
-
-	void convertFromInternalType(
+	void convertToArrayType(
 			const double &_t,
-			gsl_vector * x) const;
+			array_type & _x
+			) const;
+
+	void convertFromArrayType(
+			const array_type & _x,
+			double &_t
+			) const;
 };
 
 

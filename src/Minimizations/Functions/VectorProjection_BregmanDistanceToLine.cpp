@@ -9,6 +9,7 @@
 
 #include <boost/log/trivial.hpp>
 
+typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
 
 BregmanDistanceToLine::BregmanDistanceToLine(
 		const BregmanDistance &_distance,
@@ -52,17 +53,19 @@ BregmanDistanceToLine::gradient(
 }
 
 void
-BregmanDistanceToLine::convertToInternalType(
-		double &_t,
-		const gsl_vector * const x) const
+BregmanDistanceToLine::convertToArrayType(
+		const double &_t,
+		array_type & _x
+		) const
 {
-	_t = gsl_vector_get(x, 0);
+	_x[0] = _t;
 }
 
 void
-BregmanDistanceToLine::convertFromInternalType(
-		const double &_t,
-		gsl_vector * x) const
+BregmanDistanceToLine::convertFromArrayType(
+		const array_type & _x,
+		double &_t
+		) const
 {
-	gsl_vector_set(x, 0, _t);
+	_t = _x[0];
 }

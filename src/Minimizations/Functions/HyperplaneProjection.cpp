@@ -13,6 +13,8 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 
+typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
+
 HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,
 	const Eigen::VectorXd &_x,
@@ -68,20 +70,22 @@ HyperplaneProjection::gradient(
 }
 
 void
-HyperplaneProjection::convertToInternalType(
-		Eigen::VectorXd &_t,
-		const gsl_vector * const x) const
+HyperplaneProjection::convertToArrayType(
+		const Eigen::VectorXd &_t,
+		array_type & _x
+		) const
 {
-	for (unsigned int i=0;i<_t.innerSize();++i)
-		_t[i] = gsl_vector_get(x, i);
+	for (unsigned int i=0; i<_t.innerSize();++i)
+		_x[i] = _t[i];
 }
 
 void
-HyperplaneProjection::convertFromInternalType(
-		const Eigen::VectorXd &_t,
-		gsl_vector * x) const
+HyperplaneProjection::convertFromArrayType(
+		const array_type & _x,
+		Eigen::VectorXd &_t
+		) const
 {
-	for (unsigned int i=0; i<_t.innerSize();++i)
-		gsl_vector_set(x, i, _t[i]);
+	for (unsigned int i=0;i<_t.innerSize();++i)
+		_t[i] = _x[i];
 }
 
