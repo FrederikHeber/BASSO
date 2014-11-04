@@ -20,15 +20,13 @@
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 #include "Minimizations/Functions/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/Norm.hpp"
-
-// instantiate required template functions
-CONSTRUCT_FUNCTIONALMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -193,16 +191,17 @@ SequentialSubspaceMinimizerNoise::operator()(
 							dual_solution->getVectorRepresentation(),
 							istate.getSearchSpace(),
 							istate.getAlphas());
+					Minimizer<gsl_vector> minimizer(1);
 
 					// TODO: current alpha needs to be modified for minimization!
 					Eigen::VectorXd steps(1);
 					steps[0] = alpha+d;
-					FunctionalMinimizer<Eigen::VectorXd> minimizer(
-						functional, t0);
+					FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
+						functional, minimizer, t0);
 
 					tmin = t0;
 					const unsigned int iterations =
-							minimizer(1, TolY, tmin);
+							fmin(1, TolY, tmin);
 
 					BOOST_LOG_TRIVIAL(trace)
 						<< "tmin " << tmin.transpose()

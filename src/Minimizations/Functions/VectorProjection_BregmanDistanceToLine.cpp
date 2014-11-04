@@ -8,6 +8,7 @@
 #include "VectorProjection_BregmanDistanceToLine.hpp"
 
 #include <boost/log/trivial.hpp>
+#include <cassert>
 
 typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
 
@@ -32,7 +33,7 @@ BregmanDistanceToLine::BregmanDistanceToLine(
 }
 
 double
-BregmanDistanceToLine::operator()(
+BregmanDistanceToLine::function(
 		const double &_value) const
 {
 	assert( fabs(dualnorm(linevector) - 1.) < std::numeric_limits<double>::epsilon()*1e2 );
@@ -53,19 +54,21 @@ BregmanDistanceToLine::gradient(
 }
 
 void
-BregmanDistanceToLine::convertToArrayType(
+BregmanDistanceToLine::convertInternalTypeToArrayType(
 		const double &_t,
 		array_type & _x
 		) const
 {
+	assert( _x.size() == 1);
 	_x[0] = _t;
 }
 
 void
-BregmanDistanceToLine::convertFromArrayType(
+BregmanDistanceToLine::convertArrayTypeToInternalType(
 		const array_type & _x,
 		double &_t
 		) const
 {
+	assert( _x.size() == 1);
 	_t = _x[0];
 }

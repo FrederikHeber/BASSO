@@ -29,7 +29,7 @@ struct MinimizationFunctional
 	 * @param _value value where to evaluate function
 	 * @return function value
 	 */
-	virtual double operator()(const T &_value) const = 0;
+	virtual double function(const T &_value) const = 0;
 
 	/** Evaluates the function's gradient at \a _value.
 	 *
@@ -45,7 +45,7 @@ struct MinimizationFunctional
 	 * @param _x ref to array type
 	 * @param _t value of the template type
 	 */
-	virtual void convertFromArrayType(
+	virtual void convertArrayTypeToInternalType(
 			const array_type & _x,
 			T &_t
 			) const = 0;
@@ -57,7 +57,7 @@ struct MinimizationFunctional
 	 * @param _x ref to array type
 	 * @param _t value of the template type
 	 */
-	virtual void convertToArrayType(
+	virtual void convertInternalTypeToArrayType(
 			const T &_t,
 			array_type & _x
 			) const = 0;

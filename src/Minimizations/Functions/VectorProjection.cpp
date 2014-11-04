@@ -45,24 +45,29 @@ VectorProjection::operator()(
 			);
 
 
+	const unsigned int dim = 1;
 	double tmin = 0.;
 	double result = 0.;
 	{
+
 		// tmin=fminunc(@(t) BregmanFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-		BregmanDistanceToLine distancefunctional(
+		const BregmanDistanceToLine distancefunctional(
 				distance,
 				lpnorm,
 				J_p,
 				_projectedonto,
 				_tobeprojected,
 				p);
+		Minimizer<gsl_vector> minimizer(dim);
 
-		FunctionalMinimizer<double> minimizer(
-				distancefunctional, tmin);
+		FunctionalMinimizer<double, gsl_vector> functionminimizer(
+				distancefunctional,
+				minimizer,
+				tmin);
 
 //		const unsigned int inner_iterations =
-				minimizer(1, _Tol, tmin);
-		result = distancefunctional(tmin);
+				functionminimizer(dim, _Tol, tmin);
+		result = minimizer.getCurrentOptimumValue();
 
 		BOOST_LOG_TRIVIAL(trace)
 			<< "tmin is " << tmin;
@@ -70,6 +75,3 @@ VectorProjection::operator()(
 
 	return std::make_pair( result, tmin);
 }
-
-// instantiate template functions
-CONSTRUCT_FUNCTIONALMINIMIZER(double)

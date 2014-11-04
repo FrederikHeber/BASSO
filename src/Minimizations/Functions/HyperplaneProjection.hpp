@@ -57,16 +57,16 @@ struct HyperplaneProjection :
 		const Eigen::VectorXd &_alpha
 		);
 
-	double operator()(const Eigen::VectorXd &_value) const;
+	double function(const Eigen::VectorXd &_value) const;
 
 	const Eigen::VectorXd gradient(const Eigen::VectorXd &_value) const;
 
-	void convertToArrayType(
+	void convertInternalTypeToArrayType(
 			const Eigen::VectorXd &_t,
 			array_type & _x
 			) const;
 
-	void convertFromArrayType(
+	void convertArrayTypeToInternalType(
 			const array_type & _x,
 			Eigen::VectorXd &_t
 			) const;

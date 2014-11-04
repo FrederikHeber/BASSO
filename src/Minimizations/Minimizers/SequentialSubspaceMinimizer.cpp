@@ -24,6 +24,7 @@
 #include "Minimizations/Functions/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/Functions/Minimizer.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
@@ -32,9 +33,6 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 using namespace boost::assign;
-
-// instantiate required template functions
-CONSTRUCT_FUNCTIONALMINIMIZER(Eigen::VectorXd)
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -302,33 +300,35 @@ SequentialSubspaceMinimizer::operator()(
 					MatrixVectorProduct_subspace,
 					ScalarVectorProduct_subspace);
 
-			HyperplaneProjection functional(
+			const HyperplaneProjection functional(
 					bregman,
 					dual_solution->getVectorRepresentation(),
 					istate.getSearchSpace(),
 					istate.getAlphas());
+			Minimizer<gsl_vector> minimizer(N);
 
 			unsigned int inner_iterations = 0;
 			if (inexactLinesearch) {
-				FunctionalMinimizer<Eigen::VectorXd> minimizer(
+				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
 					functional,
+					minimizer,
 					tmin,
 					constant_positivity,
 					constant_interpolation);
-				minimizer.setMaxIterations(istate.getDimension()*100);
+				fmin.setMaxIterations(istate.getDimension()*100);
 
-				inner_iterations = minimizer(
+				inner_iterations = fmin(
 						N,
 						TolFun,
 						Wolfe_indexset_t(1, istate.getIndex()),
 						tmin
 						);
 			} else {
-				FunctionalMinimizer<Eigen::VectorXd> minimizer(
-						functional, tmin);
-				minimizer.setMaxIterations(istate.getDimension()*100);
+				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
+						functional, minimizer, tmin);
+				fmin.setMaxIterations(istate.getDimension()*100);
 
-				inner_iterations = minimizer(
+				inner_iterations = fmin(
 						N,
 						TolFun,
 						tmin);

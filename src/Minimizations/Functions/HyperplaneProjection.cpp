@@ -40,7 +40,7 @@ HyperplaneProjection::HyperplaneProjection(
 {}
 
 double
-HyperplaneProjection::operator()(
+HyperplaneProjection::function(
 		const Eigen::VectorXd &_value) const
 {
 	const double returnvalue =
@@ -70,7 +70,7 @@ HyperplaneProjection::gradient(
 }
 
 void
-HyperplaneProjection::convertToArrayType(
+HyperplaneProjection::convertInternalTypeToArrayType(
 		const Eigen::VectorXd &_t,
 		array_type & _x
 		) const
@@ -80,7 +80,7 @@ HyperplaneProjection::convertToArrayType(
 }
 
 void
-HyperplaneProjection::convertFromArrayType(
+HyperplaneProjection::convertArrayTypeToInternalType(
 		const array_type & _x,
 		Eigen::VectorXd &_t
 		) const

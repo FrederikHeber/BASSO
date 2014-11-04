@@ -45,16 +45,16 @@ public:
 			);
 	~BregmanDistanceToLine() {}
 
-	double operator()(const double &_value) const;
+	double function(const double &_value) const;
 
 	const double gradient(const double &_value) const;
 
-	void convertToArrayType(
+	void convertInternalTypeToArrayType(
 			const double &_t,
 			array_type & _x
 			) const;
 
-	void convertFromArrayType(
+	void convertArrayTypeToInternalType(
 			const array_type & _x,
 			double &_t
 			) const;
