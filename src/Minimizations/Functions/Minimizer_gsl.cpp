@@ -74,7 +74,8 @@ Minimizer<gsl_vector>::minimize(
 	x = gsl_vector_alloc (N);
 	convertArrayTypeToInternalType(_startvalue, x);
 
-	gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, _Tol);
+	// use inexact line searches here with 0.1 precision
+	gsl_multimin_fdfminimizer_set (s, &my_func, x, 0.01, 0.1);
 
 	do
 	{
