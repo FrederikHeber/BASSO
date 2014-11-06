@@ -56,5 +56,6 @@ public:
 };
 
 #include "Minimizer_gsl.hpp"
+#include "Minimizer_nlopt.hpp"
 
 #endif /* MINIMIZER_HPP_ */
