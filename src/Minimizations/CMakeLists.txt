@@ -7,7 +7,7 @@ add_library (Minimizations
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/HyperplaneProjection.cpp
-	Functions/Minimizer_gsl.cpp
+	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/ResidualFunctional.cpp
 	Functions/SmoothnessModulus.cpp
 	Functions/VectorProjection.cpp
@@ -41,10 +41,10 @@ install (FILES Elements/SpaceElement.hpp DESTINATION include)
 
 install (FILES Functions/BregmanDistance.hpp DESTINATION include)
 install (FILES Functions/BregmanProjectionFunctional.hpp DESTINATION include)
-install (FILES Functions/FunctionalMinimizer.hpp DESTINATION include)
-install (FILES Functions/FunctionalMinimizer_impl.hpp DESTINATION include)
 install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
-install (FILES Functions/MinimizationFunctional.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_impl.hpp DESTINATION include)
+install (FILES Functions/Minimizers/MinimizationFunctional.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)

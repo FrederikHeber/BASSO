@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#include "Minimizations/Functions/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
 
 template <>
 class Minimizer<gsl_vector>

@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
-#include "Minimizations/Functions/MinimizationFunctional.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/types.hpp"
 
 /** Structure containing all parameters to call BregmanProjectionFunctional functions.

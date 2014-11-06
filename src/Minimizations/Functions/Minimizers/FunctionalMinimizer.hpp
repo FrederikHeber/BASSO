@@ -10,9 +10,9 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Functions/Minimization_common.hpp"
-#include "Minimizations/Functions/MinimizationFunctional.hpp"
-#include "Minimizations/Functions/Minimizer.hpp"
+#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
+#include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 
 #include <vector>
 
@@ -212,7 +212,7 @@ private:
 	const double constant_interpolation;
 };
 
-#include "Minimizations/Functions/FunctionalMinimizer_impl.hpp"
+#include "FunctionalMinimizer_impl.hpp"
 
 
 #endif /* FUNCTIONALMINIMIZER_HPP_ */

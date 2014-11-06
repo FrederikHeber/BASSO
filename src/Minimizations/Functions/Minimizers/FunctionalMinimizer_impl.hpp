@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Functions/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 
 #include <boost/bind.hpp>
 

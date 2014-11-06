@@ -12,7 +12,7 @@
 #include <boost/log/trivial.hpp>
 
 #include "Minimizations/Functions/BregmanDistance.hpp"
-#include "Minimizations/Functions/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
 
 VectorProjection::VectorProjection(
