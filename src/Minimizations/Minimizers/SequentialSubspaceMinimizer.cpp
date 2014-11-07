@@ -201,7 +201,8 @@ SequentialSubspaceMinimizer::operator()(
 	/// -# check stopping criterion
 	const double ynorm = NormY(y);
 	bool StopCriterion = false;
-	StopCriterion = (fabs(istate.residuum/ynorm) <= TolY);
+	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
+	StopCriterion = (initial_relative_residuum <= TolY);
 
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
@@ -410,9 +411,33 @@ SequentialSubspaceMinimizer::operator()(
 
 		// check iterations count
 		++istate.NumberOuterIterations;
+		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		StopCriterion =
 				(istate.NumberOuterIterations >= MaxOuterIterations)
-				|| (fabs(istate.residuum/ynorm) <= TolY);
+				|| (current_relative_residuum <= TolY);
+
+		// check for non-convergence
+		if (current_relative_residuum >= 1e4) {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Current relative residuum is "
+					<< current_relative_residuum
+					<< " exceeding initial value of 1. by "
+					<< current_relative_residuum/initial_relative_residuum;
+			BOOST_LOG_TRIVIAL(error)
+					<< "STOPPING ITERATION";
+
+			// create a sequence of entries in Database till MaxOuterIterations
+			for (;istate.NumberOuterIterations < MaxOuterIterations;
+					++istate.NumberOuterIterations) {
+				// update iterations in tuple
+				per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+				angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+
+				// submit current tuples
+				per_iteration_table.addTuple(per_iteration_tuple);
+				angle_table.addTuple(angle_tuple);
+			}
+		}
 
 		// print intermediat solution
 		printIntermediateSolution(
