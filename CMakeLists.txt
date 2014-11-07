@@ -7,8 +7,8 @@ cmake_minimum_required (VERSION 2.6)
 project (Basso)
 
 # set debug and release flags
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g3 -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -g0 -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g3 -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3")
 
 # The version number.
 set (Basso_VERSION_MAJOR 1)
