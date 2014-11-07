@@ -58,7 +58,7 @@ Minimizer<NLopt_vector>::minimize(
 	std::vector<double> lb(N, -HUGE_VAL);
 	for (std::vector<unsigned int>::const_iterator it = PositivityBoundIndices.begin();
 			it != PositivityBoundIndices.end(); ++it) {
-		lb[*it] = constant_positivity;
+		lb[*it] = 0.;
 		// make sure _startvalue adheres bounds
 		if (_startvalue[*it] < constant_positivity)
 			_startvalue[*it] = constant_positivity;

@@ -60,27 +60,50 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 	for (Wolfe_indexset_t::const_iterator iter = _Wolfe_indexset.begin();
 			(iter != _Wolfe_indexset.end()) && conditions_fulfilled;
 			++iter) {
-		const double component = currentiterate[*iter];
-		// 1. positivity of step width component
-		BOOST_LOG_TRIVIAL(trace)
-			<< "1. Positivity: " << component << " > "
-			<< constant_positivity;
-		conditions_fulfilled &=
-				component > constant_positivity;
-		// 2. still descent in the current gradient component
-		BOOST_LOG_TRIVIAL(trace)
-			<< "2. Still descent: " << currentgradient[*iter]
-			<< " < " << std::numeric_limits<double>::epsilon();
-		conditions_fulfilled &= currentgradient[*iter]
-						< std::numeric_limits<double>::epsilon();
-		// 3. stronger descent than linear interpolation
+		const double componentiterate = currentiterate[*iter];
+		const double componentgradient = currentgradient[*iter];
+
+		// 1. sufficent decrease
 		const double linearinterpolate = _startvalue
-				+ constant_interpolation * component *
-				_startgradient[*iter];
-		BOOST_LOG_TRIVIAL(trace)
-			<< "3. Stronger than linear: " << currentvalue
-			<< " < " << linearinterpolate;
-		conditions_fulfilled &= (currentvalue < linearinterpolate);
+				- constant_positivity * componentiterate *
+				::pow(_startgradient[*iter],2);
+		BOOST_LOG_TRIVIAL(debug)
+				<< "1. sufficent decrease: " << currentvalue << " <= "
+				<< linearinterpolate;
+		conditions_fulfilled &=
+				(currentvalue <= linearinterpolate);
+
+		// 2. curvature condition
+		const double interpolatedgradient = constant_interpolation
+				* ::pow(_startgradient[*iter],2);
+		const double realgradient =
+				componentgradient * _startgradient[*iter];
+		BOOST_LOG_TRIVIAL(debug)
+				<< "2. curvature condition: " << realgradient << " <= "
+				<< interpolatedgradient;
+		conditions_fulfilled &=
+				realgradient <= interpolatedgradient;
+
+//		// 1. positivity of step width component
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "1. Positivity: " << component << " > "
+//			<< constant_positivity;
+//		conditions_fulfilled &=
+//				component > constant_positivity;
+//		// 2. still descent in the current gradient component
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "2. Still descent: " << currentgradient[*iter]
+//			<< " < " << std::numeric_limits<double>::epsilon();
+//		conditions_fulfilled &= currentgradient[*iter]
+//						< std::numeric_limits<double>::epsilon();
+//		// 3. stronger descent than linear interpolation
+//		const double linearinterpolate = _startvalue
+//				+ constant_interpolation * component *
+//				_startgradient[*iter];
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "3. Stronger than linear: " << currentvalue
+//			<< " < " << linearinterpolate;
+//		conditions_fulfilled &= (currentvalue < linearinterpolate);
 	}
 	if (conditions_fulfilled)
 		return Minimization::gradient_success;

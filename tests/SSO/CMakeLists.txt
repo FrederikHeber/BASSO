@@ -125,7 +125,7 @@ add_test (Basso_SSO_RandomMatrix_InexactLinesearch
 		--number-directions 2
 		--update-algorithm 0
 		--inexact-linesearch 1
-		--wolfe-constants 1e-4 1.
+		--wolfe-constants 1e-2 0.6
 		--normx 2 
 		--normy 0 
 		--powerx 2
@@ -135,5 +135,5 @@ add_test (Basso_SSO_RandomMatrix_InexactLinesearch
 		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
 		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
 set_tests_properties (Basso_SSO_RandomMatrix_InexactLinesearch
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.009.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 33 with relative residual of 0.008.*")
 
