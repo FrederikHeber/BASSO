@@ -57,6 +57,7 @@ int main (int argc, char *argv[])
 	        ("matrix", po::value< boost::filesystem::path >(),
 	        		"set the forward operator matrix file")
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
+			("minimization-library", po::value<std::string>(), "set which minimization library to use (gsl,nlopt)")
 	        ("normx", po::value<double>(), "set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
 	        ("normy", po::value<double>(), "set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
 	        ("number-directions", po::value<unsigned int>(), "set the number of search directions (SSO)")
@@ -204,6 +205,17 @@ int main (int argc, char *argv[])
 	} else {
 		// set default value
 		maxiter = 50;
+	}
+	std::string minlib = "gsl";
+	if (vm.count("minimization-library")) {
+		minlib = vm["minimization-library"].as<std::string>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Using minimization library " << minlib;
+	}
+	if ((minlib != "gsl") && (minlib != "nlopt")) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "Minimization library must be either 'gsl' or 'nlopt'.";
+		return 255;
 	}
 	double normx;
 	if (vm.count("normx")) {
@@ -464,6 +476,7 @@ int main (int argc, char *argv[])
 			maxiter,
 			database,
 			outputsteps);
+	minimizer->setMinLib(minlib);
 
 	// calculate initial dual solution
 	SpaceElement_ptr_t dualx0 =

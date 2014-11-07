@@ -308,33 +308,80 @@ SequentialSubspaceMinimizer::operator()(
 					dual_solution->getVectorRepresentation(),
 					istate.getSearchSpace(),
 					istate.getAlphas());
-			Minimizer<gsl_vector> minimizer(N);
+
+			// due to templation we need to instantiate both, as user
+			// decides during runtime which we need
+			Minimizer<gsl_vector> minimizer_gsl(N);
+			Minimizer<NLopt_vector> minimizer_nlopt(N);
+			Wolfe_indexset_t Wolfe_indexset(1, istate.getIndex());
+			if (MinLib == nonlinearoptimization) {
+				// hand index set to minimizer
+				minimizer_nlopt.setConstantPositivity(constant_positivity);
+				minimizer_nlopt.setPositivityBoundIndices(Wolfe_indexset);
+			}
 
 			unsigned int inner_iterations = 0;
 			if (inexactLinesearch) {
-				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
+				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin_gsl(
 					functional,
-					minimizer,
+					minimizer_gsl,
 					tmin,
 					constant_positivity,
 					constant_interpolation);
-				fmin.setMaxIterations(istate.getDimension()*100);
+				FunctionalMinimizer<Eigen::VectorXd, NLopt_vector> fmin_nlopt(
+					functional,
+					minimizer_nlopt,
+					tmin,
+					constant_positivity,
+					constant_interpolation);
 
-				inner_iterations = fmin(
-						N,
-						TolFun,
-						Wolfe_indexset_t(1, istate.getIndex()),
-						tmin
-						);
+				switch (MinLib) {
+				case gnuscientificlibrary:
+					inner_iterations = fmin_gsl(
+							N,
+							TolFun,
+							Wolfe_indexset,
+							tmin
+							);
+					break;
+				case nonlinearoptimization:
+					inner_iterations = fmin_nlopt(
+							N,
+							TolFun,
+							Wolfe_indexset_t(1, istate.getIndex()),
+							tmin
+							);
+					break;
+				default:
+					throw MinimizationIllegalValue_exception()
+							<< MinimizationIllegalValue_name("MinLib");
+					break;
+				}
+
 			} else {
-				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
-						functional, minimizer, tmin);
-				fmin.setMaxIterations(istate.getDimension()*100);
+				FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin_gsl(
+						functional, minimizer_gsl, tmin);
+				FunctionalMinimizer<Eigen::VectorXd, NLopt_vector> fmin_nlopt(
+						functional, minimizer_nlopt, tmin);
 
-				inner_iterations = fmin(
-						N,
-						TolFun,
-						tmin);
+				switch (MinLib) {
+				case gnuscientificlibrary:
+					inner_iterations = fmin_gsl(
+							N,
+							TolFun,
+							tmin);
+					break;
+				case nonlinearoptimization:
+					inner_iterations = fmin_nlopt(
+							N,
+							TolFun,
+							tmin);
+					break;
+				default:
+					throw MinimizationIllegalValue_exception()
+							<< MinimizationIllegalValue_name("MinLib");
+					break;
+				}
 			}
 			per_iteration_tuple.replace( "inner_iterations", (int)inner_iterations);
 

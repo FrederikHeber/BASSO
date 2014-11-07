@@ -12,6 +12,7 @@
 #include "MatrixIO/MatrixIO.hpp"
 #include "MatrixIO/OperationCounter.hpp"
 
+#include <boost/assign.hpp>
 #include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <fstream>
@@ -24,6 +25,11 @@
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+
+using namespace boost::assign;
+
+// static entities
+GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
 
 GeneralMinimizer::GeneralMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -38,6 +44,7 @@ GeneralMinimizer::GeneralMinimizer(
 	TolY(Delta),
 	TolFun(1e-12),
 	outputsteps(_outputsteps),
+	MinLib(gnuscientificlibrary),
 	database(_database),
 	matrix_vector_fctor(
 			boost::bind(
@@ -62,6 +69,13 @@ GeneralMinimizer::GeneralMinimizer(
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->y->getSpace()->getDualityMapping()->setTolerance(TolY);
+
+	// initalize list with static names
+	if (MinLib_names.empty())
+		MinLib_names +=
+			std::make_pair( "gsl", gnuscientificlibrary),
+			std::make_pair( "nlopt", nonlinearoptimization);
+
 }
 
 double GeneralMinimizer::calculateResidual(
@@ -75,6 +89,19 @@ double GeneralMinimizer::calculateResidual(
 	*_residual -= _problem->y;
 	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
+}
+
+bool GeneralMinimizer::isValidMinLibName(const std::string &_name)
+{
+	MinLib_names_t::const_iterator iter =
+			MinLib_names.find(_name);
+	return (iter != MinLib_names.end());
+}
+
+void GeneralMinimizer::setMinLib(const std::string &_name)
+{
+	assert( isValidMinLibName(_name) );
+	MinLib = MinLib_names[_name];
 }
 
 void GeneralMinimizer::printIntermediateSolution(
