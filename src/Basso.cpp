@@ -47,6 +47,7 @@ int main (int argc, char *argv[])
 	        ("C", po::value<double>(), "set the value for C (landweber)")
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
+			("database-replace", po::value<bool>(), "whether to replace tuples in database file (true) or just add (default=false)")
 	        ("delta", po::value<double>(), "set the amount of noise")
 	        ("enforceRandomMapping", po::value<bool>(), "whether to enforce update index algorithm in SSO to be a random mapping")
 	        ("help", "produce help message")
@@ -161,6 +162,13 @@ int main (int argc, char *argv[])
 			<< "Magnitude of noise was set to " << delta;
 	} else {
 		delta = 1e-4;
+	}
+	bool database_replace = false;
+	if (vm.count("database-replace")) {
+		database_replace = vm["database-replace"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Database replace was set to "
+			<< (database_replace ? "replace" : "just add") << ".";
 	}
 	bool enforceRandomMapping = false;
 	if (vm.count("enforceRandomMapping")) {
@@ -445,6 +453,7 @@ int main (int argc, char *argv[])
 	Database database;
 	if (!iteration_file.string().empty())
 		database.setDatabaseFile(iteration_file.string());
+	database.setReplacePresentParameterTuples(database_replace);
 	MinimizerFactory::instance_ptr_t minimizer;
 	// set regularization parametter in case of regularizedl1norm
 	minimizer =

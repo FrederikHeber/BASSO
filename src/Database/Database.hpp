@@ -70,6 +70,17 @@ public:
 	const size_t size() const
 	{ return tables.size(); }
 
+	/** Setter for whether tuples are replaced (with respect to their parameter
+	 * part or we just add new ones regardless of same-parametered present ones.
+	 *
+	 * \warning Replacement can take quite some time for a larger database
+	 * files (e.g. >10Mb ~ secs, >100Mb ~ mins).
+	 *
+	 * @param _flag true - replace, false - just add
+	 */
+	void setReplacePresentParameterTuples(const bool _flag)
+	{ ReplacePresentParameterTuples = _flag; }
+
 private:
 
 	/** Internal function to write the database as an sqlite file.
@@ -84,6 +95,9 @@ private:
 private:
 	//!> states whether a database file name has been given or not.
 	bool DatabaseFileGiven;
+
+	//!> states whether we replace already present parameter tuples or just add new ones
+	bool ReplacePresentParameterTuples;
 
 	//!> contains the filename of the database for storing
 	std::string filename;

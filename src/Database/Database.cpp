@@ -28,6 +28,7 @@ std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
 
 Database::Database() :
 		DatabaseFileGiven(false),
+		ReplacePresentParameterTuples(false),
 		MAXKEYS(14)
 {
 	TypeNames[inttype] = "int";
@@ -92,45 +93,47 @@ bool Database::writeSQLitefile()
 			Statement stmt = ( ses << sql.str() );
 			stmt.execute();
 
-			/// convert all tuples associated with parameters to pairs
-			/// containing column name and associated value, this is
-			/// required for specifying which present rows to remove
-			ses << "BEGIN", now;
-			for (Table::internal_table_t::const_iterator tupleiter = tableiter->second.internal_table.begin();
-					tupleiter != tableiter->second.internal_table.end(); ++tupleiter) {
-				std::stringstream sql_delete;
-				sql_delete << "DELETE FROM " << currenttable.getName()
-					<< " WHERE ";
-				bool AtLeastOneParameter = false;
-				for (Table::Tuple_t::const_iterator paramiter = tupleiter->begin();
-						paramiter != tupleiter->end(); ++paramiter) {
-					if (tupleiter->isParameter(paramiter->first)) {
-						if (AtLeastOneParameter)
-							sql_delete << " AND ";
-						sql_delete << paramiter->first << "=";
-						Table::KeyType_t::const_iterator keytypeiter =
-								KeyTypes.find(paramiter->first);
-						assert( keytypeiter != KeyTypes.end() );
-						switch(keytypeiter->second) {
-						case valchartype:
-							sql_delete << "'" << paramiter->second << "'";
-							break;
-						default:
-							sql_delete << paramiter->second;
-							break;
+			if (ReplacePresentParameterTuples) {
+				/// convert all tuples associated with parameters to pairs
+				/// containing column name and associated value, this is
+				/// required for specifying which present rows to remove
+				ses << "BEGIN", now;
+				for (Table::internal_table_t::const_iterator tupleiter = tableiter->second.internal_table.begin();
+						tupleiter != tableiter->second.internal_table.end(); ++tupleiter) {
+					std::stringstream sql_delete;
+					sql_delete << "DELETE FROM " << currenttable.getName()
+						<< " WHERE ";
+					bool AtLeastOneParameter = false;
+					for (Table::Tuple_t::const_iterator paramiter = tupleiter->begin();
+							paramiter != tupleiter->end(); ++paramiter) {
+						if (tupleiter->isParameter(paramiter->first)) {
+							if (AtLeastOneParameter)
+								sql_delete << " AND ";
+							sql_delete << paramiter->first << "=";
+							Table::KeyType_t::const_iterator keytypeiter =
+									KeyTypes.find(paramiter->first);
+							assert( keytypeiter != KeyTypes.end() );
+							switch(keytypeiter->second) {
+							case valchartype:
+								sql_delete << "'" << paramiter->second << "'";
+								break;
+							default:
+								sql_delete << paramiter->second;
+								break;
+							}
+							AtLeastOneParameter = true;
 						}
-						AtLeastOneParameter = true;
+					}
+					sql_delete << ";";
+					// only execute if WHERE statement makes sense
+					if (AtLeastOneParameter) {
+						ses << sql_delete.str(), now;
+						BOOST_LOG_TRIVIAL(trace)
+							<< "SQL: " << sql_delete.str();
 					}
 				}
-				sql_delete << ";";
-				// only execute if WHERE statement makes sense
-				if (AtLeastOneParameter) {
-					ses << sql_delete.str(), now;
-					BOOST_LOG_TRIVIAL(trace)
-						<< "SQL: " << sql_delete.str();
-				}
+				ses << "END", now;
 			}
-			ses << "END", now;
 
 			/// then, convert the information in tuples in vector per type
 			/// each having the same length
