@@ -40,6 +40,20 @@ FunctionalMinimizer<S,T>::FunctionalMinimizer(
 					_1));
 }
 
+struct unique_number
+{
+	unique_number() : number(0)
+	{}
+
+	unsigned int operator()()
+	{ return number++; }
+
+private:
+	unsigned int number;
+};
+
+
+
 template <class S, class T>
 enum Minimization::GradientStatus
 FunctionalMinimizer<S,T>::checkWolfeConditions(
@@ -57,32 +71,38 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 
 	bool conditions_fulfilled = true;
 	assert( !_Wolfe_indexset.empty() );
+
+	double linearinterpolate = _startvalue;
+	double interpolatedgradient = 0.;
+	double realgradient = 0.;
+	Wolfe_indexset_t indices(currentiterate.size());
+	std::generate( indices.begin(), indices.end(), unique_number());
 	for (Wolfe_indexset_t::const_iterator iter = _Wolfe_indexset.begin();
 			(iter != _Wolfe_indexset.end()) && conditions_fulfilled;
 			++iter) {
 		const double componentiterate = currentiterate[*iter];
 		const double componentgradient = currentgradient[*iter];
 
-		// 1. sufficent decrease
-		const double linearinterpolate = _startvalue
-				- constant_positivity * componentiterate *
+		linearinterpolate += -constant_positivity * componentiterate *
 				::pow(_startgradient[*iter],2);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "1. sufficent decrease: " << currentvalue << " <= "
-				<< linearinterpolate;
-		conditions_fulfilled &=
-				(currentvalue <= linearinterpolate);
 
-		// 2. curvature condition
-		const double interpolatedgradient = constant_interpolation
+		interpolatedgradient += constant_interpolation
 				* ::pow(_startgradient[*iter],2);
-		const double realgradient =
-				componentgradient * _startgradient[*iter];
-		BOOST_LOG_TRIVIAL(debug)
-				<< "2. curvature condition: " << realgradient << " <= "
-				<< interpolatedgradient;
-		conditions_fulfilled &=
-				realgradient <= interpolatedgradient;
+		realgradient += componentgradient * _startgradient[*iter];
+	}
+	// 1. sufficent decrease
+	BOOST_LOG_TRIVIAL(debug)
+			<< "1. sufficent decrease: " << currentvalue << " <= "
+			<< linearinterpolate;
+	conditions_fulfilled &=
+			(currentvalue <= linearinterpolate);
+
+	// 2. curvature condition
+	BOOST_LOG_TRIVIAL(debug)
+			<< "2. curvature condition: " << realgradient << " <= "
+			<< interpolatedgradient;
+	conditions_fulfilled &=
+			realgradient <= interpolatedgradient;
 
 //		// 1. positivity of step width component
 //		BOOST_LOG_TRIVIAL(trace)
@@ -104,7 +124,6 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 //			<< "3. Stronger than linear: " << currentvalue
 //			<< " < " << linearinterpolate;
 //		conditions_fulfilled &= (currentvalue < linearinterpolate);
-	}
 	if (conditions_fulfilled)
 		return Minimization::gradient_success;
 	else
