@@ -338,7 +338,7 @@ SequentialSubspaceMinimizer::operator()(
 			}
 			per_iteration_tuple.replace( "inner_iterations", (int)inner_iterations);
 
-			BOOST_LOG_TRIVIAL(trace)
+			BOOST_LOG_TRIVIAL(debug)
 			<< "tmin " << tmin.transpose()
 			<< " found in " << inner_iterations << " iterations.";
 		}

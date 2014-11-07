@@ -131,7 +131,7 @@ SequentialSubspaceMinimizer::IterationState::calculateBregmanAngles(
 			angles[l] = 0.;
 		}
 
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Bregman Angles #" << l << " is " << angles[l];
 	}
 
@@ -163,7 +163,7 @@ SequentialSubspaceMinimizer::IterationState::calculateAngles(
 		} else {
 			angles[l] = 0.;
 		}
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Angles #" << l << " is " << angles[l];
 	}
 

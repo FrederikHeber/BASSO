@@ -95,7 +95,7 @@ Minimizer<gsl_vector>::minimize(
 			iterate << "Current iterate #" << iter << ":";
 			for (unsigned int i=0;i<N;++i)
 				iterate << " " << gsl_vector_get(currentiterate, i);
-			BOOST_LOG_TRIVIAL(debug)
+			BOOST_LOG_TRIVIAL(trace)
 				<< iterate.str();
 		}
 
@@ -110,7 +110,7 @@ Minimizer<gsl_vector>::minimize(
 	}
 	while ((status == Minimization::gradient_continue) && iter < maxiterations);
 
-	BOOST_LOG_TRIVIAL(debug)
+	BOOST_LOG_TRIVIAL(trace)
 		<< "Inner iteration took " << iter << " steps";
 
 	// place solution at tmin
