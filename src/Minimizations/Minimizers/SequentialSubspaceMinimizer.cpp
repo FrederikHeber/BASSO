@@ -85,11 +85,11 @@ static Table::Tuple_t prepareAngleTuple(
 		const unsigned int _dim)
 {
 	Table::Tuple_t angle_tuple;
-	angle_tuple.insert( std::make_pair("p", _val_NormX));
-	angle_tuple.insert( std::make_pair("r", _val_NormY));
-	angle_tuple.insert( std::make_pair("N", (int)_N));
-	angle_tuple.insert( std::make_pair("dim", (int)_dim));
-	angle_tuple.insert( std::make_pair("iteration", (int)0));
+	angle_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
+	angle_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
+	angle_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
+	angle_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
+	angle_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	std::vector<std::string> names;
 	names += "angle","bregman_angle";
 	for (std::vector<std::string>::const_iterator nameiter = names.begin();
@@ -99,7 +99,7 @@ static Table::Tuple_t prepareAngleTuple(
 			componentname << *nameiter << i+1;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Adding " << componentname.str();
-			angle_tuple.insert( std::make_pair(componentname.str(), 0.));
+			angle_tuple.insert( std::make_pair(componentname.str(), 0.), Table::Data);
 		}
 	return angle_tuple;
 }
@@ -177,18 +177,21 @@ SequentialSubspaceMinimizer::operator()(
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
 	if (inexactLinesearch) {
-		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity));
-		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation));
+		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
+		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
+	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
 	if (inexactLinesearch) {
-		overall_tuple.insert( std::make_pair("c1", constant_positivity));
-		overall_tuple.insert( std::make_pair("c2", constant_interpolation));
+		overall_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
+		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
+	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
+	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
 
 	// build angle tuple for search direction angle information
 	Table& angle_table = database.addTable("angles");

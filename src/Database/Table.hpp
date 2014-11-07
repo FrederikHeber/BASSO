@@ -38,6 +38,13 @@ public:
 	 */
 	~Table() {}
 
+	//!> enumeration on what a column represents
+	enum ColumnType {
+		Parameter=0,
+		Data=1,
+		MAX_ColumnType
+	};
+
 	/** The Tuple_t contains the data as a map of key/value pairs.
 	 */
 	struct Tuple_t :
@@ -47,7 +54,37 @@ public:
 	{
 		bool operator<(const Tuple_t &_a) const;
 
+		/** Replaces a present (name, value) pair with a new \a _value.
+		 *
+		 * Asserts that name is already present.
+		 *
+		 * @param _key name of pair (column name)
+		 * @param _value value of pair
+		 */
 		void replace(const std::string &_key, const Database::typevariant_t &_value);
+
+		/** Inserts a new (name, value) pair.
+		 *
+		 * Asserts that name is not already present.
+		 *
+		 * @param _pair pair of (name,value)
+		 * @param _type type of this pair
+		 */
+		void insert(
+				const std::pair<std::string,
+					Database::typevariant_t> &_pair,
+				const enum ColumnType _type);
+
+		bool isParameter(const std::string &_name) const;
+
+	private:
+		void insert(
+				const std::pair<std::string,
+					Database::typevariant_t> &_pair);
+
+	private:
+		typedef std::map<std::string, enum ColumnType> TypeMap_t;
+		TypeMap_t TypeMap;
 	};
 
 	/** Adds a data tuple to the table.

@@ -121,6 +121,8 @@ LandweberMinimizer::operator()(
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension());
+	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", MatrixVectorProduct.getTiming()), Table::Data );
+	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", ScalarVectorProduct.getTiming()), Table::Data );
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
@@ -303,8 +305,8 @@ LandweberMinimizer::operator()(
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
-	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
+	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
 	overall_tuple.replace( "runtime_vector_vector_products", ScalarVectorProduct.getTiming() );
 	overall_table.addTuple(overall_tuple);
 

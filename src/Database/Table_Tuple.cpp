@@ -9,6 +9,7 @@
 
 #include "Table.hpp"
 
+#include <cassert>
 #include <string>
 
 #include "Database.hpp"
@@ -37,8 +38,34 @@ void Table::Tuple_t::replace(
 		const Database::typevariant_t &_value)
 {
 	std::pair<iterator, bool> inserter =
-			insert( std::make_pair(_key, _value) );
-	if (!inserter.second) {
-		inserter.first->second = _value;
+			std::map<std::string,
+					Database::typevariant_t >::insert(
+							std::make_pair(_key, _value) );
+	assert( !inserter.second );
+	inserter.first->second = _value;
+}
+
+void Table::Tuple_t::insert(const std::pair<std::string,
+	Database::typevariant_t> &_pair,
+	const enum ColumnType _type)
+{
+	{
+		std::pair<iterator, bool> inserter =
+				std::map<std::string,
+						Database::typevariant_t >::insert(
+								_pair );
+		assert( inserter.second );
 	}
+	{
+		std::pair<TypeMap_t::iterator, bool> inserter =
+				TypeMap.insert( std::make_pair(_pair.first, _type) );
+		assert( inserter.second );
+	}
+}
+
+bool Table::Tuple_t::isParameter(const std::string &_name) const
+{
+	TypeMap_t::const_iterator iter = TypeMap.find(_name);
+	assert( iter != TypeMap.end() );
+	return (iter->second == Parameter);
 }
