@@ -82,6 +82,14 @@ public:
 		constant_interpolation = _wolfe_constants[1];
 	}
 
+	/** Setter whether (bregman) angles between current and old search
+	 * directions should be calculated or not.
+	 *
+	 * @param _flag true -  calculate angles, false - don't
+	 */
+	void setDoCalculateAngles(const bool _flag)
+	{ DoCalculateAngles = _flag;}
+
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
@@ -360,6 +368,9 @@ protected:
 	double constant_positivity;
 	//!> constant to scale the linear interpolation
 	double constant_interpolation;
+
+	//!> whether to calculate angles between current and old search dirs
+	bool DoCalculateAngles;
 };
 
 inline

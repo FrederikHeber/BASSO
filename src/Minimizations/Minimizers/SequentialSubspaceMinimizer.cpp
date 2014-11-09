@@ -59,7 +59,8 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			ScalarVectorProduct_subspace),
 	inexactLinesearch(false),
 	constant_positivity(1e-6),
-	constant_interpolation(0.6)
+	constant_interpolation(0.6),
+	DoCalculateAngles(false)
 {}
 
 void SequentialSubspaceMinimizer::setN(
@@ -193,10 +194,13 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
 	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
 
-	// build angle tuple for search direction angle information
 	Table& angle_table = database.addTable("angles");
-	Table::Tuple_t angle_tuple = prepareAngleTuple(
-			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+	Table::Tuple_t angle_tuple;
+	if (DoCalculateAngles) {
+		// build angle tuple for search direction angle information
+		angle_tuple = prepareAngleTuple(
+				NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+	}
 
 	/// -# check stopping criterion
 	const double ynorm = NormY(y);
@@ -206,7 +210,8 @@ SequentialSubspaceMinimizer::operator()(
 
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-		angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+		if (DoCalculateAngles)
+			angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << istate.NumberOuterIterations
 				<< " with residual of " << istate.residuum;
@@ -262,29 +267,31 @@ SequentialSubspaceMinimizer::operator()(
 				MatrixVectorProduct(
 						A_t.getMatrixRepresentation(),
 						Jw->getVectorRepresentation());
-		// calculate bregman angles for angles database
-		{
-			const IterationState::angles_t angles =
-					istate.calculateBregmanAngles(
-							DualNormX,
-							projector,
-							newdir);
-			for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
-				std::stringstream componentname;
-				componentname << "bregman_angle" << i+1;
-				angle_tuple.replace( componentname.str(), angles[i]);
+		if (DoCalculateAngles) {
+			// calculate bregman angles for angles database
+			{
+				const IterationState::angles_t angles =
+						istate.calculateBregmanAngles(
+								DualNormX,
+								projector,
+								newdir);
+				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
+					std::stringstream componentname;
+					componentname << "bregman_angle" << i+1;
+					angle_tuple.replace( componentname.str(), angles[i]);
+				}
 			}
-		}
-		// calculate "scalar product" angles for angles database
-		{
-			const IterationState::angles_t angles =
-					istate.calculateAngles(
-							DualNormX,
-							newdir);
-			for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
-				std::stringstream componentname;
-				componentname << "angle" << i+1;
-				angle_tuple.replace( componentname.str(), angles[i]);
+			// calculate "scalar product" angles for angles database
+			{
+				const IterationState::angles_t angles =
+						istate.calculateAngles(
+								DualNormX,
+								newdir);
+				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
+					std::stringstream componentname;
+					componentname << "angle" << i+1;
+					angle_tuple.replace( componentname.str(), angles[i]);
+				}
 			}
 		}
 		// update search space with new direction
@@ -431,11 +438,13 @@ SequentialSubspaceMinimizer::operator()(
 					++istate.NumberOuterIterations) {
 				// update iterations in tuple
 				per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-				angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+				if (DoCalculateAngles)
+					angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 
 				// submit current tuples
 				per_iteration_table.addTuple(per_iteration_tuple);
-				angle_table.addTuple(angle_tuple);
+				if (DoCalculateAngles)
+					angle_table.addTuple(angle_tuple);
 			}
 		}
 
@@ -447,7 +456,8 @@ SequentialSubspaceMinimizer::operator()(
 
 		// submit current tuples
 		per_iteration_table.addTuple(per_iteration_tuple);
-		angle_table.addTuple(angle_tuple);
+		if (DoCalculateAngles)
+			angle_table.addTuple(angle_tuple);
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =

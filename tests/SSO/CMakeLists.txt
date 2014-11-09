@@ -20,6 +20,7 @@ add_test (Basso_SSO_RandomMatrix_Angles
 	${PROJECT_BINARY_DIR}/src/Basso 
 		--algorithm SSO
 		--number-directions 4
+		--calculateAngles 1
 		--verbose 1
 		--normx 1.5
 		--normy 0 

@@ -45,6 +45,7 @@ int main (int argc, char *argv[])
 	desc.add_options()
 			("algorithm", po::value<std::string>(), "set the used iteration algorithm")
 	        ("C", po::value<double>(), "set the value for C (landweber)")
+	        ("calculateAngles", po::value<bool>(), "whether to calculate angles between search directions (SSO)")
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
 			("database-replace", po::value<bool>(), "whether to replace tuples in database file (true) or just add (default=false)")
@@ -149,6 +150,14 @@ int main (int argc, char *argv[])
 			<< "C was set to " << C;
 	} else {
 		C = 0.9;
+	}
+	bool calculateAngles = false;
+	if (vm.count("calculateAngles")) {
+		calculateAngles = vm["calculateAngles"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "CalculateAngles was set to "
+			<< (calculateAngles ? "true" : "false")
+			<< ".";
 	}
 	double delta;
 	boost::filesystem::path comparison_file;
@@ -512,6 +521,9 @@ int main (int argc, char *argv[])
 					BOOST_LOG_TRIVIAL(warning)
 						<< "Wolfe constants set although we do perform an exact line search.";
 			}
+			static_cast<SequentialSubspaceMinimizer*>(
+					minimizer.get())->setDoCalculateAngles(
+							calculateAngles);
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
 			static_cast<SequentialSubspaceMinimizerNoise*>(
