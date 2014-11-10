@@ -281,11 +281,15 @@ LandweberMinimizer::operator()(
 				_problem,
 				returnvalues.m_residual);
 
-		// check iterations count
+		// check iterations count/wall time
+		boost::chrono::high_resolution_clock::time_point timing_intermediate =
+				boost::chrono::high_resolution_clock::now();
 		++returnvalues.NumberOuterIterations;
+		const double current_relative_residuum = fabs(returnvalues.residuum/ynorm);
 		StopCriterion =
-				(returnvalues.NumberOuterIterations >= MaxOuterIterations)
-				|| (fabs(returnvalues.residuum/ynorm) <= TolY);
+				CheckIterations(returnvalues.NumberOuterIterations)
+				|| CheckResiduum(current_relative_residuum)
+				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
 		// print intermediat solution
 		printIntermediateSolution(

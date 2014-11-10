@@ -40,6 +40,7 @@ GeneralMinimizer::GeneralMinimizer(
 		const unsigned int _outputsteps
 		) :
 	Delta(_Delta),
+	MaxWalltime(0.),
 	MaxOuterIterations(_maxiter),
 	MaxInnerIterations(_maxinneriter),
 	TolX(1e-6),
@@ -78,6 +79,31 @@ GeneralMinimizer::GeneralMinimizer(
 			std::make_pair( "gsl", gnuscientificlibrary),
 			std::make_pair( "nlopt", nonlinearoptimization);
 
+}
+
+bool GeneralMinimizer::CheckWalltime(
+		const boost::chrono::duration<double> &_time) const
+{
+	if (MaxWalltime != boost::chrono::duration<double>(0.))
+		return _time >= MaxWalltime;
+	else
+		return false;
+}
+
+bool GeneralMinimizer::CheckIterations(
+		const int _current_outeriterations) const
+{
+	// walltime overrules maxiter
+	if (MaxWalltime == boost::chrono::duration<double>(0.))
+		return _current_outeriterations >= MaxOuterIterations;
+	else
+		return false;
+}
+
+bool GeneralMinimizer::CheckResiduum(
+		const double _residuum) const
+{
+	return _residuum <= TolY;
 }
 
 double GeneralMinimizer::calculateResidual(

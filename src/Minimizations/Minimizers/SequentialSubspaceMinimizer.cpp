@@ -422,12 +422,15 @@ SequentialSubspaceMinimizer::operator()(
 					_problem,
 						istate.m_residual);
 
-		// check iterations count
+		// check iterations count/wall time
+		boost::chrono::high_resolution_clock::time_point timing_intermediate =
+				boost::chrono::high_resolution_clock::now();
 		++istate.NumberOuterIterations;
 		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		StopCriterion =
-				(istate.NumberOuterIterations >= MaxOuterIterations)
-				|| (current_relative_residuum <= TolY);
+				CheckIterations(istate.NumberOuterIterations)
+				|| CheckResiduum(current_relative_residuum)
+				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
 		// check for non-convergence
 		if (current_relative_residuum >= 1e4) {

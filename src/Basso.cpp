@@ -60,6 +60,7 @@ int main (int argc, char *argv[])
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
 			("minimization-library", po::value<std::string>(), "set which minimization library to use (gsl,nlopt)")
 			("max-inner-iterations", po::value<unsigned int>(), "set the maximum amount of inner iterations")
+			("max-walltime", po::value<double>(), "set the maximum time the algorithm may use")
 	        ("normx", po::value<double>(), "set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
 	        ("normy", po::value<double>(), "set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
 	        ("number-directions", po::value<unsigned int>(), "set the number of search directions (SSO)")
@@ -215,6 +216,17 @@ int main (int argc, char *argv[])
 	} else {
 		// set default value
 		maxiter = 50;
+	}
+	double maxwalltime = 0.;
+	if (vm.count("max-walltime")) {
+		maxwalltime = vm["max-walltime"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum Walltime was set to " << maxwalltime;
+	}
+	if ((vm.count("maxiter")) && (vm.count("max-walltime"))) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "You have specified both max-iter and max-walltime.";
+		return 255;
 	}
 	unsigned int maxinneriter = 0;
 	if (vm.count("max-inner-iterations")) {
@@ -497,6 +509,8 @@ int main (int argc, char *argv[])
 			maxinneriter,
 			database,
 			outputsteps);
+	minimizer->MaxWalltime =
+			static_cast<boost::chrono::duration<double> >(maxwalltime);
 	minimizer->setMinLib(minlib);
 
 	// calculate initial dual solution
