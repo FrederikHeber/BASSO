@@ -35,11 +35,13 @@ GeneralMinimizer::GeneralMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const unsigned int _maxinneriter,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
 	Delta(_Delta),
 	MaxOuterIterations(_maxiter),
+	MaxInnerIterations(_maxinneriter),
 	TolX(1e-6),
 	TolY(Delta),
 	TolFun(1e-12),

@@ -59,6 +59,7 @@ int main (int argc, char *argv[])
 	        		"set the forward operator matrix file")
 			("maxiter", po::value<unsigned int>(), "set the maximum amount of iterations")
 			("minimization-library", po::value<std::string>(), "set which minimization library to use (gsl,nlopt)")
+			("max-inner-iterations", po::value<unsigned int>(), "set the maximum amount of inner iterations")
 	        ("normx", po::value<double>(), "set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
 	        ("normy", po::value<double>(), "set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
 	        ("number-directions", po::value<unsigned int>(), "set the number of search directions (SSO)")
@@ -214,6 +215,12 @@ int main (int argc, char *argv[])
 	} else {
 		// set default value
 		maxiter = 50;
+	}
+	unsigned int maxinneriter = 0;
+	if (vm.count("max-inner-iterations")) {
+		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum number of inner iterations was set to " << maxinneriter;
 	}
 	std::string minlib = "gsl";
 	if (vm.count("minimization-library")) {
@@ -469,6 +476,10 @@ int main (int argc, char *argv[])
 	if (x0->getSpace()->getDimension() < 10)
 		std::cout << "Starting at x0 = " << x0 << std::endl;
 
+	// set good maximum of inner iterations
+	if (maxinneriter == 0)
+		maxinneriter = N*100;
+
 	// call minimizer
 	MinimizerFactory factory;
 	Database database;
@@ -483,6 +494,7 @@ int main (int argc, char *argv[])
 			inverseproblem,
 			delta,
 			maxiter,
+			maxinneriter,
 			database,
 			outputsteps);
 	minimizer->setMinLib(minlib);

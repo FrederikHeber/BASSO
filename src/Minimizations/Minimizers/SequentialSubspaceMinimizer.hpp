@@ -30,6 +30,7 @@ public:
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
+			const unsigned int _maxinneriter,
 			Database &_database,
 			const unsigned int _outputsteps
 			);
@@ -63,12 +64,14 @@ public:
 
 	/** Setter for whether an inexact or exact line search should be performed.
 	 *
-	 * Inexact line search will stop the iteration as soon as the Wolfe
+	 * For 1: Inexact line search will stop the iteration as soon as the Wolfe
 	 * conditions are fulfilled.
+	 * For 2: Inexact line search will stop the iteration as soon as
+	 * a fixed count of iterations have been performed
 	 *
-	 * @param _inexactLinesearch true - do inexact line search, false - do not
+	 * @param _inexactLinesearch: 0 - exact, 1 - inexact, 2 - fixed
 	 */
-	void setInexactLinesearch(const bool _inexactLinesearch)
+	void setInexactLinesearch(const int _inexactLinesearch)
 	{ inexactLinesearch = _inexactLinesearch; }
 
 	/** Setter for the constants in the three Wolfe conditions for the
@@ -362,7 +365,7 @@ protected:
 	VectorProjection projector;
 
 	//!> bool whether to do an inexact line search with Wolfe conditions
-	bool inexactLinesearch;
+	int inexactLinesearch;
 
 	//!> constant above which the step width must always lie
 	double constant_positivity;

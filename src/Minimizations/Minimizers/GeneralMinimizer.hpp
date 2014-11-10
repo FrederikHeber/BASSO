@@ -31,6 +31,7 @@ public:
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
+			const unsigned int _maxinneriter,
 			Database &_database,
 			const unsigned int _outputsteps=0
 			);
@@ -114,6 +115,8 @@ public:
 	const double Delta;
 	//!> maximum number of iterations in outer loop
 	const int MaxOuterIterations;
+	//!> maximum number of iterations in inner loop
+	const int MaxInnerIterations;
 	//!> tolerance for objects in space X
 	const double TolX;
 	//!> tolerance for objects in space Y

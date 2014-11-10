@@ -32,6 +32,7 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const unsigned int _maxinneriter,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -39,6 +40,7 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		_inverseproblem,
 		_Delta,
 		_maxiter,
+		_maxinneriter,
 		_database,
 		_outputsteps
 		),

@@ -38,6 +38,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
 		const double _Delta,
 		const unsigned int _maxiter,
+		const unsigned int _maxinneriter,
 		Database &_database,
 		const unsigned int _outputsteps
 		) :
@@ -45,6 +46,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_inverseproblem,
 			_Delta,
 			_maxiter,
+			_maxinneriter,
 			_database,
 			_outputsteps
 			),
@@ -322,11 +324,15 @@ SequentialSubspaceMinimizer::operator()(
 			Minimizer<gsl_vector> minimizer_gsl(N);
 			Minimizer<NLopt_vector> minimizer_nlopt(N);
 			Wolfe_indexset_t Wolfe_indexset(1, istate.getIndex());
-			if (MinLib == nonlinearoptimization) {
+			if (MinLib == gnuscientificlibrary) {
+				minimizer_gsl.setMaxIterations(MaxInnerIterations);
+			} else if (MinLib == nonlinearoptimization) {
 				// hand index set to minimizer
 				minimizer_nlopt.setConstantPositivity(constant_positivity);
 				minimizer_nlopt.setPositivityBoundIndices(Wolfe_indexset);
-			}
+
+				minimizer_nlopt.setMaxIterations(MaxInnerIterations);
+			} 
 
 			unsigned int inner_iterations = 0;
 			if (inexactLinesearch) {

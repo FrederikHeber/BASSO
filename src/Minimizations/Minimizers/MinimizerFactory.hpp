@@ -46,6 +46,7 @@ public:
 	 * @param _inverseproblem inverse problem to solve
 	 * @param _Delta noise level
 	 * @param _maxiter maximum number of iterations
+	 * @param _maxinneriter maximum number of inner iterations
 	 * @param _database database to store iteration information to
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @return wrapped instance of desired \a _type
@@ -55,6 +56,7 @@ public:
 			const InverseProblem_ptr_t &_inverseproblem,
 			const double _Delta,
 			const unsigned int _maxiter,
+			const unsigned int _maxinneriter,
 			Database &_database,
 			const unsigned int _outputsteps=0
 			);
