@@ -30,6 +30,9 @@
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Norms/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 using namespace boost::assign;
@@ -210,6 +213,10 @@ SequentialSubspaceMinimizer::operator()(
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
 	StopCriterion = (initial_relative_residuum <= TolY);
 
+	// create L2 norm for measuring error
+	const Norm_ptr_t l2norm = NormFactory::createLpInstance(
+			_problem->A->getSourceSpace(), 2.);
+
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		if (DoCalculateAngles)
@@ -235,7 +242,10 @@ SequentialSubspaceMinimizer::operator()(
 			per_iteration_tuple.replace( "bregman_distance", new_distance);
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
-			const double new_error = NormX(istate.m_solution-_truesolution);
+			const double new_error =
+					static_cast<const RegularizedL1Norm *>(&NormX) == NULL ?
+					NormX(istate.m_solution-_truesolution) :
+					(*l2norm)(istate.m_solution-_truesolution);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << istate.NumberOuterIterations << ": "
 				<< "||x_n-x|| is " << new_error;
