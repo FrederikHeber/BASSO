@@ -76,11 +76,12 @@ SequentialSubspaceMinimizer::IterationState::getDimension() const
 
 void
 SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
-		const SpaceElement_ptr_t &_dualiterate,
 		const SpaceElement_ptr_t &_newdir,
-		const double _alpha)
+		const double _alpha,
+		const SpaceElement_ptr_t &_dual_iterate,
+		const SpaceElement_ptr_t &_iterate)
 {
-	searchspace->update(_dualiterate, _newdir, _alpha);
+	searchspace->update(_newdir, _alpha, _dual_iterate, _iterate);
 }
 
 const Eigen::MatrixXd &

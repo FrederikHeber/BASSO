@@ -30,6 +30,7 @@ add_library (Minimizations
 	Minimizers/SequentialSubspaceMinimizer_IterationState.cpp
 	Minimizers/SequentialSubspaceMinimizerNoise.cpp
 	Minimizers/Searchspace/LastNSearchDirections.cpp
+	Minimizers/Searchspace/NemirovskyDirection.cpp
 	Minimizers/Searchspace/Searchspace.cpp
 	Minimizers/StepWidths/ConstantRegularizedL1NormStepWidth.cpp
 	Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.cpp
@@ -82,6 +83,7 @@ install (FILES Minimizers/MinimizerFactory.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/SequentialSubspaceMinimizerNoise.hpp DESTINATION include)
 install (FILES Minimizers/Searchspace/LastNSearchDirections.hpp DESTINATION include)
+install (FILES Minimizers/Searchspace/NemirovskyDirection.hpp DESTINATION include)
 install (FILES Minimizers/Searchspace/Searchspace.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/ConstantRegularizedL1NormStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/DetermineStepWidth.hpp DESTINATION include)

@@ -156,14 +156,17 @@ protected:
 
 		/** Method for updating the search space with a new direction.
 		 *
-		 * @param _dualiterate dual iterate
 		 * @param _newdir new search direction
 		 * @param _alpha new offset
+		 * @param _dual_iterate current dual iterate
+		 * @param _iterate current iterate
 		 */
 		void updateSearchSpace(
-				const SpaceElement_ptr_t &_dualiterate,
 				const SpaceElement_ptr_t &_newdir,
-				const double _alpha);
+				const double _alpha,
+				const SpaceElement_ptr_t &_dual_iterate,
+				const SpaceElement_ptr_t &_iterate
+				);
 
 		/** Const ref getter for representation of search space.
 		 *

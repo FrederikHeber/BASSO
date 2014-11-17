@@ -304,7 +304,19 @@ SequentialSubspaceMinimizer::operator()(
 			}
 		}
 		// update search space with new direction
-		istate.updateSearchSpace(dual_solution, newdir, alpha);
+		if (_truesolution->isZero()) {
+			istate.updateSearchSpace(
+					newdir,
+					alpha,
+					dual_solution,
+					istate.m_solution);
+		} else {
+			istate.updateSearchSpace(
+					newdir,
+					alpha,
+					dual_solution,
+					_truesolution);
+		}
 		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
 		BOOST_LOG_TRIVIAL(trace)
 			<< "updated_index is " << istate.searchspace->getIndex();

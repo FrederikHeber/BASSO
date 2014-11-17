@@ -49,11 +49,12 @@ LastNSearchDirections::LastNSearchDirections(
 {}
 
 void LastNSearchDirections::update(
-		const SpaceElement_ptr_t &_iterate,
 		const SpaceElement_ptr_t &_newdir,
-		const double _alpha)
+		const double _alpha,
+		const SpaceElement_ptr_t &,
+		const SpaceElement_ptr_t &
+		)
 {
-	assert( _iterate->getSpace() == SearchDirectionSpace_ptr );
 	assert( _newdir->getSpace() == SearchDirectionSpace_ptr );
 
 	switch (updateIndexType) {

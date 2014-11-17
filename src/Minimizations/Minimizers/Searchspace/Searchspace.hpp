@@ -74,14 +74,17 @@ public:
 
 	/** This function performs the update of the search space.
 	 *
-	 * @param _iterate current dual iterate
 	 * @param _newdir current search direction
 	 * @param _alpha current alpha to this \a _newdir
+	 * @param _dual_iterate current dual iterate
+	 * @param _iterate current iterate
 	 */
 	virtual void update(
-			const SpaceElement_ptr_t &_iterate,
 			const SpaceElement_ptr_t &_newdir,
-			const double _alpha) = 0;
+			const double _alpha,
+			const SpaceElement_ptr_t &_dual_iterate,
+			const SpaceElement_ptr_t &_iterate
+			) = 0;
 
 	//!> typedef for a vector of angles
 	typedef std::vector<double> angles_t;

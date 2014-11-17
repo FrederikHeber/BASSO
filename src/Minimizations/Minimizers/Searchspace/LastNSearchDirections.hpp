@@ -44,14 +44,17 @@ public:
 
 	/** This function performs the actual update of the search space.
 	 *
-	 * @param _iterate current dual iterate
 	 * @param _newdir current search direction
 	 * @param _alpha current alpha to this \a _newdir
+	 * @param _dual_iterate not used
+	 * @param _iterate not used
 	 */
 	void update(
-			const SpaceElement_ptr_t &_iterate,
 			const SpaceElement_ptr_t &_newdir,
-			const double _alpha);
+			const double _alpha,
+			const SpaceElement_ptr_t &,
+			const SpaceElement_ptr_t &
+			);
 
 	/** Const ref getter for \a index.
 	 *
