@@ -24,6 +24,7 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
@@ -334,14 +335,14 @@ int main (int argc, char *argv[])
 	} else {
 		tau = 1.1;
 	}
-	enum SequentialSubspaceMinimizer::UpdateAlgorithmType updatetype =
-			SequentialSubspaceMinimizer::RoundRobin;
+	enum LastNSearchDirections::UpdateAlgorithmType updatetype =
+			LastNSearchDirections::RoundRobin;
 	if (vm.count("update-algorithm")) {
 		const unsigned int temptype = vm["update-algorithm"].as<unsigned int>();
-		if ((temptype >= SequentialSubspaceMinimizer::RoundRobin)
-				&& (temptype < SequentialSubspaceMinimizer::MAX_UpdateAlgorithmType))
+		if ((temptype >= LastNSearchDirections::RoundRobin)
+				&& (temptype < LastNSearchDirections::MAX_UpdateAlgorithmType))
 			updatetype =
-					(enum SequentialSubspaceMinimizer::UpdateAlgorithmType)temptype;
+					(enum LastNSearchDirections::UpdateAlgorithmType)temptype;
 		else {
 			BOOST_LOG_TRIVIAL(error)
 					<< "Illegal update type set.";
@@ -555,7 +556,6 @@ int main (int argc, char *argv[])
 			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(N);
 			static_cast<SequentialSubspaceMinimizer*>(
 					minimizer.get())->setupdateIndexAlgorithm(
-							inverseproblem,
 							updatetype);
 			static_cast<SequentialSubspaceMinimizer*>(
 					minimizer.get())->setEnforceRandomMapping(

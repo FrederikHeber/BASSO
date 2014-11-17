@@ -102,7 +102,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 		const double residuum = calculateResidual(
 			_problem,
 			residual);
-		istate.set(_startvalue, residual, residuum, N);
+		istate.set(
+				_startvalue,
+				residual,
+				residuum,
+				N,
+				ScalarVectorProduct_subspace);
 	}
 
 	// calculate some values prior to loop

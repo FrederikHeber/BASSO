@@ -25,7 +25,6 @@
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
-#include "Minimizations/Functions/VectorProjection.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -56,12 +55,6 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	N(2),
 	MatrixVectorProduct_subspace(MatrixVectorProduct),
 	ScalarVectorProduct_subspace(ScalarVectorProduct),
-	projector(*_inverseproblem->x->getSpace()->getDualSpace()->getNorm(),
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()
-					),
-			_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower(),
-			ScalarVectorProduct_subspace),
 	inexactLinesearch(false),
 	constant_positivity(1e-6),
 	constant_interpolation(0.6),
@@ -144,7 +137,12 @@ SequentialSubspaceMinimizer::operator()(
 		const double residuum = calculateResidual(
 			_problem,
 			residual);
-		istate.set(_startvalue, residual, residuum, N);
+		istate.set(
+				_startvalue,
+				residual,
+				residuum,
+				N,
+				ScalarVectorProduct_subspace);
 	}
 
 	/// -# calculate some values prior to loop
@@ -285,7 +283,6 @@ SequentialSubspaceMinimizer::operator()(
 				const IterationState::angles_t angles =
 						istate.calculateBregmanAngles(
 								DualNormX,
-								projector,
 								newdir);
 				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
 					std::stringstream componentname;
@@ -307,10 +304,10 @@ SequentialSubspaceMinimizer::operator()(
 			}
 		}
 		// update search space with new direction
-		istate.updateSearchSpace(newdir, alpha);
-		per_iteration_tuple.replace( "updated_index", (int)istate.getIndex());
+		istate.updateSearchSpace(dual_solution, newdir, alpha);
+		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
 		BOOST_LOG_TRIVIAL(trace)
-			<< "updated_index is " << istate.getIndex();
+			<< "updated_index is " << istate.searchspace->getIndex();
 
 		Eigen::VectorXd tmin(N);
 		tmin.setZero();
@@ -333,7 +330,9 @@ SequentialSubspaceMinimizer::operator()(
 			// decides during runtime which we need
 			Minimizer<gsl_vector> minimizer_gsl(N);
 			Minimizer<NLopt_vector> minimizer_nlopt(N);
-			Wolfe_indexset_t Wolfe_indexset(1, istate.getIndex());
+			const unsigned int current_index =
+					istate.searchspace->getIndex();
+			Wolfe_indexset_t Wolfe_indexset(1, current_index);
 			if (MinLib == gnuscientificlibrary) {
 				minimizer_gsl.setMaxIterations(MaxInnerIterations);
 			} else if (MinLib == nonlinearoptimization) {
@@ -372,7 +371,7 @@ SequentialSubspaceMinimizer::operator()(
 					inner_iterations = fmin_nlopt(
 							N,
 							TolFun,
-							Wolfe_indexset_t(1, istate.getIndex()),
+							Wolfe_indexset,
 							tmin
 							);
 					break;
@@ -467,7 +466,7 @@ SequentialSubspaceMinimizer::operator()(
 			}
 		}
 
-		// print intermediat solution
+		// print intermediate solution
 		printIntermediateSolution(
 				 istate.m_solution->getVectorRepresentation(),
 				 A.getMatrixRepresentation(),
@@ -500,43 +499,15 @@ SequentialSubspaceMinimizer::operator()(
 
 void
 SequentialSubspaceMinimizer::setupdateIndexAlgorithm(
-		const InverseProblem_ptr_t &_problem,
-		enum UpdateAlgorithmType _type)
+		enum LastNSearchDirections::UpdateAlgorithmType _type)
 {
-	const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
-	const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
-	const Norm & DualNormX = *DualSpaceX.getNorm();
-	switch (_type) {
-	case RoundRobin:
-		istate.updateIndex = &IterationState::advanceIndex;
-		break;
-	case MostParallel:
-		istate.updateIndex = boost::bind(
-				&IterationState::updateIndexToMostParallel,
-				_1,
-				boost::cref(DualNormX),
-				boost::cref(projector),
-				_2);
-		break;
-	case MostOrthogonal:
-		istate.updateIndex = boost::bind(
-				&IterationState::updateIndexToMostOrthogonal,
-				_1,
-				boost::cref(DualNormX),
-				boost::cref(projector),
-				_2);
-		break;
-	default:
-		BOOST_LOG_TRIVIAL(error)
-			<< "Unknown updateIndex algorithm.";
-		assert(0);
-	}
+	LastNSearchDirections::updateIndexType = _type;
 }
 
 void
 SequentialSubspaceMinimizer::setEnforceRandomMapping(
 		const bool _enforceRandomMapping)
 {
-	istate.enforceRandomMapping = _enforceRandomMapping;
+	LastNSearchDirections::enforceRandomMapping = _enforceRandomMapping;
 }
 
