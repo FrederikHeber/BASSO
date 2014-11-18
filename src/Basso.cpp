@@ -565,7 +565,9 @@ int main (int argc, char *argv[])
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
 			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 
+	GeneralMinimizer::ReturnValues result;
 	try {
+		// create instance with some specifics
 		switch(type) {
 		case MinimizerFactory::landweber:
 			static_cast<LandweberMinimizer*>(
@@ -605,19 +607,20 @@ int main (int argc, char *argv[])
 			return 255;
 			break;
 		}
+
+		// and minimize
+		result = (*minimizer)(
+						inverseproblem,
+						x0,
+						dualx0,
+						truesolution);
+		minimizer->resetState();
 	} catch (MinimizationIllegalValue_exception &e) {
 		std::cerr << "Illegal value for "
 				<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
 				<< std::endl;
 		return 255;
 	}
-	GeneralMinimizer::ReturnValues result =
-			(*minimizer)(
-					inverseproblem,
-					x0,
-					dualx0,
-					truesolution);
-	minimizer->resetState();
 
 	// give result
 	{
