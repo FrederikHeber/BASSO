@@ -25,6 +25,7 @@
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
@@ -72,11 +73,12 @@ int main (int argc, char *argv[])
 	        ("regularization-parameter", po::value<double>(), "set the regularization parameter for the L1 norm (if normx is 1) (adaptive if set to zero)")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
+			("searchspace", po::value<std::string>(), "set the type of search directions used (SSO")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to")
+			("stepwidth-algorithm", po::value<unsigned int>(), "set which step width algorithm to use (Landweber)")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
 	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
-			("stepwidth-algorithm", po::value<unsigned int>(), "set which step width algorithm to use (Landweber)")
 	        ("verbose", po::value<unsigned int>(), "set the amount of verbosity")
 			("wolfe-constants", po::value< std::vector<double> >()->multitoken(), "set the two wolfe conditions for positivity and stronger than linear (SSO, inexact line search)")
 	        ;
@@ -322,6 +324,20 @@ int main (int argc, char *argv[])
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Filename of vector was set to " << rhs_file;
+	}
+	std::string searchspace_type =
+			SearchspaceFactory::getName(SearchspaceFactory::LastNDirections);
+	if (vm.count("searchspace")) {
+		searchspace_type = vm["searchspace"].as<std::string>();
+		if (SearchspaceFactory::isValidName(searchspace_type)) {
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Setting search space type to " << searchspace_type;
+		} else {
+			BOOST_LOG_TRIVIAL(error)
+						<< "Search space type " << searchspace_type
+						<< " is unknown to factory.";
+			return 255;
+		}
 	}
 	double tau;
 	if (vm.count("tau")) {
