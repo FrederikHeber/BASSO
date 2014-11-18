@@ -14,6 +14,7 @@
 
 #include "Log/Logging.hpp"
 
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/Searchspace/NemirovskyDirection.hpp"
 
@@ -47,6 +48,12 @@ Searchspace::ptr_t SearchspaceFactory::create(
 				);
 		break;
 	case Nemirovsky:
+		if (_N != 2) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "NemirovskyDirection always uses two search directions.";
+			throw MinimizationIllegalValue_exception()
+					<< MinimizationIllegalValue_name("N");
+		}
 		returninstance.reset(new NemirovskyDirection(
 				_SearchDirectionSpace_ptr,
 				_MatrixVectorProduct_subspace,

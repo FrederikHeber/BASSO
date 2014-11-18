@@ -156,3 +156,21 @@ add_test (Basso_SSO_RandomMatrix_NemirovskyDirections
 set_tests_properties (Basso_SSO_RandomMatrix_NemirovskyDirections
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 24 with relative residual of 0.0095.*")
 
+# test 9: Nemirovsky with not two search directions
+add_test (Basso_SSO_RandomMatrix_NemirovskyDirections_fail
+	${PROJECT_BINARY_DIR}/src/Basso
+		--algorithm SSO
+		--number-directions 4
+		--searchspace "Nemirovsky"
+		--update-algorithm 0
+		--normx 2
+		--normy 0
+		--powerx 2
+		--powery 2
+		--delta 0.01
+		--maxiter 100
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
+set_tests_properties (Basso_SSO_RandomMatrix_NemirovskyDirections_fail
+	PROPERTIES WILL_FAIL "true")
+
