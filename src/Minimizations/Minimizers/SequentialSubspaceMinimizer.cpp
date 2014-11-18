@@ -142,6 +142,7 @@ SequentialSubspaceMinimizer::operator()(
 				residual,
 				residuum,
 				N,
+				MatrixVectorProduct_subspace,
 				ScalarVectorProduct_subspace);
 	}
 

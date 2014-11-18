@@ -12,6 +12,8 @@
 
 #include <boost/bimap.hpp>
 
+#include "Minimizations/Minimizers/Searchspace/Searchspace.hpp"
+
 /** This class produces the desired search space type.
  *
  */
@@ -25,6 +27,35 @@ public:
 		Nemirovsky,
 		MAX_SearchspaceType
 	};
+
+	/** Creates a Searchspace object of the current \a InstanceType.
+	 *
+	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
+	 * @param _N number of search directions
+	 * @param _MatrixVectorProduct_subspace counts for matrix-vector
+	 * @param _ScalarVectorProduct_subspace counts for vector-vector
+	 * @return shared_ptr containing created instance
+	 */
+	static Searchspace::ptr_t create(
+			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
+			const unsigned int _N,
+			const OperationCounter<
+					const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+					const Eigen::MatrixBase<Eigen::MatrixXd>&,
+					const Eigen::MatrixBase<Eigen::VectorXd>&
+					> &_MatrixVectorProduct_subspace,
+			const OperationCounter<
+				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				> &_ScalarVectorProduct_subspace
+			);
+
+	/** Setter for the desired type to produce.
+	 *
+	 * @param _type type to produce
+	 */
+	static void setCurrentType(const enum SearchspaceType _type);
 
 	//!> typedef for the map containing name and type associations
 	typedef boost::bimap<enum SearchspaceType, std::string> NameTypeMap_t;
@@ -43,6 +74,9 @@ private:
 private:
 	//!> map containing name and type associations
 	static NameTypeMap_t NameTypeMap;
+
+	//!> current type to create
+	static enum SearchspaceType InstanceType;
 };
 
 

@@ -330,6 +330,9 @@ int main (int argc, char *argv[])
 	if (vm.count("searchspace")) {
 		searchspace_type = vm["searchspace"].as<std::string>();
 		if (SearchspaceFactory::isValidName(searchspace_type)) {
+			SearchspaceFactory::setCurrentType(
+					SearchspaceFactory::getType(searchspace_type)
+			);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Setting search space type to " << searchspace_type;
 		} else {

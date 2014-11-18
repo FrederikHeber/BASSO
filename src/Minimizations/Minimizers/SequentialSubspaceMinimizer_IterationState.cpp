@@ -21,7 +21,7 @@
 
 #include "Minimizations/types.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 SequentialSubspaceMinimizer::IterationState::IterationState() :
@@ -33,6 +33,11 @@ void SequentialSubspaceMinimizer::IterationState::set(
 		const SpaceElement_ptr_t &_residual,
 		const double _residuum,
 		const unsigned int _N,
+		const OperationCounter<
+			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+			const Eigen::MatrixBase<Eigen::MatrixXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &_MatrixVectorProduct_subspace,
 		const OperationCounter<
 			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
 			const Eigen::MatrixBase<Eigen::VectorXd>&,
@@ -49,12 +54,12 @@ void SequentialSubspaceMinimizer::IterationState::set(
 	residuum = _residuum;
 	m_residual = _residual->getSpace()->createElement();
 	*m_residual = _residual;
-	// use last N search directions
-	searchspace.reset(
-			new LastNSearchDirections(
+	// use pre-specified type
+	searchspace = SearchspaceFactory::create(
 					_x0->getSpace()->getDualSpace(),
 					_N,
-					_ScalarVectorProduct_subspace));
+					_MatrixVectorProduct_subspace,
+					_ScalarVectorProduct_subspace);
 	isInitialized = true;
 }
 

@@ -132,6 +132,7 @@ protected:
 		 * @param _residual initial residual vector
 		 * @param _residuum initial residuum
 		 * @param _N number of search directions
+		 * @param _MatrixVectorProduct_subspace counts for matrix-vector
 		 * @param _ScalarVectorProduct_subspace counts for vector-vector
 		 * products in the subspace (i.e. search space)
 		 */
@@ -140,6 +141,11 @@ protected:
 				const SpaceElement_ptr_t &_residual,
 				const double _residuum,
 				const unsigned int _N,
+				const OperationCounter<
+						const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+						const Eigen::MatrixBase<Eigen::MatrixXd>&,
+						const Eigen::MatrixBase<Eigen::VectorXd>&
+						> &_MatrixVectorProduct_subspace,
 				const OperationCounter<
 					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
 					const Eigen::MatrixBase<Eigen::VectorXd>&,

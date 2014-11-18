@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
 #include <vector>
 
@@ -26,6 +27,9 @@ class Norm;
 class Searchspace
 {
 public:
+	//!> typedef for a shared pointer containing such an instance
+	typedef boost::shared_ptr<Searchspace> ptr_t;
+
 	/** Constructor for class Searchspace, initializes matrix and
 	 * vector representations.
 	 *

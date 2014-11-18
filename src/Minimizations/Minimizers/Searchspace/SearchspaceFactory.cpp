@@ -12,8 +12,61 @@
 
 #include <cassert>
 
+#include "Log/Logging.hpp"
+
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Minimizations/Minimizers/Searchspace/NemirovskyDirection.hpp"
+
 // static entities
 SearchspaceFactory::NameTypeMap_t SearchspaceFactory::NameTypeMap;
+enum SearchspaceFactory::SearchspaceType
+SearchspaceFactory::InstanceType = SearchspaceFactory::LastNDirections;
+
+Searchspace::ptr_t SearchspaceFactory::create(
+		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
+		const unsigned int _N,
+		const OperationCounter<
+			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+			const Eigen::MatrixBase<Eigen::MatrixXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &_MatrixVectorProduct_subspace,
+		const OperationCounter<
+			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+			const Eigen::MatrixBase<Eigen::VectorXd>&,
+			const Eigen::MatrixBase<Eigen::VectorXd>&
+			> &_ScalarVectorProduct_subspace
+		)
+{
+	Searchspace::ptr_t returninstance;
+	switch (InstanceType) {
+	case LastNDirections:
+		returninstance.reset(new LastNSearchDirections(
+				_SearchDirectionSpace_ptr,
+				_N,
+				_ScalarVectorProduct_subspace)
+				);
+		break;
+	case Nemirovsky:
+		returninstance.reset(new NemirovskyDirection(
+				_SearchDirectionSpace_ptr,
+				_MatrixVectorProduct_subspace,
+				_ScalarVectorProduct_subspace)
+				);
+		break;
+	default:
+		BOOST_LOG_TRIVIAL(error)
+			<< "Current InstanceType is unknown.";
+		assert(0);
+	}
+	return returninstance;
+}
+
+void
+SearchspaceFactory::setCurrentType(const enum SearchspaceType _type)
+{
+	if (isValidType(_type))
+		InstanceType = _type;
+}
 
 const std::string
 SearchspaceFactory::getName(const enum SearchspaceType _type)
