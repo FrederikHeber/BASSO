@@ -138,3 +138,21 @@ add_test (Basso_SSO_RandomMatrix_InexactLinesearch
 set_tests_properties (Basso_SSO_RandomMatrix_InexactLinesearch
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 33 with relative residual of 0.008.*")
 
+# test 8: 
+add_test (Basso_SSO_RandomMatrix_NemirovskyDirections
+	${PROJECT_BINARY_DIR}/src/Basso
+		--algorithm SSO
+		--number-directions 2
+		--searchspace "Nemirovsky"
+		--update-algorithm 0
+		--normx 2
+		--normy 0
+		--powerx 2
+		--powery 2
+		--delta 0.01
+		--maxiter 100
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
+set_tests_properties (Basso_SSO_RandomMatrix_NemirovskyDirections
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 24 with relative residual of 0.0095.*")
+
