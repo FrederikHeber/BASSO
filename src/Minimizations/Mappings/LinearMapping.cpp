@@ -27,7 +27,16 @@ LinearMapping::LinearMapping(
 	matrix(Eigen::MatrixXd::Zero(
 			_SourceSpaceRef->getDimension(),
 			_TargetSpaceRef->getDimension())
-	)
+	),
+	matrix_vector_fctor(
+			boost::bind(
+					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
+						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
+								_1, _2
+			)
+	),
+	MatrixVectorProduct(matrix_vector_fctor)
 {}
 
 LinearMapping::LinearMapping(
@@ -36,7 +45,16 @@ LinearMapping::LinearMapping(
 		const Eigen::MatrixXd &_matrix
 		) :
 	Mapping(_SourceSpaceRef,_TargetSpaceRef),
-	matrix(_matrix)
+	matrix(_matrix),
+	matrix_vector_fctor(
+			boost::bind(
+					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
+						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
+								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
+								_1, _2
+			)
+	),
+	MatrixVectorProduct(matrix_vector_fctor)
 {
 	assert( matrix.outerSize() == SourceSpaceRef->getDimension() );
 	assert( matrix.innerSize() == TargetSpaceRef->getDimension() );
@@ -50,7 +68,9 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
 					TargetSpaceRef,
-					matrix * RepresentationAdvocate::get(_sourceelement));
+					MatrixVectorProduct(
+						matrix,
+						 RepresentationAdvocate::get(_sourceelement)));
 	return targetelement;
 }
 
@@ -60,7 +80,9 @@ SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) 
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
 					TargetSpaceRef,
-					matrix * RepresentationAdvocate::get(_element));
+					MatrixVectorProduct(
+						matrix,
+						RepresentationAdvocate::get(_element)));
 	return targetelement;
 }
 

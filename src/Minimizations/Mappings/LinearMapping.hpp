@@ -12,6 +12,8 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixIO/OperationCounter.hpp"
+
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -84,6 +86,18 @@ public:
 private:
 	//!> matrix representation of this linear mapping
 	Eigen::MatrixXd matrix;
+
+	boost::function<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
+				const Eigen::MatrixBase<Eigen::MatrixXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&
+				)> matrix_vector_fctor;
+
+	const OperationCounter<
+		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
+		const Eigen::MatrixBase<Eigen::MatrixXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> MatrixVectorProduct;
 };
 
 
