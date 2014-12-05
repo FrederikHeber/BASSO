@@ -494,7 +494,8 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", istate.residuum );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
-	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
+	overall_tuple.replace( "matrix_vector_products",
+			(int)(A.MatrixVectorProduct.getCount()+A_t.MatrixVectorProduct.getCount()) );
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
 	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
 	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );

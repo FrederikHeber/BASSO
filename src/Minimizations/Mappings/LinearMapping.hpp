@@ -87,12 +87,15 @@ private:
 	//!> matrix representation of this linear mapping
 	Eigen::MatrixXd matrix;
 
+	//!> internally bound function to count matrix vector products
 	boost::function<
 		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
 				const Eigen::MatrixBase<Eigen::MatrixXd>&,
 				const Eigen::MatrixBase<Eigen::VectorXd>&
 				)> matrix_vector_fctor;
 
+public:
+	//!> matrix vector product counter
 	const OperationCounter<
 		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
 		const Eigen::MatrixBase<Eigen::MatrixXd>&,
