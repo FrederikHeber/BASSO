@@ -134,7 +134,7 @@ SequentialSubspaceMinimizer::operator()(
 
 	/// -# initialize return structure
 	if (!istate.getisInitialized()) {
-		SpaceElement_ptr_t residual = A.getTargetSpace()->createElement();
+		SpaceElement_ptr_t residual = SpaceY.createElement();
 		const double residuum = calculateResidual(
 			_problem,
 			residual);
@@ -178,21 +178,23 @@ SequentialSubspaceMinimizer::operator()(
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
-			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
 	if (inexactLinesearch) {
 		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
 		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
+	per_iteration_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
-			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
 	if (inexactLinesearch) {
 		overall_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
 		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
+	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
 	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
 
@@ -202,6 +204,8 @@ SequentialSubspaceMinimizer::operator()(
 		// build angle tuple for search direction angle information
 		angle_tuple = prepareAngleTuple(
 				NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+		angle_tuple.insert( std::make_pair("max_iterations", MaxOuterIterations), Table::Parameter);
+		angle_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	}
 
 	/// -# check stopping criterion

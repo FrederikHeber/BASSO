@@ -119,12 +119,12 @@ LandweberMinimizer::operator()(
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
-			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension());
+			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension(), MaxOuterIterations);
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
-			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension());
+			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension(), MaxOuterIterations);
 	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", MatrixVectorProduct.getTiming()), Table::Data );
 	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", ScalarVectorProduct.getTiming()), Table::Data );
 

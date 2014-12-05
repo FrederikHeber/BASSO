@@ -180,13 +180,15 @@ protected:
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,
-			const unsigned int _dim);
+			const unsigned int _dim,
+			const int _MaxOuterIterations);
 
 	static Table::Tuple_t prepareOverallTuple(
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,
-			const unsigned int _dim);
+			const unsigned int _dim,
+			const int _MaxOuterIterations);
 
 	boost::function<
 		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (

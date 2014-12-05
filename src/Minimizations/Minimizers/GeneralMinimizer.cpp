@@ -180,13 +180,15 @@ Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
-		const unsigned int _dim)
+		const unsigned int _dim,
+		const int _MaxOuterIterations)
 {
 	Table::Tuple_t per_iteration_tuple;
 	per_iteration_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
+	per_iteration_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
@@ -200,13 +202,15 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
-		const unsigned int _dim)
+		const unsigned int _dim,
+		const int _MaxOuterIterations)
 {
 	Table::Tuple_t overall_tuple;
 	overall_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
 	overall_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	overall_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	overall_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
+	overall_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
 	overall_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("runtime", 0.), Table::Data);
