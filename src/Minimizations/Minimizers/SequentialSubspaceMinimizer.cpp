@@ -104,6 +104,17 @@ static Table::Tuple_t prepareAngleTuple(
 	return angle_tuple;
 }
 
+SpaceElement_ptr_t calculateDualStartingValue(
+		const SpaceElement_ptr_t &_dualstartvalue)
+{
+	SpaceElement_ptr_t dual_solution =
+			_dualstartvalue->getSpace()->createElement();
+	*dual_solution = _dualstartvalue;
+	BOOST_LOG_TRIVIAL(trace)
+		<< "Jx_0 is " << dual_solution;
+	return dual_solution;
+}
+
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -147,18 +158,8 @@ SequentialSubspaceMinimizer::operator()(
 
 	/// -# calculate some values prior to loop
 	// Jx=DualityMapping(x,NormX,PowerX,TolX);
-	SpaceElement_ptr_t dual_solution = DualSpaceX.createElement();
-	*dual_solution = _dualstartvalue;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Jx_0 is " << dual_solution;
-
-	if ((_truesolution->getSpace()->getDimension() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "true solution is " << _truesolution << std::endl;
-	} else {
-		BOOST_LOG_TRIVIAL(info)
-			<< "true solution is " << _truesolution << std::endl;
-	}
+	SpaceElement_ptr_t dual_solution =
+			calculateDualStartingValue(_dualstartvalue);
 
 	BregmanDistance Delta_p(
 			NormX,
