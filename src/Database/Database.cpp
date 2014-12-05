@@ -10,7 +10,7 @@
 
 #include "Database.hpp"
 
-#include "boost/assign.hpp"
+#include <boost/assign.hpp>
 #include <sstream>
 
 #include "Log/Logging.hpp"
@@ -26,10 +26,12 @@ using namespace boost::assign;
 std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
 
 
+#define BASSO_MAXKEYS 16
+
 Database::Database() :
 		DatabaseFileGiven(false),
 		ReplacePresentParameterTuples(false),
-		MAXKEYS(14)
+		MaxKeys(BASSO_MAXKEYS)
 {
 	TypeNames[inttype] = "int";
 	TypeNames[doubletype] = "double";
@@ -67,7 +69,11 @@ bool Database::writeSQLitefile()
 
 			/// third, we create the table with the given keys
 			Table::keys_t::const_iterator specialiter = keys.begin();
-			std::advance(specialiter, keys.size() > MAXKEYS ? MAXKEYS : keys.size());
+			std::advance(specialiter, keys.size() > MaxKeys ? MaxKeys : keys.size());
+			if (keys.size() > MaxKeys)
+				BOOST_LOG_TRIVIAL(error)
+						<< "Truncating database output by " << (keys.size() - MaxKeys)
+						<< " columns as too many columns are to be stored.";
 			Table::keys_t allowed_keys(keys.begin(), specialiter);
 			Session ses("SQLite", filename.c_str());
 			// Don't drop table, we might want to accumulate multiple datasets
@@ -174,61 +180,34 @@ bool Database::writeSQLitefile()
 					}
 				}
 			}
+
 			ses << "BEGIN", now;
 
 			// add all new ones
-			switch (valuevector.size()) {
-			case 0:
-				BOOST_LOG_TRIVIAL(warning)
-					<< "Database contains no values";
-				break;
-			case 1:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?)", use(valuevector[0]), now;
-				break;
-			case 2:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?)", use(valuevector[0]), use(valuevector[1]), now;
-				break;
-			case 3:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), now;
-				break;
-			case 4:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), now;
-				break;
-			case 5:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), now;
-				break;
-			case 6:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), now;
-				break;
-			case 7:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), now;
-				break;
-			case 8:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), now;
-				break;
-			case 9:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), now;
-				break;
-			case 10:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), now;
-				break;
-			case 11:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), now;
-				break;
-			case 12:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), now;
-				break;
-			case 13:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), use(valuevector[12]), now;
-				break;
-			case 14:
-				ses << "INSERT INTO " << currenttable.getName() << " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", use(valuevector[0]), use(valuevector[1]), use(valuevector[2]), use(valuevector[3]), use(valuevector[4]), use(valuevector[5]), use(valuevector[6]), use(valuevector[7]), use(valuevector[8]), use(valuevector[9]), use(valuevector[10]), use(valuevector[11]), use(valuevector[12]), use(valuevector[13]), now;
-				break;
-			default:
-				BOOST_LOG_TRIVIAL(error)
-					<< "Cannot deal (yet) with tuple size" << valuevector.size();
-				break;
+			// note that due to use(..) this cannot be debugged into
+			// a printable string
+			{
+				switch (valuevector.size()) {
+				case 0:
+					BOOST_LOG_TRIVIAL(warning)
+						<< "Database contains no values";
+					break;
+				// use preprocessor magic to create the range of cases
+#include <boost/preprocessor/iteration/local.hpp>
+#include "Database_impl.hpp"
+#define BASSO_ARGUMENTLIST (ses)(currenttable.getName())(valuevector)
+#define BOOST_PP_LOCAL_MACRO(n) CasePrinter(~, n, BASSO_ARGUMENTLIST)
+#define BOOST_PP_LOCAL_LIMITS (1, BASSO_MAXKEYS)
+#include BOOST_PP_LOCAL_ITERATE()
+#undef BASSO_ARGUMENTLIST
+#include "Database_undef.hpp"
+				default:
+					BOOST_LOG_TRIVIAL(error)
+						<< "Cannot deal (yet) with tuple size" << valuevector.size();
+					break;
+				}
 			}
+
 			ses << "END", now;
 
 			/// finally, we write all information to the table

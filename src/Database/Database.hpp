@@ -112,7 +112,7 @@ private:
 	tables_t tables;
 
 	//!> maximum number of keys per table
-	const unsigned int MAXKEYS;
+	const unsigned int MaxKeys;
 };
 
 
