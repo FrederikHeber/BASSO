@@ -79,40 +79,6 @@ int main()
 				<< (*J_infty)(v) << ")" << std::endl;
 	}
 
-	boost::function<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
-				const Eigen::MatrixBase<Eigen::MatrixXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				)> matrix_vector_fctor =
-			boost::bind(
-					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
-						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
-								_1, _2
-			)
-	;
-	const OperationCounter<
-				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-				const Eigen::MatrixBase<Eigen::MatrixXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> MatrixVectorProduct(matrix_vector_fctor);
-	boost::function<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
-					const Eigen::MatrixBase<Eigen::VectorXd>&,
-					const Eigen::MatrixBase<Eigen::VectorXd>&)
-					> scalar_vector_fctor =
-			boost::bind(
-					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
-						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
-								_1, _2
-			);
-	const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> ScalarVectorProduct(scalar_vector_fctor);
-
 	// testing of BregmanProjectionFunctional
 	{
 		const double p = 1.;
@@ -124,8 +90,7 @@ int main()
 		BregmanProjectionFunctional bregman_1(
 				*SpaceX->getDualSpace()->getNorm(),
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower(),
-				MatrixVectorProduct, ScalarVectorProduct);
+				J_infty->getPower());
 		std::vector<double> t;
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);
@@ -161,8 +126,7 @@ int main()
 		BregmanProjectionFunctional bregman_2(
 				*SpaceX->getDualSpace()->getNorm(),
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower(),
-				MatrixVectorProduct, ScalarVectorProduct);
+				J_infty->getPower());
 		std::vector<double> t;
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);
@@ -198,8 +162,7 @@ int main()
 		BregmanProjectionFunctional bregman_infty(
 				*SpaceX->getDualSpace()->getNorm(),
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower(),
-				MatrixVectorProduct, ScalarVectorProduct);
+				J_infty->getPower());
 		std::vector<double> t;
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);

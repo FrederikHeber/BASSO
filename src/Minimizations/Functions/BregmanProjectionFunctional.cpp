@@ -20,45 +20,21 @@
 BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const Norm &_dualnorm,
 		const PowerTypeDualityMapping &_J_q,
-		const double _dualpower,
-		const OperationCounter<
-			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-			const Eigen::MatrixBase<Eigen::MatrixXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_MatrixVectorProduct,
-		const OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_ScalarVectorProduct
+		const double _dualpower
 		) :
 	dualpower(_dualpower),
 	dualnorm(_dualnorm),
-	J_q(_J_q),
-	MatrixVectorProduct(_MatrixVectorProduct),
-	ScalarVectorProduct(_ScalarVectorProduct)
+	J_q(_J_q)
 {}
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
-		const InverseProblem_ptr_t &_problem,
-		const OperationCounter<
-			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-			const Eigen::MatrixBase<Eigen::MatrixXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_MatrixVectorProduct,
-		const OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_ScalarVectorProduct
+		const InverseProblem_ptr_t &_problem
 		) :
 	dualpower(_problem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()),
 	dualnorm(*_problem->x->getSpace()->getDualSpace()->getNorm()),
 	J_q(dynamic_cast<const PowerTypeDualityMapping&>(
 			*_problem->x->getSpace()->getDualSpace()->getDualityMapping())
-			),
-	MatrixVectorProduct(_MatrixVectorProduct),
-	ScalarVectorProduct(_ScalarVectorProduct)
+			)
 {}
 
 double BregmanProjectionFunctional::operator()(

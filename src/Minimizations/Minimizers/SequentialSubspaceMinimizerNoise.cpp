@@ -195,9 +195,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					BregmanProjectionFunctional bregman(
 							DualNormX,
 							dynamic_cast<const PowerTypeDualityMapping &>(J_q),
-							J_q.getPower(),
-							MatrixVectorProduct_subspace,
-							ScalarVectorProduct_subspace);
+							J_q.getPower());
 
 					std::vector<SpaceElement_ptr_t> U(N);
 					std::generate(U.begin(), U.end(),
