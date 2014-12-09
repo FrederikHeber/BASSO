@@ -38,13 +38,8 @@ bool LastNSearchDirections::enforceRandomMapping = false;
 
 LastNSearchDirections::LastNSearchDirections(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-		const unsigned int _N,
-		const OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_ScalarVectorProduct_subspace) :
-	Searchspace(_SearchDirectionSpace_ptr,_N,_ScalarVectorProduct_subspace),
+		const unsigned int _N) :
+	Searchspace(_SearchDirectionSpace_ptr,_N),
 	index(0)
 {}
 

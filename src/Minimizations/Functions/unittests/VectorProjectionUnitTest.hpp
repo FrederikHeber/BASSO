@@ -10,12 +10,6 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <Eigen/Dense>
-
-#include <boost/function.hpp>
-
-#include "MatrixIO/OperationCounter.hpp"
-
 class VectorProjectionUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( VectorProjectionUnitTest );
@@ -35,16 +29,6 @@ public:
   void sixNorm();
 
 private:
-	boost::function<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&)
-				> scalar_vector_fctor;
-	OperationCounter<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-		const Eigen::MatrixBase<Eigen::VectorXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> *ScalarVectorProduct;
 
 	//!> "global" tolerance threshold for minimization
 	static const double tolerance;

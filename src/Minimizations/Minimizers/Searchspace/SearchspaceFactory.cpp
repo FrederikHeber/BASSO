@@ -43,8 +43,7 @@ Searchspace::ptr_t SearchspaceFactory::create(
 	case LastNDirections:
 		returninstance.reset(new LastNSearchDirections(
 				_SearchDirectionSpace_ptr,
-				_N,
-				_ScalarVectorProduct_subspace)
+				_N)
 				);
 		break;
 	case Nemirovsky:

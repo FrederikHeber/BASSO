@@ -10,10 +10,9 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
 #include <utility>
 
-#include "MatrixIO/OperationCounter.hpp"
+#include "Minimizations/types.hpp"
 
 class PowerTypeDualityMapping;
 class Norm;
@@ -27,12 +26,7 @@ public:
 	VectorProjection(
 			const Norm &_lpnorm,
 			const PowerTypeDualityMapping &_J_p,
-			const double _p,
-			const OperationCounter<
-									Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-									const Eigen::MatrixBase<Eigen::VectorXd>&,
-									const Eigen::MatrixBase<Eigen::VectorXd>&
-									>& _ScalarVectorProduct
+			const double _p
 			);
 	~VectorProjection() {}
 
@@ -51,8 +45,8 @@ public:
 	 * @return
 	 */
 	const std::pair<double, double> operator()(
-			const Eigen::VectorXd &_projectonto,
-			const Eigen::VectorXd &_tobeprojected,
+			const SpaceElement_ptr_t &_projectonto,
+			const SpaceElement_ptr_t &_tobeprojected,
 			const double _Tol
 			) const;
 
@@ -63,12 +57,6 @@ private:
 	const PowerTypeDualityMapping &J_p;
 	//!> value p of the Lp norm
 	const double p;
-	//!> counting and timing object for VectorVectorMultiplication
-	const OperationCounter<
-						Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-						const Eigen::MatrixBase<Eigen::VectorXd>&,
-						const Eigen::MatrixBase<Eigen::VectorXd>&
-						>& ScalarVectorProduct;
 };
 
 

@@ -164,8 +164,7 @@ SequentialSubspaceMinimizer::operator()(
 	BregmanDistance Delta_p(
 			NormX,
 			dynamic_cast<const PowerTypeDualityMapping &>(J_p),
-			J_p.getPower(),
-			ScalarVectorProduct);
+			J_p.getPower());
 	double old_distance = 0.;
 	if (!_truesolution->isZero()) {
 		old_distance = Delta_p(

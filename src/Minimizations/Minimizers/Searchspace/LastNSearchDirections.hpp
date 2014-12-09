@@ -30,17 +30,11 @@ public:
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
 	 * @param _N number of search directions
-	 * @param _ScalarVectorProduct_subspace counts for vector-vector
 	 * products in the subspace (i.e. search space)
 	 */
 	LastNSearchDirections(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-			const unsigned int _N,
-			const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> &_ScalarVectorProduct_subspace);
+			const unsigned int _N);
 
 	/** This function performs the actual update of the search space.
 	 *

@@ -32,25 +32,11 @@ void VectorProjectionUnitTest::setUp()
 					logging::trivial::severity >= logging::trivial::info
 			);
 	startLogging();
-
-	scalar_vector_fctor =
-			boost::bind(
-					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
-						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
-								_1, _2
-			);
-	ScalarVectorProduct = new OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			>(scalar_vector_fctor);
 }
 
 
 void VectorProjectionUnitTest::tearDown()
 {
-	delete ScalarVectorProduct;
 }
 
 void VectorProjectionUnitTest::oneoneNorm()
@@ -63,7 +49,10 @@ void VectorProjectionUnitTest::oneoneNorm()
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
-	VectorProjection projector(NormX, Jp, p, *ScalarVectorProduct);
+	VectorProjection projector(NormX, Jp, p);
+	SpaceElement_ptr_t x = SpaceX->createElement();
+	SpaceElement_ptr_t y = SpaceX->createElement();
+
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
 
@@ -71,15 +60,14 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, more than unit length
@@ -87,123 +75,116 @@ void VectorProjectionUnitTest::oneoneNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e3);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e3);
 	}
 
 	// parallel vectors, less than unit length
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, mixed
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, other way mixed
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, unit length
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// orthogonal vectors, unit length
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// orthogonal vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// slanted vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -217,18 +198,18 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -242,18 +223,18 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -274,7 +255,10 @@ void VectorProjectionUnitTest::onefiveNorm()
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
-	VectorProjection projector(NormX, Jp, p, *ScalarVectorProduct);
+	VectorProjection projector(NormX, Jp, p);
+	SpaceElement_ptr_t x = SpaceX->createElement();
+	SpaceElement_ptr_t y = SpaceX->createElement();
+
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
 
@@ -282,15 +266,14 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, more than unit length
@@ -298,123 +281,116 @@ void VectorProjectionUnitTest::onefiveNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, less than unit length
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, mixed
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, other way mixed
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, unit length
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// orthogonal vectors, unit length
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// orthogonal vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// slanted vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -428,18 +404,18 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -453,18 +429,18 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -485,7 +461,10 @@ void VectorProjectionUnitTest::twoNorm()
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
-	VectorProjection projector(NormX, Jp, p, *ScalarVectorProduct);
+	VectorProjection projector(NormX, Jp, p);
+	SpaceElement_ptr_t x = SpaceX->createElement();
+	SpaceElement_ptr_t y = SpaceX->createElement();
+
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
 
@@ -493,18 +472,17 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
-//		std::cout << "Minimum is " << tmp.first
-//				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
+		std::cout << "Minimum is " << tmp.first
+				<< ", with minimizer " << tmp.second << std::endl;
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		std::cout << "Angle is " << angle;
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// parallel vectors, more than unit length
@@ -512,147 +490,133 @@ void VectorProjectionUnitTest::twoNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// parallel vectors, less than unit length
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// parallel vectors, mixed
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// parallel vectors, other way mixed
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// parallel vectors, unit length
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// orthogonal vectors, unit length
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
+		const double angle = x * y / NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// orthogonal vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
-		const double angle = scalar_vector_fctor(projectonto, tobeprojected)
-				/ NormX(projectonto) / NormX(tobeprojected);
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - angle) < tolerance);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
+		const double angle = x * y
+				/ NormX(x) / NormX(y);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - angle) < tolerance);
 	}
 
 	// slanted vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
-			euclidianangles[i] = scalar_vector_fctor(projectonto, tobeprojected)
-					/ NormX(projectonto) / NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
+			euclidianangles[i] = x * y / NormX(x) / NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		CPPUNIT_ASSERT( fabs( euclidianangles[0] - angles[0]) < tolerance);
@@ -668,21 +632,20 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
-			euclidianangles[i] = scalar_vector_fctor(projectonto, tobeprojected)
-					/ NormX(projectonto) / NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
+			euclidianangles[i] = x * y / NormX(x) / NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		CPPUNIT_ASSERT( fabs( euclidianangles[0] - angles[0]) < tolerance);
@@ -698,21 +661,20 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
-			euclidianangles[i] = scalar_vector_fctor(projectonto, tobeprojected)
-					/ NormX(projectonto) / NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
+			euclidianangles[i] = x * y / NormX(x) / NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		CPPUNIT_ASSERT( fabs( euclidianangles[0] - angles[0]) < tolerance);
@@ -735,7 +697,10 @@ void VectorProjectionUnitTest::sixNorm()
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
-	VectorProjection projector(NormX, Jp, p, *ScalarVectorProduct);
+	VectorProjection projector(NormX, Jp, p);
+	SpaceElement_ptr_t x = SpaceX->createElement();
+	SpaceElement_ptr_t y = SpaceX->createElement();
+
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
 
@@ -743,15 +708,14 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, more than unit length
@@ -759,123 +723,116 @@ void VectorProjectionUnitTest::sixNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
-		std::cout << "Minimum is " << tmp.first
-				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
+//		std::cout << "Minimum is " << tmp.first
+//				<< ", with minimizer " << tmp.second << std::endl;
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, less than unit length
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, mixed
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, other way mixed
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// parallel vectors, unit length
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( fabs( tmp.second/NormX(tobeprojected) - 1.) < tolerance*1e2);
+		CPPUNIT_ASSERT( fabs( tmp.second/NormX(y) - 1.) < tolerance*1e2);
 	}
 
 	// orthogonal vectors, unit length
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// orthogonal vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
+		*x = projectonto;
+		*y = tobeprojected;
 		// minimum, minimizer
-		const std::pair<double, double> tmp = projector(
-				projectonto,
-				tobeprojected,
-				tolerance
-				);
+		const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //		std::cout << "Minimum is " << tmp.first
 //				<< ", with minimizer " << tmp.second << std::endl;
-		CPPUNIT_ASSERT( tmp.second/NormX(tobeprojected) < tolerance*1e2);
+		CPPUNIT_ASSERT( tmp.second/NormX(y) < tolerance*1e2);
 	}
 
 	// slanted vectors
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -889,18 +846,18 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {
@@ -914,18 +871,18 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
+		*x = projectonto;
+		*y = tobeprojected;
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
 			tobeprojected[i] = 1.;
+			*y = tobeprojected;
 			// minimum, minimizer
-			const std::pair<double, double> tmp = projector(
-					projectonto,
-					tobeprojected,
-					tolerance
-					);
+			const std::pair<double, double> tmp =
+				projector(x, y, tolerance);
 //			std::cout << "Minimum is " << tmp.first
 //					<< ", with minimizer " << tmp.second << std::endl;
-			angles[i] = tmp.second/NormX(tobeprojected);
+			angles[i] = tmp.second/NormX(y);
 		}
 		// make sure that angle is monotonically decreasing
 		for (unsigned int i=1; i<dim; ++i) {

@@ -11,6 +11,7 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
@@ -18,30 +19,23 @@
 VectorProjection::VectorProjection(
 		const Norm &_lpnorm,
 		const PowerTypeDualityMapping &_J_p,
-		const double _p,
-		const OperationCounter<
-								Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-								const Eigen::MatrixBase<Eigen::VectorXd>&,
-								const Eigen::MatrixBase<Eigen::VectorXd>&
-								>& _ScalarVectorProduct
+		const double _p
 		) :
 		lpnorm(_lpnorm),
 		J_p(_J_p),
-		p(_p),
-		ScalarVectorProduct(_ScalarVectorProduct)
+		p(_p)
 {}
 
 const std::pair<double, double>
 VectorProjection::operator()(
-		const Eigen::VectorXd &_projectedonto,
-		const Eigen::VectorXd &_tobeprojected,
+		const SpaceElement_ptr_t &_projectedonto,
+		const SpaceElement_ptr_t &_tobeprojected,
 		const double _Tol) const
 {
 	BregmanDistance distance(
 			lpnorm,
 			J_p,
-			p,
-			ScalarVectorProduct
+			p
 			);
 
 

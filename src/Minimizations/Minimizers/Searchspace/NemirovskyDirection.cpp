@@ -28,7 +28,7 @@ NemirovskyDirection::NemirovskyDirection(
 			const Eigen::MatrixBase<Eigen::VectorXd>&,
 			const Eigen::MatrixBase<Eigen::VectorXd>&
 			> &_ScalarVectorProduct_subspace) :
-		Searchspace(_SearchDirectionSpace_ptr, 2, _ScalarVectorProduct_subspace),
+		Searchspace(_SearchDirectionSpace_ptr, 2),
 		MatrixVectorProduct_subspace(_MatrixVectorProduct_subspace),
 		ScalarVectorProduct_subspace(_ScalarVectorProduct_subspace)
 {}

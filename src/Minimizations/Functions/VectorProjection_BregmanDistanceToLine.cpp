@@ -10,14 +10,16 @@
 #include <boost/log/trivial.hpp>
 #include <cassert>
 
+#include "Minimizations/Elements/SpaceElement.hpp"
+
 typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
 
 BregmanDistanceToLine::BregmanDistanceToLine(
 		const BregmanDistance &_distance,
 		const Norm &_dualnorm,
 		const PowerTypeDualityMapping &_J_q,
-		const Eigen::VectorXd &_linevector,
-		const Eigen::VectorXd &_tobeprojected,
+		const SpaceElement_ptr_t &_linevector,
+		const SpaceElement_ptr_t &_tobeprojected,
 		const double _powertype
 		) :
 		distance(_distance),
@@ -33,7 +35,7 @@ double
 BregmanDistanceToLine::function(
 		const double &_value) const
 {
-	const Eigen::VectorXd Jy = (1./linevector_norm)*_value*linevector;
+	const SpaceElement_ptr_t Jy = (1./linevector_norm)*_value*linevector;
 	const double result = distance(argvector, Jy);
 	return result;
 }
@@ -42,10 +44,10 @@ const double
 BregmanDistanceToLine::gradient(
 		const double &_value) const
 {
-	const Eigen::VectorXd Jy = (1./linevector_norm)*(_value)*linevector;
-	const double grad =
-			(J_q(Jy) - J_q(argvector)).transpose() * (linevector);
-	return (1./linevector_norm)*grad;
+	const SpaceElement_ptr_t Jy = (1./linevector_norm)*(_value)*linevector;
+	const double grad = (J_q(Jy) - J_q(argvector))
+			* (linevector)/linevector_norm;
+	return grad;
 }
 
 void

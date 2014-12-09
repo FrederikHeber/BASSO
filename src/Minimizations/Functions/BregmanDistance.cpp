@@ -10,7 +10,6 @@
 #include "BregmanDistance.hpp"
 
 #include <cmath>
-#include <Eigen/Dense>
 #include <limits>
 
 #include "Log/Logging.hpp"
@@ -22,16 +21,10 @@
 BregmanDistance::BregmanDistance(
 		const Norm &_norm,
 		const PowerTypeDualityMapping &_J_p,
-		const double _power,
-		const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				>& _ScalarVectorProduct) :
+		const double _power) :
 			power(_power),
 			norm(_norm),
-			J_p(_J_p),
-			ScalarVectorProduct(_ScalarVectorProduct)
+			J_p(_J_p)
 {
 	if ((power != 0.) && (power <= 1.))
 		throw MinimizationIllegalValue_exception()
@@ -39,18 +32,12 @@ BregmanDistance::BregmanDistance(
 }
 
 BregmanDistance::BregmanDistance(
-		const InverseProblem_ptr_t &_problem,
-		const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				>& _ScalarVectorProduct) :
+		const InverseProblem_ptr_t &_problem) :
 			power(_problem->x->getSpace()->getDualityMapping()->getPower()),
 			norm(*_problem->x->getSpace()->getNorm()),
 			J_p(dynamic_cast<const PowerTypeDualityMapping&>(
 							*_problem->x->getSpace()->getDualityMapping())
-			),
-			ScalarVectorProduct(_ScalarVectorProduct)
+			)
 {
 	if ((power != 0.) && (power <= 1.))
 		throw MinimizationIllegalValue_exception()
@@ -58,27 +45,27 @@ BregmanDistance::BregmanDistance(
 }
 
 double BregmanDistance::operator()(
-		const Eigen::VectorXd &_x,
-		const Eigen::VectorXd &_y
+		const SpaceElement_ptr_t &_x,
+		const SpaceElement_ptr_t &_y
 		) const
 {
-	const Eigen::VectorXd dual_x = J_p(_x).transpose();
+	const SpaceElement_ptr_t dual_x = J_p(_x);
 	return operator()(_x,_y, dual_x);
 }
 
 double BregmanDistance::operator()(
-		const Eigen::VectorXd &_x,
-		const Eigen::VectorXd &_y,
-		const Eigen::VectorXd &_xdual
+		const SpaceElement_ptr_t &_x,
+		const SpaceElement_ptr_t &_y,
+		const SpaceElement_ptr_t &_xdual
 		) const
 {
 
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Calculating Bregman distance between "
-			<< _x.transpose() << " and " << _y.transpose();
+//	BOOST_LOG_TRIVIAL(trace)
+//			<< "Calculating Bregman distance between "
+//			<< _x << " and " << _y;
 	double result = 0.;
 	result += (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
 	result += (1./power) * ::pow(norm(_y), power);
-	result -= ScalarVectorProduct(_xdual, _y);
+	result -= _xdual * _y;
 	return result;
 }

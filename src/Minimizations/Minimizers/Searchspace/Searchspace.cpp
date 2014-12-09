@@ -23,19 +23,13 @@
 
 Searchspace::Searchspace(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-		const unsigned int _N,
-		const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> &_ScalarVectorProduct_subspace) :
+		const unsigned int _N) :
 	SearchDirectionSpace_ptr(_SearchDirectionSpace_ptr),
 	projector(*_SearchDirectionSpace_ptr->getNorm(),
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*_SearchDirectionSpace_ptr->getDualityMapping()
 					),
-					_SearchDirectionSpace_ptr->getDualityMapping()->getPower(),
-			_ScalarVectorProduct_subspace)
+					_SearchDirectionSpace_ptr->getDualityMapping()->getPower())
 {
 	U = Eigen::MatrixXd::Zero(
 			SearchDirectionSpace_ptr->getDimension(),
@@ -63,10 +57,12 @@ Searchspace::calculateBregmanAngles(
 		if (U.col(l).norm() < std::numeric_limits<double>::epsilon())
 			continue;
 		// first: minimum, second: minimizer (equals length in LpNorm here)
+		SpaceElement_ptr_t temp = SearchDirectionSpace_ptr->createElement();
+		*temp = U.col(l);
 		const std::pair<double, double> tmp =
 				projector(
-						U.col(l),
-						_newdir->getVectorRepresentation(),
+						temp,
+						_newdir,
 						1e-4);
 		const double projected_distance = tmp.second;
 		const double original_distance = _Norm(_newdir);
