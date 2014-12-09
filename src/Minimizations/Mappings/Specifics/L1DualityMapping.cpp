@@ -14,7 +14,7 @@
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
-#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Math/Helpers.hpp"
 

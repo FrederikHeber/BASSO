@@ -13,7 +13,7 @@
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"

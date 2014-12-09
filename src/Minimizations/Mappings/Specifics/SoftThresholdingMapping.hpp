@@ -1,5 +1,5 @@
 /*
- * SoftThresholdingMapping.hpp
+ * Specifics/SoftThresholdingMapping.hpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/types.hpp"
 
 class SoftThresholdingMappingUnitTest;

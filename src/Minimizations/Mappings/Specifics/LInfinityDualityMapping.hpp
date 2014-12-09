@@ -1,5 +1,5 @@
 /*
- * LInfinityDualityMapping.hpp
+ * Specifics/LInfinityDualityMapping.hpp
  *
  *  Created on: Oct 24, 2014
  *      Author: heber

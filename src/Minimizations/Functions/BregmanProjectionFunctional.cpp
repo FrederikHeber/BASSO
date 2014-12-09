@@ -14,7 +14,7 @@
 #include <numeric>
 
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(

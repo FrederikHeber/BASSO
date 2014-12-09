@@ -15,7 +15,7 @@
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
 BregmanDistance::BregmanDistance(

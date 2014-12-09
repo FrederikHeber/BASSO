@@ -13,9 +13,9 @@
 #include <limits>
 
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Mappings/L1DualityMapping.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
-#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 
 const Mapping_ptr_t
 PowerTypeDualityMappingFactory::createInstance(

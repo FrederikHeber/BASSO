@@ -20,9 +20,9 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
-#include "Minimizations/Mappings/L1DualityMapping.hpp"
-#include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"

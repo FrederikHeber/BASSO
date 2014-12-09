@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 
 class IllegalDualityMappingUnitTest;
 

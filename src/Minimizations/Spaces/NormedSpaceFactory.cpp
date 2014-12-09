@@ -14,7 +14,7 @@
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
-#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 

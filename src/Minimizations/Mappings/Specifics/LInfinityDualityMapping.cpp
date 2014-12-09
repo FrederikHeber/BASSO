@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-#include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Math/Helpers.hpp"

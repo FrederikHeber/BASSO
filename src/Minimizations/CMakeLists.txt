@@ -18,11 +18,11 @@ add_library (Minimizations
 	InverseProblems/InverseProblemFactory.cpp
 	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
-	Mappings/L1DualityMapping.cpp
-	Mappings/LpDualityMapping.cpp
-	Mappings/LInfinityDualityMapping.cpp
 	Mappings/PowerTypeDualityMappingFactory.cpp
-	Mappings/SoftThresholdingMapping.cpp
+	Mappings/Specifics/L1DualityMapping.cpp
+	Mappings/Specifics/LpDualityMapping.cpp
+	Mappings/Specifics/LInfinityDualityMapping.cpp
+	Mappings/Specifics/SoftThresholdingMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/MinimizerFactory.cpp
@@ -70,13 +70,13 @@ install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
 
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
-install (FILES Mappings/L1DualityMapping.hpp DESTINATION include)
-install (FILES Mappings/LpDualityMapping.hpp DESTINATION include)
-install (FILES Mappings/LInfinityDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)
-install (FILES Mappings/SoftThresholdingMapping.hpp DESTINATION include)
+install (FILES Mappings/Specifics/L1DualityMapping.hpp DESTINATION include)
+install (FILES Mappings/Specifics/LpDualityMapping.hpp DESTINATION include)
+install (FILES Mappings/Specifics/LInfinityDualityMapping.hpp DESTINATION include)
+install (FILES Mappings/Specifics/SoftThresholdingMapping.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)

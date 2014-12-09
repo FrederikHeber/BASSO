@@ -27,7 +27,7 @@
 #include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"

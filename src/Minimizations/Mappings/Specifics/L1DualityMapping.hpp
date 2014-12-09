@@ -1,5 +1,5 @@
 /*
- * L1DualityMapping.hpp
+ * Specifics/L1DualityMapping.hpp
  *
  *  Created on: Oct 24, 2014
  *      Author: heber

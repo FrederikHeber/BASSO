@@ -13,7 +13,7 @@
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"

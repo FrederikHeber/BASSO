@@ -14,7 +14,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/LpDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 
 class ResidualFunctional
 {

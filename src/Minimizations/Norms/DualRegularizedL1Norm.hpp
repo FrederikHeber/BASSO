@@ -11,7 +11,7 @@
 #include "BassoConfig.h"
 
 #include <cassert>
-#include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
