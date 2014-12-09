@@ -59,6 +59,11 @@ const double SpaceElement::operator*(const SpaceElement_ptr_t &_element) const
 	return (vector.transpose() * _element->vector);
 }
 
+const double SpaceElement::operator*(const SpaceElement &_element) const
+{
+	return vector.transpose() * _element.vector;
+}
+
 SpaceElement_ptr_t SpaceElement::operator+(const SpaceElement_ptr_t &_element) const
 {
 	SpaceElement_ptr_t newelement(NormedSpaceRef->createElement());
@@ -125,4 +130,18 @@ std::ostream & operator<<(std::ostream &ost, const SpaceElement_ptr_t &_element)
 {
 	ost << *_element;
 	return ost;
+}
+
+/** Scalar product.
+ *
+ * @param _element element in space
+ * @param _otherelement other element
+ * @return scalar product between \a _element and \a _otherelement vector
+ */
+const double operator*(
+		const SpaceElement_ptr_t &_element,
+		const SpaceElement_ptr_t &_otherelement)
+{
+	return _element->getVectorRepresentation().transpose() *
+			_otherelement->getVectorRepresentation();
 }

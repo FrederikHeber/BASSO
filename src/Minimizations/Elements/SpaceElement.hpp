@@ -100,6 +100,13 @@ public:
 	 */
 	const double operator*(const SpaceElement_ptr_t &_element) const;
 
+	/** Scalar product.
+	 *
+	 * @param _element other element
+	 * @return scalar product between this and \a _element vector
+	 */
+	const double operator*(const SpaceElement &_element) const;
+
 	/** Element sum.
 	 *
 	 * @param _element other element
@@ -230,12 +237,9 @@ inline SpaceElement_ptr_t operator*(
  * @param _otherelement other element
  * @return scalar product between \a _element and \a _otherelement vector
  */
-inline const double operator*(
+const double operator*(
 		const SpaceElement_ptr_t &_element,
-		const SpaceElement_ptr_t &_otherelement)
-{
-	return (*_element * _otherelement);
-}
+		const SpaceElement_ptr_t &_otherelement);
 
 /** Element sum.
  *
