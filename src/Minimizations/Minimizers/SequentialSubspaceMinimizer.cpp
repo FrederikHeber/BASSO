@@ -198,6 +198,9 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
 	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
+	// due to Eigen's lazy evaluation runtime is not measured accurately
 
 	Table& angle_table = database.addTable("angles");
 	Table::Tuple_t angle_tuple;
@@ -499,6 +502,12 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
 	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
 	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
+//	overall_tuple.replace( "runtime_matrix_vector_products",
+//			boost::chrono::duration_cast<double>(
+//					A.MatrixVectorProduct.getTiming()+A_t.MatrixVectorProduct.getTiming()).count() );
+//	overall_tuple.replace( "runtime_vector_vector_products",
+//			boost::chrono::duration_cast<double>(ScalarVectorProduct.getTiming()).count() );
+	// due to Eigen's lazy evaluation runtime is not measured accurately
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution

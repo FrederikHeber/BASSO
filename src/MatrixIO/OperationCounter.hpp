@@ -32,10 +32,10 @@ public:
 	res operator()(T _a, V _b) const
 	{
 		++count;
-		boost::chrono::high_resolution_clock::time_point timing_start =
+		const boost::chrono::high_resolution_clock::time_point timing_start =
 				boost::chrono::high_resolution_clock::now();
 		res tmp = operatorfunction(_a,_b);
-		boost::chrono::high_resolution_clock::time_point timing_end =
+		const boost::chrono::high_resolution_clock::time_point timing_end =
 				boost::chrono::high_resolution_clock::now();
 		timing += timing_end - timing_start;
 		return tmp;
@@ -45,15 +45,15 @@ public:
 	 *
 	 * @return number of calls to operator()
 	 */
-	size_t getCount() const
+	const size_t getCount() const
 	{ return count; }
 
 	/** Getter for the total runtime of function calls.
 	 *
 	 * @return overall runtime of operator() in seconds
 	 */
-	double getTiming() const
-	{ return boost::chrono::duration_cast<boost::chrono::duration<double> >(timing).count(); }
+	const boost::chrono::nanoseconds getTiming() const
+	{ return timing; }
 
 private:
 	//!> function call that is wrapped by this class

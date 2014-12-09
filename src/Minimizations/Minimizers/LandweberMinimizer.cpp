@@ -125,8 +125,9 @@ LandweberMinimizer::operator()(
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), 1, SpaceX.getDimension(), MaxOuterIterations);
-	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", MatrixVectorProduct.getTiming()), Table::Data );
-	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", ScalarVectorProduct.getTiming()), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
+	// due to Eigen's lazy evaluation runtime is not measured accurately
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
@@ -266,8 +267,11 @@ LandweberMinimizer::operator()(
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
-	overall_tuple.replace( "runtime_matrix_vector_products", MatrixVectorProduct.getTiming() );
-	overall_tuple.replace( "runtime_vector_vector_products", ScalarVectorProduct.getTiming() );
+//	overall_tuple.replace( "runtime_matrix_vector_products",
+//			boost::chrono::duration_cast<double>(MatrixVectorProduct.getTiming()).count() );
+//	overall_tuple.replace( "runtime_vector_vector_products",
+//			boost::chrono::duration_cast<double>(ScalarVectorProduct.getTiming()).count() );
+	// due to Eigen's lazy evaluation runtime is not measured accurately
 	overall_table.addTuple(overall_tuple);
 
 	return returnvalues;
