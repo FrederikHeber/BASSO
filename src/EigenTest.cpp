@@ -9,10 +9,14 @@
 
 #include <boost/function.hpp>
 
+#include <boost/assign.hpp>
 #include <boost/bind.hpp>
 #include <Eigen/Dense>
 #include <iostream>
 #include <iomanip>
+#include <iterator>
+#include <numeric>
+#include <sstream>
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
@@ -24,6 +28,8 @@
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+
+using namespace boost::assign;
 
 int main()
 {
@@ -120,17 +126,30 @@ int main()
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
 				J_infty->getPower(),
 				MatrixVectorProduct, ScalarVectorProduct);
-		Eigen::VectorXd t(2);
-		t << 4,3;
-		Eigen::VectorXd x(2);
-		x << 4,3;
-		Eigen::MatrixXd U(2,2);
-		U << 1,0,0,1;
-		Eigen::VectorXd alpha(2);
-		alpha << 1,0;
-		std::cout << "BregmanProjectionFunctional bregman_1 of v is "
-				<< bregman_1(t,x,U,alpha) << ","
-				<< bregman_1.gradient(t,x,U,alpha)<< "" << std::endl;
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
+		*x = xtemp;
+		Eigen::MatrixXd Utemp(2,2);
+		Utemp << 1,0,0,1;
+		std::vector<SpaceElement_ptr_t> U(2);
+		std::generate(U.begin(), U.end(),
+				boost::bind(&NormedSpace::createElement,
+						boost::cref(*SpaceX->getDualSpace()))
+		);
+		for (size_t i=0;i<2;++i)
+			*(U[i]) = Utemp.col(i);
+		std::vector<double> alpha;
+		alpha += 1,0;
+		const double fval = bregman_1(t,x,U,alpha);
+		const std::vector<double> gval = bregman_1.gradient(t,x,U,alpha);
+		std::stringstream gval_stream;
+		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
+		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
+				<< fval << ","
+				<< gval_stream.str() << "" << std::endl;
 	}
 	{
 		const double p = 2.;
@@ -144,17 +163,30 @@ int main()
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
 				J_infty->getPower(),
 				MatrixVectorProduct, ScalarVectorProduct);
-		Eigen::VectorXd t(2);
-		t << 4,3;
-		Eigen::VectorXd x(2);
-		x << 4,3;
-		Eigen::MatrixXd U(2,2);
-		U << 1,0,0,1;
-		Eigen::VectorXd alpha(2);
-		alpha << 1,0;
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
+		*x = xtemp;
+		Eigen::MatrixXd Utemp(2,2);
+		Utemp << 1,0,0,1;
+		std::vector<SpaceElement_ptr_t> U(2);
+		std::generate(U.begin(), U.end(),
+				boost::bind(&NormedSpace::createElement,
+						boost::cref(*SpaceX->getDualSpace()))
+		);
+		for (size_t i=0;i<2;++i)
+			*(U[i]) = Utemp.col(i);
+		std::vector<double> alpha;
+		alpha += 1,0;
+		const double fval = bregman_2(t,x,U,alpha);
+		const std::vector<double> gval = bregman_2.gradient(t,x,U,alpha);
+		std::stringstream gval_stream;
+		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
 		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
-				<< bregman_2(t,x,U,alpha) << ","
-				<< bregman_2.gradient(t,x,U,alpha) << "" << std::endl;
+				<< fval << ","
+				<< gval_stream.str() << "" << std::endl;
 	}
 	{
 		const double p = std::numeric_limits<double>::infinity();
@@ -168,16 +200,29 @@ int main()
 				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
 				J_infty->getPower(),
 				MatrixVectorProduct, ScalarVectorProduct);
-		Eigen::VectorXd t(2);
-		t << 4,3;
-		Eigen::VectorXd x(2);
-		x << 4,3;
-		Eigen::MatrixXd U(2,2);
-		U << 1,0,0,1;
-		Eigen::VectorXd alpha(2);
-		alpha << 1,0;
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
+		*x = xtemp;
+		Eigen::MatrixXd Utemp(2,2);
+		Utemp << 1,0,0,1;
+		std::vector<SpaceElement_ptr_t> U(2);
+		std::generate(U.begin(), U.end(),
+				boost::bind(&NormedSpace::createElement,
+						boost::cref(*SpaceX->getDualSpace()))
+		);
+		for (size_t i=0;i<2;++i)
+			*(U[i]) = Utemp.col(i);
+		std::vector<double> alpha;
+		alpha += 1,0;
+		const double fval = bregman_infty(t,x,U,alpha);
+		const std::vector<double> gval = bregman_infty.gradient(t,x,U,alpha);
+		std::stringstream gval_stream;
+		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
 		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
-				<< bregman_infty(t,x,U,alpha) << ","
-				<< bregman_infty.gradient(t,x,U,alpha) << "" << std::endl;
+				<< fval << ","
+				<< gval_stream.str() << "" << std::endl;
 	}
 }

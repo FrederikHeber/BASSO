@@ -62,33 +62,6 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 {}
 
 double BregmanProjectionFunctional::operator()(
-		const Eigen::VectorXd &_t,
-		const Eigen::VectorXd &_dualx,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
-		) const
-{
-	// x=x-U*t;
-	const Eigen::VectorXd resx = _dualx - MatrixVectorProduct(_U,_t);
-	// fval=1/q*norm(x,p)^q+alpha'*t;
-	const Eigen::VectorXd alpha_transposed = _alpha.transpose();
-	const double fval =
-			1./dualpower * ::pow(dualnorm(resx), dualpower)
-			+ ScalarVectorProduct(alpha_transposed, _t);
-	return fval;
-}
-
-double BregmanProjectionFunctional::operator()(
-		const Eigen::VectorXd &_t,
-		const SpaceElement_ptr_t &_dualx,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
-		) const
-{
-	return operator()(_t, _dualx->getVectorRepresentation(),_U, _alpha);
-}
-
-double BregmanProjectionFunctional::operator()(
 		const std::vector<double> &_t,
 		const SpaceElement_ptr_t &_dualx,
 		const std::vector<SpaceElement_ptr_t> &_U,
@@ -111,32 +84,6 @@ double BregmanProjectionFunctional::operator()(
 			1./dualpower * ::pow(dualnorm(resx), dualpower)
 			+ alpha_times_t;
 	return fval;
-}
-
-Eigen::VectorXd BregmanProjectionFunctional::gradient(
-		const Eigen::VectorXd &_t,
-		const Eigen::VectorXd &_dualx,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
-		) const
-{
-	const Eigen::VectorXd resx = _dualx - MatrixVectorProduct(_U, _t);
-	const Eigen::MatrixXd &U_transposed = _U.transpose();
-	const Eigen::VectorXd gval =
-			_alpha -
-			MatrixVectorProduct(U_transposed, J_q(resx));
-
-	return gval;
-}
-
-Eigen::VectorXd BregmanProjectionFunctional::gradient(
-		const Eigen::VectorXd &_t,
-		const SpaceElement_ptr_t &_dualx,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
-		) const
-{
-	return gradient(_t, _dualx->getVectorRepresentation(),_U, _alpha);
 }
 
 std::vector<double> BregmanProjectionFunctional::gradient(

@@ -8,6 +8,9 @@
 #include "BassoConfig.h"
 
 #include <boost/log/trivial.hpp>
+#include <iostream>
+#include <iterator>
+#include <sstream>
 
 #include "HyperplaneProjection.hpp"
 
@@ -15,11 +18,20 @@
 
 typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
 
+template<class T>
+std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
+{
+	std::copy(
+			values.begin(), values.end(),
+			std::ostream_iterator<T>(ost, " "));
+	return ost;
+}
+
 HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,
-	const Eigen::VectorXd &_x,
-	const Eigen::MatrixXd &_U,
-	const Eigen::VectorXd &_alpha
+	const SpaceElement_ptr_t &_x,
+	const std::vector<SpaceElement_ptr_t> &_U,
+	const std::vector<double> &_alpha
 	) :
 		bregman(_bregman),
 		x(_x),
@@ -27,21 +39,9 @@ HyperplaneProjection::HyperplaneProjection(
 		alpha(_alpha)
 {}
 
-HyperplaneProjection::HyperplaneProjection(
-	BregmanProjectionFunctional &_bregman,
-	const SpaceElement_ptr_t &_x,
-	const Eigen::MatrixXd &_U,
-	const Eigen::VectorXd &_alpha
-	) :
-		bregman(_bregman),
-		x(_x->getVectorRepresentation()),
-		U(_U),
-		alpha(_alpha)
-{}
-
 double
 HyperplaneProjection::function(
-		const Eigen::VectorXd &_value) const
+		const std::vector<double> &_value) const
 {
 	const double returnvalue =
 			bregman(
@@ -54,38 +54,38 @@ HyperplaneProjection::function(
 	return returnvalue;
 }
 
-const Eigen::VectorXd
+const std::vector<double>
 HyperplaneProjection::gradient(
-		const Eigen::VectorXd &_value) const
+		const std::vector<double> &_value) const
 {
-	const Eigen::VectorXd grad =
+	const std::vector<double> grad =
 			bregman.gradient(
 					_value,
 					x,
 					U,
 					alpha);
+	std::stringstream outputstream;
+	outputstream << grad;
 	BOOST_LOG_TRIVIAL(trace)
-		<< "grad() evaluates to " << grad.transpose();
+		<< "grad() evaluates to " << outputstream.str();
 	return grad;
 }
 
 void
 HyperplaneProjection::convertInternalTypeToArrayType(
-		const Eigen::VectorXd &_t,
+		const std::vector<double> &_t,
 		array_type & _x
 		) const
 {
-	for (unsigned int i=0; i<_t.innerSize();++i)
-		_x[i] = _t[i];
+	_x = _t;
 }
 
 void
 HyperplaneProjection::convertArrayTypeToInternalType(
 		const array_type & _x,
-		Eigen::VectorXd &_t
+		std::vector<double> &_t
 		) const
 {
-	for (unsigned int i=0;i<_t.innerSize();++i)
-		_t[i] = _x[i];
+	_t = _x;
 }
 

@@ -10,7 +10,7 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
+#include <vector>
 
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
@@ -28,24 +28,14 @@
  *
  */
 struct HyperplaneProjection :
-		public MinimizationFunctional<Eigen::VectorXd>
+		public MinimizationFunctional< std::vector<double> >
 {
-	typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
+	typedef typename MinimizationFunctional< std::vector<double> >::array_type array_type;
 
 	BregmanProjectionFunctional &bregman;
-	const Eigen::VectorXd &x;
-	const Eigen::MatrixXd &U;
-	const Eigen::VectorXd &alpha;
-
-	/** Constructor to initialize refs.
-	 *
-	 */
-	HyperplaneProjection(
-		BregmanProjectionFunctional &_bregman,
-		const Eigen::VectorXd &_x,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
-		);
+	const SpaceElement_ptr_t &x;
+	const std::vector<SpaceElement_ptr_t> &U;
+	const std::vector<double> &alpha;
 
 	/** Constructor to initialize refs.
 	 *
@@ -53,22 +43,22 @@ struct HyperplaneProjection :
 	HyperplaneProjection(
 		BregmanProjectionFunctional &_bregman,
 		const SpaceElement_ptr_t &_x,
-		const Eigen::MatrixXd &_U,
-		const Eigen::VectorXd &_alpha
+		const std::vector<SpaceElement_ptr_t> &_U,
+		const std::vector<double> &_alpha
 		);
 
-	double function(const Eigen::VectorXd &_value) const;
+	double function(const std::vector<double> &_value) const;
 
-	const Eigen::VectorXd gradient(const Eigen::VectorXd &_value) const;
+	const std::vector<double> gradient(const std::vector<double> &_value) const;
 
 	void convertInternalTypeToArrayType(
-			const Eigen::VectorXd &_t,
+			const std::vector<double> &_t,
 			array_type & _x
 			) const;
 
 	void convertArrayTypeToInternalType(
 			const array_type & _x,
-			Eigen::VectorXd &_t
+			std::vector<double> &_t
 			) const;
 };
 

@@ -12,6 +12,9 @@
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
+#include <iterator>
+#include <numeric>
+#include <sstream>
 
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
@@ -172,16 +175,18 @@ SequentialSubspaceMinimizerNoise::operator()(
 					::pow(istate.residuum,(double)j_r.getPower()-1.)
 					* (istate.residuum-Delta)/::pow(uNorm, J_q.getPower());
 
-			Eigen::VectorXd tmin(1);
-			tmin.setZero();
+			std::vector<double> tmin(1, 0.);
 			if (dual_solution->isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
 				tmin[0] = ::pow(beta, J_p.getPower() - 1.);
+				std::stringstream tmin_stream;
+				std::copy(tmin.begin(),tmin.end(),
+						std::ostream_iterator<double>(tmin_stream, " "));
 				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin;
+					<< "tmin is " << tmin_stream;
 			} else {
 				// t0=(beta/G)^(PowerX-1);
-				Eigen::VectorXd t0(1);
+				std::vector<double> t0(1, 0.);
 				t0[0] = ::pow(beta/G, J_p.getPower() - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "t0[0] is " << t0[0];
@@ -194,36 +199,53 @@ SequentialSubspaceMinimizerNoise::operator()(
 							MatrixVectorProduct_subspace,
 							ScalarVectorProduct_subspace);
 
-					HyperplaneProjection functional(
+					std::vector<SpaceElement_ptr_t> U(N);
+					std::generate(U.begin(), U.end(),
+							boost::bind(&NormedSpace::createElement,
+									boost::cref(DualSpaceX)));
+					for (size_t i=0;i<N;++i)
+						*(U[i]) = istate.getSearchSpace().col(i);
+					std::vector<double> alphas(N,0.);
+					for (size_t i=0;i<N;++i)
+						alphas[i] = istate.getAlphas().row(i)(0);
+					const HyperplaneProjection functional(
 							bregman,
-							dual_solution->getVectorRepresentation(),
-							istate.getSearchSpace(),
-							istate.getAlphas());
+							dual_solution,
+							U,
+							alphas);
 					Minimizer<gsl_vector> minimizer(1);
 
 					// TODO: current alpha needs to be modified for minimization!
-					Eigen::VectorXd steps(1);
+					std::vector<double> steps(1);
 					steps[0] = alpha+d;
-					FunctionalMinimizer<Eigen::VectorXd, gsl_vector> fmin(
+					FunctionalMinimizer<std::vector<double>, gsl_vector> fmin(
 						functional, minimizer, t0);
 
 					tmin = t0;
 					const unsigned int iterations =
 							fmin(1, TolY, tmin);
 
-					BOOST_LOG_TRIVIAL(trace)
-						<< "tmin " << tmin.transpose()
+					std::stringstream output_stepwidth;
+					std::copy(tmin.begin(), tmin.end(), std::ostream_iterator<double>(output_stepwidth, " "));
+					BOOST_LOG_TRIVIAL(debug)
+						<< "tmin " << output_stepwidth.str()
 						<< " found in " << iterations << " iterations.";
 				}
 			}
-			per_iteration_tuple.replace( "stepwidth", tmin.norm());
+			double stepwidth_norm = 0.;
+			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
+			per_iteration_tuple.replace( "stepwidth", stepwidth_norm);
 //			const Eigen::VectorXd uold = u;
 //			const double alphao0ld = alpha;
 //			const double dold = d;
 			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 			{
 				const SpaceElement_ptr_t tempelement = DualSpaceX.createElement();
-				*tempelement = tmin*u->getVectorRepresentation();
+				for (size_t i=0;i<N;++i) {
+					SpaceElement_ptr_t tempdir = DualSpaceX.createElement();
+					*tempdir = istate.getSearchSpace().col(i);
+					*tempelement +=  tmin[i] * tempdir;
+				}
 				*dual_solution -= tempelement;
 			}
 			BOOST_LOG_TRIVIAL(trace)
