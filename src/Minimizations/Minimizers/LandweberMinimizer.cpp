@@ -265,7 +265,8 @@ LandweberMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", returnvalues.residuum );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
-	overall_tuple.replace( "matrix_vector_products", (int)MatrixVectorProduct.getCount() );
+	overall_tuple.replace( "matrix_vector_products",
+			(int)(A.getCount()+A_t.getCount()) );
 	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
 //	overall_tuple.replace( "runtime_matrix_vector_products",
 //			boost::chrono::duration_cast<double>(MatrixVectorProduct.getTiming()).count() );

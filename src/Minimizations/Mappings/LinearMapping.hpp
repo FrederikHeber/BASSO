@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/chrono.hpp>
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"
@@ -82,6 +83,21 @@ public:
 	 * @return maximum of "angle" between column vectors
 	 */
 	const double MutualCoherence() const;
+
+	/** Returns the number of times the operator() was called.
+	 *
+	 * @return number of calls
+	 */
+	const unsigned int getCount() const
+	{ return MatrixVectorProduct.getCount(); }
+
+	/** Returns the total runtime the program spent so far on
+	 * its operator().
+	 *
+	 * @return runtime summed over all calls
+	 */
+	const boost::chrono::nanoseconds getTiming() const
+	{ return MatrixVectorProduct.getTiming(); }
 
 private:
 	//!> matrix representation of this linear mapping

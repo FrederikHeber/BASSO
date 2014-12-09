@@ -41,6 +41,10 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 		const SpaceElement_ptr_t &_x
 		) const
 {
+	// start timing
+	const boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
 	const Norm &l1norm = *getSourceSpace()->getNorm();
@@ -50,6 +54,13 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 			ElementCreator::create(getTargetSpace(),
 			RepresentationAdvocate::get(_x->getSignVector()));
 	*sign_x *= factor;
+
+	// finish timing
+	const boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	timing += timing_end - timing_start;
+	++count;
+
 	return sign_x;
 }
 

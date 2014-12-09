@@ -10,6 +10,8 @@
 
 #include "BassoConfig.h"
 
+#include <boost/chrono.hpp>
+
 #include "Minimizations/types.hpp"
 
 /** Mapping represents a transformation of SpaceElements from one Space
@@ -77,6 +79,19 @@ public:
 	 */
 	virtual const double getPower() const
 	{ return 0.; }
+
+	/** Returns the number of times the operator() was called.
+	 *
+	 * @return number of calls
+	 */
+	virtual const unsigned int getCount() const = 0;
+
+	/** Returns the total runtime the program spent so far on
+	 * its operator().
+	 *
+	 * @return runtime summed over all calls
+	 */
+	virtual const boost::chrono::nanoseconds getTiming() const = 0;
 
 protected:
 	//!> reference to space from which this mappings projects

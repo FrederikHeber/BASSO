@@ -10,6 +10,8 @@
 
 #include "BassoConfig.h"
 
+#include <boost/chrono.hpp>
+
 #include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/types.hpp"
 
@@ -60,9 +62,30 @@ public:
 	const double getLambda() const
 	{ return lambda; }
 
+	/** Returns the number of times the operator() was called.
+	 *
+	 * @return number of calls
+	 */
+	const unsigned int getCount() const
+	{ return count; }
+
+	/** Returns the total runtime the program spent so far on
+	 * its operator().
+	 *
+	 * @return runtime summed over all calls
+	 */
+	const boost::chrono::nanoseconds getTiming() const
+	{ return timing; }
+
 private:
 	//!> soft thresholding parameter
 	const double lambda;
+
+	//!> number of times the operator was called
+	mutable unsigned int count;
+
+	//!> total runtime spent on executing this operator
+	mutable boost::chrono::nanoseconds timing;
 };
 
 

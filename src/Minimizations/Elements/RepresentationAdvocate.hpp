@@ -40,6 +40,14 @@ private:
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }
+
+	static void set(
+			const SpaceElement_ptr_t & _element,
+			const Eigen::VectorXd &_vector)
+	{ 
+		assert( _element->vector.innerSize() == _vector.innerSize() );
+		_element->vector = _vector; 
+	}
 };
 
 

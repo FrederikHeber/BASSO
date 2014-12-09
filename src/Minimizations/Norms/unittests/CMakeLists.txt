@@ -6,6 +6,7 @@ add_executable (LpNormUnitTest
 	LpNormUnitTest.cpp) 
 target_link_libraries (LpNormUnitTest 
 	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}") 
 
 add_test (LpNormUnitTest 
@@ -17,6 +18,7 @@ add_executable (L1NormUnitTest
 	L1NormUnitTest.cpp) 
 target_link_libraries (L1NormUnitTest 
 	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}") 
 
 add_test (L1NormUnitTest 
@@ -28,6 +30,7 @@ add_executable (LInfinityNormUnitTest
 	LInfinityNormUnitTest.cpp) 
 target_link_libraries (LInfinityNormUnitTest 
 	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}") 
 
 add_test (LInfinityNormUnitTest 
@@ -39,6 +42,7 @@ add_executable (NormFactoryUnitTest
 	LInfinityNormUnitTest.cpp) 
 target_link_libraries (NormFactoryUnitTest 
 	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}") 
 
 add_test (NormFactoryUnitTest 

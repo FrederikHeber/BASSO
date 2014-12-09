@@ -39,6 +39,10 @@ const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
 		const SpaceElement_ptr_t &_x
 		) const
 {
+	// start timing
+	const boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	// [xNorm,k]=max(abs(x));
 	const std::pair<double,int> factor_index =
 			_x->getMaxCoefficientAndIndex();
@@ -49,7 +53,15 @@ const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
 	(*temp)[0] = 1.;
 	SpaceElement_ptr_t Jx =
 			temp->getCircShiftedVector(factor_index.second);  // no -1 here, as index starts at 0 here, not 1
-	return Jx * factor;
+	*Jx *= factor;
+
+	// finish timing
+	const boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	timing += timing_end - timing_start;
+	++count;
+
+	return Jx;
 }
 
 const Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const

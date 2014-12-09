@@ -10,6 +10,8 @@
 
 #include "BassoConfig.h"
 
+#include <boost/chrono.hpp>
+
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 
@@ -47,6 +49,28 @@ public:
 	 * @return mapping instance with adjoint
 	 */
 	const Mapping_ptr_t getAdjointMapping() const;
+
+	/** Returns the number of times the operator() was called.
+	 *
+	 * @return number of calls
+	 */
+	const unsigned int getCount() const
+	{ return count; }
+
+	/** Returns the total runtime the program spent so far on
+	 * its operator().
+	 *
+	 * @return runtime summed over all calls
+	 */
+	const boost::chrono::nanoseconds getTiming() const
+	{ return timing; }
+
+private:
+	//!> number of times the operator was called
+	mutable unsigned int count;
+
+	//!> total runtime spent on executing this operator
+	mutable boost::chrono::nanoseconds timing;
 };
 
 #endif /* LPDUALITYMAPPING_HPP_ */

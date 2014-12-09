@@ -21,7 +21,9 @@
 LpDualityMapping::LpDualityMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _power) :
-	PowerTypeDualityMapping(_NormedSpaceRef, _power)
+	PowerTypeDualityMapping(_NormedSpaceRef, _power),
+	count(0),
+	timing(boost::chrono::nanoseconds(0))
 {}
 
 /** General function to calculate the duality mapping.
@@ -47,49 +49,54 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 		const SpaceElement_ptr_t &_x
 		) const
 {
+	// start timing
+	const boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	const Norm &lpnorm = *getSourceSpace()->getNorm();
 	const double p = lpnorm.getPvalue();
+	SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
 	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
-		SpaceElement_ptr_t Jx =
-				ElementCreator::create(
-						getTargetSpace(),
-						RepresentationAdvocate::get(_x->getAbsVector()));
+		RepresentationAdvocate::set(
+				Jx, 
+				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 			(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
-		return Jx;
 	} else if (p < (double)power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
 		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
-		SpaceElement_ptr_t Jx =
-				ElementCreator::create(
-						getTargetSpace(),
-						RepresentationAdvocate::get(_x->getAbsVector()));
+		RepresentationAdvocate::set(
+				Jx, 
+				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 			(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
-		return Jx;
 	} else {
 		const double norm = lpnorm(_x);
 		if (norm < tolerance) {
 			// J=zeros(size(x,1),1);
-			SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
-			return Jx;
 		} else {
 			// J=n^(q-p)*abs(x).^(p-1).*sign(x);
 			const double exponent = (double)power-p;
 			const double pnorm = ::pow(norm, exponent);
-			SpaceElement_ptr_t Jx =
-					ElementCreator::create(
-							getTargetSpace(),
-							RepresentationAdvocate::get(_x->getAbsVector()));
+			RepresentationAdvocate::set(
+					Jx, 
+					RepresentationAdvocate::get(_x->getAbsVector()));
 			SpaceElement_ptr_t sign_x = _x->getSignVector();
 			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
-			return Jx;
 		}
 	}
+
+	// finish timing
+	const boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	timing += timing_end - timing_start;
+	++count;
+
+	return Jx;
 }
 
 const Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
