@@ -4,7 +4,7 @@
 
 
 cmake_minimum_required (VERSION 2.6)
-project (Basso)
+project (Basso C CXX)
 
 # set debug and release flags
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g3 -O0")
@@ -17,6 +17,8 @@ set (Basso_VERSION_MINOR 0)
 ######################## CHECK HEADERS  ##################################
 
 # does the system provide the log and exp functions?
+set(CMAKE_REQUIRED_INCLUDES math.h)
+set(CMAKE_REQUIRED_LIBRARIES m)
 include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
 check_function_exists (log HAVE_LOG)
 check_function_exists (exp HAVE_EXP)
