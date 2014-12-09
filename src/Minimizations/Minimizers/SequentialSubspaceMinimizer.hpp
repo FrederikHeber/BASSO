@@ -10,13 +10,13 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
 #include <set>
 #include <vector>
 
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/Searchspace/Searchspace.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Minimizations/types.hpp"
 
 class Database;
 
@@ -132,25 +132,12 @@ protected:
 		 * @param _residual initial residual vector
 		 * @param _residuum initial residuum
 		 * @param _N number of search directions
-		 * @param _MatrixVectorProduct_subspace counts for matrix-vector
-		 * @param _ScalarVectorProduct_subspace counts for vector-vector
-		 * products in the subspace (i.e. search space)
 		 */
 		void set(
 				const SpaceElement_ptr_t &_x0,
 				const SpaceElement_ptr_t &_residual,
 				const double _residuum,
-				const unsigned int _N,
-				const OperationCounter<
-						const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-						const Eigen::MatrixBase<Eigen::MatrixXd>&,
-						const Eigen::MatrixBase<Eigen::VectorXd>&
-						> &_MatrixVectorProduct_subspace,
-				const OperationCounter<
-					Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-					const Eigen::MatrixBase<Eigen::VectorXd>&,
-					const Eigen::MatrixBase<Eigen::VectorXd>&
-					> &_ScalarVectorProduct_subspace
+				const unsigned int _N
 				);
 
 		/** Getter for the dimension of the search directions in \a U.
@@ -178,13 +165,13 @@ protected:
 		 *
 		 * @return const ref to U
 		 */
-		const Eigen::MatrixXd & getSearchSpace() const;
+		const std::vector<SpaceElement_ptr_t> & getSearchSpace() const;
 
 		/** Const ref getter for representation of search space offsets.
 		 *
 		 * @return const ref to alphas
 		 */
-		const Eigen::VectorXd & getAlphas() const;
+		const std::vector<double> & getAlphas() const;
 
 		/** Getter for isInitialized, states whether set() needs to be
 		 * called yet.
@@ -199,26 +186,22 @@ protected:
 		/** Helper function to calculate the angles between each search
 		 * direction in ::U and the given _newdir.
 		 *
-		 * @param _Norm norm object to calculate norms
 		 * @param _newdir new direction to compare to present ones
 		 * @return vector of doubles, the angles
 		 */
 		const angles_t
 		calculateAngles(
-				const Norm &_Norm,
 				const SpaceElement_ptr_t &_newdir) const;
 
 		/** Helper function to calculate the angles between each search
 		 * direction in ::U and the given _newdir using Bregman projections
 		 * and distance.
 		 *
-		 * @param _Norm norm object to calculate norms
 		 * @param _newdir new direction to compare to present ones
 		 * @return vector of doubles, the angles
 		 */
 		const angles_t
 		calculateBregmanAngles(
-				const Norm &_Norm,
 				const SpaceElement_ptr_t &_newdir) const;
 
 		//!> contains search space representation and update

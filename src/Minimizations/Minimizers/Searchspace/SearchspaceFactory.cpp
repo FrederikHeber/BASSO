@@ -25,17 +25,7 @@ SearchspaceFactory::InstanceType = SearchspaceFactory::LastNDirections;
 
 Searchspace::ptr_t SearchspaceFactory::create(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-		const unsigned int _N,
-		const OperationCounter<
-			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-			const Eigen::MatrixBase<Eigen::MatrixXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_MatrixVectorProduct_subspace,
-		const OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_ScalarVectorProduct_subspace
+		const unsigned int _N
 		)
 {
 	Searchspace::ptr_t returninstance;
@@ -54,9 +44,7 @@ Searchspace::ptr_t SearchspaceFactory::create(
 					<< MinimizationIllegalValue_name("N");
 		}
 		returninstance.reset(new NemirovskyDirection(
-				_SearchDirectionSpace_ptr,
-				_MatrixVectorProduct_subspace,
-				_ScalarVectorProduct_subspace)
+				_SearchDirectionSpace_ptr)
 				);
 		break;
 	default:

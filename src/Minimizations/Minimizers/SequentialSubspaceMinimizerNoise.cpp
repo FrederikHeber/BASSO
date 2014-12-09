@@ -109,9 +109,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				_startvalue,
 				residual,
 				residuum,
-				N,
-				MatrixVectorProduct_subspace,
-				ScalarVectorProduct_subspace);
+				N);
 	}
 
 	// calculate some values prior to loop
@@ -197,20 +195,11 @@ SequentialSubspaceMinimizerNoise::operator()(
 							dynamic_cast<const PowerTypeDualityMapping &>(J_q),
 							J_q.getPower());
 
-					std::vector<SpaceElement_ptr_t> U(N);
-					std::generate(U.begin(), U.end(),
-							boost::bind(&NormedSpace::createElement,
-									boost::cref(DualSpaceX)));
-					for (size_t i=0;i<N;++i)
-						*(U[i]) = istate.getSearchSpace().col(i);
-					std::vector<double> alphas(N,0.);
-					for (size_t i=0;i<N;++i)
-						alphas[i] = istate.getAlphas().row(i)(0);
 					const HyperplaneProjection functional(
 							bregman,
 							dual_solution,
-							U,
-							alphas);
+							istate.getSearchSpace(),
+							istate.getAlphas());
 					Minimizer<gsl_vector> minimizer(1);
 
 					// TODO: current alpha needs to be modified for minimization!
@@ -232,18 +221,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 			}
 			double stepwidth_norm = 0.;
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
-			per_iteration_tuple.replace( "stepwidth", stepwidth_norm);
-//			const Eigen::VectorXd uold = u;
-//			const double alphao0ld = alpha;
-//			const double dold = d;
+			per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 			{
 				const SpaceElement_ptr_t tempelement = DualSpaceX.createElement();
-				for (size_t i=0;i<N;++i) {
-					SpaceElement_ptr_t tempdir = DualSpaceX.createElement();
-					*tempdir = istate.getSearchSpace().col(i);
-					*tempelement +=  tmin[i] * tempdir;
-				}
+				for (size_t i=0;i<N;++i)
+					*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
 				*dual_solution -= tempelement;
 			}
 			BOOST_LOG_TRIVIAL(trace)

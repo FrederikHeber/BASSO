@@ -32,17 +32,7 @@ void SequentialSubspaceMinimizer::IterationState::set(
 		const SpaceElement_ptr_t &_x0,
 		const SpaceElement_ptr_t &_residual,
 		const double _residuum,
-		const unsigned int _N,
-		const OperationCounter<
-			const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-			const Eigen::MatrixBase<Eigen::MatrixXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_MatrixVectorProduct_subspace,
-		const OperationCounter<
-			Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-			const Eigen::MatrixBase<Eigen::VectorXd>&,
-			const Eigen::MatrixBase<Eigen::VectorXd>&
-			> &_ScalarVectorProduct_subspace
+		const unsigned int _N
 		)
 {
 	/// -# initialize return structure
@@ -57,9 +47,7 @@ void SequentialSubspaceMinimizer::IterationState::set(
 	// use pre-specified type
 	searchspace = SearchspaceFactory::create(
 					_x0->getSpace()->getDualSpace(),
-					_N,
-					_MatrixVectorProduct_subspace,
-					_ScalarVectorProduct_subspace);
+					_N);
 	isInitialized = true;
 }
 
@@ -89,20 +77,20 @@ SequentialSubspaceMinimizer::IterationState::updateSearchSpace(
 	searchspace->update(_newdir, _alpha, _dual_iterate, _iterate);
 }
 
-const Eigen::MatrixXd &
+const std::vector<SpaceElement_ptr_t> &
 SequentialSubspaceMinimizer::IterationState::getSearchSpace() const
 {
-	static const Eigen::MatrixXd zeroMatrix = Eigen::MatrixXd::Zero(0,0);
+	static const std::vector<SpaceElement_ptr_t> zeroSearchspace;
 	if (isInitialized)
 		return searchspace->getSearchSpace();
 	else
-		return zeroMatrix;
+		return zeroSearchspace;
 }
 
-const Eigen::VectorXd &
+const std::vector<double> &
 SequentialSubspaceMinimizer::IterationState::getAlphas() const
 {
-	static const Eigen::VectorXd zeroVector = Eigen::VectorXd::Zero(0);
+	static const std::vector<double> zeroVector;
 	if (isInitialized)
 		return searchspace->getAlphas();
 	else
@@ -111,17 +99,14 @@ SequentialSubspaceMinimizer::IterationState::getAlphas() const
 
 const SequentialSubspaceMinimizer::IterationState::angles_t
 SequentialSubspaceMinimizer::IterationState::calculateAngles(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
-	return searchspace->calculateAngles(_Norm, _newdir);
+	return searchspace->calculateAngles(_newdir);
 }
 
 const SequentialSubspaceMinimizer::IterationState::angles_t
 SequentialSubspaceMinimizer::IterationState::calculateBregmanAngles(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
-	return searchspace->calculateBregmanAngles(
-			_Norm, _newdir);
+	return searchspace->calculateBregmanAngles(_newdir);
 }

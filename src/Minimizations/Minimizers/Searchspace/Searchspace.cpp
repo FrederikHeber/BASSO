@@ -11,6 +11,7 @@
 #include "Searchspace.hpp"
 
 #include <cmath>
+#include <iterator>
 #include <limits>
 
 #include "Log/Logging.hpp"
@@ -29,43 +30,46 @@ Searchspace::Searchspace(
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*_SearchDirectionSpace_ptr->getDualityMapping()
 					),
-					_SearchDirectionSpace_ptr->getDualityMapping()->getPower())
+					_SearchDirectionSpace_ptr->getDualityMapping()->getPower()),
+	U(_N),
+	alphas(_N,0.)
 {
-	U = Eigen::MatrixXd::Zero(
-			SearchDirectionSpace_ptr->getDimension(),
-			_N);
-	alphas = Eigen::VectorXd::Zero(_N);
+	assert( U.size() == _N );
+	std::generate(U.begin(), U.end(),
+			boost::bind(&NormedSpace::createElement,
+					boost::cref(_SearchDirectionSpace_ptr)));
+	// DEBUG: check whether directions are initialized and zero
+	const SearchDirections_t::const_iterator checkiter =
+			std::find_if(U.begin(), U.end(),
+					!boost::bind(&SpaceElement::isZero,_1));
+	assert( checkiter == U.end() );
 }
 
 unsigned int
 Searchspace::getDimension() const
 {
-	return getSearchSpace().outerSize();
+	return getSearchSpace().size();
 }
 
 const Searchspace::angles_t
 Searchspace::calculateBregmanAngles(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
 	// calculate all angles
-	const Eigen::MatrixXd &U = getSearchSpace();
 	const unsigned int N = getDimension();
 	angles_t angles(N, 0.);
 
 	for (unsigned int l=0;l<N;++l) {
-		if (U.col(l).norm() < std::numeric_limits<double>::epsilon())
+		if (U[l]->Norm() < std::numeric_limits<double>::epsilon())
 			continue;
 		// first: minimum, second: minimizer (equals length in LpNorm here)
-		SpaceElement_ptr_t temp = SearchDirectionSpace_ptr->createElement();
-		*temp = U.col(l);
 		const std::pair<double, double> tmp =
 				projector(
-						temp,
+						U[l],
 						_newdir,
 						1e-4);
 		const double projected_distance = tmp.second;
-		const double original_distance = _Norm(_newdir);
+		const double original_distance = _newdir->Norm();
 		if (fabs(original_distance) > std::numeric_limits<double>::epsilon()*1e2) {
 			angles[l] = fabs(projected_distance / original_distance);
 		} else {
@@ -81,24 +85,19 @@ Searchspace::calculateBregmanAngles(
 
 const Searchspace::angles_t
 Searchspace::calculateAngles(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
 	// calculate all angles
-	const Eigen::MatrixXd &U = getSearchSpace();
 	const unsigned int N = getDimension();
 	angles_t angles(N, 0.);
 
 	for (unsigned int l=0;l<N;++l) {
-		if (U.col(l).norm() < std::numeric_limits<double>::epsilon()) {
+		if (U[l]->Norm() < std::numeric_limits<double>::epsilon()) {
 			continue;
 		}
 		// first: minimum, second: minimizer (equals length in LpNorm here)
-		const Eigen::VectorXd Ucol_transposed = U.col(l).transpose();
-		const double projected_distance = Ucol_transposed.dot(
-				_newdir->getVectorRepresentation())
-				/ _Norm(U.col(l));
-		const double original_distance = _Norm(_newdir);
+		const double projected_distance = U[l] * _newdir / U[l]->Norm();
+		const double original_distance = _newdir->Norm();
 		if (fabs(original_distance) > std::numeric_limits<double>::epsilon()*1e2) {
 			angles[l] = fabs(projected_distance / original_distance);
 		} else {

@@ -30,6 +30,12 @@ public:
 	//!> typedef for a shared pointer containing such an instance
 	typedef boost::shared_ptr<Searchspace> ptr_t;
 
+	//!> typedef for how the set of search directions are stored
+	typedef std::vector<SpaceElement_ptr_t> SearchDirections_t;
+
+	//!> typedef for how the set of search directions are stored
+	typedef std::vector<double> Weights_t;
+
 	/** Constructor for class Searchspace, initializes matrix and
 	 * vector representations.
 	 *
@@ -47,14 +53,14 @@ public:
 	 *
 	 * @return const ref to U
 	 */
-	const Eigen::MatrixXd & getSearchSpace() const
+	const SearchDirections_t & getSearchSpace() const
 	{ return U; }
 
 	/** Const ref getter for \a alphas.
 	 *
 	 * @return const ref to alphas
 	 */
-	const Eigen::VectorXd & getAlphas() const
+	const Weights_t & getAlphas() const
 	{ return alphas; }
 
 	/** Getter for the dimension of the search directions in \a U.
@@ -90,27 +96,21 @@ public:
 	/** Helper function to calculate the angles between each search
 	 * direction in ::U and the given _newdir.
 	 *
-	 * @param _Norm norm object to calculate norms
 	 * @param _newdir new direction to compare to present ones
 	 * @return vector of doubles, the angles
 	 */
 	const angles_t
-	calculateAngles(
-			const Norm &_Norm,
-			const SpaceElement_ptr_t &_newdir) const;
+	calculateAngles(const SpaceElement_ptr_t &_newdir) const;
 
 	/** Helper function to calculate the angles between each search
 	 * direction in ::U and the given _newdir using Bregman projections
 	 * and distance.
 	 *
-	 * @param _Norm norm object to calculate norms
 	 * @param _newdir new direction to compare to present ones
 	 * @return vector of doubles, the angles
 	 */
 	const angles_t
-	calculateBregmanAngles(
-			const Norm &_Norm,
-			const SpaceElement_ptr_t &_newdir) const;
+	calculateBregmanAngles(const SpaceElement_ptr_t &_newdir) const;
 
 protected:
 	//!> reference to Space of search directions for checking
@@ -120,9 +120,9 @@ protected:
 	VectorProjection projector;
 
 	//!> subspace matrix with search directions as column vectors
-	Eigen::MatrixXd U;
+	SearchDirections_t U;
 	//!> offset of hyperplanes of search directions for projection
-	Eigen::VectorXd alphas;
+	Weights_t alphas;
 };
 
 

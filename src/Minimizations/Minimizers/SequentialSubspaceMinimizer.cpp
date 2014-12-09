@@ -13,7 +13,6 @@
 #include <boost/assign.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
-#include <Eigen/Dense>
 #include <iterator>
 #include <numeric>
 #include <sstream>
@@ -143,9 +142,7 @@ SequentialSubspaceMinimizer::operator()(
 				_startvalue,
 				residual,
 				residuum,
-				N,
-				MatrixVectorProduct_subspace,
-				ScalarVectorProduct_subspace);
+				N);
 	}
 
 	/// -# calculate some values prior to loop
@@ -283,9 +280,7 @@ SequentialSubspaceMinimizer::operator()(
 			// calculate bregman angles for angles database
 			{
 				const IterationState::angles_t angles =
-						istate.calculateBregmanAngles(
-								DualNormX,
-								newdir);
+						istate.calculateBregmanAngles(newdir);
 				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
 					std::stringstream componentname;
 					componentname << "bregman_angle" << i+1;
@@ -295,9 +290,7 @@ SequentialSubspaceMinimizer::operator()(
 			// calculate "scalar product" angles for angles database
 			{
 				const IterationState::angles_t angles =
-						istate.calculateAngles(
-								DualNormX,
-								newdir);
+						istate.calculateAngles(newdir);
 				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
 					std::stringstream componentname;
 					componentname << "angle" << i+1;
@@ -331,20 +324,11 @@ SequentialSubspaceMinimizer::operator()(
 					dynamic_cast<const PowerTypeDualityMapping &>(J_q),
 					J_q.getPower());
 
-			std::vector<SpaceElement_ptr_t> U(N);
-			std::generate(U.begin(), U.end(),
-					boost::bind(&NormedSpace::createElement,
-							boost::cref(DualSpaceX)));
-			for (size_t i=0;i<N;++i)
-				*(U[i]) = istate.getSearchSpace().col(i);
-			std::vector<double> alphas(N,0.);
-			for (size_t i=0;i<N;++i)
-				alphas[i] = istate.getAlphas().row(i)(0);
 			const HyperplaneProjection functional(
 					bregman,
 					dual_solution,
-					U,
-					alphas);
+					istate.getSearchSpace(),
+					istate.getAlphas());
 
 			// due to templation we need to instantiate both, as user
 			// decides during runtime which we need
@@ -436,15 +420,12 @@ SequentialSubspaceMinimizer::operator()(
 		}
 		double stepwidth_norm = 0.;
 		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
-		per_iteration_tuple.replace( "stepwidth", stepwidth_norm);
+		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 		{
 			const SpaceElement_ptr_t tempelement = DualSpaceX.createElement();
-			for (size_t i=0;i<N;++i) {
-				SpaceElement_ptr_t tempdir = DualSpaceX.createElement();
-				*tempdir = istate.getSearchSpace().col(i);
-				*tempelement +=  tmin[i] * tempdir;
-			}
+			for (size_t i=0;i<N;++i)
+				*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
 			*dual_solution -= tempelement;
 		}
 		BOOST_LOG_TRIVIAL(trace)

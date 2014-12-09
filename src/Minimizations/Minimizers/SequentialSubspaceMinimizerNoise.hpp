@@ -10,8 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 
 class Database;

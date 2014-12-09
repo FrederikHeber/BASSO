@@ -21,22 +21,10 @@ public:
 	 * and the current dual iterate.
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
-	 * @param _MatrixVectorProduct_subspace counts for matrix-vector
-	 * @param _ScalarVectorProduct_subspace counts for vector-vector
 	 * products in the subspace (i.e. search space)
 	 */
 	NemirovskyDirection(
-			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-			const OperationCounter<
-				const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-				const Eigen::MatrixBase<Eigen::MatrixXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> &_MatrixVectorProduct_subspace,
-			const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> &_ScalarVectorProduct_subspace);
+			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr);
 
 	/** This function performs the actual update of the search space.
 	 *
@@ -58,21 +46,6 @@ public:
 	 */
 	const unsigned int getIndex() const
 	{ return 0; }
-
-private:
-	//!> counter for the small matrix vector products in subspace
-	const OperationCounter<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-		const Eigen::MatrixBase<Eigen::MatrixXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> &MatrixVectorProduct_subspace;
-
-	//!> counter for the small scalar products in subspace
-	const OperationCounter<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-		const Eigen::MatrixBase<Eigen::VectorXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> &ScalarVectorProduct_subspace;
 };
 
 

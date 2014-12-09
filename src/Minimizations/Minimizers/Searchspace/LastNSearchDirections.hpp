@@ -94,26 +94,22 @@ private:
 	 * in the state and selects the one that is most parallel,
 	 * i.e. the one with maximum angle.
 	 *
-	 * @param _Norm norm object to calculate norms
 	 * @param _newdir new direction to compare to present ones
 	 * @return index whose search direction is most parallel to \a newdir
 	 */
 	unsigned int
 	updateIndexToMostParallel(
-			const Norm &_Norm,
 			const SpaceElement_ptr_t &_newdir) const;
 
 	/** Function that compares new search direction with present ones
 	 * in the state and selects the one that is most orthogonal,
 	 * i.e. the one with minimum angle.
 	 *
-	 * @param _Norm norm object to calculate norms
 	 * @param _newdir new direction to compare to present ones
 	 * @return index whose search direction is most orthogonal to \a newdir
 	 */
 	unsigned int
 	updateIndexToMostOrthogonal(
-			const Norm &_Norm,
 			const SpaceElement_ptr_t &_newdir) const;
 
 	//!> typedef for a set of indices

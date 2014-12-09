@@ -57,14 +57,10 @@ void LastNSearchDirections::update(
 			index = advanceIndex();
 			break;
 		case MostParallel:
-			index = updateIndexToMostParallel(
-					*_newdir->getSpace()->getNorm(),
-					_newdir);
+			index = updateIndexToMostParallel(_newdir);
 			break;
 		case MostOrthogonal:
-			index = updateIndexToMostOrthogonal(
-					*_newdir->getSpace()->getNorm(),
-					_newdir);
+			index = updateIndexToMostOrthogonal(_newdir);
 			break;
 		default:
 			BOOST_LOG_TRIVIAL(error)
@@ -73,8 +69,8 @@ void LastNSearchDirections::update(
 	}
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Updated index is " << index;
-	U.col(index) = _newdir->getVectorRepresentation();
-	alphas(index) = _alpha;
+	*(U[index]) = _newdir;
+	alphas[index] = _alpha;
 }
 
 unsigned int
@@ -99,13 +95,10 @@ LastNSearchDirections::replenishIndexset(
 
 unsigned int
 LastNSearchDirections::updateIndexToMostParallel(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
 	// calculate the angles
-	const angles_t angles = calculateBregmanAngles(
-			_Norm,
-			_newdir);
+	const angles_t angles = calculateBregmanAngles(_newdir);
 
 	angles_t::const_iterator indexiter = angles.begin();
 	if (enforceRandomMapping) {
@@ -129,7 +122,7 @@ LastNSearchDirections::updateIndexToMostParallel(
 	} else {
 		unsigned int i=0;
 		for (;i<getDimension();++i)
-			if (U.col(i).isZero())
+			if (U[i]->isZero())
 				break;
 		// always fill a zero column if present (for the first N steps)
 		indexiter =
@@ -151,13 +144,10 @@ LastNSearchDirections::updateIndexToMostParallel(
 
 unsigned int
 LastNSearchDirections::updateIndexToMostOrthogonal(
-		const Norm &_Norm,
 		const SpaceElement_ptr_t &_newdir) const
 {
 	// calculate the angles
-	angles_t angles = calculateBregmanAngles(
-			_Norm,
-			_newdir);
+	angles_t angles = calculateBregmanAngles(_newdir);
 
 	angles_t::const_iterator indexiter = angles.begin();
 	if (enforceRandomMapping) {
@@ -183,7 +173,7 @@ LastNSearchDirections::updateIndexToMostOrthogonal(
 	} else {
 		unsigned int i=0;
 		for (;i<getDimension();++i)
-			if (U.col(i).isZero())
+			if (U[i]->isZero())
 				break;
 		// find min angle (this automatically fills all zero columns)
 		indexiter =

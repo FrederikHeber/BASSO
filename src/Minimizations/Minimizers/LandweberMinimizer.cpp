@@ -14,7 +14,6 @@
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
-#include <Eigen/Dense>
 #include <limits>
 #include <fstream>
 #include <sstream>

@@ -38,17 +38,7 @@ public:
 	 */
 	static Searchspace::ptr_t create(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-			const unsigned int _N,
-			const OperationCounter<
-					const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-					const Eigen::MatrixBase<Eigen::MatrixXd>&,
-					const Eigen::MatrixBase<Eigen::VectorXd>&
-					> &_MatrixVectorProduct_subspace,
-			const OperationCounter<
-				Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				> &_ScalarVectorProduct_subspace
+			const unsigned int _N
 			);
 
 	/** Setter for the desired type to produce.
