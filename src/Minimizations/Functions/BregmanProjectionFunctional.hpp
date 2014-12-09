@@ -11,6 +11,7 @@
 #include "BassoConfig.h"
 
 #include <Eigen/Dense>
+#include <vector>
 
 #include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
@@ -102,6 +103,20 @@ public:
 	 * \param _U search space spanned by column vectors
 	 * \param _alpha offsets of affine subspace
 	 */
+	double operator()(
+			const std::vector<double> &_t,
+			const SpaceElement_ptr_t &_dualx,
+			const std::vector<SpaceElement_ptr_t> &_U,
+			const std::vector<double> &_alpha
+			) const;
+
+	/** Implements BregmanProjectionFunctional functional.
+	 *
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
+	 */
 	Eigen::VectorXd gradient(
 			const Eigen::VectorXd &_t,
 			const Eigen::VectorXd &_dualx,
@@ -121,6 +136,20 @@ public:
 			const SpaceElement_ptr_t &_dualx,
 			const Eigen::MatrixXd &_U,
 			const Eigen::VectorXd &_alpha
+			) const;
+
+	/** Implements BregmanProjectionFunctional functional.
+	 *
+	 * \param _t coefficients to column vectors of search space
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
+	 */
+	std::vector<double> gradient(
+			const std::vector<double> &_t,
+			const SpaceElement_ptr_t &_dualx,
+			const std::vector<SpaceElement_ptr_t> &_U,
+			const std::vector<double> &_alpha
 			) const;
 
 private:

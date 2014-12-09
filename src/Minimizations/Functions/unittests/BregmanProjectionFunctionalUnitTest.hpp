@@ -57,6 +57,8 @@ private:
 		const Eigen::MatrixBase<Eigen::VectorXd>&
 		> *ScalarVectorProduct;
 
+	//!> "global" tolerance threshold for minimization
+	static const double tolerance;
 };
 
 

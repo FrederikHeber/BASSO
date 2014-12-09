@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <Eigen/Dense>
+#include <numeric>
 
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
@@ -84,14 +85,31 @@ double BregmanProjectionFunctional::operator()(
 		const Eigen::VectorXd &_alpha
 		) const
 {
+	return operator()(_t, _dualx->getVectorRepresentation(),_U, _alpha);
+}
+
+double BregmanProjectionFunctional::operator()(
+		const std::vector<double> &_t,
+		const SpaceElement_ptr_t &_dualx,
+		const std::vector<SpaceElement_ptr_t> &_U,
+		const std::vector<double> &_alpha
+		) const
+{
+	assert ( _t.size() == _U.size() );
+	assert ( _t.size() == _alpha.size() );
 	// x=x-U*t;
-	const Eigen::VectorXd resx =
-			_dualx->getVectorRepresentation() - MatrixVectorProduct(_U,_t);
+	SpaceElement_ptr_t resx = _dualx->getSpace()->createElement();
+	*resx = std::inner_product(_t.begin(), _t.end(),_U.begin(),resx);
+	*resx = _dualx - resx;
 	// fval=1/q*norm(x,p)^q+alpha'*t;
-	const Eigen::VectorXd alpha_transposed = _alpha.transpose();
+	double alpha_times_t = 0.;
+	alpha_times_t = std::inner_product(
+			_t.begin(), _t.end(),
+			_alpha.begin(),
+			alpha_times_t);
 	const double fval =
 			1./dualpower * ::pow(dualnorm(resx), dualpower)
-			+ ScalarVectorProduct(alpha_transposed, _t);
+			+ alpha_times_t;
 	return fval;
 }
 
@@ -118,12 +136,25 @@ Eigen::VectorXd BregmanProjectionFunctional::gradient(
 		const Eigen::VectorXd &_alpha
 		) const
 {
-	const Eigen::VectorXd resx =
-			_dualx->getVectorRepresentation() - MatrixVectorProduct(_U, _t);
-	const Eigen::MatrixXd &U_transposed = _U.transpose();
-	const Eigen::VectorXd gval =
-			_alpha -
-			MatrixVectorProduct(U_transposed, J_q(resx));
+	return gradient(_t, _dualx->getVectorRepresentation(),_U, _alpha);
+}
 
+std::vector<double> BregmanProjectionFunctional::gradient(
+		const std::vector<double> &_t,
+		const SpaceElement_ptr_t &_dualx,
+		const std::vector<SpaceElement_ptr_t> &_U,
+		const std::vector<double> &_alpha
+		) const
+{
+	assert ( _t.size() == _U.size() );
+	assert ( _t.size() == _alpha.size() );
+	// x=x-U*t;
+	SpaceElement_ptr_t resx = _dualx->getSpace()->createElement();
+	*resx = std::inner_product(_t.begin(), _t.end(),_U.begin(),resx);
+	*resx = _dualx - resx;
+	std::vector<double> gval(_alpha);
+	const SpaceElement_ptr_t dual_resx = J_q(resx);
+	for (size_t i=0;i<_t.size();++i)
+		gval[i] -= _U[i] * dual_resx;
 	return gval;
 }
