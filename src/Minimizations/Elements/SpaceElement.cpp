@@ -114,7 +114,8 @@ SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const
 
 const double SpaceElement::operator*(const SpaceElement_ptr_t &_element) const
 {
-	return (vector.transpose() * _element->vector);
+	return NormedSpaceRef->ScalarVectorProduct(
+			vector, _element->vector); //.transpose()
 }
 
 const double SpaceElement::operator*(const SpaceElement &_element) const

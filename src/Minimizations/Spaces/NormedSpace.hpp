@@ -12,7 +12,11 @@
 
 #include "Minimizations/types.hpp"
 
+#include <boost/function.hpp>
 #include <boost/weak_ptr.hpp>
+#include <Eigen/Dense>
+
+#include "MatrixIO/OperationCounter.hpp"
 
 class NormedSpaceFactory;
 
@@ -26,9 +30,8 @@ private:
 	 *
 	 * @param _dimension dimension of this space
 	 */
-	NormedSpace(const unsigned int _dimension) :
-		dimension(_dimension)
-	{}
+	NormedSpace(
+			const unsigned int _dimension);
 
 	/** Setter of the internal space ref.
 	 *
@@ -89,11 +92,7 @@ public:
 			const unsigned int _dimension,
 			const Norm_ptr_t &_norm,
 			const Mapping_ptr_t &_dualitymapping
-			) :
-		norm(_norm),
-		dualitymapping(_dualitymapping),
-		dimension(_dimension)
-	{}
+			);
 
 	/** Getter for the this space.
 	 *
@@ -156,8 +155,22 @@ private:
 
 	//!> dimension of the representations in this vector space
 	const unsigned int dimension;
-};
 
+	//!> internal function for operator counting
+	boost::function<
+		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
+				const Eigen::MatrixBase<Eigen::VectorXd>&,
+				const Eigen::MatrixBase<Eigen::VectorXd>&)
+				> scalar_vector_fctor;
+
+public:
+	//!> operator counter for scalar vector products in this space
+	const OperationCounter<
+		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
+		const Eigen::MatrixBase<Eigen::VectorXd>&,
+		const Eigen::MatrixBase<Eigen::VectorXd>&
+		> ScalarVectorProduct;
+};
 
 
 #endif /* NORMEDSPACE_HPP_ */
