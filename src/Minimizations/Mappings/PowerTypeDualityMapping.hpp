@@ -41,14 +41,6 @@ public:
 	void setTolerance(const double _tolerance) const
 	{ tolerance = _tolerance; }
 
-	/** Evaluates duality mapping at \a _x.
-	 *
-	 * \param _x point where to evaluate
-	 * \param _power power of duality mapping's weight
-	 */
-	virtual const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x) const = 0;
-
 	/** Mapping function.
 	 *
 	 * @param _sourceelement element to map/transform
@@ -77,6 +69,15 @@ public:
 	 */
 	const double getPower() const
 	{ return power; }
+
+protected:
+	/** Evaluates duality mapping at \a _x.
+	 *
+	 * \param _x point where to evaluate
+	 * \param _power power of duality mapping's weight
+	 */
+	virtual const Eigen::VectorXd operator()(
+			const Eigen::VectorXd &_x) const = 0;
 
 protected:
 	//!> power type of the weight function of this duality mapping

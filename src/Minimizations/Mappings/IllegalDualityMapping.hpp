@@ -14,12 +14,16 @@
 
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 
+class IllegalDualityMappingUnitTest;
+
 /** This class acts as a placeholder for a LpDualityMapping and ensures that this
  * function is never called in an algorithm.
  */
 class IllegalDualityMapping :
 	public LpDualityMapping
 {
+	//!> grant unit test access to private parts
+	friend class IllegalDualityMappingUnitTest;
 public:
 	/** Constructor of class IllegalDualityMapping.
 	 *
@@ -47,6 +51,14 @@ public:
 			const SpaceElement_ptr_t &_sourceelement
 			) const;
 
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	Mapping_ptr_t getAdjointMapping() const;
+
+private:
+
 	/** This function throws an assertion and must never be called.
 	 * @param _x
 	 * @param _power power of the duality mapping
@@ -55,11 +67,6 @@ public:
 	const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x) const;
 
-	/** Creates the adjoint mapping to this mapping.
-	 *
-	 * @return mapping instance with adjoint
-	 */
-	Mapping_ptr_t getAdjointMapping() const;
 };
 
 

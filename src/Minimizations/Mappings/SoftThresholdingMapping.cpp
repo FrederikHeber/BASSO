@@ -9,6 +9,9 @@
 
 #include "Math/Helpers.hpp"
 
+#include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+
 SoftThresholdingMapping::SoftThresholdingMapping(
 		const NormedSpace_ptr_t &_NormedSpaceRef) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
@@ -21,6 +24,15 @@ SoftThresholdingMapping::SoftThresholdingMapping(
 	L1DualityMapping(_NormedSpaceRef, 2.),
 	lambda(_lambda)
 {}
+
+SpaceElement_ptr_t
+SoftThresholdingMapping::operator()(
+		const SpaceElement_ptr_t &_x) const
+{
+	SpaceElement_ptr_t result = _x->getSpace()->createElement();
+	*result = operator()(_x->getVectorRepresentation());
+	return result;
+}
 
 const Eigen::VectorXd
 SoftThresholdingMapping::operator()(

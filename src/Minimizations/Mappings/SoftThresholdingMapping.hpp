@@ -13,10 +13,15 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
+#include "Minimizations/types.hpp"
+
+class SoftThresholdingMappingUnitTest;
 
 class SoftThresholdingMapping :
 	public L1DualityMapping
 {
+	//!> grant unit test access to private parts
+	friend class SoftThresholdingMappingUnitTest;
 public:
 	/** Default constructor of class SoftThresholdingMapping.
 	 *
@@ -38,8 +43,8 @@ public:
 	 * @param _x vector to soft-threshold
 	 * @return componentwise soft threshold of \a _x by \a lambda
 	 */
-	const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x) const;
+	SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_x) const;
 
 	/** Setter for soft thresholding parameter \a lambda.
 	 *
@@ -56,6 +61,16 @@ public:
 	 */
 	const double getLambda() const
 	{ return lambda; }
+
+private:
+
+	/** Evaluates for the given \a _x the soft thresholding result with respect
+	 * to \a _lambda.
+	 * @param _x vector to soft-threshold
+	 * @return componentwise soft threshold of \a _x by \a lambda
+	 */
+	const Eigen::VectorXd operator()(
+			const Eigen::VectorXd &_x) const;
 
 private:
 	//!> soft thresholding parameter

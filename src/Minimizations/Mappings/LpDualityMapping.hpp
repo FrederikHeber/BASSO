@@ -35,18 +35,20 @@ public:
 			const NormedSpace_ptr_t &_NormedSpaceRef,
 			const double _power);
 
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	Mapping_ptr_t getAdjointMapping() const;
+
+private:
+
 	/** Evaluates duality mapping at \a _x.
 	 *
 	 * \param _x point where to evaluate
 	 */
 	virtual const Eigen::VectorXd operator()(
 			const Eigen::VectorXd &_x) const;
-
-	/** Creates the adjoint mapping to this mapping.
-	 *
-	 * @return mapping instance with adjoint
-	 */
-	Mapping_ptr_t getAdjointMapping() const;
 };
 
 #endif /* LPDUALITYMAPPING_HPP_ */

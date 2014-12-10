@@ -56,27 +56,33 @@ int main()
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
+		SpaceElement_ptr_t vElement = SpaceX->createElement();
+		*vElement = v;
 		Mapping_ptr_t J_1 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_1 with weight 2 of v is ("
-				<< (*J_1)(v) << ")" << std::endl;
+				<< (*J_1)(vElement) << ")" << std::endl;
 	}
 	{
 		const double p = 2.;
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
+		SpaceElement_ptr_t vElement = SpaceX->createElement();
+		*vElement = v;
 		Mapping_ptr_t J_2 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_2 with weight 2 of v is ("
-				<< (*J_2)(v) << ")" << std::endl;
+				<< (*J_2)(vElement) << ")" << std::endl;
 	}
 	{
 		const double p = std::numeric_limits<double>::infinity();
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
+		SpaceElement_ptr_t vElement = SpaceX->createElement();
+		*vElement = v;
 		Mapping_ptr_t J_infty = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_infty with weight 2 of v is ("
-				<< (*J_infty)(v) << ")" << std::endl;
+				<< (*J_infty)(vElement) << ")" << std::endl;
 	}
 
 	// testing of BregmanProjectionFunctional

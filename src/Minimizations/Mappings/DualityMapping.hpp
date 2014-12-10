@@ -31,6 +31,8 @@ public:
 			) :
 		Mapping(_NormedSpaceRef,_NormedSpaceRef->getDualSpace())
 	{}
+
+private:
 };
 
 
