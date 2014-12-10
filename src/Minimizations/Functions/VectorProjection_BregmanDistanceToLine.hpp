@@ -34,6 +34,8 @@ public:
 	const Eigen::VectorXd &argvector;
 	//!> power type of the distance
 	const double powertype;
+	//!> norm of line vector which is used multiply
+	const double linevector_norm;
 
 	BregmanDistanceToLine(
 			const BregmanDistance &_distance,

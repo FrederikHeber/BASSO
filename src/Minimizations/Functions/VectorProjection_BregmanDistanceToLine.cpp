@@ -25,19 +25,15 @@ BregmanDistanceToLine::BregmanDistanceToLine(
 		J_q(_J_q),
 		linevector(_linevector),
 		argvector(_tobeprojected),
-		powertype(_powertype)
-{
-	// linevector normalized in respective norm
-	assert( !linevector.isZero() );
-	const_cast<Eigen::VectorXd &>(linevector) *= 1./dualnorm(_linevector);
-}
+		powertype(_powertype),
+		linevector_norm(dualnorm(linevector))
+{}
 
 double
 BregmanDistanceToLine::function(
 		const double &_value) const
 {
-	assert( fabs(dualnorm(linevector) - 1.) < std::numeric_limits<double>::epsilon()*1e2 );
-	const Eigen::VectorXd Jy = _value*linevector;
+	const Eigen::VectorXd Jy = (1./linevector_norm)*_value*linevector;
 	const double result = distance(argvector, Jy);
 	return result;
 }
@@ -46,11 +42,10 @@ const double
 BregmanDistanceToLine::gradient(
 		const double &_value) const
 {
-	assert( fabs(dualnorm(linevector) - 1.) < std::numeric_limits<double>::epsilon()*1e2 );
-	const Eigen::VectorXd Jy = (_value)*linevector;
-	const double grad = (J_q(Jy) - J_q(argvector)).transpose()
-			* (linevector);
-	return grad;
+	const Eigen::VectorXd Jy = (1./linevector_norm)*(_value)*linevector;
+	const double grad =
+			(J_q(Jy) - J_q(argvector)).transpose() * (linevector);
+	return (1./linevector_norm)*grad;
 }
 
 void
