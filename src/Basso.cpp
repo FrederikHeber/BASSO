@@ -654,7 +654,7 @@ int main (int argc, char *argv[])
 			std::ofstream ost(solution_file.string().c_str());
 			if (ost.good())
 				try {
-					ost << result.m_solution->getVectorRepresentation();
+					ost << result.m_solution;
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write solution to file.\n";
 				}
