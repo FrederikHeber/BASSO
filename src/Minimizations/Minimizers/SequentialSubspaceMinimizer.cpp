@@ -477,9 +477,7 @@ SequentialSubspaceMinimizer::operator()(
 
 		// print intermediate solution
 		printIntermediateSolution(
-				 istate.m_solution->getVectorRepresentation(),
-				 A.getMatrixRepresentation(),
-				istate.NumberOuterIterations);
+				istate.m_solution, A, istate.NumberOuterIterations);
 
 		// submit current tuples
 		per_iteration_table.addTuple(per_iteration_tuple);

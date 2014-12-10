@@ -16,9 +16,8 @@
 #include "MatrixIO/OperationCounter.hpp"
 
 #include "Database/Table.hpp"
-#include "Minimizations/Mappings/Mapping.hpp"
-#include "Minimizations/Norms/Norm.hpp"
-#include "Minimizations/Functions/SmoothnessModulus.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/types.hpp"
 
 class Database;
 
@@ -135,8 +134,8 @@ protected:
 	 * @param _NumberOuterIterations current iteration count
 	 */
 	void printIntermediateSolution(
-			const Eigen::VectorXd &_solution,
-			const Eigen::MatrixXd &_A,
+			const SpaceElement_ptr_t &_solution,
+			const LinearMapping &_A,
 			unsigned int _NumberOuterIterations
 			) const;
 public:

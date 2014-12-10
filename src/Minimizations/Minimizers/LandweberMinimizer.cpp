@@ -266,9 +266,7 @@ LandweberMinimizer::operator()(
 
 		// print intermediat solution
 		printIntermediateSolution(
-				 returnvalues.m_solution->getVectorRepresentation(),
-				 A.getMatrixRepresentation(),
-				returnvalues.NumberOuterIterations);
+				returnvalues.m_solution, A, returnvalues.NumberOuterIterations);
 
 		// submit current tuple
 		per_iteration_table.addTuple(per_iteration_tuple);

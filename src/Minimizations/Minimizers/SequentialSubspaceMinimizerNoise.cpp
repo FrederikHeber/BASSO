@@ -253,9 +253,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 			// print intermediat solution
 			printIntermediateSolution(
-					 istate.m_solution->getVectorRepresentation(),
-					 A.getMatrixRepresentation(),
-					istate.NumberOuterIterations);
+					istate.m_solution, A, istate.NumberOuterIterations);
 		}
 
 		// submit current tuple

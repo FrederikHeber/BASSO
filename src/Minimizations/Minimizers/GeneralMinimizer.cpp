@@ -21,8 +21,8 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
-#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -111,9 +111,8 @@ double GeneralMinimizer::calculateResidual(
 		SpaceElement_ptr_t &_residual
 		) const
 {
-	*_residual =  MatrixVectorProduct(
-			dynamic_cast<const LinearMapping &>(*_problem->A).getMatrixRepresentation(),
-			_problem->x->getVectorRepresentation());
+	const LinearMapping &A = static_cast<const LinearMapping &>(*_problem->A);
+	*_residual = A * _problem->x;
 	*_residual -= _problem->y;
 	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
@@ -133,8 +132,8 @@ void GeneralMinimizer::setMinLib(const std::string &_name)
 }
 
 void GeneralMinimizer::printIntermediateSolution(
-		const Eigen::VectorXd &_solution,
-		const Eigen::MatrixXd &_A,
+		const SpaceElement_ptr_t &_solution,
+		const LinearMapping &_A,
 		unsigned int _NumberOuterIterations
 		) const
 {
