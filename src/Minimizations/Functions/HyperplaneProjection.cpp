@@ -16,7 +16,7 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 
-typedef typename MinimizationFunctional<Eigen::VectorXd>::array_type array_type;
+typedef typename MinimizationFunctional< std::vector<double> >::array_type array_type;
 
 template<class T>
 std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
