@@ -102,6 +102,12 @@ public:
 	const Eigen::MatrixXd& getMatrixRepresentation() const
 	{ return matrix; }
 
+	/** Calculate the mutual coherence of the matrix.
+	 *
+	 * @return maximum of "angle" between column vectors
+	 */
+	const double MutualCoherence() const;
+
 private:
 
 	/** Mapping function.

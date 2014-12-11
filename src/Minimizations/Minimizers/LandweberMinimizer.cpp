@@ -111,25 +111,8 @@ LandweberMinimizer::operator()(
 	if ((stepwidth_type >=
 			DetermineStepWidthFactory::ConstantRegularizedL1Norm)
 			&& (dynamic_cast<const RegularizedL1Norm &>(*A.getSourceSpace()->getNorm()).getLambda() == 0.)) {
-		for (unsigned int i=0;i<A.getSourceSpace()->getDimension();++i) {
-			for (unsigned int j=i+1;j<A.getSourceSpace()->getDimension();++j) {
-				const Eigen::VectorXd col_i =
-						A.getMatrixRepresentation().col(i);
-				const Eigen::VectorXd col_j =
-						A.getMatrixRepresentation().col(j);
-				const double col_i_norm = col_i.norm();
-				const double col_j_norm = col_j.norm();
-				double temp = fabs(col_i.transpose() * col_j);
-				temp *= 1./(col_i_norm*col_j_norm);
-				if (mutual_coherence < temp)
-					mutual_coherence = temp;
-			}
-		}
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Mutual coherence of A is " << mutual_coherence;
-		setRegularizationParameter(
-				mutual_coherence,
-				_truesolution);
+		mutual_coherence = A.MutualCoherence();
+		setRegularizationParameter(mutual_coherence, _truesolution);
 		setLambdaAdaptively = true;
 	}
 

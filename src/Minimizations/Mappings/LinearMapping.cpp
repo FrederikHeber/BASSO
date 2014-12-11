@@ -73,3 +73,22 @@ const double LinearMapping::Norm() const
 	return matrix.norm();
 }
 
+const double LinearMapping::MutualCoherence() const
+{
+	double mutual_coherence = 0.;
+	for (unsigned int i=0;i<getSourceSpace()->getDimension();++i) {
+		for (unsigned int j=i+1;j<getSourceSpace()->getDimension();++j) {
+			const Eigen::VectorXd col_i = matrix.col(i);
+			const Eigen::VectorXd col_j = matrix.col(j);
+			const double col_i_norm = col_i.norm();
+			const double col_j_norm = col_j.norm();
+			double temp = fabs(col_i.transpose() * col_j);
+			temp *= 1./(col_i_norm*col_j_norm);
+			if (mutual_coherence < temp)
+				mutual_coherence = temp;
+		}
+	}
+	BOOST_LOG_TRIVIAL(debug)
+			<< "Mutual coherence of mapping is " << mutual_coherence;
+	return mutual_coherence;
+}
