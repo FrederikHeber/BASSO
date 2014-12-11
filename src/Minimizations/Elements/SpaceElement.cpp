@@ -28,9 +28,9 @@ const bool SpaceElement::isInSpace(
 	return _NormedSpaceRef == getSpace();
 }
 
-const bool SpaceElement::isZero() const
+const bool SpaceElement::isZero(const double _threshold) const
 {
-	return vector.isZero();
+	return vector.isZero(_threshold);
 }
 
 const bool SpaceElement::isApproxToConstant(
@@ -38,6 +38,20 @@ const bool SpaceElement::isApproxToConstant(
 		const double _tolerance) const
 {
 	return vector.isApproxToConstant(_constant, _tolerance);
+}
+
+const bool SpaceElement::isApprox(
+		const SpaceElement_ptr_t &_other,
+		const double _tolerance) const
+{
+	return vector.isApprox(_other->vector, _tolerance);
+}
+
+const bool SpaceElement::isApprox(
+		const SpaceElement &_other,
+		const double _tolerance) const
+{
+	return vector.isApprox(_other.vector, _tolerance);
 }
 
 const double SpaceElement::Norm() const

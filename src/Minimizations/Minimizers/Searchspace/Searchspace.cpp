@@ -41,7 +41,9 @@ Searchspace::Searchspace(
 	// DEBUG: check whether directions are initialized and zero
 	const SearchDirections_t::const_iterator checkiter =
 			std::find_if(U.begin(), U.end(),
-					!boost::bind(&SpaceElement::isZero,_1));
+					!boost::bind(&SpaceElement::isZero,
+							_1,
+							std::numeric_limits<double>::epsilon()*1e2));
 	assert( checkiter == U.end() );
 }
 

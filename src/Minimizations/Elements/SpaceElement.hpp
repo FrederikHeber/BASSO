@@ -15,6 +15,7 @@
 #include <boost/weak_ptr.hpp>
 #include <Eigen/Dense>
 #include <iosfwd>
+#include <limits>
 
 class ElementCreator;
 class NormedSpace;
@@ -62,9 +63,12 @@ public:
 
 	/** Checks whether this contained representation is equal to zero.
 	 *
+	 * @param _threshold - tolerance for zero
 	 * @return true - vector is zero, else - not
 	 */
-	const bool isZero() const;
+	const bool isZero(
+			const double _threshold = std::numeric_limits<double>::epsilon()
+			) const;
 
 	/** Checks whether the representation is component-wise approximately
 	 * equal the given \a _constant.
@@ -75,6 +79,36 @@ public:
 	 */
 	const bool isApproxToConstant(
 			const double _constant,
+			const double _tolerance) const;
+
+	/** Checks whether the representation is component-wise approximately
+	 * equal the given \a _constant.
+	 *
+	 * \note While isApproxToConstant() checks on absolute precision,
+	 * here we use relative precision comparing to the minimum of
+	 * either component.
+	 *
+	 * @param _other other vector to compare to
+	 * @param _tolerance tolerance value
+	 * @return true - every component is within [c-tol, c+tol], else - not
+	 */
+	const bool isApprox(
+			const SpaceElement_ptr_t &_other,
+			const double _tolerance) const;
+
+	/** Checks whether the representation is component-wise approximately
+	 * equal the given \a _constant.
+	 *
+	 * \note While isApproxToConstant() checks on absolute precision,
+	 * here we use relative precision comparing to the minimum of
+	 * either component.
+	 *
+	 * @param _other other vector to compare to
+	 * @param _tolerance tolerance value
+	 * @return true - every component is within [c-tol, c+tol], else - not
+	 */
+	const bool isApprox(
+			const SpaceElement &_other,
 			const double _tolerance) const;
 
 	/** Calculates the norm of this element in the given Space.
