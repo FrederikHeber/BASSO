@@ -270,12 +270,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		SpaceElement_ptr_t newdir =
-				dual_solution->getSpace()->createElement();
-		*newdir =
-				MatrixVectorProduct(
-						A_t.getMatrixRepresentation(),
-						Jw->getVectorRepresentation());
+		SpaceElement_ptr_t newdir = A_t * Jw;
 		if (DoCalculateAngles) {
 			// calculate bregman angles for angles database
 			{
