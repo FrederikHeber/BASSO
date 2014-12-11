@@ -10,7 +10,6 @@
 #include "LpDualityMapping.hpp"
 
 #include <cmath>
-#include <Eigen/Dense>
 
 #include "Math/Helpers.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
@@ -41,38 +40,44 @@ LpDualityMapping::LpDualityMapping(
  * \return dual element corresponding to one element of the duality mapping for
  * 		x
  */
-const Eigen::VectorXd LpDualityMapping::operator()(
-		const Eigen::VectorXd &_x
+const SpaceElement_ptr_t LpDualityMapping::operator()(
+		const SpaceElement_ptr_t &_x
 		) const
 {
 	const Norm &lpnorm = *getSourceSpace()->getNorm();
 	const double p = lpnorm.getPvalue();
 	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
-		Eigen::VectorXd Jx = _x.array().abs();
-		for (int i=0;i<Jx.innerSize();++i)
-			Jx[i] = ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
+		SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
+		*Jx = _x->getAbsVector()->getVectorRepresentation();
+		SpaceElement_ptr_t sign_x = _x->getSignVector();
+		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+			(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
 		return Jx;
 	} else if (p < (double)power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
 		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
-		Eigen::VectorXd Jx = _x.array().abs();
-		for (int i=0;i<Jx.innerSize();++i)
-			Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
+		SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
+		*Jx = _x->getAbsVector()->getVectorRepresentation();
+		SpaceElement_ptr_t sign_x = _x->getSignVector();
+		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+			(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
 		return Jx;
 	} else {
 		const double norm = lpnorm(_x);
 		if (norm < tolerance) {
 			// J=zeros(size(x,1),1);
-			Eigen::VectorXd Jx = Eigen::VectorXd::Zero(_x.innerSize());
+			SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
 			return Jx;
 		} else {
 			// J=n^(q-p)*abs(x).^(p-1).*sign(x);
 			const double exponent = (double)power-p;
 			const double pnorm = ::pow(norm, exponent);
-			Eigen::VectorXd Jx = _x.array().abs();
-			for (int i=0;i<Jx.innerSize();++i)
-				Jx[i] = pnorm * ::pow(Jx[i], p - 1.) * Helpers::sign(_x[i]);
+			SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
+			*Jx = _x->getAbsVector()->getVectorRepresentation();
+			SpaceElement_ptr_t sign_x = _x->getSignVector();
+			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
 			return Jx;
 		}
 	}

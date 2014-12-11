@@ -10,8 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 
 class IllegalDualityMappingUnitTest;
@@ -47,7 +45,7 @@ public:
 	 * @param _sourceelement element to map/transform
 	 * @return new transformed/mapped element
 	 */
-	SpaceElement_ptr_t operator()(
+	const SpaceElement_ptr_t operator()(
 			const SpaceElement_ptr_t &_sourceelement
 			) const;
 
@@ -56,16 +54,6 @@ public:
 	 * @return mapping instance with adjoint
 	 */
 	const Mapping_ptr_t getAdjointMapping() const;
-
-private:
-
-	/** This function throws an assertion and must never be called.
-	 * @param _x
-	 * @param _power power of the duality mapping
-	 * @return componentwise soft threshold of \a _x by \a _ lambda
-	 */
-	const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x) const;
 
 };
 

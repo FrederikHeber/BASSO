@@ -79,7 +79,7 @@ public:
 	 * @param _sourceelement element to map/transform
 	 * @return mapped/transformed element
 	 */
-	SpaceElement_ptr_t operator()(
+	const SpaceElement_ptr_t operator()(
 				const SpaceElement_ptr_t &_sourceelement
 				) const;
 

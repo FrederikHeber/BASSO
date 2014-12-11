@@ -61,7 +61,7 @@ public:
 	 * @param _sourceelement element to map/transform
 	 * @return new transformed/mapped element
 	 */
-	virtual SpaceElement_ptr_t operator()(
+	virtual const SpaceElement_ptr_t operator()(
 			const SpaceElement_ptr_t &_sourceelement
 			) const = 0;
 

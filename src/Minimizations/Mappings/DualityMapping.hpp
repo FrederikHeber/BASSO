@@ -32,7 +32,13 @@ public:
 		Mapping(_NormedSpaceRef,_NormedSpaceRef->getDualSpace())
 	{}
 
-private:
+	/** Evaluates duality mapping at \a _x.
+	 *
+	 * \param _x point where to evaluate
+	 */
+	virtual const SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_x) const = 0;
+
 };
 
 

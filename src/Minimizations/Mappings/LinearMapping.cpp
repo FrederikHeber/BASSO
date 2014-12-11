@@ -16,7 +16,7 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
-SpaceElement_ptr_t LinearMapping::operator()(
+const SpaceElement_ptr_t LinearMapping::operator()(
 		const SpaceElement_ptr_t &_sourceelement
 		) const
 {

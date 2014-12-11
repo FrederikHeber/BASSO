@@ -10,8 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 
 class LInfinityDualityMappingUnitTest;
@@ -36,20 +34,18 @@ public:
 		PowerTypeDualityMapping(_NormedSpaceRef, _power)
 	{}
 
+	/** Evaluates duality mapping at \a _x.
+	 *
+	 * \param _x point where to evaluate
+	 */
+	virtual const SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_x) const;
+
 	/** Creates the adjoint mapping to this mapping.
 	 *
 	 * @return mapping instance with adjoint
 	 */
 	const Mapping_ptr_t getAdjointMapping() const;
-
-private:
-
-	/** Evaluates duality mapping at \a _x.
-	 *
-	 * \param _x point where to evaluate
-	 */
-	virtual const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x) const;
 };
 
 #endif /* LINFINITYDUALITYMAPPING_HPP_ */

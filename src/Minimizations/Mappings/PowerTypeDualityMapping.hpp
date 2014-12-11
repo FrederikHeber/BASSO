@@ -10,8 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/types.hpp"
 #include "Minimizations/Mappings/DualityMapping.hpp"
 
@@ -34,21 +32,19 @@ public:
 		tolerance(BASSOTOLERANCE)
 	{}
 
+	/** Evaluates duality mapping at \a _x.
+	 *
+	 * \param _x point where to evaluate
+	 */
+	virtual const SpaceElement_ptr_t operator()(
+			const SpaceElement_ptr_t &_x) const = 0;
+
 	/** Setter for internal tolerance.
 	 *
 	 * \param _tolerance value to set to
 	 */
 	void setTolerance(const double _tolerance) const
 	{ tolerance = _tolerance; }
-
-	/** Mapping function.
-	 *
-	 * @param _sourceelement element to map/transform
-	 * @return new transformed/mapped element
-	 */
-	SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_sourceelement
-			) const;
 
 	/** Creates the adjoint mapping to this mapping.
 	 *
@@ -69,15 +65,6 @@ public:
 	 */
 	const double getPower() const
 	{ return power; }
-
-protected:
-	/** Evaluates duality mapping at \a _x.
-	 *
-	 * \param _x point where to evaluate
-	 * \param _power power of duality mapping's weight
-	 */
-	virtual const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_x) const = 0;
 
 protected:
 	//!> power type of the weight function of this duality mapping

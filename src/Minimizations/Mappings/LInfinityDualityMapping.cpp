@@ -10,7 +10,6 @@
 #include "LInfinityDualityMapping.hpp"
 
 #include <cmath>
-#include <Eigen/Dense>
 
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
@@ -36,19 +35,20 @@
  * \return dual element corresponding to one element of the duality mapping for
  * 		x
  */
-const Eigen::VectorXd LInfinityDualityMapping::operator()(
-		const Eigen::VectorXd &_x
+const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
+		const SpaceElement_ptr_t &_x
 		) const
 {
 	// [xNorm,k]=max(abs(x));
-	unsigned int rowMax;
-	unsigned int colMax;
-	double factor = _x.array().abs().maxCoeff(&rowMax, &colMax);
-	factor = ::pow(factor, (double)power-1.) * Helpers::sign(_x[rowMax]);
+	const std::pair<double,int> factor_index =
+			_x->getMaxCoefficientAndIndex();
+	const double factor = ::pow(factor_index.first, (double)power-1.)
+			* Helpers::sign((*_x)[factor_index.second]);
 	// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
-	Eigen::VectorXd temp = Eigen::VectorXd::Zero(_x.innerSize());
-	temp[0] = 1.;
-	const Eigen::VectorXd Jx = Helpers::circshift(temp, rowMax); // no -1 here, as index starts at 0 here, not 1
+	SpaceElement_ptr_t temp = getTargetSpace()->createElement();
+	(*temp)[0] = 1.;
+	SpaceElement_ptr_t Jx =
+			temp->getCircShiftedVector(factor_index.second);  // no -1 here, as index starts at 0 here, not 1
 	return Jx * factor;
 }
 

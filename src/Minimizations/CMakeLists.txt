@@ -21,7 +21,6 @@ add_library (Minimizations
 	Mappings/L1DualityMapping.cpp
 	Mappings/LpDualityMapping.cpp
 	Mappings/LInfinityDualityMapping.cpp
-	Mappings/PowerTypeDualityMapping.cpp
 	Mappings/PowerTypeDualityMappingFactory.cpp
 	Mappings/SoftThresholdingMapping.cpp
 	Minimizers/GeneralMinimizer.cpp

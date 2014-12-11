@@ -25,24 +25,15 @@ SoftThresholdingMapping::SoftThresholdingMapping(
 	lambda(_lambda)
 {}
 
-SpaceElement_ptr_t
+const SpaceElement_ptr_t
 SoftThresholdingMapping::operator()(
 		const SpaceElement_ptr_t &_x) const
 {
-	SpaceElement_ptr_t result = _x->getSpace()->createElement();
-	*result = operator()(_x->getVectorRepresentation());
-	return result;
-}
-
-const Eigen::VectorXd
-SoftThresholdingMapping::operator()(
-		const Eigen::VectorXd &_x) const
-{
-	Eigen::VectorXd result(_x);
-	for (unsigned int i=0;i<result.innerSize();++i)
-		result[i] = fabs(result[i]) < lambda ?
+	SpaceElement_ptr_t result = getTargetSpace()->createElement();
+	for (unsigned int i=0;i<result->getSpace()->getDimension();++i)
+		(*result)[i] = fabs((*_x)[i]) < lambda ?
 				0. :
-				(fabs(result[i])-lambda)*Helpers::sign(result[i]);
+				(fabs((*_x)[i])-lambda)*Helpers::sign((*_x)[i]);
 	return result;
 }
 

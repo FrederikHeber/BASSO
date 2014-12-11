@@ -10,7 +10,6 @@
 #include "L1DualityMapping.hpp"
 
 #include <cmath>
-#include <Eigen/Dense>
 
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
@@ -35,15 +34,19 @@
  * \return dual element corresponding to one element of the duality mapping for
  * 		x
  */
-const Eigen::VectorXd L1DualityMapping::operator()(
-		const Eigen::VectorXd &_x
+const SpaceElement_ptr_t L1DualityMapping::operator()(
+		const SpaceElement_ptr_t &_x
 		) const
 {
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
 	const Norm &l1norm = *getSourceSpace()->getNorm();
+
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
-	return factor*Helpers::signum(_x);
+	SpaceElement_ptr_t sign_x = getTargetSpace()->createElement();
+	*sign_x = _x->getSignVector()->getVectorRepresentation();
+	*sign_x *= factor;
+	return sign_x;
 }
 
 const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const
