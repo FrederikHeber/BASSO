@@ -297,7 +297,7 @@ void LandweberMinimizer::setRegularizationParameter(
 	// count the number of zeros in _solution
 	unsigned int nonzerocomponents = 0;
 	for (unsigned int i=0;i<_solution->getSpace()->getDimension();++i)
-		if (fabs(_solution->getVectorRepresentation()[i]) > std::numeric_limits<double>::epsilon())
+		if (fabs((*_solution)[i]) > std::numeric_limits<double>::epsilon())
 			++nonzerocomponents;
 	// strict positivity criterion
 	if ( nonzerocomponents < .5*(1. + 1./mutual_coherence) ) {

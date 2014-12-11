@@ -70,13 +70,13 @@ const double LandweberFixedStepWidth::operator()(
 			<< "A_p " << A_p;
 		double R_p = 0.;
 		if (NormX.getPvalue() == std::numeric_limits<double>::infinity()) {
-			R_p = _residual->getVectorRepresentation().array().abs().maxCoeff();
+			R_p = _residual->getMaxCoefficientAndIndex().first;
 		} else {
 			R_p = ::pow(_residuum, NormX.getPvalue());
 		}
 		double R_r = 0.;
 		if (NormY.getPvalue() == std::numeric_limits<double>::infinity()) {
-			R_r = _residual->getVectorRepresentation().array().abs().maxCoeff();
+			R_r = _residual->getMaxCoefficientAndIndex().first;
 		} else {
 			R_r = ::pow(_residuum, NormY.getPvalue());
 		}
@@ -104,8 +104,7 @@ const double LandweberFixedStepWidth::operator()(
 			<< "x_p " << x_p;
 		double R_r = 0.;
 		if (NormY.getPvalue() == std::numeric_limits<double>::infinity()) {
-			R_r = _residual->getVectorRepresentation().array().abs().maxCoeff()
-					/ _residuum;
+			R_r = _residual->getMaxCoefficientAndIndex().first / _residuum;
 		} else {
 			R_r = ::pow(_residuum, NormY.getPvalue() - 1.);
 		}
