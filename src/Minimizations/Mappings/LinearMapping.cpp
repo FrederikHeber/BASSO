@@ -19,6 +19,29 @@
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
+LinearMapping::LinearMapping(
+		const NormedSpace_ptr_t _SourceSpaceRef,
+		const NormedSpace_ptr_t _TargetSpaceRef
+		) :
+	Mapping(_SourceSpaceRef,_TargetSpaceRef),
+	matrix(Eigen::MatrixXd::Zero(
+			_SourceSpaceRef->getDimension(),
+			_TargetSpaceRef->getDimension())
+	)
+{}
+
+LinearMapping::LinearMapping(
+		const NormedSpace_ptr_t _SourceSpaceRef,
+		const NormedSpace_ptr_t _TargetSpaceRef,
+		const Eigen::MatrixXd &_matrix
+		) :
+	Mapping(_SourceSpaceRef,_TargetSpaceRef),
+	matrix(_matrix)
+{
+	assert( matrix.outerSize() == SourceSpaceRef->getDimension() );
+	assert( matrix.innerSize() == TargetSpaceRef->getDimension() );
+}
+
 const SpaceElement_ptr_t LinearMapping::operator()(
 		const SpaceElement_ptr_t &_sourceelement
 		) const
@@ -31,14 +54,6 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 	return targetelement;
 }
 
-const Eigen::VectorXd LinearMapping::operator()(
-		const Eigen::VectorXd &_sourcevector
-		) const
-{
-	const Eigen::VectorXd targetvector = matrix * _sourcevector;
-	return targetvector;
-}
-
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
 	assert( _element->getSpace() == SourceSpaceRef );
@@ -47,13 +62,6 @@ SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) 
 					TargetSpaceRef,
 					matrix * RepresentationAdvocate::get(_element));
 	return targetelement;
-}
-
-const Eigen::VectorXd
-LinearMapping::operator*(const Eigen::VectorXd &_vector) const
-{
-	const Eigen::VectorXd newvector = matrix * _vector;
-	return newvector;
 }
 
 const Mapping_ptr_t LinearMapping::getAdjointMapping() const

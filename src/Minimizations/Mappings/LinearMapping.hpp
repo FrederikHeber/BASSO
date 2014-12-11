@@ -10,7 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <cassert>
 #include <Eigen/Dense>
 
 #include "Minimizations/Mappings/Mapping.hpp"
@@ -34,13 +33,7 @@ public:
 	LinearMapping(
 			const NormedSpace_ptr_t _SourceSpaceRef,
 			const NormedSpace_ptr_t _TargetSpaceRef
-			) :
-		Mapping(_SourceSpaceRef,_TargetSpaceRef),
-		matrix(Eigen::MatrixXd::Zero(
-				_SourceSpaceRef->getDimension(),
-				_TargetSpaceRef->getDimension())
-		)
-	{}
+			);
 
 	/** Constructor for LinearMapping with a given matrix
 	 *
@@ -52,13 +45,7 @@ public:
 			const NormedSpace_ptr_t _SourceSpaceRef,
 			const NormedSpace_ptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd &_matrix
-			) :
-		Mapping(_SourceSpaceRef,_TargetSpaceRef),
-		matrix(_matrix)
-	{
-		assert( matrix.outerSize() == SourceSpaceRef->getDimension() );
-		assert( matrix.innerSize() == TargetSpaceRef->getDimension() );
-	}
+			);
 
 	/** Matrix multiplication from the right.
 	 *
@@ -66,13 +53,6 @@ public:
 	 * @return new transformed/mapped element
 	 */
 	SpaceElement_ptr_t operator*(const SpaceElement_ptr_t &_element) const;
-
-	/** Matrix multiplication from the right.
-	 *
-	 * @param _vector element to map/transform
-	 * @return new transformed/mapped vector
-	 */
-	const Eigen::VectorXd operator*(const Eigen::VectorXd &_vector) const;
 
 	/** Matrix multiplication from the right.
 	 *
@@ -95,29 +75,11 @@ public:
 	 */
 	const double Norm() const;
 
-	/** Const getter for the internal matrix representation.
-	 *
-	 * @return const ref to matrix
-	 */
-	const Eigen::MatrixXd& getMatrixRepresentation() const
-	{ return matrix; }
-
 	/** Calculate the mutual coherence of the matrix.
 	 *
 	 * @return maximum of "angle" between column vectors
 	 */
 	const double MutualCoherence() const;
-
-private:
-
-	/** Mapping function.
-	 *
-	 * @param _sourcevector vector to map/transform
-	 * @return new transformed/mapped vector
-	 */
-	const Eigen::VectorXd operator()(
-			const Eigen::VectorXd &_sourcevector
-			) const;
 
 private:
 	//!> matrix representation of this linear mapping
