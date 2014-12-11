@@ -16,6 +16,7 @@
 #include <Eigen/Dense>
 #include <iosfwd>
 
+class ElementCreator;
 class NormedSpace;
 
 /** This class defines an element in a normed Space.
@@ -28,6 +29,9 @@ class SpaceElement
 {
 	//!> allow NormedSpace access to private cstor
 	friend class NormedSpace;
+
+	//!> allow ElementCreator access to private representation
+	friend class ElementCreator;
 
 	/** Private cstor to allow only a specific Space to create its elements.
 	 *
