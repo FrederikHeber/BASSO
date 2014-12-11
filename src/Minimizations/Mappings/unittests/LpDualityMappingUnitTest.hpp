@@ -29,6 +29,10 @@ public:
   void elevenNorm();
   void otherNorm();
   void setTolerance();
+
+private:
+  //!> numeric tolerance for all tests
+  static double tolerance;
 };
 
 

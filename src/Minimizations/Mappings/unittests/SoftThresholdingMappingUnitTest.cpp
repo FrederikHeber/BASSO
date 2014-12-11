@@ -11,6 +11,8 @@
 
 #include <Eigen/Dense>
 
+#include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -18,6 +20,9 @@
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( SoftThresholdingMappingUnitTest );
+
+// static entities
+double SoftThresholdingMappingUnitTest::tolerance = 1e-4;
 
 
 void SoftThresholdingMappingUnitTest::setUp()
@@ -44,79 +49,94 @@ void SoftThresholdingMappingUnitTest::tearDown()
 void SoftThresholdingMappingUnitTest::oneNorm()
 {
 	const double power = 2.;
-	Eigen::VectorXd x(10);
-	x << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
+	Eigen::VectorXd xtemp(10);
+	xtemp << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
 	{
 		const double lambda = .9;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
-						x.innerSize(), lambda, power);
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = SpaceX->createElement();
+		*x = xtemp;
 		// Note that we have the duality mapping (the soft thresholding)
 		// only in the dual space, not in the original back as this
-		// space is not smooth and jence its duality mapping not single-
+		// space is not smooth and hence its duality mapping not single-
 		// valued.
-		const SoftThresholdingMapping &S =
-				static_cast<const SoftThresholdingMapping &>(*SpaceX->getDualSpace()->getDualityMapping());
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.,0.,0.,0.,0.,0.,0.,0.,0.,0.;
-		const Eigen::VectorXd compare = S(x);
+		const SpaceElement_ptr_t compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-		CPPUNIT_ASSERT( expected.isApprox(compare, 1e-4)  );
+//					<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
 	{
 		const double lambda = .4;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
-						x.innerSize(), lambda, power);
-		const SoftThresholdingMapping &S =
-				static_cast<const SoftThresholdingMapping &>(*SpaceX->getDualSpace()->getDualityMapping());
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = SpaceX->createElement();
+		*x = xtemp;
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.,-0.399513,0.,0.,0.,0.,-0.451628,0.320586,0.,-0.129929;
-		const Eigen::VectorXd compare = S(x);
+		const SpaceElement_ptr_t compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-		CPPUNIT_ASSERT( expected.isApprox(compare, 1e-4)  );
+//					<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
 	{
 		const double lambda = .1;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
-						x.innerSize(), lambda, power);
-		const SoftThresholdingMapping &S =
-				static_cast<const SoftThresholdingMapping &>(*SpaceX->getDualSpace()->getDualityMapping());
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = SpaceX->createElement();
+		*x = xtemp;
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.104691,-0.699513,0.,0.264664,0.,-0.172607,-0.751628,0.620586,0.,-0.429929;
-		const Eigen::VectorXd compare = S(x);
+		const SpaceElement_ptr_t compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-		CPPUNIT_ASSERT( expected.isApprox(compare, 1e-4)  );
+//					<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
 	{
 		const double lambda = .001;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
-						x.innerSize(), lambda, power);
-		const SoftThresholdingMapping &S =
-				static_cast<const SoftThresholdingMapping &>(*SpaceX->getDualSpace()->getDualityMapping());
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = SpaceX->createElement();
+		*x = xtemp;
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
 		expected << 0.203691,-0.798513,0.055042,0.363664,0.038179,-0.271607,-0.850628,0.719586,-0.057074,-0.528929;
-		const Eigen::VectorXd compare = S(x);
+		const SpaceElement_ptr_t compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-		CPPUNIT_ASSERT( expected.isApprox(compare, 1e-4)  );
+//					<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
 	{
 		const double lambda = .0;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
-						x.innerSize(), lambda, power);
-		const SoftThresholdingMapping &S =
-				static_cast<const SoftThresholdingMapping &>(*SpaceX->getDualSpace()->getDualityMapping());
-		Eigen::VectorXd expected(x);
-		const Eigen::VectorXd compare = S(x);
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = SpaceX->createElement();
+		*x = xtemp;
+		const Mapping &S = *SpaceX->getDualSpace()->getDualityMapping();
+		Eigen::VectorXd expected(xtemp);
+		const SpaceElement_ptr_t compare = S(x);
 //			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare.transpose() << ".\n";
-		CPPUNIT_ASSERT( expected.isApprox(compare, 1e-4)  );
+//					<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
 }

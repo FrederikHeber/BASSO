@@ -21,6 +21,10 @@ public:
   void tearDown();
 
   void oneNorm();
+
+private:
+  //!> numeric tolerance for all tests
+  static double tolerance;
 };
 
 

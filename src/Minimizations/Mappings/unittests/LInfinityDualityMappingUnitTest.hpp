@@ -23,6 +23,10 @@ public:
 
   void inftyNorm();
   void setTolerance();
+
+private:
+  //!> numeric tolerance for all tests
+  static double tolerance;
 };
 
 
