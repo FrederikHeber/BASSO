@@ -46,7 +46,7 @@ const Eigen::VectorXd L1DualityMapping::operator()(
 	return factor*Helpers::signum(_x);
 }
 
-Mapping_ptr_t L1DualityMapping::getAdjointMapping() const
+const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const
 {
 	// calculate dual power
 	const double dualpower = Helpers::ConjugateValue(power);

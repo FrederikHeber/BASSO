@@ -55,7 +55,7 @@ public:
 	 *
 	 * @return mapping instance with adjoint
 	 */
-	Mapping_ptr_t getAdjointMapping() const;
+	const Mapping_ptr_t getAdjointMapping() const;
 
 private:
 

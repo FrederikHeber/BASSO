@@ -17,7 +17,7 @@
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 
-Mapping_ptr_t
+const Mapping_ptr_t
 PowerTypeDualityMappingFactory::createInstance(
 		const NormedSpace_ptr_t &_NormedSpaceRef,
 		const double _power)

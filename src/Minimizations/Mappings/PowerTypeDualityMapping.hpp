@@ -54,7 +54,7 @@ public:
 	 *
 	 * @return mapping instance with adjoint
 	 */
-	virtual Mapping_ptr_t getAdjointMapping() const = 0;
+	virtual const Mapping_ptr_t getAdjointMapping() const = 0;
 
 	/** Returns the tolerance.
 	 *

@@ -51,7 +51,7 @@ LinearMapping::operator*(const Eigen::VectorXd &_vector) const
 	return newvector;
 }
 
-Mapping_ptr_t LinearMapping::getAdjointMapping() const
+const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 {
 	LinearMapping * adjoint = new LinearMapping(
 				TargetSpaceRef->getDualSpace(),

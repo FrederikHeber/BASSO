@@ -47,7 +47,7 @@ IllegalDualityMapping::operator()(
 		<< MinimizationIllegalValue_name("illegally called");
 }
 
-Mapping_ptr_t IllegalDualityMapping::getAdjointMapping() const
+const Mapping_ptr_t IllegalDualityMapping::getAdjointMapping() const
 {
 	// we just throw as this function must now be called
 	throw MinimizationIllegalValue_exception()

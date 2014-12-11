@@ -78,7 +78,7 @@ const Eigen::VectorXd LpDualityMapping::operator()(
 	}
 }
 
-Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
+const Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value
 	const double dualpower = Helpers::ConjugateValue(power);

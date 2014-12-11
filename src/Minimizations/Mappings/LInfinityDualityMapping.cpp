@@ -21,7 +21,7 @@
  *
  *	In [Schöpfer et al., '06] some formulas for the duality mapping in
  *	Lp and other spaces are given. Note that also the power type of the
- *	duality mapping is denoted by p, making it ambigious.
+ *	duality mapping is denoted by p, making it ambiguous.
  *
  *	We have settled on the following:
  *	The norm \f$ ||.|| \f$ is always the one of the space the argument
@@ -52,7 +52,7 @@ const Eigen::VectorXd LInfinityDualityMapping::operator()(
 	return Jx * factor;
 }
 
-Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const
+const Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const
 {
 	// calculate dual power
 	const double dualpower = Helpers::ConjugateValue(power);
