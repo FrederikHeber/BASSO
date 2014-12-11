@@ -13,6 +13,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "Math/Helpers.hpp"
+
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -52,6 +54,48 @@ const bool SpaceElement::isApprox(
 		const double _tolerance) const
 {
 	return vector.isApprox(_other.vector, _tolerance);
+}
+
+const SpaceElement_ptr_t SpaceElement::getSignVector() const
+{
+	SpaceElement_ptr_t signvector(NormedSpaceRef->createElement());
+	*signvector = Helpers::signum(vector);
+	return signvector;
+}
+
+const SpaceElement_ptr_t SpaceElement::getAbsVector() const
+{
+	SpaceElement_ptr_t absvector(NormedSpaceRef->createElement());
+	*absvector = vector.array().abs();
+	return absvector;
+}
+
+const SpaceElement_ptr_t SpaceElement::getCircShiftedVector(
+		const int shift) const
+{
+	SpaceElement_ptr_t shiftedvector(NormedSpaceRef->createElement());
+	*shiftedvector = Helpers::circshift(vector, shift);
+	return shiftedvector;
+}
+
+const std::pair<double, int> SpaceElement::getMaxCoefficientAndIndex(
+		) const
+{
+	unsigned int rowMax;
+	unsigned int colMax;
+	SpaceElement_ptr_t absvector = getAbsVector();
+	const double value = absvector->vector.maxCoeff(&rowMax, &colMax);
+	return std::make_pair(value, rowMax);
+}
+
+double& SpaceElement::operator[](const int i)
+{
+	return vector[i];
+}
+
+const double SpaceElement::operator[](const int i) const
+{
+	return vector[i];
 }
 
 const double SpaceElement::Norm() const

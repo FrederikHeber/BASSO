@@ -13,6 +13,7 @@
 #include "Minimizations/types.hpp"
 
 #include <boost/weak_ptr.hpp>
+#include <utility>
 #include <Eigen/Dense>
 #include <iosfwd>
 #include <limits>
@@ -110,6 +111,45 @@ public:
 	const bool isApprox(
 			const SpaceElement &_other,
 			const double _tolerance) const;
+
+	/** Returns the vector with each component +1/0/-1.
+	 *
+	 * @return sign vector of this element
+	 */
+	const SpaceElement_ptr_t getSignVector() const;
+
+	/** Returns the vector with each component as absolute value.
+	 *
+	 * @return abs vector of this element
+	 */
+	const SpaceElement_ptr_t getAbsVector() const;
+
+	/** Circularly shifts the components of the representation by \a shift.
+	 *
+	 * @param shift number of entries to shift
+	 * @return shifted copy of the vector
+	 */
+	const SpaceElement_ptr_t getCircShiftedVector(const int shift) const;
+
+	/** Returns the index of the component with greatest absolute value.
+	 *
+	 * @return index of maximal component
+	 */
+	const std::pair<double, int> getMaxCoefficientAndIndex() const;
+
+	/** Componentwise access to element's representation.
+	 *
+	 * @param i index of component
+	 * @return \a i th component of element's representation.
+	 */
+	double& operator[](const int i);
+
+	/** Componentwise access to element's representation.
+	 *
+	 * @param i index of component
+	 * @return \a i th component of element's representation.
+	 */
+	const double operator[](const int i) const;
 
 	/** Calculates the norm of this element in the given Space.
 	 *
