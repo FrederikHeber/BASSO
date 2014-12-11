@@ -14,6 +14,7 @@
 #include "Math/Helpers.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
@@ -53,7 +54,7 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 		SpaceElement_ptr_t Jx =
 				ElementCreator::create(
 						getTargetSpace(),
-						_x->getAbsVector()->getVectorRepresentation());
+						RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 			(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
@@ -64,7 +65,7 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 		SpaceElement_ptr_t Jx =
 				ElementCreator::create(
 						getTargetSpace(),
-						_x->getAbsVector()->getVectorRepresentation());
+						RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 			(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
@@ -82,7 +83,7 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 			SpaceElement_ptr_t Jx =
 					ElementCreator::create(
 							getTargetSpace(),
-							_x->getAbsVector()->getVectorRepresentation());
+							RepresentationAdvocate::get(_x->getAbsVector()));
 			SpaceElement_ptr_t sign_x = _x->getSignVector();
 			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
 				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];

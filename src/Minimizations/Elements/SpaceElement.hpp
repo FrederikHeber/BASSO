@@ -20,6 +20,7 @@
 
 class ElementCreator;
 class NormedSpace;
+class RepresentationAdvocate;
 
 /** This class defines an element in a normed Space.
  *
@@ -29,11 +30,26 @@ class NormedSpace;
  */
 class SpaceElement
 {
+	//!> allow advocate access to private representation
+	friend class RepresentationAdvocate;
+
 	//!> allow NormedSpace access to private cstor
 	friend class NormedSpace;
 
 	//!> allow ElementCreator access to private representation
 	friend class ElementCreator;
+
+	//!> grant output operator access to private representation
+	friend std::ostream & operator<<(
+			std::ostream &ost,
+			const SpaceElement &_element
+			);
+
+	//!> grant vector multiplication access to private representation
+	friend const double operator*(
+			const SpaceElement_ptr_t &_element,
+			const SpaceElement_ptr_t &_otherelement);
+
 
 	/** Private cstor to allow only a specific Space to create its elements.
 	 *
@@ -220,6 +236,20 @@ public:
 	 */
 	SpaceElement_ptr_t operator=(const SpaceElement_ptr_t &_element);
 
+	/** Const getter to the space which this elements belongs to.
+	 *
+	 * @return const ref to space
+	 */
+	const NormedSpace_ptr_t& getSpace() const
+	{ return NormedSpaceRef; }
+
+	/** Sets the whole representation vector to zero.
+	 *
+	 */
+	void setZero()
+	{ vector.setZero(); }
+
+private:
 	/** Assignment operator for an Eigen::VectorXd.
 	 *
 	 * @param _vector new content of \a vector
@@ -233,19 +263,6 @@ public:
 	 */
 	const Eigen::VectorXd& getVectorRepresentation() const
 	{ return vector; }
-
-	/** Const getter to the space which this elements belongs to.
-	 *
-	 * @return const ref to space
-	 */
-	const NormedSpace_ptr_t& getSpace() const
-	{ return NormedSpaceRef; }
-
-	/** Sets the whole representation vector to zero.
-	 *
-	 */
-	void setZero()
-	{ vector.setZero(); }
 
 private:
 	/** Similar as to internal ref for NormedSpace, the SpaceElements

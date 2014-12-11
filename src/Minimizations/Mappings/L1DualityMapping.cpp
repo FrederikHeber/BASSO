@@ -13,6 +13,7 @@
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Math/Helpers.hpp"
@@ -47,7 +48,7 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
 	SpaceElement_ptr_t sign_x =
 			ElementCreator::create(getTargetSpace(),
-			_x->getSignVector()->getVectorRepresentation());
+			RepresentationAdvocate::get(_x->getSignVector()));
 	*sign_x *= factor;
 	return sign_x;
 }

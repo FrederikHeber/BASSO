@@ -47,6 +47,7 @@ install (TARGETS Minimizations DESTINATION bin)
 
 install (FILES Elements/SpaceElement.hpp DESTINATION include)
 install (FILES Elements/ElementCreator.hpp DESTINATION include)
+install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
 
 install (FILES Functions/BregmanDistance.hpp DESTINATION include)
 install (FILES Functions/BregmanProjectionFunctional.hpp DESTINATION include)

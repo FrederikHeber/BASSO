@@ -16,6 +16,7 @@
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 const SpaceElement_ptr_t LinearMapping::operator()(
@@ -26,7 +27,7 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
 					TargetSpaceRef,
-					matrix * _sourceelement->getVectorRepresentation());
+					matrix * RepresentationAdvocate::get(_sourceelement));
 	return targetelement;
 }
 
@@ -44,7 +45,7 @@ SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) 
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
 					TargetSpaceRef,
-					matrix * _element->getVectorRepresentation());
+					matrix * RepresentationAdvocate::get(_element));
 	return targetelement;
 }
 
