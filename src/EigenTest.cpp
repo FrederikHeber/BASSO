@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include "MatrixIO/OperationCounter.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Mappings/L1DualityMapping.hpp"
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Mappings/LpDualityMapping.hpp"
@@ -56,8 +57,8 @@ int main()
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
-		SpaceElement_ptr_t vElement = SpaceX->createElement();
-		*vElement = v;
+		SpaceElement_ptr_t vElement =
+				ElementCreator::create(SpaceX, v);
 		Mapping_ptr_t J_1 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_1 with weight 2 of v is ("
 				<< (*J_1)(vElement) << ")" << std::endl;
@@ -67,8 +68,8 @@ int main()
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
-		SpaceElement_ptr_t vElement = SpaceX->createElement();
-		*vElement = v;
+		SpaceElement_ptr_t vElement =
+				ElementCreator::create(SpaceX, v);
 		Mapping_ptr_t J_2 = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_2 with weight 2 of v is ("
 				<< (*J_2)(vElement) << ")" << std::endl;
@@ -78,8 +79,8 @@ int main()
 		NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
-		SpaceElement_ptr_t vElement = SpaceX->createElement();
-		*vElement = v;
+		SpaceElement_ptr_t vElement =
+				ElementCreator::create(SpaceX, v);
 		Mapping_ptr_t J_infty = SpaceX->getDualityMapping();
 		std::cout << "LpDualityMapping J_infty with weight 2 of v is ("
 				<< (*J_infty)(vElement) << ")" << std::endl;
@@ -101,17 +102,17 @@ int main()
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);
 		xtemp << 4,3;
-		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
-		*x = xtemp;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
-		std::vector<SpaceElement_ptr_t> U(2);
-		std::generate(U.begin(), U.end(),
-				boost::bind(&NormedSpace::createElement,
-						boost::cref(*SpaceX->getDualSpace()))
-		);
+		std::vector<SpaceElement_ptr_t> U;
 		for (size_t i=0;i<2;++i)
-			*(U[i]) = Utemp.col(i);
+			U.push_back(
+					ElementCreator::create(
+							*SpaceX->getDualSpace(),
+							Utemp.col(i)));
+		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
 		const double fval = bregman_1(t,x,U,alpha);
@@ -137,17 +138,17 @@ int main()
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);
 		xtemp << 4,3;
-		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
-		*x = xtemp;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
-		std::vector<SpaceElement_ptr_t> U(2);
-		std::generate(U.begin(), U.end(),
-				boost::bind(&NormedSpace::createElement,
-						boost::cref(*SpaceX->getDualSpace()))
-		);
+		std::vector<SpaceElement_ptr_t> U;
 		for (size_t i=0;i<2;++i)
-			*(U[i]) = Utemp.col(i);
+			U.push_back(
+					ElementCreator::create(
+							*SpaceX->getDualSpace(),
+							Utemp.col(i)));
+		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
 		const double fval = bregman_2(t,x,U,alpha);
@@ -173,17 +174,17 @@ int main()
 		t += 4,3;
 		Eigen::VectorXd xtemp(2);
 		xtemp << 4,3;
-		SpaceElement_ptr_t x = SpaceX->getDualSpace()->createElement();
-		*x = xtemp;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
-		std::vector<SpaceElement_ptr_t> U(2);
-		std::generate(U.begin(), U.end(),
-				boost::bind(&NormedSpace::createElement,
-						boost::cref(*SpaceX->getDualSpace()))
-		);
+		std::vector<SpaceElement_ptr_t> U;
 		for (size_t i=0;i<2;++i)
-			*(U[i]) = Utemp.col(i);
+			U.push_back(
+					ElementCreator::create(
+							*SpaceX->getDualSpace(),
+							Utemp.col(i)));
+		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
 		const double fval = bregman_infty(t,x,U,alpha);

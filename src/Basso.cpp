@@ -15,6 +15,7 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
@@ -522,9 +523,9 @@ int main (int argc, char *argv[])
 
 	// prepare true solution
 	SpaceElement_ptr_t truesolution =
-			inverseproblem->x->getSpace()->createElement();
-	*truesolution = solution;
-
+			ElementCreator::create(
+					inverseproblem->x->getSpace(),
+					solution);
 
 	// prepare start value
 	SpaceElement_ptr_t x0 =

@@ -13,6 +13,8 @@
 #include <cassert>
 
 #include "Log/Logging.hpp"
+
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -21,9 +23,10 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 		) const
 {
 	assert( _sourceelement->getSpace() == SourceSpaceRef );
-	SpaceElement_ptr_t targetelement = TargetSpaceRef->createElement();
-	*targetelement =
-			matrix * _sourceelement->getVectorRepresentation();
+	SpaceElement_ptr_t targetelement =
+			ElementCreator::create(
+					TargetSpaceRef,
+					matrix * _sourceelement->getVectorRepresentation());
 	return targetelement;
 }
 
@@ -38,10 +41,11 @@ const Eigen::VectorXd LinearMapping::operator()(
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
 	assert( _element->getSpace() == SourceSpaceRef );
-	SpaceElement_ptr_t newelement = TargetSpaceRef->createElement();
-	*newelement =
-			matrix * _element->getVectorRepresentation();
-	return newelement;
+	SpaceElement_ptr_t targetelement =
+			ElementCreator::create(
+					TargetSpaceRef,
+					matrix * _element->getVectorRepresentation());
+	return targetelement;
 }
 
 const Eigen::VectorXd

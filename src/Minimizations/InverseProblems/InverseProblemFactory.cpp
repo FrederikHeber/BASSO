@@ -10,6 +10,7 @@
 
 #include "InverseProblemFactory.hpp"
 
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
@@ -32,8 +33,7 @@ InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 					_matrix.innerSize(), _r, _powery);
 
 	// then create the SpaceElement
-	SpaceElement_ptr_t y = Y->createElement();
-	*y = _rhs;
+	SpaceElement_ptr_t y = ElementCreator::create(Y, _rhs);
 
 	// and the LinearMapping
 	Mapping_ptr_t A( new LinearMapping(X,Y,_matrix) );
@@ -60,8 +60,7 @@ InverseProblem_ptr_t InverseProblemFactory::createRegularizedL1Instance(
 					_matrix.innerSize(), _r, _powery);
 
 	// then create the SpaceElement
-	SpaceElement_ptr_t y = Y->createElement();
-	*y = _rhs;
+	SpaceElement_ptr_t y = ElementCreator::create(Y, _rhs);
 
 	// and the LinearMapping
 	Mapping_ptr_t A( new LinearMapping(X,Y,_matrix) );

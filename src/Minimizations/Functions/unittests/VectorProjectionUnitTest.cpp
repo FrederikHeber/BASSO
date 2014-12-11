@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "Log/Logging.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
@@ -50,8 +51,6 @@ void VectorProjectionUnitTest::oneoneNorm()
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
-	SpaceElement_ptr_t x = SpaceX->createElement();
-	SpaceElement_ptr_t y = SpaceX->createElement();
 
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
@@ -60,8 +59,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -75,8 +74,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -89,8 +88,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -103,8 +102,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -117,8 +116,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -131,8 +130,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -145,8 +144,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -159,8 +158,8 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -173,12 +172,11 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -198,12 +196,11 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -223,12 +220,11 @@ void VectorProjectionUnitTest::oneoneNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -256,8 +252,6 @@ void VectorProjectionUnitTest::onefiveNorm()
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
-	SpaceElement_ptr_t x = SpaceX->createElement();
-	SpaceElement_ptr_t y = SpaceX->createElement();
 
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
@@ -266,8 +260,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -281,8 +275,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -295,8 +289,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -309,8 +303,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -323,8 +317,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -337,8 +331,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -351,8 +345,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -365,8 +359,8 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -379,12 +373,11 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -404,12 +397,11 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -429,12 +421,11 @@ void VectorProjectionUnitTest::onefiveNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -462,8 +453,6 @@ void VectorProjectionUnitTest::twoNorm()
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
-	SpaceElement_ptr_t x = SpaceX->createElement();
-	SpaceElement_ptr_t y = SpaceX->createElement();
 
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
@@ -472,8 +461,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -490,8 +479,8 @@ void VectorProjectionUnitTest::twoNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -506,8 +495,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -522,8 +511,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -538,8 +527,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -554,8 +543,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -570,8 +559,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -586,8 +575,8 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -603,13 +592,12 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -632,13 +620,12 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -661,13 +648,12 @@ void VectorProjectionUnitTest::twoNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		std::vector<double> euclidianangles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -698,8 +684,6 @@ void VectorProjectionUnitTest::sixNorm()
 					*SpaceX->getDualityMapping());
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
-	SpaceElement_ptr_t x = SpaceX->createElement();
-	SpaceElement_ptr_t y = SpaceX->createElement();
 
 	Eigen::VectorXd projectonto(dim);
 	Eigen::VectorXd tobeprojected(dim);
@@ -708,8 +692,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 1.,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -723,8 +707,8 @@ void VectorProjectionUnitTest::sixNorm()
 //		std::cout << "Current length is " << length << std::endl;
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << length,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -737,8 +721,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << .1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -751,8 +735,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.1,0,0,0,0;
 		tobeprojected << .2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -765,8 +749,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << .27,0,0,0,0;
 		tobeprojected << 2.2,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -779,8 +763,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 1,0,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -793,8 +777,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.5,0,0,0,0;
 		tobeprojected << 0,1,0,0,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -807,8 +791,8 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected << 0,0,1,1,0;
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		// minimum, minimizer
 		const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -821,12 +805,11 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -846,12 +829,11 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);
@@ -871,12 +853,11 @@ void VectorProjectionUnitTest::sixNorm()
 	{
 		projectonto << 1.,0,0,0,0;
 		tobeprojected = Eigen::VectorXd::Zero(dim);
-		*x = projectonto;
-		*y = tobeprojected;
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX, projectonto);
+		SpaceElement_ptr_t y = ElementCreator::create(SpaceX, tobeprojected);
 		std::vector<double> angles(dim, 0.);
 		for (unsigned int i=0; i<dim; ++i) {
-			tobeprojected[i] = 1.;
-			*y = tobeprojected;
+			(*y)[i] = 1.;
 			// minimum, minimizer
 			const std::pair<double, double> tmp =
 				projector(x, y, tolerance);

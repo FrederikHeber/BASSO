@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+#include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Math/Helpers.hpp"
@@ -43,8 +45,9 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 	const Norm &l1norm = *getSourceSpace()->getNorm();
 
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
-	SpaceElement_ptr_t sign_x = getTargetSpace()->createElement();
-	*sign_x = _x->getSignVector()->getVectorRepresentation();
+	SpaceElement_ptr_t sign_x =
+			ElementCreator::create(getTargetSpace(),
+			_x->getSignVector()->getVectorRepresentation());
 	*sign_x *= factor;
 	return sign_x;
 }
