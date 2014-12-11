@@ -10,13 +10,14 @@
 
 #include "BassoConfig.h"
 
+#include <cassert>
 #include <cmath>
-#include <Eigen/Dense>
 
 #include "Norm.hpp"
 
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 /** This class implements the l_1 norm.
  *
@@ -36,14 +37,9 @@ public:
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
 		assert( NormedSpaceRef == _x->getSpace() );
-		return operator()(_x->getVectorRepresentation());
-	}
-
-	const double operator()(const Eigen::VectorXd &_x) const
-	{
 		double value = 0.;
-		for (unsigned int i=0;i<_x.innerSize();++i)
-			value += fabs(_x[i]);
+		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
+			value += fabs((*_x)[i]);
 		return value;
 	}
 

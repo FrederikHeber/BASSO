@@ -14,6 +14,7 @@
 #include "Minimizations/Mappings/SoftThresholdingMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 /** This class implements a regularized l1 norm of the form
  * \f$ \lambda ||.||_1 + \tfrac 1 2 ||.||^2_2 \f$.

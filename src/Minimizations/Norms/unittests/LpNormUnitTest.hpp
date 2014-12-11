@@ -13,7 +13,6 @@
 class LpNormUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( LpNormUnitTest );
-  CPPUNIT_TEST( throwTest );
   CPPUNIT_TEST( twoNorm );
   CPPUNIT_TEST( threeNorm );
   CPPUNIT_TEST( fourNorm );
@@ -25,7 +24,6 @@ public:
   void setUp();
   void tearDown();
 
-  void throwTest();
   void twoNorm();
   void threeNorm();
   void fourNorm();

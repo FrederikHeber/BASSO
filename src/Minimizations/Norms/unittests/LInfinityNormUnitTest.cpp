@@ -10,9 +10,11 @@
 #include <Eigen/Dense>
 #include <limits>
 
+#include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
-#include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LInfinityNormUnitTest );
@@ -29,17 +31,20 @@ void LInfinityNormUnitTest::tearDown()
 
 void LInfinityNormUnitTest::inftyNorm()
 {
-	Norm_ptr_t norm_ptr = NormFactory::createLpInstance(
-			std::numeric_limits<double>::infinity());
-	const Norm &norm = *norm_ptr;
+	const double p = std::numeric_limits<double>::infinity();
 	{
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
 				0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						X.innerSize(), p, 2.);
+		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52088,0.88885,0.78007,0.44651,0.15783,0.90374,0.88042,0.99737,0.34520,0.56292;
 		for (size_t i=0; i<10; ++i) {
-			const double compare = norm(X.col(i));
+			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
+			const double compare = norm(x);
 //			std::cout << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
 			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
@@ -52,10 +57,15 @@ void LInfinityNormUnitTest::inftyNorm()
 			0.5836364,0.7425789,0.1059589,0.3170492,0.6488256,-0.6131489,0.3917273,-0.4766553,0.4321104,-0.2287513,
 			0.0010107,0.8335353,0.7493321,0.1686532,-0.9022343,-0.1451915,-0.2955828,-0.8714578,-0.6201104,-0.4218609,
 			0.9747178,-0.9666331,0.2735608,0.1137258,0.1620735,-0.4401804,-0.0051763,-0.6895868,-0.2982194,0.9003390;
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						X.innerSize(), p, 2.);
+		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.97472,0.96663,0.89721,0.31705,0.92300,0.70086,0.58420,0.98734,0.62011,0.90034;
 		for (size_t i=0; i<10; ++i) {
-			const double compare = norm(X.col(i));
+			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
+			const double compare = norm(x);
 //			std::cout << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
 			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
@@ -73,10 +83,15 @@ void LInfinityNormUnitTest::inftyNorm()
 			-5.3199e-01,-1.8225e-01,-3.3247e-01,8.7822e-01,-3.9038e-01,7.2615e-01,-8.6705e-01,2.9549e-02,1.8063e-02,-4.1061e-01,
 			-5.1152e-01,-8.3150e-01,2.7693e-01,-9.7872e-01,9.7519e-01,-1.7073e-01,7.9553e-01,-4.0667e-01,-9.7718e-01,8.2855e-01,
 			1.4308e-01,8.0489e-02,-5.3567e-01,-3.6793e-02,7.2730e-01,1.9200e-01,-4.9364e-01,6.0502e-01,2.9298e-01,-5.2860e-01;
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createLpInstance(
+						X.innerSize(), p, 2.);
+		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.98346,0.96560,0.92229,0.97872,0.97519,0.83976,0.86705,0.74771,0.98683,0.96702;
 		for (size_t i=0; i<10; ++i) {
-			const double compare = norm(X.col(i));
+			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
+			const double compare = norm(x);
 //			std::cout << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
 			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );

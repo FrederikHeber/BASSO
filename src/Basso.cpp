@@ -624,15 +624,14 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		Norm_ptr_t NormY = inverseproblem->y->getSpace()->getNorm();
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
-					<< " with relative residual of " << result.residuum/(*NormY)(rhs)
+					<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
 					<< std::endl;
 		} else {
 			std::cout << "Solution after " << result.NumberOuterIterations
-				<< " with relative residual of " << result.residuum/(*NormY)(rhs)
+				<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
 				<< " is " << std::scientific << std::setprecision(8)
 				<< inverseproblem->x
 				<< std::endl;

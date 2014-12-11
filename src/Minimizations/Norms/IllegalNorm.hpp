@@ -42,11 +42,6 @@ public:
 				<< NormIllegalValue_name("IllegalNorm");
 	}
 
-	const double operator()(const Eigen::VectorXd &_x) const
-	{
-		throw NormIllegalValue_exception()
-				<< NormIllegalValue_name("IllegalNorm");
-	}
 
 	virtual const double getPvalue() const
 	{

@@ -10,14 +10,13 @@
 
 #include "BassoConfig.h"
 
+#include <cassert>
 #include <cmath>
-#include <Eigen/Dense>
-#include <limits>
 
-#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 class LpNorm : public Norm
 {
@@ -48,20 +47,10 @@ public:
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
 		assert( NormedSpaceRef == _x->getSpace() );
-		return operator()(_x->getVectorRepresentation());
-	}
-
-	const double operator()(const Eigen::VectorXd &_x) const
-	{
-		if (p > 0. ) {
-			double value = 0.;
-			for (unsigned int i=0;i<_x.innerSize();++i)
-				value += ::pow(fabs(_x[i]), p);
-			return ::pow(value, 1./p);
-		} else {
-			// infinity norm
-			return _x.lpNorm<Eigen::Infinity>();
-		}
+		double value = 0.;
+		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
+			value += ::pow(fabs((*_x)[i]), p);
+		return ::pow(value, 1./p);
 	}
 
 	/** Getter for the p value of a possible lp norm.

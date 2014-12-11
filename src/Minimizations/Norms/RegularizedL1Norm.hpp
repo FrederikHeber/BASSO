@@ -43,11 +43,6 @@ public:
 	const double operator()(const SpaceElement_ptr_t &_x) const
 	{
 		assert( NormedSpaceRef == _x->getSpace() );
-		return operator()(_x->getVectorRepresentation());
-	}
-
-	const double operator()(const Eigen::VectorXd &_x) const
-	{
 		double value = 0.;
 		value += lambda * L1Norm::operator()(_x);
 		value += .5 * ::pow(l2norm(_x),2);
