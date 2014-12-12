@@ -16,8 +16,6 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
-typedef VectorSpaceOperationCounts::TimeKeeper TimeKeeper;
-
 NormedSpace::NormedSpace(
 		const unsigned int _dimension) :
 	dimension(_dimension)
@@ -35,7 +33,7 @@ NormedSpace::NormedSpace(
 
 SpaceElement_ptr_t NormedSpace::createElement() const
 {
-	TimeKeeper(opcounts.ElementCreation);
+	TIMEKEEPER(opcounts.ElementCreation);
 	SpaceElement_ptr_t newelement(new SpaceElement(getSpace()));
 	newelement->setSelfRef(newelement);
 	return newelement;

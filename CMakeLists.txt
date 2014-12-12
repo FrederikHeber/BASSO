@@ -14,6 +14,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3")
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 0)
 
+# should we count and measure the time of all operations?
+option (USE_TIMINGS 
+	"Use counter and timings on all vector space operations" OFF)
+
 ######################## CHECK HEADERS  ##################################
 
 # does the system provide the log and exp functions?

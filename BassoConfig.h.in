@@ -13,7 +13,7 @@
 #cmakedefine HAVE_EXP
 
 // measure timing of each part of the algorithm
-#cmakedefine USE_TIMING
+#cmakedefine USE_TIMINGS
 
 // use NLopt for minimization
 #cmakedefine NLOPT_FOUND

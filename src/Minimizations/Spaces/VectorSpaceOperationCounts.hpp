@@ -13,6 +13,13 @@
 #include <boost/chrono.hpp>
 #include <utility>
 
+#ifdef USE_TIMINGS
+#define TIMEKEEPER(type) \
+	VectorSpaceOperationCounts::TimeKeeper(type)
+#else
+#define TIMEKEEPER(type)
+#endif
+
 /** This simple struct contains counts and timings for all operations
  * in a vector space.
  */

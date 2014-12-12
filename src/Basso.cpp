@@ -641,6 +641,7 @@ int main (int argc, char *argv[])
 		}
 	}
 
+#ifdef USE_TIMINGS
 	// list all incurred costs
 	std::cout << "===============================================" << std::endl;
 	std::cout << "This minimization incurred the following costs:" << std::endl;
@@ -661,6 +662,7 @@ int main (int argc, char *argv[])
 				+inverseproblem->A->getAdjointMapping()->getCount())
 			<< std::endl;
 	std::cout << "===============================================" << std::endl;
+#endif
 
 	// writing solution
 	{
@@ -670,9 +672,6 @@ int main (int argc, char *argv[])
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Writing solution vector to " << solution_file << ".\n";
 
-		}
-
-		{
 			using namespace MatrixIO;
 			std::ofstream ost(solution_file.string().c_str());
 			if (ost.good())
@@ -685,7 +684,8 @@ int main (int argc, char *argv[])
 				std::cerr << "Failed to open " << solution_file.string() << std::endl;
 				return 255;
 			}
-
+		} else {
+			std::cout << "No solution file given." << std::endl;
 		}
 	}
 
