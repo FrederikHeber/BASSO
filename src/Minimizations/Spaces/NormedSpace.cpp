@@ -33,7 +33,9 @@ NormedSpace::NormedSpace(
 
 SpaceElement_ptr_t NormedSpace::createElement() const
 {
-	TIMEKEEPER(opcounts.ElementCreation);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::ElementCreation>(
+					opcounts.instance));
 	SpaceElement_ptr_t newelement(new SpaceElement(getSpace()));
 	newelement->setSelfRef(newelement);
 	return newelement;

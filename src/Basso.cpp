@@ -642,30 +642,37 @@ int main (int argc, char *argv[])
 	}
 
 #ifdef USE_TIMINGS
+	using namespace VectorSpaceOperations;
 	// list all incurred costs
 	std::cout << "===============================================" << std::endl;
 	std::cout << "This minimization incurred the following costs:" << std::endl;
 	std::cout << "Element creation: "
-			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalElementCreationCounts()
-				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalElementCreationCounts()
-				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalElementCreationCounts()
-				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalElementCreationCounts())
+			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalConstantCounts()
+				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalConstantCounts()
+				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalConstantCounts()
+				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalConstantCounts())
 			<< std::endl;
 	std::cout << "Linear time operations: "
-			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalCounts()
-				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalCounts()
-				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalCounts()
-				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalCounts())
+			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalLinearCounts()
+				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalLinearCounts()
+				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalLinearCounts()
+				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalLinearCounts())
+			<< std::endl;
+	std::cout << "\tVector Addition operations: "
+			<< (getCountTiming<VectorAddition>(inverseproblem->A->getSourceSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorAddition>(inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorAddition>(inverseproblem->A->getTargetSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorAddition>(inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().instance).first)
 			<< std::endl;
 	std::cout << "Quadratic time operations: "
 			<< (inverseproblem->A->getCount()
 				+inverseproblem->A->getAdjointMapping()->getCount())
 			<< std::endl;
 	std::cout << "Norm operations: "
-			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalVectorNormCounts()
-				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalVectorNormCounts()
-				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalVectorNormCounts()
-				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalVectorNormCounts())
+			<< (getCountTiming<VectorNorm>(inverseproblem->A->getSourceSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorNorm>(inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorNorm>(inverseproblem->A->getTargetSpace()->getOpCounts().instance).first
+				+getCountTiming<VectorNorm>(inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().instance).first)
 			<< std::endl;
 	std::cout << "===============================================" << std::endl;
 #endif

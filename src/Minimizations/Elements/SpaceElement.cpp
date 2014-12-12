@@ -33,7 +33,9 @@ const bool SpaceElement::isInSpace(
 
 const bool SpaceElement::isZero(const double _threshold) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorComparison);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorComparison>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.isZero(_threshold);
 }
 
@@ -41,7 +43,9 @@ const bool SpaceElement::isApproxToConstant(
 		const double _constant,
 		const double _tolerance) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorComparison);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorComparison>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.isApproxToConstant(_constant, _tolerance);
 }
 
@@ -49,7 +53,9 @@ const bool SpaceElement::isApprox(
 		const SpaceElement_ptr_t &_other,
 		const double _tolerance) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorComparison);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorComparison>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.isApprox(_other->vector, _tolerance);
 }
 
@@ -57,14 +63,18 @@ const bool SpaceElement::isApprox(
 		const SpaceElement &_other,
 		const double _tolerance) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorComparison);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorComparison>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.isApprox(_other.vector, _tolerance);
 }
 
 const SpaceElement_ptr_t SpaceElement::getSignVector() const
 {
 	SpaceElement_ptr_t signvector(NormedSpaceRef->createElement());
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorModification);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorModification>(
+					NormedSpaceRef->opcounts.instance));
 	*signvector = Helpers::signum(vector);
 	return signvector;
 }
@@ -72,7 +82,9 @@ const SpaceElement_ptr_t SpaceElement::getSignVector() const
 const SpaceElement_ptr_t SpaceElement::getAbsVector() const
 {
 	SpaceElement_ptr_t absvector(NormedSpaceRef->createElement());
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorModification);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorModification>(
+					NormedSpaceRef->opcounts.instance));
 	*absvector = vector.array().abs();
 	return absvector;
 }
@@ -81,7 +93,9 @@ const SpaceElement_ptr_t SpaceElement::getCircShiftedVector(
 		const int shift) const
 {
 	SpaceElement_ptr_t shiftedvector(NormedSpaceRef->createElement());
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorModification);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorModification>(
+					NormedSpaceRef->opcounts.instance));
 	*shiftedvector = Helpers::circshift(vector, shift);
 	return shiftedvector;
 }
@@ -115,7 +129,9 @@ const double SpaceElement::Norm() const
 SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const
 {
 	SpaceElement_ptr_t newelement(NormedSpaceRef->createElement());
-	TIMEKEEPER(NormedSpaceRef->opcounts.ScalarVectorMultiplication);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::ScalarVectorMultiplication>(
+					NormedSpaceRef->opcounts.instance));
 	*newelement = vector;
 	*newelement *= _alpha;
 	return newelement;
@@ -123,13 +139,17 @@ SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const
 
 const double SpaceElement::operator*(const SpaceElement_ptr_t &_element) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorMultiplication);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorMultiplication>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.transpose() * _element->vector;
 }
 
 const double SpaceElement::operator*(const SpaceElement &_element) const
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorMultiplication);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorMultiplication>(
+					NormedSpaceRef->opcounts.instance));
 	return vector.transpose() * _element.vector;
 }
 
@@ -137,7 +157,9 @@ SpaceElement_ptr_t SpaceElement::operator+(const SpaceElement_ptr_t &_element) c
 {
 	SpaceElement_ptr_t newelement(NormedSpaceRef->createElement());
 	// exclude element creation time
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorAddition);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					NormedSpaceRef->opcounts.instance));
 	*newelement = vector;
 	*newelement += _element;
 	return newelement;
@@ -147,7 +169,9 @@ SpaceElement_ptr_t SpaceElement::operator-(const SpaceElement_ptr_t &_element) c
 {
 	SpaceElement_ptr_t newelement(NormedSpaceRef->createElement());
 	// exclude element creation time
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorAddition);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					NormedSpaceRef->opcounts.instance));
 	*newelement = vector;
 	*newelement -= _element;
 	return newelement;
@@ -155,14 +179,18 @@ SpaceElement_ptr_t SpaceElement::operator-(const SpaceElement_ptr_t &_element) c
 
 SpaceElement_ptr_t SpaceElement::operator*=(const double _alpha)
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.ScalarVectorMultiplication);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::ScalarVectorMultiplication>(
+					NormedSpaceRef->opcounts.instance));
 	vector *= _alpha;
 	return SpaceElement_ptr_t(SelfRef);
 }
 
 SpaceElement_ptr_t SpaceElement::operator+=(const SpaceElement_ptr_t &_element)
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorAddition);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					NormedSpaceRef->opcounts.instance));
 	assert( NormedSpaceRef == _element->NormedSpaceRef );
 	assert( vector.innerSize() == _element->vector.innerSize() );
 	vector += _element->vector;
@@ -171,7 +199,9 @@ SpaceElement_ptr_t SpaceElement::operator+=(const SpaceElement_ptr_t &_element)
 
 SpaceElement_ptr_t SpaceElement::operator-=(const SpaceElement_ptr_t &_element)
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorAddition);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					NormedSpaceRef->opcounts.instance));
 	assert( NormedSpaceRef == _element->NormedSpaceRef );
 	assert( vector.innerSize() == _element->vector.innerSize() );
 	vector -= _element->vector;
@@ -182,7 +212,9 @@ SpaceElement_ptr_t SpaceElement::operator=(const SpaceElement_ptr_t &_element)
 {
 	// check self-assignment
 	if (this != _element.get()) {
-		TIMEKEEPER(NormedSpaceRef->opcounts.VectorAssignment);
+		TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+				VectorSpaceOperations::VectorAssignment>(
+						NormedSpaceRef->opcounts.instance));
 		assert( NormedSpaceRef == _element->NormedSpaceRef );
 		assert( vector.innerSize() == _element->vector.innerSize() );
 		vector = _element->vector;
@@ -192,7 +224,9 @@ SpaceElement_ptr_t SpaceElement::operator=(const SpaceElement_ptr_t &_element)
 
 SpaceElement_ptr_t SpaceElement::operator=(const Eigen::VectorXd &_vector)
 {
-	TIMEKEEPER(NormedSpaceRef->opcounts.VectorAssignment);
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAssignment>(
+					NormedSpaceRef->opcounts.instance));
 	assert( vector.innerSize() == _vector.innerSize() );
 	vector = _vector;
 	return SpaceElement_ptr_t(SelfRef);

@@ -11,7 +11,11 @@
 #include "BassoConfig.h"
 
 #include <boost/chrono.hpp>
+#include <boost/fusion/sequence.hpp>
+#include <boost/mpl/at.hpp>
 #include <utility>
+
+#include "Minimizations/Spaces/OperationCountMap.hpp"
 
 #ifdef USE_TIMINGS
 #define TIMEKEEPER(type) \
@@ -20,45 +24,39 @@
 #define TIMEKEEPER(type)
 #endif
 
+namespace VectorSpaceOperations {
+
+	/** Allows access to a certain timing object.
+	 *
+	 * @return ref to timing object
+	 */
+	template<class _type>
+	CountTiming_t& getCountTiming(
+			OperationCountMap_t &_opcounts
+			)
+	{
+		return boost::fusion::at_key<_type>(_opcounts);
+	}
+
+	/** Allows access to a certain timing object.
+	 *
+	 * @return ref to timing object
+	 */
+	template<class _type>
+	const CountTiming_t& getCountTiming(
+			const OperationCountMap_t &_opcounts
+			)
+	{
+		return boost::fusion::at_key<_type>(_opcounts);
+	}
+};
+
 /** This simple struct contains counts and timings for all operations
  * in a vector space.
  */
 struct VectorSpaceOperationCounts
 {
-	//!> typedef for the count type
-	typedef int Count_t;
-	//!> typedef for the time-keeping type
-	typedef boost::chrono::nanoseconds Timing_t;
-	//!> typedef for the combined count and time-keeping type
-	typedef std::pair<Count_t, Timing_t> CountTiming_t;
-
-	VectorSpaceOperationCounts() :
-		ElementCreation(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorAddition(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorAssignment(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorComparison(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorModification(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorMultiplication(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		VectorNorm(std::make_pair(0, boost::chrono::nanoseconds(0))),
-		ScalarVectorMultiplication(std::make_pair(0, boost::chrono::nanoseconds(0)))
-	{}
-
-	//!> time and count for the creation of vectors
-	CountTiming_t ElementCreation;
-	//!> time and count for adding/subtracting of vectors: O(n)
-	CountTiming_t VectorAddition;
-	//!> time and count for assigning a vector: O(n)
-	CountTiming_t VectorAssignment;
-	//!> time and count for comparing a vector to another or to constant: O(n)
-	CountTiming_t VectorComparison;
-	//!> time and count for modifying a vector componentwise: O(n)
-	CountTiming_t VectorModification;
-	//!> time and count for the vector vector multiplication: O(n)
-	CountTiming_t VectorMultiplication;
-	//!> time and count for the vector norm: O(n)
-	CountTiming_t VectorNorm;
-	//!> time and count for the vector multiplication with a scalar: O(n)
-	CountTiming_t ScalarVectorMultiplication;
+	OperationCountMap_t instance;
 
 	/** Returns the total number of O(n) operations.
 	 *
@@ -71,20 +69,18 @@ struct VectorSpaceOperationCounts
 	 *
 	 * @return total number of operations called
 	 */
-	Count_t getTotalCounts() const
-	{ return VectorAddition.first
-			+VectorAssignment.first
-			+VectorComparison.first
-			+VectorModification.first
-			+VectorMultiplication.first
-			+ScalarVectorMultiplication.first;
+	VectorSpaceOperations::Count_t getTotalLinearCounts() const
+	{ return boost::fusion::at_key<VectorSpaceOperations::ScalarVectorMultiplication>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorAddition>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorAssignment>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorComparison>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorModification>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorMultiplication>(instance).first
+			+boost::fusion::at_key<VectorSpaceOperations::VectorNorm>(instance).first;
 	}
 
-	Count_t getTotalElementCreationCounts() const
-	{ return ElementCreation.first; }
-
-	Count_t getTotalVectorNormCounts() const
-	{ return VectorNorm.first; }
+	VectorSpaceOperations::Count_t getTotalConstantCounts() const
+	{ return boost::fusion::at_key<VectorSpaceOperations::ElementCreation>(instance).first; }
 
 	/** Returns the total time spent in O(n) operations.
 	 *
@@ -102,20 +98,18 @@ struct VectorSpaceOperationCounts
 	 *
 	 * @return total time spent in calls of operation
 	 */
-	Timing_t getTotalTimings() const
-	{ return VectorAddition.second
-			+VectorAssignment.second
-			+VectorComparison.second
-			+VectorModification.second
-			+VectorMultiplication.second
-			+ScalarVectorMultiplication.second;
+	VectorSpaceOperations::Timing_t getTotalLinearTimings() const
+	{ return boost::fusion::at_key<VectorSpaceOperations::ScalarVectorMultiplication>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorAddition>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorAssignment>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorComparison>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorModification>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorMultiplication>(instance).second
+			+boost::fusion::at_key<VectorSpaceOperations::VectorNorm>(instance).second;
 	}
 
-	Timing_t getTotalElementCreationTimings() const
-	{ return ElementCreation.second; }
-
-	Timing_t getTotalVectorNormTimings() const
-	{ return VectorNorm.second; }
+	VectorSpaceOperations::Timing_t getTotalConstantTimings() const
+	{ return boost::fusion::at_key<VectorSpaceOperations::ElementCreation>(instance).second; }
 
 	/** This is a convenience struct that measures the time that
 	 * passed by during its existence.
@@ -145,7 +139,7 @@ struct VectorSpaceOperationCounts
 		 *
 		 * @param _optype reference to one of the counttimes above
 		 */
-		TimeKeeper(CountTiming_t &_optype) :
+		TimeKeeper(VectorSpaceOperations::CountTiming_t &_optype) :
 			optype(_optype),
 			timing_start(boost::chrono::high_resolution_clock::now())
 		{
@@ -166,7 +160,7 @@ struct VectorSpaceOperationCounts
 
 	private:
 		//!> stores the optype to write results to
-		CountTiming_t &optype;
+		VectorSpaceOperations::CountTiming_t &optype;
 		//!> contains the starting time
 		const boost::chrono::high_resolution_clock::time_point timing_start;
 	};

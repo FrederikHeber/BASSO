@@ -111,6 +111,7 @@ install (FILES Norms/RegularizedL1Norm.hpp DESTINATION include)
 
 install (FILES Spaces/NormedSpaceFactory.hpp DESTINATION include)
 install (FILES Spaces/NormedSpace.hpp DESTINATION include)
+install (FILES Spaces/OperationCountMap.hpp DESTINATION include)
 install (FILES Spaces/VectorSpaceOperationCounts.hpp DESTINATION include)
 
 install (FILES types.hpp DESTINATION include)

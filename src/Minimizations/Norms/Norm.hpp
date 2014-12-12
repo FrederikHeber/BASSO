@@ -44,7 +44,9 @@ public:
 	 */
 	const double operator()(const SpaceElement_ptr_t &_element) const
 	{
-		TIMEKEEPER(NormedSpaceRef->opcounts.VectorNorm);
+		TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+				VectorSpaceOperations::VectorNorm>(
+				NormedSpaceRef->opcounts.instance));
 		return internal_operator(_element);
 	}
 
