@@ -36,14 +36,15 @@ public:
 		Norm(_ref)
 	{}
 
-	const double operator()(const SpaceElement_ptr_t &_x) const
+	virtual const double getPvalue() const
 	{
 		throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("IllegalNorm");
 	}
 
+protected:
 
-	virtual const double getPvalue() const
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("IllegalNorm");

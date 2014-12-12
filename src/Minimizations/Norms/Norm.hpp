@@ -10,7 +10,8 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/types.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
 #include <Eigen/Dense>
 
@@ -35,10 +36,17 @@ public:
 
 	/** Evaluates the norm for a given \a _element.
 	 *
+	 * This functions wraps the internal_operator() with an additional
+	 * TimeKeeper object to measure how often the Norms are evaluated.
+	 *
 	 * @param _element element of the space, whose norm to evaluated
 	 * @return norm of \a element
 	 */
-	virtual const double operator()(const SpaceElement_ptr_t &_element) const = 0;
+	const double operator()(const SpaceElement_ptr_t &_element) const
+	{
+		TIMEKEEPER(NormedSpaceRef->opcounts.VectorNorm);
+		return internal_operator(_element);
+	}
 
 	/** Getter for the p value of a possible lp norm.
 	 *
@@ -50,6 +58,13 @@ public:
 protected:
 	//!> internal reference to the space this norm belongs to
 	const NormedSpace_ptr_t NormedSpaceRef;
+
+	/** Evaluates the norm for a given \a _element.
+	 *
+	 * @param _element element of the space, whose norm to evaluated
+	 * @return norm of \a element
+	 */
+	virtual const double internal_operator(const SpaceElement_ptr_t &_element) const = 0;
 };
 
 

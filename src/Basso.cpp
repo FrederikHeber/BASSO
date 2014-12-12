@@ -661,6 +661,12 @@ int main (int argc, char *argv[])
 			<< (inverseproblem->A->getCount()
 				+inverseproblem->A->getAdjointMapping()->getCount())
 			<< std::endl;
+	std::cout << "Norm operations: "
+			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalVectorNormCounts()
+				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalVectorNormCounts()
+				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalVectorNormCounts()
+				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalVectorNormCounts())
+			<< std::endl;
 	std::cout << "===============================================" << std::endl;
 #endif
 

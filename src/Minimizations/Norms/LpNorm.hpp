@@ -39,12 +39,21 @@ public:
 	}
 	~LpNorm() {}
 
+	/** Getter for the p value of a possible lp norm.
+	 *
+	 * @return p value: 0 - not an lp norm, else - p of lp norm
+	 */
+	virtual const double getPvalue() const
+	{ return p; }
+
+protected:
+
 	/** Evaluates the norm for a given \a _element.
 	 *
 	 * @param _element element of the space, whose norm to evaluated
 	 * @return norm of \a element
 	 */
-	const double operator()(const SpaceElement_ptr_t &_x) const
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( NormedSpaceRef == _x->getSpace() );
 		double value = 0.;
@@ -52,13 +61,6 @@ public:
 			value += ::pow(fabs((*_x)[i]), p);
 		return ::pow(value, 1./p);
 	}
-
-	/** Getter for the p value of a possible lp norm.
-	 *
-	 * @return p value: 0 - not an lp norm, else - p of lp norm
-	 */
-	virtual const double getPvalue() const
-	{ return p; }
 
 private:
 	//!> p value for norm

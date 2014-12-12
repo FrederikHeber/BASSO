@@ -35,20 +35,6 @@ public:
 		lambda(_lambda)
 	{}
 
-	/** Evaluates the norm for a given \a _element.
-	 *
-	 * @param _element element of the space, whose norm to evaluated
-	 * @return norm of \a element
-	 */
-	const double operator()(const SpaceElement_ptr_t &_x) const
-	{
-		assert( NormedSpaceRef == _x->getSpace() );
-		double value = 0.;
-		value += lambda * L1Norm::operator()(_x);
-		value += .5 * ::pow(l2norm(_x),2);
-		return value;
-	}
-
 	/** Setter for soft thresholding parameter \a lambda.
 	 *
 	 * @param _lambda new value for parameter
@@ -64,6 +50,22 @@ public:
 	 */
 	const double getLambda() const
 	{ return lambda; }
+
+protected:
+
+	/** Evaluates the norm for a given \a _element.
+	 *
+	 * @param _element element of the space, whose norm to evaluated
+	 * @return norm of \a element
+	 */
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
+	{
+		assert( NormedSpaceRef == _x->getSpace() );
+		double value = 0.;
+		value += lambda * L1Norm::operator()(_x);
+		value += .5 * ::pow(l2norm(_x),2);
+		return value;
+	}
 
 private:
 	//!> internal l2 norm

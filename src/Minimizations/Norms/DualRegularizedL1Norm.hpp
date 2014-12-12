@@ -35,19 +35,6 @@ public:
 		softthresholder(_ref, _lambda)
 	{}
 
-	/** Evaluates the norm for a given \a _element.
-	 *
-	 * @param _element element of the space, whose norm to evaluated
-	 * @return norm of \a element
-	 */
-	const double operator()(const SpaceElement_ptr_t &_x) const
-	{
-		assert( NormedSpaceRef == _x->getSpace() );
-		const double value =
-				LpNorm::operator()(softthresholder(_x));
-		return value;
-	}
-
 	/** Setter for soft thresholding parameter \a lambda.
 	 *
 	 * @param _lambda new value for parameter
@@ -63,6 +50,21 @@ public:
 	 */
 	const double getLambda() const
 	{ return softthresholder.getLambda(); }
+
+protected:
+
+	/** Evaluates the norm for a given \a _element.
+	 *
+	 * @param _element element of the space, whose norm to evaluated
+	 * @return norm of \a element
+	 */
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
+	{
+		assert( NormedSpaceRef == _x->getSpace() );
+		const double value =
+				LpNorm::operator()(softthresholder(_x));
+		return value;
+	}
 
 private:
 	//!> internal soft thresholding operator

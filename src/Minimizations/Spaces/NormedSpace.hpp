@@ -20,6 +20,7 @@
 
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
+class Norm;
 class NormedSpaceFactory;
 class SpaceElement;
 
@@ -161,6 +162,9 @@ private:
 
 	//!> grant SpaceElement write access to opcounts
 	friend class SpaceElement;
+
+	//!> grant Norm write access to opcounts
+	friend class Norm;
 
 	//!> internal object for operator counting
 	mutable VectorSpaceOperationCounts opcounts;

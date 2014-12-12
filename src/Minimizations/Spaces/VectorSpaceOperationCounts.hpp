@@ -39,6 +39,7 @@ struct VectorSpaceOperationCounts
 		VectorComparison(std::make_pair(0, boost::chrono::nanoseconds(0))),
 		VectorModification(std::make_pair(0, boost::chrono::nanoseconds(0))),
 		VectorMultiplication(std::make_pair(0, boost::chrono::nanoseconds(0))),
+		VectorNorm(std::make_pair(0, boost::chrono::nanoseconds(0))),
 		ScalarVectorMultiplication(std::make_pair(0, boost::chrono::nanoseconds(0)))
 	{}
 
@@ -54,15 +55,19 @@ struct VectorSpaceOperationCounts
 	CountTiming_t VectorModification;
 	//!> time and count for the vector vector multiplication: O(n)
 	CountTiming_t VectorMultiplication;
+	//!> time and count for the vector norm: O(n)
+	CountTiming_t VectorNorm;
 	//!> time and count for the vector multiplication with a scalar: O(n)
 	CountTiming_t ScalarVectorMultiplication;
 
 	/** Returns the total number of O(n) operations.
 	 *
 	 * \note This excludes ElementCreation and this is not necessarily
-	 * O(n) but simply an allocation of O(n) memory.
+	 * O(n) but simply an allocation of O(n) memory. Also, VectorNorm
+	 * is not included as this is here with Banach Spaces interesting
+	 * on its own.
 	 *
-	 * \sa getTotalElementCreationCounts()
+	 * \sa getTotalElementCreationCounts() and getTotalVectorNormCounts()
 	 *
 	 * @return total number of operations called
 	 */
@@ -78,17 +83,22 @@ struct VectorSpaceOperationCounts
 	Count_t getTotalElementCreationCounts() const
 	{ return ElementCreation.first; }
 
+	Count_t getTotalVectorNormCounts() const
+	{ return VectorNorm.first; }
+
 	/** Returns the total time spent in O(n) operations.
 	 *
 	 * \note This excludes ElementCreation and this is not necessarily
-	 * O(n) but simply an allocation of O(n) memory.
+	 * O(n) but simply an allocation of O(n) memory. Also, VectorNorm
+	 * is not included as this is here with Banach Spaces interesting
+	 * on its own.
 	 *
 	 * \warning the times may not actually be meaningful due to lazy
 	 * evaluation of \b Eigen. I.e. an operation may occur outside
 	 * the scope of the time measured function at a later point where
 	 * the result of the operation is actually needed.
 	 *
-	 * \sa getTotalElementCreationTimings()
+	 * \sa getTotalElementCreationTimings() and getTotalVectorNormTimings()
 	 *
 	 * @return total time spent in calls of operation
 	 */
@@ -103,6 +113,9 @@ struct VectorSpaceOperationCounts
 
 	Timing_t getTotalElementCreationTimings() const
 	{ return ElementCreation.second; }
+
+	Timing_t getTotalVectorNormTimings() const
+	{ return VectorNorm.second; }
 
 	/** This is a convenience struct that measures the time that
 	 * passed by during its existence.

@@ -34,7 +34,16 @@ public:
 		Norm(_ref)
 	{}
 
-	const double operator()(const SpaceElement_ptr_t &_x) const
+	/** Getter for the p value of a possible lp norm.
+	 *
+	 * @return p value: 0 - not an lp norm, else - p of lp norm
+	 */
+	virtual const double getPvalue() const
+	{ return 1.; }
+
+protected:
+
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( NormedSpaceRef == _x->getSpace() );
 		double value = 0.;
@@ -42,13 +51,6 @@ public:
 			value += fabs((*_x)[i]);
 		return value;
 	}
-
-	/** Getter for the p value of a possible lp norm.
-	 *
-	 * @return p value: 0 - not an lp norm, else - p of lp norm
-	 */
-	virtual const double getPvalue() const
-	{ return 1.; }
 };
 
 

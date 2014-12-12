@@ -33,24 +33,26 @@ public:
 		Norm(_ref)
 	{}
 
-	/** Evaluates the norm for a given \a _element.
-	 *
-	 * @param _element element of the space, whose norm to evaluated
-	 * @return norm of \a element
-	 */
-	const double operator()(const SpaceElement_ptr_t &_x) const
-	{
-		// infinity norm
-		assert( NormedSpaceRef == _x->getSpace() );
-		return _x->getMaxCoefficientAndIndex().first;
-	}
-
 	/** Getter for the p value of a possible lp norm.
 	 *
 	 * @return p value: 0 - not an lp norm, else - p of lp norm
 	 */
 	virtual const double getPvalue() const
 	{ return std::numeric_limits<double>::infinity(); }
+
+protected:
+
+	/** Evaluates the norm for a given \a _element.
+	 *
+	 * @param _element element of the space, whose norm to evaluated
+	 * @return norm of \a element
+	 */
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
+	{
+		// infinity norm
+		assert( NormedSpaceRef == _x->getSpace() );
+		return _x->getMaxCoefficientAndIndex().first;
+	}
 };
 
 
