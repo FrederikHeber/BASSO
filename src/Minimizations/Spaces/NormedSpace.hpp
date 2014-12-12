@@ -18,7 +18,10 @@
 
 #include "MatrixIO/OperationCounter.hpp"
 
+#include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
+
 class NormedSpaceFactory;
+class SpaceElement;
 
 class NormedSpace
 {
@@ -156,20 +159,19 @@ private:
 	//!> dimension of the representations in this vector space
 	const unsigned int dimension;
 
-	//!> internal function for operator counting
-	boost::function<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&)
-				> scalar_vector_fctor;
+	//!> grant SpaceElement write access to opcounts
+	friend class SpaceElement;
+
+	//!> internal object for operator counting
+	mutable VectorSpaceOperationCounts opcounts;
 
 public:
-	//!> operator counter for scalar vector products in this space
-	const OperationCounter<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-		const Eigen::MatrixBase<Eigen::VectorXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> ScalarVectorProduct;
+	/** Getter for the operation counting structure.
+	 *
+	 * @return const ref to internal VectorSpaceOperationCounts
+	 */
+	const VectorSpaceOperationCounts& getOpCounts() const
+	{ return opcounts; }
 };
 
 

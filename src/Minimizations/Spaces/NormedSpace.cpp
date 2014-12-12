@@ -14,19 +14,13 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
+
+typedef VectorSpaceOperationCounts::TimeKeeper TimeKeeper;
 
 NormedSpace::NormedSpace(
 		const unsigned int _dimension) :
-	dimension(_dimension),
-	scalar_vector_fctor(
-			boost::bind(
-					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
-						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
-								_1, _2
-			)
-	),
-	ScalarVectorProduct(scalar_vector_fctor)
+	dimension(_dimension)
 {}
 
 NormedSpace::NormedSpace(
@@ -36,20 +30,12 @@ NormedSpace::NormedSpace(
 		) :
 	norm(_norm),
 	dualitymapping(_dualitymapping),
-	dimension(_dimension),
-	scalar_vector_fctor(
-			boost::bind(
-					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
-						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
-								_1, _2
-			)
-	),
-	ScalarVectorProduct(scalar_vector_fctor)
+	dimension(_dimension)
 {}
 
 SpaceElement_ptr_t NormedSpace::createElement() const
 {
+	TimeKeeper(opcounts.ElementCreation);
 	SpaceElement_ptr_t newelement(new SpaceElement(getSpace()));
 	newelement->setSelfRef(newelement);
 	return newelement;
