@@ -32,6 +32,7 @@
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
 namespace po = boost::program_options;
 
@@ -639,6 +640,27 @@ int main (int argc, char *argv[])
 				<< std::endl;
 		}
 	}
+
+	// list all incurred costs
+	std::cout << "===============================================" << std::endl;
+	std::cout << "This minimization incurred the following costs:" << std::endl;
+	std::cout << "Element creation: "
+			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalElementCreationCounts()
+				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalElementCreationCounts()
+				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalElementCreationCounts()
+				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalElementCreationCounts())
+			<< std::endl;
+	std::cout << "Linear time operations: "
+			<< (inverseproblem->A->getSourceSpace()->getOpCounts().getTotalCounts()
+				+inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().getTotalCounts()
+				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalCounts()
+				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalCounts())
+			<< std::endl;
+	std::cout << "Quadratic time operations: "
+			<< (inverseproblem->A->getCount()
+				+inverseproblem->A->getAdjointMapping()->getCount())
+			<< std::endl;
+	std::cout << "===============================================" << std::endl;
 
 	// writing solution
 	{
