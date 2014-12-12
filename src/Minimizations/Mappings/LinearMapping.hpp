@@ -11,6 +11,7 @@
 #include "BassoConfig.h"
 
 #include <boost/chrono.hpp>
+#include <boost/weak_ptr.hpp>
 #include <Eigen/Dense>
 
 #include "MatrixIO/OperationCounter.hpp"
@@ -18,6 +19,7 @@
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
+struct LinearMappingFactory;
 class SpaceElement;
 
 /** This class defines matrices transforming elements from one
@@ -27,18 +29,11 @@ class LinearMapping : public Mapping
 {
 	//!> allow SpaceElement access to matrix
 	friend class SpaceElement;
-public:
-	/** Constructor for LinearMapping.
-	 *
-	 * @param _SourceSpaceRef source space
-	 * @param _TargetSpaceRef target space
-	 */
-	LinearMapping(
-			const NormedSpace_ptr_t _SourceSpaceRef,
-			const NormedSpace_ptr_t _TargetSpaceRef
-			);
 
-	/** Constructor for LinearMapping with a given matrix
+	//!> allow Factory access to private constructors
+	friend struct LinearMappingFactory;
+private:
+	/** Constructor for LinearMapping.
 	 *
 	 * @param _SourceSpaceRef source space
 	 * @param _TargetSpaceRef target space
@@ -49,6 +44,8 @@ public:
 			const NormedSpace_ptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd &_matrix
 			);
+
+public:
 
 	/** Matrix multiplication from the right.
 	 *
@@ -67,6 +64,10 @@ public:
 				) const;
 
 	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * \note With this specific Mapping (i.e. LinearMapping) we make
+	 * sure that only a single adjoint mapping (per individual mapping)
+	 * is ever created.
 	 *
 	 * @return mapping instance with adjoint
 	 */
@@ -102,6 +103,34 @@ public:
 private:
 	//!> matrix representation of this linear mapping
 	Eigen::MatrixXd matrix;
+
+	/** Similar as to internal ref for NormedSpace, the SpaceElements
+	 * also holds a weak_ptr reference to itself in order to return
+	 * it on specific operators
+	 */
+	const boost::weak_ptr<Mapping> SelfRef;
+
+	//!> internal pointer to adjoint
+	const Mapping_ptr_t AdjointLinearMapping;
+
+	/** Setter for the internal weak_ptr to \a this.
+	 *
+	 * \note This must be used by the NormedSpace::createElement() as
+	 * otherwise certain operators will return shared_ptr's containing NULL.
+	 *
+	 * @param _selfref reference to this entity wrapped in weak_ptr.
+	 */
+	void setSelfRef(const Mapping_ptr_t &_selfref);
+
+	/** Internal setter for the adjoint mapping
+	 *
+	 * When we create the adjoint mapping for the first time, the
+	 * adjoint's adjoint mapping is the original one and hence must
+	 * not be created.
+	 *
+	 * @param _adjoint adjoint instance to set
+	 */
+	void setAdjointMapping(const Mapping_ptr_t &_adjoint);
 
 	//!> internally bound function to count matrix vector products
 	boost::function<

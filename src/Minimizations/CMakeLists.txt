@@ -18,6 +18,7 @@ add_library (Minimizations
 	InverseProblems/InverseProblemFactory.cpp
 	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
+	Mappings/LinearMappingFactory.cpp
 	Mappings/PowerTypeDualityMappingFactory.cpp
 	Mappings/Specifics/L1DualityMapping.cpp
 	Mappings/Specifics/LpDualityMapping.cpp
@@ -70,6 +71,7 @@ install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
 
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
+install (FILES Mappings/LinearMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)

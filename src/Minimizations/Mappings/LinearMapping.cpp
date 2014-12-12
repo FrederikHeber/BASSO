@@ -17,27 +17,8 @@
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
+#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
-
-LinearMapping::LinearMapping(
-		const NormedSpace_ptr_t _SourceSpaceRef,
-		const NormedSpace_ptr_t _TargetSpaceRef
-		) :
-	Mapping(_SourceSpaceRef,_TargetSpaceRef),
-	matrix(Eigen::MatrixXd::Zero(
-			_SourceSpaceRef->getDimension(),
-			_TargetSpaceRef->getDimension())
-	),
-	matrix_vector_fctor(
-			boost::bind(
-					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
-						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
-								_1, _2
-			)
-	),
-	MatrixVectorProduct(matrix_vector_fctor)
-{}
 
 LinearMapping::LinearMapping(
 		const NormedSpace_ptr_t _SourceSpaceRef,
@@ -88,12 +69,32 @@ SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) 
 
 const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 {
-	LinearMapping * adjoint = new LinearMapping(
+	if (AdjointLinearMapping == NULL) {
+		// create adjoint instance properly
+		Mapping_ptr_t adjoint = LinearMappingFactory::createInstance(
 				TargetSpaceRef->getDualSpace(),
-				SourceSpaceRef->getDualSpace()
-			);
-	adjoint->matrix = matrix.transpose();
-	return Mapping_ptr_t(adjoint);
+				SourceSpaceRef->getDualSpace(),
+				matrix.transpose());
+		const_cast<LinearMapping *>(this)->
+				setAdjointMapping(adjoint);
+		const_cast<LinearMapping *>(
+				static_cast<const LinearMapping *>(
+						adjoint.get())
+						)->setAdjointMapping(
+								Mapping_ptr_t(SelfRef));
+	}
+	return AdjointLinearMapping;
+}
+
+void LinearMapping::setSelfRef(const Mapping_ptr_t &_selfref)
+{
+	const_cast<boost::weak_ptr<Mapping> &>(SelfRef) = _selfref;
+}
+
+void LinearMapping::setAdjointMapping(const Mapping_ptr_t &_adjoint)
+{
+	assert( AdjointLinearMapping == NULL );
+	const_cast<Mapping_ptr_t &>(AdjointLinearMapping) = _adjoint;
 }
 
 const double LinearMapping::Norm() const
