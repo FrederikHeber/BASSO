@@ -195,8 +195,12 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 	overall_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("runtime", 0.), Table::Data);
-	overall_tuple.insert( std::make_pair("matrix_vector_products", (int)0), Table::Data);
-	overall_tuple.insert( std::make_pair("vector_vector_products", (int)0), Table::Data);
+	overall_tuple.insert( std::make_pair("element_creation_operations", (int)0), Table::Data);
+	overall_tuple.insert( std::make_pair("linear_time_operations", (int)0), Table::Data);
+	overall_tuple.insert( std::make_pair("quadratic_time_operations", (int)0), Table::Data);
+	overall_tuple.insert( std::make_pair("element_creation_runtime", 0.), Table::Data);
+	overall_tuple.insert( std::make_pair("linear_time_runtime", 0.), Table::Data);
+	overall_tuple.insert( std::make_pair("quadratic_time_runtime", 0.), Table::Data);
 	return overall_tuple;
 }
 

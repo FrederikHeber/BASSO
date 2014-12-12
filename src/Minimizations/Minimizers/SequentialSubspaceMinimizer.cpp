@@ -128,6 +128,7 @@ SequentialSubspaceMinimizer::operator()(
 	const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
 	const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
 	const NormedSpace & SpaceY = *_problem->A->getTargetSpace();
+	const NormedSpace & DualSpaceY = *SpaceY.getDualSpace();
 	const Norm & NormX = *SpaceX.getNorm();
 	const Norm & DualNormX = *DualSpaceX.getNorm();
 	const Norm & NormY = *SpaceY.getNorm();
@@ -194,10 +195,6 @@ SequentialSubspaceMinimizer::operator()(
 		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
 	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-//	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
 	// due to Eigen's lazy evaluation runtime is not measured accurately
 
 	Table& angle_table = database.addTable("angles");
@@ -494,18 +491,35 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );
 	overall_tuple.replace( "relative_residual", istate.residuum );
 	overall_tuple.replace( "runtime",
-			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
-	overall_tuple.replace( "matrix_vector_products",
+			boost::chrono::duration<double>(timing_end - timing_start).count() );
+	overall_tuple.replace( "element_creation_operations",
+			(int)(SpaceX.getOpCounts().getTotalElementCreationCounts()
+					+SpaceY.getOpCounts().getTotalElementCreationCounts()
+					+DualSpaceX.getOpCounts().getTotalElementCreationCounts()
+					+DualSpaceY.getOpCounts().getTotalElementCreationCounts()));
+	overall_tuple.replace( "linear_time_operations",
+			(int)(SpaceX.getOpCounts().getTotalCounts()
+					+SpaceY.getOpCounts().getTotalCounts()
+					+DualSpaceX.getOpCounts().getTotalCounts()
+					+DualSpaceY.getOpCounts().getTotalCounts()));
+	overall_tuple.replace( "quadratic_time_operations",
 			(int)(A.getCount()+A_t.getCount()) );
-//	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
-//	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
-//	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
-//	overall_tuple.replace( "runtime_matrix_vector_products",
-//			boost::chrono::duration_cast<double>(
-//					A.MatrixVectorProduct.getTiming()+A_t.MatrixVectorProduct.getTiming()).count() );
-//	overall_tuple.replace( "runtime_vector_vector_products",
-//			boost::chrono::duration_cast<double>(ScalarVectorProduct.getTiming()).count() );
-	// due to Eigen's lazy evaluation runtime is not measured accurately
+	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
+	overall_tuple.replace( "element_creation_runtime",
+			boost::chrono::duration<double>(
+					SpaceX.getOpCounts().getTotalElementCreationTimings()
+					+SpaceY.getOpCounts().getTotalElementCreationTimings()
+					+DualSpaceX.getOpCounts().getTotalElementCreationTimings()
+					+DualSpaceY.getOpCounts().getTotalElementCreationTimings()).count());
+	overall_tuple.replace( "linear_time_runtime",
+			boost::chrono::duration<double>(
+					SpaceX.getOpCounts().getTotalTimings()
+					+SpaceY.getOpCounts().getTotalTimings()
+					+DualSpaceX.getOpCounts().getTotalTimings()
+					+DualSpaceY.getOpCounts().getTotalTimings()).count());
+	overall_tuple.replace( "quadratic_time_runtime",
+			boost::chrono::duration<double>(A.getTiming()+A_t.getTiming()).count() );
+	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution
