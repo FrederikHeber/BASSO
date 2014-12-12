@@ -220,33 +220,11 @@ protected:
 	};
 
 protected:
-	// internal variables
-
-//	//!> number of columns (M)
-//	unsigned int NoCols;
-//	//!> number of rows (N)
-//	unsigned int NoRows;
-
-	// constants
-
 	//!> number of search directions
 	const unsigned int N;
 
 	//!> internal state of the iteration
 	IterationState istate;
-
-	//!> counter for the small matrix vector products in subspace
-	const OperationCounter<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-		const Eigen::MatrixBase<Eigen::MatrixXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> MatrixVectorProduct_subspace;
-	//!> counter for the small scalar products in subspace
-	const OperationCounter<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-		const Eigen::MatrixBase<Eigen::VectorXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> ScalarVectorProduct_subspace;
 
 	//!> bool whether to do an inexact line search with Wolfe conditions
 	int inexactLinesearch;

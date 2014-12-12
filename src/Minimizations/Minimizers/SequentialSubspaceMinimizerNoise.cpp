@@ -123,11 +123,18 @@ SequentialSubspaceMinimizerNoise::operator()(
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
+	per_iteration_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
+	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
 
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
+	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
+//	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
 
 	/// -# check stopping criterion
 	const double ynorm = NormY(y);
@@ -271,9 +278,9 @@ SequentialSubspaceMinimizerNoise::operator()(
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products",
 			(int)(A.getCount()+A_t.getCount()) );
-	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
-	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
-	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
+//	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
+//	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
+//	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution

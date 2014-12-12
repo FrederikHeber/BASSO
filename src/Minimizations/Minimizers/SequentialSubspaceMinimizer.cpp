@@ -54,8 +54,6 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 			_outputsteps
 			),
 	N(2),
-	MatrixVectorProduct_subspace(MatrixVectorProduct),
-	ScalarVectorProduct_subspace(ScalarVectorProduct),
 	inexactLinesearch(false),
 	constant_positivity(1e-6),
 	constant_interpolation(0.6),
@@ -196,8 +194,8 @@ SequentialSubspaceMinimizer::operator()(
 		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
 	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
-	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
+//	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
 //	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
 //	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
 	// due to Eigen's lazy evaluation runtime is not measured accurately
@@ -499,9 +497,9 @@ SequentialSubspaceMinimizer::operator()(
 			boost::chrono::duration_cast<boost::chrono::duration<double> >(timing_end - timing_start).count() );
 	overall_tuple.replace( "matrix_vector_products",
 			(int)(A.getCount()+A_t.getCount()) );
-	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
-	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
-	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
+//	overall_tuple.replace( "vector_vector_products", (int)ScalarVectorProduct.getCount() );
+//	overall_tuple.replace( "matrix_vector_products_subspace", (int)MatrixVectorProduct_subspace.getCount() );
+//	overall_tuple.replace( "vector_vector_products_subspace", (int)ScalarVectorProduct_subspace.getCount() );
 //	overall_tuple.replace( "runtime_matrix_vector_products",
 //			boost::chrono::duration_cast<double>(
 //					A.MatrixVectorProduct.getTiming()+A_t.MatrixVectorProduct.getTiming()).count() );

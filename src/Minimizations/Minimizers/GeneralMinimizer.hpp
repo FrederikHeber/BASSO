@@ -11,9 +11,6 @@
 #include "BassoConfig.h"
 
 #include <boost/chrono.hpp>
-#include <Eigen/Dense>
-
-#include "MatrixIO/OperationCounter.hpp"
 
 #include "Database/Table.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
@@ -189,28 +186,6 @@ protected:
 			const unsigned int _N,
 			const unsigned int _dim,
 			const int _MaxOuterIterations);
-
-	boost::function<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
-				const Eigen::MatrixBase<Eigen::MatrixXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				)> matrix_vector_fctor;
-	const OperationCounter<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-		const Eigen::MatrixBase<Eigen::MatrixXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> MatrixVectorProduct;
-
-	boost::function<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType (
-				const Eigen::MatrixBase<Eigen::VectorXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&)
-				> scalar_vector_fctor;
-	const OperationCounter<
-		Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType,
-		const Eigen::MatrixBase<Eigen::VectorXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> ScalarVectorProduct;
 };
 
 

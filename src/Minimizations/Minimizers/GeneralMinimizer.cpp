@@ -13,7 +13,6 @@
 #include "MatrixIO/OperationCounter.hpp"
 
 #include <boost/assign.hpp>
-#include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <fstream>
 #include <iostream>
@@ -48,25 +47,7 @@ GeneralMinimizer::GeneralMinimizer(
 	TolFun(1e-12),
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
-	database(_database),
-	matrix_vector_fctor(
-			boost::bind(
-					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
-						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
-								_1, _2
-			)
-	),
-	MatrixVectorProduct(matrix_vector_fctor),
-	scalar_vector_fctor(
-			boost::bind(
-					static_cast<Eigen::internal::scalar_product_traits<typename Eigen::internal::traits<Eigen::VectorXd>::Scalar, typename Eigen::internal::traits<Eigen::VectorXd>::Scalar>::ReturnType
-						(Eigen::MatrixBase<Eigen::VectorXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::VectorXd>::dot),
-								_1, _2
-			)
-	),
-	ScalarVectorProduct(scalar_vector_fctor)
+	database(_database)
 {
 	// set tolerances values
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
