@@ -14,6 +14,7 @@
 #include <boost/fusion/sequence.hpp>
 #include <boost/mpl/at.hpp>
 #include <utility>
+#include <iosfwd>
 
 #include "Minimizations/Spaces/OperationCountMap.hpp"
 
@@ -49,6 +50,53 @@ namespace VectorSpaceOperations {
 	{
 		return boost::fusion::at_key<_type>(_opcounts);
 	}
+
+	template<class _type>
+	struct TypeToString {
+		const std::string operator()() const
+		{ return ""; }
+	};
+
+	template <>
+	struct TypeToString<VectorSpaceOperations::ElementCreation> {
+		const std::string operator()() const
+				{ return "ElementCreation"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::ScalarVectorMultiplication> {
+		const std::string operator()() const
+		{ return "ScalarVectorMultiplication"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorAddition> {
+		const std::string operator()() const
+		{ return "VectorAddition"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorAssignment> {
+		const std::string operator()() const
+		{ return "VectorAssignment"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorComparison> {
+		const std::string operator()() const
+		{ return "VectorComparison"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorModification> {
+		const std::string operator()() const
+		{ return "VectorModification"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorMultiplication> {
+		const std::string operator()() const
+		{ return "VectorMultiplication"; }
+	};
+	template <>
+	struct TypeToString<VectorSpaceOperations::VectorNorm> {
+		const std::string operator()() const
+		{ return "VectorNorm"; }
+	};
 };
 
 /** This simple struct contains counts and timings for all operations

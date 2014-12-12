@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include <boost/assign.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <boost/fusion/include/for_each.hpp>
 #include <boost/program_options.hpp>
 
 #include "Database/Database.hpp"
@@ -35,6 +38,17 @@
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
 namespace po = boost::program_options;
+
+using namespace boost::assign;
+
+template <class _type>
+void printCounts(const std::vector<NormedSpace_ptr_t> &_spaces) {
+	int sum = 0;
+	for (std::vector<NormedSpace_ptr_t>::const_iterator iter = _spaces.begin();
+			iter != _spaces.end(); ++iter)
+		sum += VectorSpaceOperations::getCountTiming<_type>((*iter)->getOpCounts().instance).first;
+	std::cout << "\t" << VectorSpaceOperations::TypeToString<_type>()() << ": " << sum << std::endl;
+}
 
 
 //!> enumeration of all known dualities (Don't forget to add string literal to TypeNames)
@@ -658,21 +672,20 @@ int main (int argc, char *argv[])
 				+inverseproblem->A->getTargetSpace()->getOpCounts().getTotalLinearCounts()
 				+inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().getTotalLinearCounts())
 			<< std::endl;
-	std::cout << "\tVector Addition operations: "
-			<< (getCountTiming<VectorAddition>(inverseproblem->A->getSourceSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorAddition>(inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorAddition>(inverseproblem->A->getTargetSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorAddition>(inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().instance).first)
-			<< std::endl;
+	// put all spaces into a vector
+	std::vector<NormedSpace_ptr_t> spaces;
+	spaces += inverseproblem->A->getSourceSpace(), inverseproblem->A->getSourceSpace()->getDualSpace();
+	spaces += inverseproblem->A->getTargetSpace(), inverseproblem->A->getTargetSpace()->getDualSpace();
+	printCounts<ScalarVectorMultiplication>(spaces);
+	printCounts<VectorAddition>(spaces);
+	printCounts<VectorAssignment>(spaces);
+	printCounts<VectorComparison>(spaces);
+	printCounts<VectorModification>(spaces);
+	printCounts<VectorMultiplication>(spaces);
+	printCounts<VectorNorm>(spaces);
 	std::cout << "Quadratic time operations: "
 			<< (inverseproblem->A->getCount()
 				+inverseproblem->A->getAdjointMapping()->getCount())
-			<< std::endl;
-	std::cout << "Norm operations: "
-			<< (getCountTiming<VectorNorm>(inverseproblem->A->getSourceSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorNorm>(inverseproblem->A->getSourceSpace()->getDualSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorNorm>(inverseproblem->A->getTargetSpace()->getOpCounts().instance).first
-				+getCountTiming<VectorNorm>(inverseproblem->A->getTargetSpace()->getDualSpace()->getOpCounts().instance).first)
 			<< std::endl;
 	std::cout << "===============================================" << std::endl;
 #endif
