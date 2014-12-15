@@ -21,14 +21,14 @@ namespace VectorSpaceOperations {
 	//!> typedef for the combined count and time-keeping type
 	typedef std::pair<Count_t, Timing_t> CountTiming_t;
 
-	struct ElementCreation;
-	struct ScalarVectorMultiplication;
-	struct VectorAddition;
-	struct VectorAssignment;
-	struct VectorComparison;
-	struct VectorModification;
-	struct VectorMultiplication;
-	struct VectorNorm;
+	struct ElementCreation {};
+	struct ScalarVectorMultiplication {};
+	struct VectorAddition {};
+	struct VectorAssignment {};
+	struct VectorComparison {};
+	struct VectorModification {};
+	struct VectorMultiplication {};
+	struct VectorNorm {};
 };
 
 /** A boost::fusion::container allows to discern between multiple instances
