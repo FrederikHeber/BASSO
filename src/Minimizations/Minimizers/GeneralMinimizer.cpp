@@ -13,6 +13,7 @@
 #include "MatrixIO/OperationCounter.hpp"
 
 #include <boost/assign.hpp>
+#include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <fstream>
 #include <iostream>
@@ -20,6 +21,7 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
+#include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
@@ -204,3 +206,37 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 	return overall_tuple;
 }
 
+void GeneralMinimizer::finalizeOverallTuple(
+		Table::Tuple_t &_overall_tuple,
+		QuickAccessReferences &_refs)
+{
+	_overall_tuple.replace( "element_creation_operations",
+			(int)(_refs.SpaceX.getOpCounts().getTotalConstantCounts()
+					+_refs.SpaceY.getOpCounts().getTotalConstantCounts()
+					+_refs.DualSpaceX.getOpCounts().getTotalConstantCounts()
+					+_refs.DualSpaceY.getOpCounts().getTotalConstantCounts()));
+	_overall_tuple.replace( "linear_time_operations",
+			(int)(_refs.SpaceX.getOpCounts().getTotalLinearCounts()
+					+_refs.SpaceY.getOpCounts().getTotalLinearCounts()
+					+_refs.DualSpaceX.getOpCounts().getTotalLinearCounts()
+					+_refs.DualSpaceY.getOpCounts().getTotalLinearCounts()));
+	_overall_tuple.replace( "quadratic_time_operations",
+			(int)(_refs.A.getCount()+_refs.A_t.getCount()) );
+	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
+	_overall_tuple.replace( "element_creation_runtime",
+			boost::chrono::duration<double>(
+					_refs.SpaceX.getOpCounts().getTotalConstantTimings()
+					+_refs.SpaceY.getOpCounts().getTotalConstantTimings()
+					+_refs.DualSpaceX.getOpCounts().getTotalConstantTimings()
+					+_refs.DualSpaceY.getOpCounts().getTotalConstantTimings()).count());
+	_overall_tuple.replace( "linear_time_runtime",
+			boost::chrono::duration<double>(
+					_refs.SpaceX.getOpCounts().getTotalLinearTimings()
+					+_refs.SpaceY.getOpCounts().getTotalLinearTimings()
+					+_refs.DualSpaceX.getOpCounts().getTotalLinearTimings()
+					+_refs.DualSpaceY.getOpCounts().getTotalLinearTimings()).count());
+	_overall_tuple.replace( "quadratic_time_runtime",
+			boost::chrono::duration<double>(
+					_refs.A.getTiming()+_refs.A_t.getTiming()).count() );
+	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
+}

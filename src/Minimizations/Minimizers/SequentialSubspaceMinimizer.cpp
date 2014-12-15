@@ -491,35 +491,7 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", istate.residuum );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
-	overall_tuple.replace( "element_creation_operations",
-			(int)(refs.SpaceX.getOpCounts().getTotalConstantCounts()
-					+refs.SpaceY.getOpCounts().getTotalConstantCounts()
-					+refs.DualSpaceX.getOpCounts().getTotalConstantCounts()
-					+refs.DualSpaceY.getOpCounts().getTotalConstantCounts()));
-	overall_tuple.replace( "linear_time_operations",
-			(int)(refs.SpaceX.getOpCounts().getTotalLinearCounts()
-					+refs.SpaceY.getOpCounts().getTotalLinearCounts()
-					+refs.DualSpaceX.getOpCounts().getTotalLinearCounts()
-					+refs.DualSpaceY.getOpCounts().getTotalLinearCounts()));
-	overall_tuple.replace( "quadratic_time_operations",
-			(int)(refs.A.getCount()+refs.A_t.getCount()) );
-	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
-	overall_tuple.replace( "element_creation_runtime",
-			boost::chrono::duration<double>(
-					refs.SpaceX.getOpCounts().getTotalConstantTimings()
-					+refs.SpaceY.getOpCounts().getTotalConstantTimings()
-					+refs.DualSpaceX.getOpCounts().getTotalConstantTimings()
-					+refs.DualSpaceY.getOpCounts().getTotalConstantTimings()).count());
-	overall_tuple.replace( "linear_time_runtime",
-			boost::chrono::duration<double>(
-					refs.SpaceX.getOpCounts().getTotalLinearTimings()
-					+refs.SpaceY.getOpCounts().getTotalLinearTimings()
-					+refs.DualSpaceX.getOpCounts().getTotalLinearTimings()
-					+refs.DualSpaceY.getOpCounts().getTotalLinearTimings()).count());
-	overall_tuple.replace( "quadratic_time_runtime",
-			boost::chrono::duration<double>(
-					refs.A.getTiming()+refs.A_t.getTiming()).count() );
-	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
+	finalizeOverallTuple(overall_tuple, refs);
 	overall_table.addTuple(overall_tuple);
 
 	// and return solution

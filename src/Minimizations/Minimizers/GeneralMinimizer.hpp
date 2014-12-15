@@ -17,6 +17,7 @@
 #include "Minimizations/types.hpp"
 
 class Database;
+class QuickAccessReferences;
 
 /** This class describes the interface to a general minimizer.
  *
@@ -186,6 +187,10 @@ protected:
 			const unsigned int _N,
 			const unsigned int _dim,
 			const int _MaxOuterIterations);
+
+	static void finalizeOverallTuple(
+			Table::Tuple_t &_overall_tuple,
+			QuickAccessReferences &_refs);
 };
 
 
