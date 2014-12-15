@@ -419,18 +419,20 @@ SequentialSubspaceMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw;
 		// alpha=Jw'*y
-		const double alpha =
-				Jw * refs.y;
-		BOOST_LOG_TRIVIAL(trace)
-			<< "alpha is " << alpha;
 		// add u to U and alpha to alphas
 		const SpaceElement_ptr_t newdir = refs.A_t * Jw;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "newdir is " << newdir;
 		updateAngleTable(newdir, angle_tuple);
 
 		/// output prior to iterate update
 		istate.output(ynorm);
 
 		/// update search space with new direction
+		const double alpha =
+				Jw * refs.y;
+		BOOST_LOG_TRIVIAL(trace)
+			<< "alpha is " << alpha;
 		updateSearchspace(_truesolution, dual_solution, newdir, alpha);
 
 		/// get optimal stepwidth

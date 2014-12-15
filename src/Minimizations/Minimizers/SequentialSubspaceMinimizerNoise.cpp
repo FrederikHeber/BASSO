@@ -139,6 +139,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			/// output prior to iterate update
 			istate.output(ynorm);
 
+			/// update search space with new direction
 			// uNorm=norm(u,DualNormX);
 			const double uNorm = refs.DualNormX(newdir);
 			BOOST_LOG_TRIVIAL(trace)
