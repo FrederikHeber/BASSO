@@ -292,6 +292,72 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	return inner_iterations;
 }
 
+void SequentialSubspaceMinimizer::updateAngleTable(
+		const SpaceElement_ptr_t& newdir,
+		Table::Tuple_t& angle_tuple) const
+{
+	if (DoCalculateAngles) {
+		angle_tuple.replace("iteration", (int) (istate.NumberOuterIterations));
+		// calculate bregman angles for angles database
+		{
+			const IterationState::angles_t angles =
+					istate.calculateBregmanAngles(newdir);
+			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
+					++i) {
+				std::stringstream componentname;
+				componentname << "bregman_angle" << i + 1;
+				angle_tuple.replace(componentname.str(), angles[i]);
+			}
+		}
+		// calculate "scalar product" angles for angles database
+		{
+			const IterationState::angles_t angles = istate.calculateAngles(
+					newdir);
+			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
+					++i) {
+				std::stringstream componentname;
+				componentname << "angle" << i + 1;
+				angle_tuple.replace(componentname.str(), angles[i]);
+			}
+		}
+	}
+}
+
+void SequentialSubspaceMinimizer::updateSearchspace(
+		const SpaceElement_ptr_t& _truesolution,
+		const SpaceElement_ptr_t& dual_solution,
+		const SpaceElement_ptr_t& newdir,
+		const double alpha)
+{
+	/// update search space with new direction
+	if (_truesolution->isZero()) {
+		istate.updateSearchSpace(newdir, alpha, dual_solution,
+				istate.m_solution);
+	} else {
+		istate.updateSearchSpace(newdir, alpha, dual_solution, _truesolution);
+	}
+	BOOST_LOG_TRIVIAL(trace)<< "updated_index is " << istate.searchspace->getIndex();
+}
+
+void SequentialSubspaceMinimizer::updateIterates(
+		const QuickAccessReferences& refs,
+		const std::vector<double> tmin,
+		SpaceElement_ptr_t& _x,
+		SpaceElement_ptr_t& dual_x) const
+{
+	// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
+	{
+		const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
+		for (size_t i = 0; i < N; ++i)
+			*tempelement += tmin[i] * istate.getSearchSpace()[i];
+		*dual_x -= tempelement;
+	}
+	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << dual_x;
+	*istate.m_solution = refs.J_q(dual_x);
+	BOOST_LOG_TRIVIAL(trace)<< "x_n+1 is " << istate.m_solution;
+	*_x = istate.m_solution;
+}
+
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -359,91 +425,43 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 		// add u to U and alpha to alphas
 		const SpaceElement_ptr_t newdir = refs.A_t * Jw;
+		updateAngleTable(newdir, angle_tuple);
 
 		/// output prior to iterate update
 		istate.output(ynorm);
 
+		/// update search space with new direction
+		updateSearchspace(_truesolution, dual_solution, newdir, alpha);
+
+		/// get optimal stepwidth
+		std::vector<double> tmin(N, 0.);
+		const unsigned int inner_iterations =
+				calculateStepWidth(refs, dual_solution, tmin);
+		double stepwidth_norm = 0.;
+		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
+
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-		if (DoCalculateAngles)
-			angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-
 		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
 								Delta_p, istate.m_solution, _truesolution, dual_solution));
 		per_iteration_tuple.replace( "error",
 				calculateError(istate.m_solution, _truesolution));
-		if (DoCalculateAngles) {
-			// calculate bregman angles for angles database
-			{
-				const IterationState::angles_t angles =
-						istate.calculateBregmanAngles(newdir);
-				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
-					std::stringstream componentname;
-					componentname << "bregman_angle" << i+1;
-					angle_tuple.replace( componentname.str(), angles[i]);
-				}
-			}
-			// calculate "scalar product" angles for angles database
-			{
-				const IterationState::angles_t angles =
-						istate.calculateAngles(newdir);
-				for (unsigned int i=0; (i<MAXANGLES) && (i<angles.size()); ++i) {
-					std::stringstream componentname;
-					componentname << "angle" << i+1;
-					angle_tuple.replace( componentname.str(), angles[i]);
-				}
-			}
-		}
-
-		/// update search space with new direction
-		if (_truesolution->isZero()) {
-			istate.updateSearchSpace(
-					newdir,
-					alpha,
-					dual_solution,
-					istate.m_solution);
-		} else {
-			istate.updateSearchSpace(
-					newdir,
-					alpha,
-					dual_solution,
-					_truesolution);
-		}
 		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
-		BOOST_LOG_TRIVIAL(trace)
-			<< "updated_index is " << istate.searchspace->getIndex();
-
-		/// get optimal stepwidth
-		std::vector<double> tmin(N, 0.);
-		const unsigned int inner_iterations =
-				calculateStepWidth(refs, dual_solution, tmin);
 		per_iteration_tuple.replace("inner_iterations",
 				(int) (inner_iterations));
-		double stepwidth_norm = 0.;
-		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+		// submit current tuples
+		per_iteration_table.addTuple(per_iteration_tuple);
+		if (DoCalculateAngles)
+			angle_table.addTuple(angle_tuple);
 
 		/// update iterate
-		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-		{
-			const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
-			for (size_t i=0;i<N;++i)
-				*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
-			*dual_solution -= tempelement;
-		}
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x^*_n+1 is " << dual_solution;
-		*istate.m_solution = refs.J_q(dual_solution);
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x_n+1 is " << istate.m_solution;
-		*_problem->x = istate.m_solution;
+		updateIterates(refs, tmin, _problem->x, dual_solution);
 
 		/// update residual
-		istate.residuum = calculateResidual(
-					_problem,
-					istate.m_residual);
+		istate.residuum = calculateResidual(_problem,istate.m_residual);
 
 		/// check iterations count/wall time
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
@@ -465,11 +483,6 @@ SequentialSubspaceMinimizer::operator()(
 		// print intermediate solution
 		printIntermediateSolution(
 				istate.m_solution, refs.A, istate.NumberOuterIterations);
-
-		// submit current tuples
-		per_iteration_table.addTuple(per_iteration_tuple);
-		if (DoCalculateAngles)
-			angle_table.addTuple(angle_tuple);
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =

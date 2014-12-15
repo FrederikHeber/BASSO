@@ -131,25 +131,24 @@ SequentialSubspaceMinimizerNoise::operator()(
 		if ((istate.NumberOuterIterations == 0)
 			|| (istate.residuum > TolY)) {
 			/// Calculation of search direction
-			// Jw=DualityMapping(w,NormY,PowerY,TolX);
 			const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
 			BOOST_LOG_TRIVIAL(trace)
-					<< "j_r (residual) is " << Jw;
+				<< "Jw= j_r (R_n) is " << Jw;
+			const SpaceElement_ptr_t newdir = refs.A_t * Jw;
 
-			// u=A'*DualityMapping(w,NormY,PowerY,TolX);
-			const SpaceElement_ptr_t u = refs.A_t * Jw;
-			BOOST_LOG_TRIVIAL(trace)
-				<< "u is " << u;
+			/// output prior to iterate update
+			istate.output(ynorm);
+
 			// uNorm=norm(u,DualNormX);
-			const double uNorm = refs.DualNormX(u);
+			const double uNorm = refs.DualNormX(newdir);
 			BOOST_LOG_TRIVIAL(trace)
 				<< "uNorm is " << uNorm;
-
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
-					u * istate.m_solution - ::pow(istate.residuum,refs.j_r.getPower());
+					newdir * istate.m_solution - ::pow(istate.residuum,refs.j_r.getPower());
 			BOOST_LOG_TRIVIAL(trace)
 				<< "alpha is " << alpha;
+			updateSearchspace(_truesolution, dual_solution, newdir, alpha);
 
 			// d=Delta*Residual^(PowerY-1);
 			const double d =
@@ -158,9 +157,6 @@ SequentialSubspaceMinimizerNoise::operator()(
 			const double beta =
 					::pow(istate.residuum,(double)refs.j_r.getPower()-1.)
 					* (istate.residuum-Delta)/::pow(uNorm, refs.J_q.getPower());
-
-			/// output prior to iterate update
-			istate.output(ynorm);
 
 			/// database update prior to iterate update
 			per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
@@ -225,19 +221,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 			per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-			{
-				const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
-				for (size_t i=0;i<N;++i)
-					*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
-				*dual_solution -= tempelement;
-			}
 			/// update iterate
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x^*_n+1 is " << dual_solution;
-			istate.m_solution = refs.J_q(dual_solution);
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n+1 is " << istate.m_solution;
-			*_problem->x = istate.m_solution;
+			updateIterates(refs, tmin, _problem->x, dual_solution);
 
 			/// update residual
 			istate.residuum = calculateResidual(

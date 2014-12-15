@@ -145,6 +145,22 @@ protected:
 			Table::Tuple_t& angle_tuple,
 			Table& angle_table);
 
+	void updateAngleTable(
+			const SpaceElement_ptr_t& newdir,
+			Table::Tuple_t& angle_tuple) const;
+
+	void updateSearchspace(
+			const SpaceElement_ptr_t& _truesolution,
+			const SpaceElement_ptr_t& dual_solution,
+			const SpaceElement_ptr_t& newdir,
+			const double alpha);
+
+	void updateIterates(
+			const QuickAccessReferences& refs,
+			const std::vector<double> tmin,
+			SpaceElement_ptr_t& _x,
+			SpaceElement_ptr_t& dual_x) const;
+
 protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all
