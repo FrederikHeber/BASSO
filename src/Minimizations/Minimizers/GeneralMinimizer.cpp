@@ -18,12 +18,14 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
+#include "Minimizations/Norms/RegularizedL1Norm.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -100,6 +102,51 @@ double GeneralMinimizer::calculateResidual(
 	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
 }
+
+const double GeneralMinimizer::calculateBregmanDistance(
+		const boost::shared_ptr<BregmanDistance> &_Delta_p,
+		const SpaceElement_ptr_t &_solution,
+		const SpaceElement_ptr_t &_truesolution,
+		const SpaceElement_ptr_t &_dual_solution) const
+{
+	static double old_distance = 0.;
+	double distance = 0.;
+	if (!_truesolution->isZero()) {
+		distance = (*_Delta_p)(
+			_solution,
+			_truesolution,
+			_dual_solution)
+			+ 1e4*BASSOTOLERANCE; // make sure its larger
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Bregman distance is " << distance;
+		// check that distance truly decreases
+		assert( (old_distance == 0.) || ((old_distance - distance) > - BASSOTOLERANCE) );
+		old_distance = distance;
+	}
+	return distance;
+}
+const double GeneralMinimizer::calculateError(
+		const SpaceElement_ptr_t &_solution,
+		const SpaceElement_ptr_t &_truesolution) const
+{
+	const Norm &NormX = *_solution->getSpace()->getNorm();
+	double new_error = 0.;
+	if (!_truesolution->isZero()) {
+		if (static_cast<const RegularizedL1Norm *>(&NormX) == NULL) {
+			new_error = NormX(_solution-_truesolution);
+		} else {
+			// create L2 norm for measuring error
+			const Norm_ptr_t l2norm = NormFactory::createLpInstance(
+					_solution->getSpace(), 2.);
+			new_error = (*l2norm)(_solution-_truesolution);
+		}
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Error is " << ": "
+			<< "||x_n-x|| is " << new_error;
+	}
+	return new_error;
+}
+
 
 bool GeneralMinimizer::isValidMinLibName(const std::string &_name)
 {
@@ -240,3 +287,4 @@ void GeneralMinimizer::finalizeOverallTuple(
 					_refs.A.getTiming()+_refs.A_t.getTiming()).count() );
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 }
+

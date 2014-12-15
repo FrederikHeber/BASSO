@@ -146,20 +146,13 @@ SequentialSubspaceMinimizer::operator()(
 	SpaceElement_ptr_t dual_solution =
 			calculateDualStartingValue(_dualstartvalue);
 
-	BregmanDistance Delta_p(
-			refs.NormX,
-			dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
-			refs.J_p.getPower());
-	double old_distance = 0.;
-	if (!_truesolution->isZero()) {
-		old_distance = Delta_p(
-			istate.m_solution,
-			_truesolution,
-			dual_solution)
-			+ 1e4*BASSOTOLERANCE; // make sure its larger
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Starting Bregman distance is " << old_distance;
-	}
+	// create Bregman distance object
+	boost::shared_ptr<BregmanDistance> Delta_p;
+	if (!_truesolution->isZero())
+		Delta_p.reset(new BregmanDistance (
+				refs.NormX,
+				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
+				refs.J_p.getPower()));
 
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
@@ -210,10 +203,6 @@ SequentialSubspaceMinimizer::operator()(
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
 	StopCriterion = (initial_relative_residuum <= TolY);
 
-	// create L2 norm for measuring error
-	const Norm_ptr_t l2norm = NormFactory::createLpInstance(
-			_problem->A->getSourceSpace(), 2.);
-
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		if (DoCalculateAngles)
@@ -224,30 +213,15 @@ SequentialSubspaceMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "#" << istate.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << istate.residuum/ynorm;
+
 		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
-		// check that distance truly decreases
-		if (!_truesolution->isZero()) {
-			const double new_distance =
-					Delta_p(
-							istate.m_solution,
-							_truesolution,
-							dual_solution);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "#" << istate.NumberOuterIterations << ": "
-				<< "Delta_p^{x^*_n}(x_n,x) is "
-				<< new_distance;
-			per_iteration_tuple.replace( "bregman_distance", new_distance);
-//			assert( old_distance > new_distance );
-			old_distance = new_distance;
-			const double new_error =
-					static_cast<const RegularizedL1Norm *>(&refs.NormX) == NULL ?
-							refs.NormX(istate.m_solution-_truesolution) :
-					(*l2norm)(istate.m_solution-_truesolution);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "#" << istate.NumberOuterIterations << ": "
-				<< "||x_n-x|| is " << new_error;
-			per_iteration_tuple.replace( "error", new_error);
-		}
+
+		const double distance = calculateBregmanDistance(
+				Delta_p, istate.m_solution, _truesolution, dual_solution);
+		per_iteration_tuple.replace( "bregman_distance", distance);
+		const double error = calculateError(istate.m_solution, _truesolution);
+		per_iteration_tuple.replace( "error", error);
+
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << istate.m_solution;
 		BOOST_LOG_TRIVIAL(trace)

@@ -110,6 +110,7 @@ public:
 			const enum LastNSearchDirections::UpdateAlgorithmType _type);
 
 protected:
+protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all
 	 * variables that define the current state of the iterate.

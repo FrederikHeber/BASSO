@@ -131,19 +131,14 @@ LandweberMinimizer::operator()(
 	// calculate some values prior to loop
 	SpaceElement_ptr_t dual_solution = refs.DualSpaceX.createElement();
 	*dual_solution = _dualstartvalue;
-	BregmanDistance Delta_p(
-			refs.NormX,
-			dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
-			refs.J_p.getPower());
-	double old_distance = 0.;
-	if (!_truesolution->isZero()) {
-		old_distance = Delta_p(
-				returnvalues.m_solution,
-				_truesolution,
-				dual_solution) + 1e4*BASSOTOLERANCE; // make sure its larger
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Starting Bregman distance is " << old_distance;
-	}
+
+	// create Bregman distance object
+	boost::shared_ptr<BregmanDistance> Delta_p;
+	if (!_truesolution->isZero())
+		Delta_p.reset(new BregmanDistance (
+				refs.NormX,
+				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
+				refs.J_p.getPower()));
 
 	// step width algorithm
 	ResidualFunctional::calculateResidual_t residualizer =
@@ -166,26 +161,12 @@ LandweberMinimizer::operator()(
 			<< "#" << returnvalues.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/ynorm;
 		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
-		// check that distance truely decreases
-		if (!_truesolution->isZero()) {
-			const double new_distance =
-					Delta_p(
-							returnvalues.m_solution,
-							_truesolution,
-							dual_solution);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "#" << returnvalues.NumberOuterIterations << ": "
-				<< "Delta_p^{x^*_n}(x_n,x) is "
-				<< new_distance;
-			per_iteration_tuple.replace( "bregman_distance", new_distance);
-//			assert( old_distance > new_distance );
-			old_distance = new_distance;
-			const double new_error = refs.NormX(returnvalues.m_solution-_truesolution);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "#" << returnvalues.NumberOuterIterations << ": "
-				<< "||x_n-x|| is " << new_error;
-			per_iteration_tuple.replace( "error", new_error);
-		}
+		per_iteration_tuple.replace( "bregman_distance",
+				calculateBregmanDistance(
+						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
+		per_iteration_tuple.replace( "error",
+				calculateError(returnvalues.m_solution, _truesolution));
+
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << returnvalues.m_solution;
 		BOOST_LOG_TRIVIAL(trace)

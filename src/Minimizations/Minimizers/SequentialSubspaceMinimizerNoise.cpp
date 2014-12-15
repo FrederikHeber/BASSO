@@ -106,7 +106,15 @@ SequentialSubspaceMinimizerNoise::operator()(
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Jx_0 is " << dual_solution;
 
-	// build data tuple for iteration information
+	// create Bregman distance object
+	boost::shared_ptr<BregmanDistance> Delta_p;
+	if (!_truesolution->isZero())
+		Delta_p.reset(new BregmanDistance (
+				refs.NormX,
+				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
+				refs.J_p.getPower()));
+
+	/// build data tuple for iteration, overall, and angles information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			refs.NormX.getPvalue(),

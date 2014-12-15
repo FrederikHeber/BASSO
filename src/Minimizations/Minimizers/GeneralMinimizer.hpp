@@ -10,12 +10,14 @@
 
 #include "BassoConfig.h"
 
+#include <boost/shared_ptr.hpp>
 #include <boost/chrono.hpp>
 
 #include "Database/Table.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/types.hpp"
 
+class BregmanDistance;
 class Database;
 class QuickAccessReferences;
 
@@ -80,6 +82,31 @@ public:
 			const InverseProblem_ptr_t &_problem,
 			SpaceElement_ptr_t &_residual
 			) const;
+
+	/** Helper function to calculate (and print) the Bregman distance.
+	 *
+	 * @param _Delta_p BregmanDistance object
+	 * @param _solution current solution iterate
+	 * @param _truesolution true solution
+	 * @param _dual_solution dual of current solution iterate
+	 * @return Bregman distance between \a _solution and \a _truesolution
+	 */
+	const double calculateBregmanDistance(
+			const boost::shared_ptr<BregmanDistance> &_Delta_p,
+			const SpaceElement_ptr_t &_solution,
+			const SpaceElement_ptr_t &_truesolution,
+			const SpaceElement_ptr_t &_dual_solution) const;
+
+	/** Helper function to calculate (and print) the norm of the error.
+	 *
+	 * @param _solution current solution iterate
+	 * @param _truesolution true solution
+	 * @return norm of difference between \a _solution and \a _truesolution
+	 */
+	const double calculateError(
+			const SpaceElement_ptr_t &_solution,
+			const SpaceElement_ptr_t &_truesolution) const;
+
 
 	/** Setter for MinLib via \a _name as string.
 	 *
