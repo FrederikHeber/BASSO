@@ -361,16 +361,7 @@ SequentialSubspaceMinimizer::operator()(
 		const SpaceElement_ptr_t newdir = refs.A_t * Jw;
 
 		/// output prior to iterate update
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#" << istate.NumberOuterIterations
-				<< " with residual of " << istate.residuum;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "#" << istate.NumberOuterIterations << ": "
-			<< "||Ax_n-y||/||y|| is " << istate.residuum/ynorm;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x_n is " << istate.m_solution;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "R_n is " << istate.m_residual;
+		istate.output(ynorm);
 
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);

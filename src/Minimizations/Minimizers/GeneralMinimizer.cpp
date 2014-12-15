@@ -91,6 +91,21 @@ bool GeneralMinimizer::CheckResiduum(
 	return _residuum <= TolY;
 }
 
+void GeneralMinimizer::ReturnValues::output(
+		const double ynorm) const
+{
+	/// output prior to iterate update
+	BOOST_LOG_TRIVIAL(debug)<< "#" << NumberOuterIterations
+	<< " with residual of " << residuum;
+	BOOST_LOG_TRIVIAL(debug)
+	<< "#" << NumberOuterIterations << ": "
+	<< "||Ax_n-y||/||y|| is " << residuum/ynorm;
+	BOOST_LOG_TRIVIAL(trace)
+	<< "x_n is " << m_solution;
+	BOOST_LOG_TRIVIAL(trace)
+	<< "R_n is " << m_residual;
+}
+
 double GeneralMinimizer::calculateResidual(
 		const InverseProblem_ptr_t &_problem,
 		SpaceElement_ptr_t &_residual

@@ -51,7 +51,15 @@ public:
 		double residuum;
 		//!> number of outer iterations till solution
 		int NumberOuterIterations;
+
+		/** Print the current state of return values.
+		 *
+		 * @param ynorm norm of y for relative residual
+		 */
+		void output(
+				const double ynorm) const;
 	};
+
 
 	/** Solve the inverse problem _A * x = _y for x with given
 	 * tart value \a _x0, discretized operator \A _A and right-hand

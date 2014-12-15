@@ -160,13 +160,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					* (istate.residuum-Delta)/::pow(uNorm, refs.J_q.getPower());
 
 			/// output prior to iterate update
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << istate.NumberOuterIterations
-					<< " with residual of " << istate.residuum;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n is " << istate.m_solution;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "R_n is " << istate.m_residual;
+			istate.output(ynorm);
 
 			/// database update prior to iterate update
 			per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
@@ -237,6 +231,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
 				*dual_solution -= tempelement;
 			}
+			/// update iterate
 			BOOST_LOG_TRIVIAL(trace)
 					<< "x^*_n+1 is " << dual_solution;
 			istate.m_solution = refs.J_q(dual_solution);
@@ -269,7 +264,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					istate.m_solution, refs.A, istate.NumberOuterIterations);
 		}
 
-		// submit current tuple
+		/// submit current tuple
 		per_iteration_table.addTuple(per_iteration_tuple);
 	}
 

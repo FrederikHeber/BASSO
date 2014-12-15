@@ -92,7 +92,7 @@ LandweberMinimizer::operator()(
 			returnvalues.m_residual);
 	const double ynorm = refs.NormY(refs.y);
 
-	// set initial lambda
+	/// set initial lambda
 	double mutual_coherence = 0.;
 	bool setLambdaAdaptively = false;
 	if ((stepwidth_type >=
@@ -103,7 +103,7 @@ LandweberMinimizer::operator()(
 		setLambdaAdaptively = true;
 	}
 
-	// build data tuple for iteration information
+	/// build data tuple for iteration and overall information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			refs.NormX.getPvalue(),
@@ -111,8 +111,6 @@ LandweberMinimizer::operator()(
 			1,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-
-	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			refs.NormX.getPvalue(),
@@ -153,24 +151,7 @@ LandweberMinimizer::operator()(
 
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
-		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#" << returnvalues.NumberOuterIterations
-				<< " with residual of " << returnvalues.residuum;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "#" << returnvalues.NumberOuterIterations << ": "
-			<< "||Ax_n-y||/||y|| is " << returnvalues.residuum/ynorm;
-		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
-		per_iteration_tuple.replace( "bregman_distance",
-				calculateBregmanDistance(
-						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
-		per_iteration_tuple.replace( "error",
-				calculateError(returnvalues.m_solution, _truesolution));
-
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x_n is " << returnvalues.m_solution;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "R_n is " << returnvalues.m_residual;
+		/// Calculation of search direction
 		const SpaceElement_ptr_t Jw = refs.j_r( returnvalues.m_residual );
 		BOOST_LOG_TRIVIAL(trace)
 				<< "j_r (residual) is " << Jw;
@@ -178,7 +159,19 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 				<< "u is " << u;
 
-		// use step width used in theoretical proof
+		/// output prior to iterate update
+		returnvalues.output(ynorm);
+
+		/// database update prior to iterate update
+		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
+		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+		per_iteration_tuple.replace( "bregman_distance",
+				calculateBregmanDistance(
+						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
+		per_iteration_tuple.replace( "error",
+				calculateError(returnvalues.m_solution, _truesolution));
+
+		/// find step width
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
 		double alpha = (*stepwidth)(
 				dual_solution,
@@ -193,11 +186,10 @@ LandweberMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Step width is " << alpha;
 
-		// iterate: J_p (x_{n+1})
+		/// update iterate
 		*dual_solution -= alpha * u;
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution;
-
 		// finally map back from X^{\conj} to X: x_{n+1}
 		*returnvalues.m_solution = refs.J_q(dual_solution);
 		BOOST_LOG_TRIVIAL(trace)
@@ -209,12 +201,12 @@ LandweberMinimizer::operator()(
 					_truesolution);
 		}
 
-		// update residual
+		/// update residual
 		returnvalues.residuum = calculateResidual(
 				_problem,
 				returnvalues.m_residual);
 
-		// check iterations count/wall time
+		/// check iterations count/wall time
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++returnvalues.NumberOuterIterations;
@@ -225,11 +217,11 @@ LandweberMinimizer::operator()(
 				|| CheckWalltime(boost::chrono::duration<double>(
 						timing_intermediate - timing_start));
 
-		// print intermediat solution
+		/// print intermediate solution
 		printIntermediateSolution(
 				returnvalues.m_solution, refs.A, returnvalues.NumberOuterIterations);
 
-		// submit current tuple
+		/// submit current tuple to database
 		per_iteration_table.addTuple(per_iteration_tuple);
 	}
 
