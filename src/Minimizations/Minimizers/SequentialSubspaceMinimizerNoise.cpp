@@ -114,30 +114,11 @@ SequentialSubspaceMinimizerNoise::operator()(
 				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
 				refs.J_p.getPower()));
 
-	/// build data tuple for iteration, overall, and angles information
+	// build data tuple for iteration, overall, and angles information
 	Table& per_iteration_table = database.addTable("per_iteration");
-	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
-			refs.NormX.getPvalue(),
-			refs.NormY.getPvalue(),
-			N,
-			refs.SpaceX.getDimension(),
-			MaxOuterIterations);
-	per_iteration_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-
-	// build data tuple for overall information
+	Table::Tuple_t per_iteration_tuple = addInfoToPerIterationTable(refs);
 	Table& overall_table = database.addTable("overall");
-	Table::Tuple_t overall_tuple = prepareOverallTuple(
-			refs.NormX.getPvalue(),
-			refs.NormY.getPvalue(),
-			N,
-			refs.SpaceX.getDimension(),
-			MaxOuterIterations);
-	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-//	overall_tuple.insert( std::make_pair("matrix_vector_products_subspace", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("vector_vector_products_subspace", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
-//	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
+	Table::Tuple_t overall_tuple = addInfoToOverallTable(refs);
 
 	/// -# check stopping criterion
 	const double ynorm = refs.NormY(refs.y);

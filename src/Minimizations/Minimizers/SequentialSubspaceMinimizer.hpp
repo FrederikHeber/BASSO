@@ -110,6 +110,14 @@ public:
 			const enum LastNSearchDirections::UpdateAlgorithmType _type);
 
 protected:
+
+	Table::Tuple_t addInfoToPerIterationTable(
+			const QuickAccessReferences &_refs) const;
+	Table::Tuple_t addInfoToOverallTable(
+			const QuickAccessReferences &_refs) const;
+	Table::Tuple_t addInfoToAnglesTable(
+			const QuickAccessReferences &_refs) const;
+
 protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all
