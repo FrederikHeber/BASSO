@@ -114,7 +114,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
 				refs.J_p.getPower()));
 
-	// build data tuple for iteration, overall, and angles information
+	/// build data tuple for iteration, overall, and angles information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = addInfoToPerIterationTable(refs);
 	Table& overall_table = database.addTable("overall");
@@ -123,21 +123,15 @@ SequentialSubspaceMinimizerNoise::operator()(
 	/// -# check stopping criterion
 	const double ynorm = refs.NormY(refs.y);
 	bool StopCriterion = false;
-	StopCriterion = (fabs(istate.residuum/ynorm) <= TolY);
+	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
+	StopCriterion = (initial_relative_residuum <= TolY);
 
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		if ((istate.NumberOuterIterations == 0)
 			|| (istate.residuum > TolY)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << istate.NumberOuterIterations
-					<< " with residual of " << istate.residuum;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "x_n is " << istate.m_solution;
-			BOOST_LOG_TRIVIAL(trace)
-					<< "R_n is " << istate.m_residual;
-			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
-
+			/// Calculation of search direction
+			// Jw=DualityMapping(w,NormY,PowerY,TolX);
 			const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
 			BOOST_LOG_TRIVIAL(trace)
 					<< "j_r (residual) is " << Jw;
@@ -146,16 +140,17 @@ SequentialSubspaceMinimizerNoise::operator()(
 			const SpaceElement_ptr_t u = refs.A_t * Jw;
 			BOOST_LOG_TRIVIAL(trace)
 				<< "u is " << u;
-
 			// uNorm=norm(u,DualNormX);
 			const double uNorm = refs.DualNormX(u);
 			BOOST_LOG_TRIVIAL(trace)
 				<< "uNorm is " << uNorm;
+
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
 					u * istate.m_solution - ::pow(istate.residuum,refs.j_r.getPower());
 			BOOST_LOG_TRIVIAL(trace)
 				<< "alpha is " << alpha;
+
 			// d=Delta*Residual^(PowerY-1);
 			const double d =
 					Delta * ::pow(istate.residuum,(double)refs.j_r.getPower()-1.);
@@ -163,6 +158,28 @@ SequentialSubspaceMinimizerNoise::operator()(
 			const double beta =
 					::pow(istate.residuum,(double)refs.j_r.getPower()-1.)
 					* (istate.residuum-Delta)/::pow(uNorm, refs.J_q.getPower());
+
+			/// output prior to iterate update
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << istate.NumberOuterIterations
+					<< " with residual of " << istate.residuum;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "x_n is " << istate.m_solution;
+			BOOST_LOG_TRIVIAL(trace)
+					<< "R_n is " << istate.m_residual;
+
+			/// database update prior to iterate update
+			per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
+			per_iteration_tuple.replace( "bregman_distance",
+					calculateBregmanDistance(
+							Delta_p, istate.m_solution, _truesolution, dual_solution));
+			per_iteration_tuple.replace( "error",
+					calculateError(istate.m_solution, _truesolution));
+			per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
+//			per_iteration_tuple.replace("inner_iterations",
+//					(int) (inner_iterations));
+//			per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 
 			std::vector<double> tmin(1, 0.);
 			if (dual_solution->isApproxToConstant(0, TolX)) {
@@ -227,12 +244,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 					<< "x_n+1 is " << istate.m_solution;
 			*_problem->x = istate.m_solution;
 
-			// update residual
+			/// update residual
 			istate.residuum = calculateResidual(
 					_problem,
 					istate.m_residual);
 
-			// check iterations count/wall time
+			/// check iterations count/wall time
 			boost::chrono::high_resolution_clock::time_point timing_intermediate =
 					boost::chrono::high_resolution_clock::now();
 			++istate.NumberOuterIterations;
@@ -242,7 +259,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 					|| CheckResiduum(current_relative_residuum)
 					|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
-			// print intermediat solution
+			/// check for non-convergence
+			if (isNonConverging(current_relative_residuum,
+					initial_relative_residuum))
+				fillPerIterationTable(per_iteration_tuple, per_iteration_table);
+
+			/// print intermediate solution
 			printIntermediateSolution(
 					istate.m_solution, refs.A, istate.NumberOuterIterations);
 		}

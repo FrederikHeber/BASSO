@@ -118,6 +118,11 @@ protected:
 	Table::Tuple_t addInfoToAnglesTable(
 			const QuickAccessReferences &_refs) const;
 
+	const unsigned int calculateStepWidth(
+			const QuickAccessReferences& refs,
+			const SpaceElement_ptr_t& dual_solution,
+			std::vector<double>& tmin) const;
+
 	/** Checks whether we exceed \a initial_residuum by a certain
 	 * factor and signals for stopping the iteration.
 	 *

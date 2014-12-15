@@ -219,6 +219,79 @@ void SequentialSubspaceMinimizer::fillAngleTable(
 	}
 }
 
+const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
+		const QuickAccessReferences& refs,
+		const SpaceElement_ptr_t& dual_solution,
+		std::vector<double> & tmin) const
+{
+	// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+	BregmanProjectionFunctional bregman(refs.DualNormX,
+			dynamic_cast<const PowerTypeDualityMapping&>(refs.J_q),
+			refs.J_q.getPower());
+	const HyperplaneProjection functional(bregman, dual_solution,
+			istate.getSearchSpace(), istate.getAlphas());
+	// due to templation we need to instantiate both, as user
+	// decides during runtime which we need
+	Minimizer<gsl_vector> minimizer_gsl(N);
+	Minimizer<NLopt_vector> minimizer_nlopt(N);
+	const unsigned int current_index = istate.searchspace->getIndex();
+	Wolfe_indexset_t Wolfe_indexset(1, current_index);
+	if (MinLib == gnuscientificlibrary) {
+		minimizer_gsl.setMaxIterations(MaxInnerIterations);
+	} else if (MinLib == nonlinearoptimization) {
+		// hand index set to minimizer
+		minimizer_nlopt.setConstantPositivity(constant_positivity);
+		minimizer_nlopt.setPositivityBoundIndices(Wolfe_indexset);
+		minimizer_nlopt.setMaxIterations(MaxInnerIterations);
+	}
+
+	unsigned int inner_iterations = 0;
+	if (inexactLinesearch) {
+		FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
+				functional, minimizer_gsl, tmin, constant_positivity,
+				constant_interpolation);
+		FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
+				functional, minimizer_nlopt, tmin, constant_positivity,
+				constant_interpolation);
+		switch (MinLib) {
+		case gnuscientificlibrary:
+			inner_iterations = fmin_gsl(N, TolFun, Wolfe_indexset, tmin);
+			break;
+		case nonlinearoptimization:
+			inner_iterations = fmin_nlopt(N, TolFun, Wolfe_indexset, tmin);
+			break;
+		default:
+			throw MinimizationIllegalValue_exception()
+					<< MinimizationIllegalValue_name("MinLib");
+			break;
+		}
+	} else {
+		FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
+				functional, minimizer_gsl, tmin);
+		FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
+				functional, minimizer_nlopt, tmin);
+		switch (MinLib) {
+		case gnuscientificlibrary:
+			inner_iterations = fmin_gsl(N, TolFun, tmin);
+			break;
+		case nonlinearoptimization:
+			inner_iterations = fmin_nlopt(N, TolFun, tmin);
+			break;
+		default:
+			throw MinimizationIllegalValue_exception()
+					<< MinimizationIllegalValue_name("MinLib");
+			break;
+		}
+	}
+	std::stringstream output_stepwidth;
+	std::copy(tmin.begin(), tmin.end(),
+			std::ostream_iterator<double>(output_stepwidth, " "));
+	BOOST_LOG_TRIVIAL(debug)<< "tmin " << output_stepwidth.str()
+	<< " found in " << inner_iterations << " iterations.";
+
+	return inner_iterations;
+}
+
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -259,7 +332,7 @@ SequentialSubspaceMinimizer::operator()(
 				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
 				refs.J_p.getPower()));
 
-	// build data tuple for iteration, overall, and angles information
+	/// build data tuple for iteration, overall, and angles information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = addInfoToPerIterationTable(refs);
 	Table& overall_table = database.addTable("overall");
@@ -267,54 +340,49 @@ SequentialSubspaceMinimizer::operator()(
 	Table& angle_table = database.addTable("angles");
 	Table::Tuple_t angle_tuple = addInfoToAnglesTable(refs);
 
-	/// -# check stopping criterion
+	/// -# check initial stopping criterion
 	const double ynorm = refs.NormY(refs.y);
 	bool StopCriterion = false;
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
 	StopCriterion = (initial_relative_residuum <= TolY);
 
 	while (!StopCriterion) {
-		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-		if (DoCalculateAngles)
-			angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+		/// Calculation of search direction
+		// Jw=DualityMapping(w,NormY,PowerY,TolX);
+		const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
+		BOOST_LOG_TRIVIAL(trace)
+			<< "Jw= j_r (R_n) is " << Jw;
+		// alpha=Jw'*y
+		const double alpha =
+				Jw * refs.y;
+		BOOST_LOG_TRIVIAL(trace)
+			<< "alpha is " << alpha;
+		// add u to U and alpha to alphas
+		const SpaceElement_ptr_t newdir = refs.A_t * Jw;
+
+		/// output prior to iterate update
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << istate.NumberOuterIterations
 				<< " with residual of " << istate.residuum;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "#" << istate.NumberOuterIterations << ": "
 			<< "||Ax_n-y||/||y|| is " << istate.residuum/ynorm;
-
-		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
-
-		const double distance = calculateBregmanDistance(
-				Delta_p, istate.m_solution, _truesolution, dual_solution);
-		per_iteration_tuple.replace( "bregman_distance", distance);
-		const double error = calculateError(istate.m_solution, _truesolution);
-		per_iteration_tuple.replace( "error", error);
-
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n is " << istate.m_solution;
 		BOOST_LOG_TRIVIAL(trace)
 				<< "R_n is " << istate.m_residual;
 
-		// Jw=DualityMapping(w,NormY,PowerY,TolX);
-		const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Jw= j_r (R_n) is " << Jw;
+		/// database update prior to iterate update
+		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+		if (DoCalculateAngles)
+			angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 
-		// JwNorm=norm(w,DualNormX);
-//		const double JwNorm = DualNormX(Jw);
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "wNorm is " << wNorm;
-
-		// alpha=Jw'*y
-		const double alpha =
-				Jw * refs.y;
-		BOOST_LOG_TRIVIAL(trace)
-			<< "alpha is " << alpha;
-
-		// add u to U and alpha to alphas
-		SpaceElement_ptr_t newdir = refs.A_t * Jw;
+		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
+		per_iteration_tuple.replace( "bregman_distance",
+				calculateBregmanDistance(
+								Delta_p, istate.m_solution, _truesolution, dual_solution));
+		per_iteration_tuple.replace( "error",
+				calculateError(istate.m_solution, _truesolution));
 		if (DoCalculateAngles) {
 			// calculate bregman angles for angles database
 			{
@@ -337,7 +405,8 @@ SequentialSubspaceMinimizer::operator()(
 				}
 			}
 		}
-		// update search space with new direction
+
+		/// update search space with new direction
 		if (_truesolution->isZero()) {
 			istate.updateSearchSpace(
 					newdir,
@@ -355,111 +424,17 @@ SequentialSubspaceMinimizer::operator()(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "updated_index is " << istate.searchspace->getIndex();
 
+		/// get optimal stepwidth
 		std::vector<double> tmin(N, 0.);
-		{
-			// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-			BregmanProjectionFunctional bregman(
-					refs.DualNormX,
-					dynamic_cast<const PowerTypeDualityMapping &>(refs.J_q),
-					refs.J_q.getPower());
-
-			const HyperplaneProjection functional(
-					bregman,
-					dual_solution,
-					istate.getSearchSpace(),
-					istate.getAlphas());
-
-			// due to templation we need to instantiate both, as user
-			// decides during runtime which we need
-			Minimizer<gsl_vector> minimizer_gsl(N);
-			Minimizer<NLopt_vector> minimizer_nlopt(N);
-			const unsigned int current_index =
-					istate.searchspace->getIndex();
-			Wolfe_indexset_t Wolfe_indexset(1, current_index);
-			if (MinLib == gnuscientificlibrary) {
-				minimizer_gsl.setMaxIterations(MaxInnerIterations);
-			} else if (MinLib == nonlinearoptimization) {
-				// hand index set to minimizer
-				minimizer_nlopt.setConstantPositivity(constant_positivity);
-				minimizer_nlopt.setPositivityBoundIndices(Wolfe_indexset);
-
-				minimizer_nlopt.setMaxIterations(MaxInnerIterations);
-			} 
-
-			unsigned int inner_iterations = 0;
-			if (inexactLinesearch) {
-				FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
-					functional,
-					minimizer_gsl,
-					tmin,
-					constant_positivity,
-					constant_interpolation);
-				FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
-					functional,
-					minimizer_nlopt,
-					tmin,
-					constant_positivity,
-					constant_interpolation);
-
-				switch (MinLib) {
-				case gnuscientificlibrary:
-					inner_iterations = fmin_gsl(
-							N,
-							TolFun,
-							Wolfe_indexset,
-							tmin
-							);
-					break;
-				case nonlinearoptimization:
-					inner_iterations = fmin_nlopt(
-							N,
-							TolFun,
-							Wolfe_indexset,
-							tmin
-							);
-					break;
-				default:
-					throw MinimizationIllegalValue_exception()
-							<< MinimizationIllegalValue_name("MinLib");
-					break;
-				}
-
-			} else {
-				FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
-						functional, minimizer_gsl, tmin);
-				FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
-						functional, minimizer_nlopt, tmin);
-
-				switch (MinLib) {
-				case gnuscientificlibrary:
-					inner_iterations = fmin_gsl(
-							N,
-							TolFun,
-							tmin);
-					break;
-				case nonlinearoptimization:
-					inner_iterations = fmin_nlopt(
-							N,
-							TolFun,
-							tmin);
-					break;
-				default:
-					throw MinimizationIllegalValue_exception()
-							<< MinimizationIllegalValue_name("MinLib");
-					break;
-				}
-			}
-			per_iteration_tuple.replace( "inner_iterations", (int)inner_iterations);
-
-			std::stringstream output_stepwidth;
-			std::copy(tmin.begin(), tmin.end(), std::ostream_iterator<double>(output_stepwidth, " "));
-			BOOST_LOG_TRIVIAL(debug)
-				<< "tmin " << output_stepwidth.str()
-				<< " found in " << inner_iterations << " iterations.";
-		}
+		const unsigned int inner_iterations =
+				calculateStepWidth(refs, dual_solution, tmin);
+		per_iteration_tuple.replace("inner_iterations",
+				(int) (inner_iterations));
 		double stepwidth_norm = 0.;
 		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+
+		/// update iterate
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 		{
 			const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
@@ -474,12 +449,12 @@ SequentialSubspaceMinimizer::operator()(
 				<< "x_n+1 is " << istate.m_solution;
 		*_problem->x = istate.m_solution;
 
-		// update residual
+		/// update residual
 		istate.residuum = calculateResidual(
 					_problem,
 					istate.m_residual);
 
-		// check iterations count/wall time
+		/// check iterations count/wall time
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++istate.NumberOuterIterations;
