@@ -162,15 +162,6 @@ LandweberMinimizer::operator()(
 		/// output prior to iterate update
 		returnvalues.output(ynorm);
 
-		/// database update prior to iterate update
-		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
-		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
-		per_iteration_tuple.replace( "bregman_distance",
-				calculateBregmanDistance(
-						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
-		per_iteration_tuple.replace( "error",
-				calculateError(returnvalues.m_solution, _truesolution));
-
 		/// find step width
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
 		double alpha = (*stepwidth)(
@@ -182,9 +173,18 @@ LandweberMinimizer::operator()(
 				TolX,
 				0.
 				);
-		per_iteration_tuple.replace( "stepwidth", alpha);
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Step width is " << alpha;
+
+		/// database update prior to iterate update
+		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
+		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+		per_iteration_tuple.replace( "bregman_distance",
+				calculateBregmanDistance(
+						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
+		per_iteration_tuple.replace( "error",
+				calculateError(returnvalues.m_solution, _truesolution));
+		per_iteration_tuple.replace( "stepwidth", alpha);
 
 		/// update iterate
 		*dual_solution -= alpha * u;
