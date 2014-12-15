@@ -20,6 +20,7 @@
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
+#include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
@@ -125,26 +126,11 @@ SequentialSubspaceMinimizer::operator()(
 			boost::chrono::high_resolution_clock::now();
 
 	// gather some refs for convenient access
-	const NormedSpace & SpaceX = *_problem->A->getSourceSpace();
-	const NormedSpace & DualSpaceX = *SpaceX.getDualSpace();
-	const NormedSpace & SpaceY = *_problem->A->getTargetSpace();
-	const NormedSpace & DualSpaceY = *SpaceY.getDualSpace();
-	const Norm & NormX = *SpaceX.getNorm();
-	const Norm & DualNormX = *DualSpaceX.getNorm();
-	const Norm & NormY = *SpaceY.getNorm();
-	const Mapping & J_p = *SpaceX.getDualityMapping();
-	const Mapping & J_q = *DualSpaceX.getDualityMapping();
-	const Mapping & j_r = *SpaceY.getDualityMapping();
-	const SpaceElement_ptr_t &y = _problem->y;
-	const LinearMapping &A =
-			dynamic_cast<const LinearMapping &>(*_problem->A);
-	const Mapping_ptr_t A_adjoint = A.getAdjointMapping();
-	const LinearMapping &A_t =
-			dynamic_cast<const LinearMapping &>(*A_adjoint);
+	QuickAccessReferences refs(_problem);
 
 	/// -# initialize return structure
 	if (!istate.getisInitialized()) {
-		SpaceElement_ptr_t residual = SpaceY.createElement();
+		SpaceElement_ptr_t residual = refs.SpaceY.createElement();
 		const double residuum = calculateResidual(
 			_problem,
 			residual);
@@ -161,9 +147,9 @@ SequentialSubspaceMinimizer::operator()(
 			calculateDualStartingValue(_dualstartvalue);
 
 	BregmanDistance Delta_p(
-			NormX,
-			dynamic_cast<const PowerTypeDualityMapping &>(J_p),
-			J_p.getPower());
+			refs.NormX,
+			dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
+			refs.J_p.getPower());
 	double old_distance = 0.;
 	if (!_truesolution->isZero()) {
 		old_distance = Delta_p(
@@ -178,7 +164,11 @@ SequentialSubspaceMinimizer::operator()(
 	// build data tuple for iteration information
 	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
-			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
+			refs.NormX.getPvalue(),
+			refs.NormY.getPvalue(),
+			N,
+			refs.SpaceX.getDimension(),
+			MaxOuterIterations);
 	if (inexactLinesearch) {
 		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
 		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
@@ -189,7 +179,11 @@ SequentialSubspaceMinimizer::operator()(
 	// build data tuple for overall information
 	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
-			NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension(), MaxOuterIterations);
+			refs.NormX.getPvalue(),
+			refs.NormY.getPvalue(),
+			N,
+			refs.SpaceX.getDimension(),
+			MaxOuterIterations);
 	if (inexactLinesearch) {
 		overall_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
 		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
@@ -202,13 +196,16 @@ SequentialSubspaceMinimizer::operator()(
 	if (DoCalculateAngles) {
 		// build angle tuple for search direction angle information
 		angle_tuple = prepareAngleTuple(
-				NormX.getPvalue(), NormY.getPvalue(), N, SpaceX.getDimension());
+				refs.NormX.getPvalue(),
+				refs.NormY.getPvalue(),
+				N,
+				refs.SpaceX.getDimension());
 		angle_tuple.insert( std::make_pair("max_iterations", MaxOuterIterations), Table::Parameter);
 		angle_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	}
 
 	/// -# check stopping criterion
-	const double ynorm = NormY(y);
+	const double ynorm = refs.NormY(refs.y);
 	bool StopCriterion = false;
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
 	StopCriterion = (initial_relative_residuum <= TolY);
@@ -243,8 +240,8 @@ SequentialSubspaceMinimizer::operator()(
 //			assert( old_distance > new_distance );
 			old_distance = new_distance;
 			const double new_error =
-					static_cast<const RegularizedL1Norm *>(&NormX) == NULL ?
-					NormX(istate.m_solution-_truesolution) :
+					static_cast<const RegularizedL1Norm *>(&refs.NormX) == NULL ?
+							refs.NormX(istate.m_solution-_truesolution) :
 					(*l2norm)(istate.m_solution-_truesolution);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "#" << istate.NumberOuterIterations << ": "
@@ -257,7 +254,7 @@ SequentialSubspaceMinimizer::operator()(
 				<< "R_n is " << istate.m_residual;
 
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
-		const SpaceElement_ptr_t Jw = j_r( istate.m_residual );
+		const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw;
 
@@ -268,12 +265,12 @@ SequentialSubspaceMinimizer::operator()(
 
 		// alpha=Jw'*y
 		const double alpha =
-				Jw * y;
+				Jw * refs.y;
 		BOOST_LOG_TRIVIAL(trace)
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		SpaceElement_ptr_t newdir = A_t * Jw;
+		SpaceElement_ptr_t newdir = refs.A_t * Jw;
 		if (DoCalculateAngles) {
 			// calculate bregman angles for angles database
 			{
@@ -318,9 +315,9 @@ SequentialSubspaceMinimizer::operator()(
 		{
 			// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 			BregmanProjectionFunctional bregman(
-					DualNormX,
-					dynamic_cast<const PowerTypeDualityMapping &>(J_q),
-					J_q.getPower());
+					refs.DualNormX,
+					dynamic_cast<const PowerTypeDualityMapping &>(refs.J_q),
+					refs.J_q.getPower());
 
 			const HyperplaneProjection functional(
 					bregman,
@@ -421,14 +418,14 @@ SequentialSubspaceMinimizer::operator()(
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 		{
-			const SpaceElement_ptr_t tempelement = DualSpaceX.createElement();
+			const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
 			for (size_t i=0;i<N;++i)
 				*tempelement +=  tmin[i] * istate.getSearchSpace()[i];
 			*dual_solution -= tempelement;
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution;
-		*istate.m_solution = J_q(dual_solution);
+		*istate.m_solution = refs.J_q(dual_solution);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n+1 is " << istate.m_solution;
 		*_problem->x = istate.m_solution;
@@ -436,7 +433,7 @@ SequentialSubspaceMinimizer::operator()(
 		// update residual
 		istate.residuum = calculateResidual(
 					_problem,
-						istate.m_residual);
+					istate.m_residual);
 
 		// check iterations count/wall time
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
@@ -475,7 +472,7 @@ SequentialSubspaceMinimizer::operator()(
 
 		// print intermediate solution
 		printIntermediateSolution(
-				istate.m_solution, A, istate.NumberOuterIterations);
+				istate.m_solution, refs.A, istate.NumberOuterIterations);
 
 		// submit current tuples
 		per_iteration_table.addTuple(per_iteration_tuple);
@@ -485,7 +482,9 @@ SequentialSubspaceMinimizer::operator()(
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	std::cout << "The operation took " << boost::chrono::duration<double>(timing_end - timing_start) << "." << std::endl;
+	std::cout << "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start)
+			<< "." << std::endl;
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );
@@ -493,32 +492,33 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	overall_tuple.replace( "element_creation_operations",
-			(int)(SpaceX.getOpCounts().getTotalConstantCounts()
-					+SpaceY.getOpCounts().getTotalConstantCounts()
-					+DualSpaceX.getOpCounts().getTotalConstantCounts()
-					+DualSpaceY.getOpCounts().getTotalConstantCounts()));
+			(int)(refs.SpaceX.getOpCounts().getTotalConstantCounts()
+					+refs.SpaceY.getOpCounts().getTotalConstantCounts()
+					+refs.DualSpaceX.getOpCounts().getTotalConstantCounts()
+					+refs.DualSpaceY.getOpCounts().getTotalConstantCounts()));
 	overall_tuple.replace( "linear_time_operations",
-			(int)(SpaceX.getOpCounts().getTotalLinearCounts()
-					+SpaceY.getOpCounts().getTotalLinearCounts()
-					+DualSpaceX.getOpCounts().getTotalLinearCounts()
-					+DualSpaceY.getOpCounts().getTotalLinearCounts()));
+			(int)(refs.SpaceX.getOpCounts().getTotalLinearCounts()
+					+refs.SpaceY.getOpCounts().getTotalLinearCounts()
+					+refs.DualSpaceX.getOpCounts().getTotalLinearCounts()
+					+refs.DualSpaceY.getOpCounts().getTotalLinearCounts()));
 	overall_tuple.replace( "quadratic_time_operations",
-			(int)(A.getCount()+A_t.getCount()) );
+			(int)(refs.A.getCount()+refs.A_t.getCount()) );
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 	overall_tuple.replace( "element_creation_runtime",
 			boost::chrono::duration<double>(
-					SpaceX.getOpCounts().getTotalConstantTimings()
-					+SpaceY.getOpCounts().getTotalConstantTimings()
-					+DualSpaceX.getOpCounts().getTotalConstantTimings()
-					+DualSpaceY.getOpCounts().getTotalConstantTimings()).count());
+					refs.SpaceX.getOpCounts().getTotalConstantTimings()
+					+refs.SpaceY.getOpCounts().getTotalConstantTimings()
+					+refs.DualSpaceX.getOpCounts().getTotalConstantTimings()
+					+refs.DualSpaceY.getOpCounts().getTotalConstantTimings()).count());
 	overall_tuple.replace( "linear_time_runtime",
 			boost::chrono::duration<double>(
-					SpaceX.getOpCounts().getTotalLinearTimings()
-					+SpaceY.getOpCounts().getTotalLinearTimings()
-					+DualSpaceX.getOpCounts().getTotalLinearTimings()
-					+DualSpaceY.getOpCounts().getTotalLinearTimings()).count());
+					refs.SpaceX.getOpCounts().getTotalLinearTimings()
+					+refs.SpaceY.getOpCounts().getTotalLinearTimings()
+					+refs.DualSpaceX.getOpCounts().getTotalLinearTimings()
+					+refs.DualSpaceY.getOpCounts().getTotalLinearTimings()).count());
 	overall_tuple.replace( "quadratic_time_runtime",
-			boost::chrono::duration<double>(A.getTiming()+A_t.getTiming()).count() );
+			boost::chrono::duration<double>(
+					refs.A.getTiming()+refs.A_t.getTiming()).count() );
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 	overall_table.addTuple(overall_tuple);
 

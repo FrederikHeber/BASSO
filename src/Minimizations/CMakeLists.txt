@@ -68,6 +68,7 @@ install (FILES Functions/VectorProjection_BregmanDistanceToLine.hpp DESTINATION 
 
 install (FILES InverseProblems/InverseProblem.hpp DESTINATION include)
 install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
+install (FILES InverseProblems/QuickAccessReferences.hpp DESTINATION include)
 
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
