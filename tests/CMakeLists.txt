@@ -19,7 +19,7 @@ add_subdirectory (simple)
 # tests for Landweber algorithm
 add_subdirectory (Landweber)
 
-# tests for SSO algorithm
-add_subdirectory (SSO)
+# tests for SESOP algorithm
+add_subdirectory (SESOP)
 
 

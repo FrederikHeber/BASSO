@@ -1,7 +1,7 @@
 # test 1: 
-add_test (Basso_SSO_RandomMatrix
+add_test (Basso_SESOP_RandomMatrix
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
 		--normx 2 
@@ -10,15 +10,15 @@ add_test (Basso_SSO_RandomMatrix
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.009.*")
 
 # test 2: check angles
-add_test (Basso_SSO_RandomMatrix_Angles
+add_test (Basso_SESOP_RandomMatrix_Angles
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 4
 		--calculateAngles 1
 		--verbose 1
@@ -28,29 +28,29 @@ add_test (Basso_SSO_RandomMatrix_Angles
 		--powery 2
 		--delta 0.01 
 		--maxiter 5
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #0 is 0.1")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #1 is 0.1.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #2 is 0.04.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #3 is 0.05.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #0 is 0.22.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #1 is 0.38.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #2 is 0.16.*")
-set_tests_properties (Basso_SSO_RandomMatrix_Angles
+set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #3 is 0.23.*")
 
 # test 3: updateToMostParallel
-add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel
+add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 1
 		--enforceRandomMapping 0
@@ -60,15 +60,15 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostParallel
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 19 with relative residual of 0.0089.*")
 
 # test 4: updateToMostOrthogonal
-add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
+add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 2
 		--enforceRandomMapping 0
@@ -78,15 +78,15 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 25 with relative residual of 0.0047.*")
 
 # test 5: updateToMostParallel_randomMapping
-add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel_randomMapping
+add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 1
 		--enforceRandomMapping 1
@@ -96,15 +96,15 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostParallel_randomMapping
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostParallel_randomMapping
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 21 with relative residual of 0.0083.*")
 
 # test 6: updateToMostOrthogonal_randomMapping
-add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal_randomMapping
+add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 2
 		--enforceRandomMapping 1
@@ -114,15 +114,15 @@ add_test (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal_randomMapping
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_UpdateToMostOrthogonal_randomMapping
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 23 with relative residual of 0.0094.*")
 
 # test 7: 
-add_test (Basso_SSO_RandomMatrix_InexactLinesearch
+add_test (Basso_SESOP_RandomMatrix_InexactLinesearch
 	${PROJECT_BINARY_DIR}/src/Basso 
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
 		--inexact-linesearch 1
@@ -133,15 +133,15 @@ add_test (Basso_SSO_RandomMatrix_InexactLinesearch
 		--powery 2
 		--delta 0.01 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_InexactLinesearch
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 33 with relative residual of 0.008.*")
 
 # test 8: 
-add_test (Basso_SSO_RandomMatrix_NemirovskyDirections
+add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections
 	${PROJECT_BINARY_DIR}/src/Basso
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 2
 		--searchspace "Nemirovsky"
 		--update-algorithm 0
@@ -151,15 +151,15 @@ add_test (Basso_SSO_RandomMatrix_NemirovskyDirections
 		--powery 2
 		--delta 0.01
 		--maxiter 100
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_NemirovskyDirections
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 24 with relative residual of 0.0095.*")
 
 # test 9: Nemirovsky with not two search directions
-add_test (Basso_SSO_RandomMatrix_NemirovskyDirections_fail
+add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections_fail
 	${PROJECT_BINARY_DIR}/src/Basso
-		--algorithm SSO
+		--algorithm SESOP
 		--number-directions 4
 		--searchspace "Nemirovsky"
 		--update-algorithm 0
@@ -169,8 +169,8 @@ add_test (Basso_SSO_RandomMatrix_NemirovskyDirections_fail
 		--powery 2
 		--delta 0.01
 		--maxiter 100
-		--matrix ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randommatrix.m
-		--rhs ${PROJECT_SOURCE_DIR}/tests/SSO/pre/randomvector.m)
-set_tests_properties (Basso_SSO_RandomMatrix_NemirovskyDirections_fail
+		--matrix ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randommatrix.m
+		--rhs ${PROJECT_SOURCE_DIR}/tests/SESOP/pre/randomvector.m)
+set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections_fail
 	PROPERTIES WILL_FAIL "true")
 

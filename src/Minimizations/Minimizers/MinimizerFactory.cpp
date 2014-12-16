@@ -17,9 +17,9 @@
 
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {
-		"landweber",
-		"SSO",
-		"SSO_noise"
+		"Landweber",
+		"SESOP",
+		"RESESOP"
 };
 
 MinimizerFactory::instance_ptr_t
