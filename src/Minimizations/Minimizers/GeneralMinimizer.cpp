@@ -66,6 +66,18 @@ GeneralMinimizer::GeneralMinimizer(
 
 }
 
+void GeneralMinimizer::SearchDirection::update(
+	 	 const QuickAccessReferences &_refs,
+	 	 const SpaceElement_ptr_t &_residual)
+{
+		Jw = _refs.j_r( _residual );
+		BOOST_LOG_TRIVIAL(trace)
+			<< "Jw= j_r (R_n) is " << Jw;
+		u = _refs.A_t * Jw;
+		BOOST_LOG_TRIVIAL(trace)
+				<< "newdir is " << u;
+}
+
 bool GeneralMinimizer::CheckWalltime(
 		const boost::chrono::duration<double> &_time) const
 {

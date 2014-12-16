@@ -152,12 +152,7 @@ LandweberMinimizer::operator()(
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
 		/// Calculation of search direction
-		const SpaceElement_ptr_t Jw = refs.j_r( returnvalues.m_residual );
-		BOOST_LOG_TRIVIAL(trace)
-				<< "j_r (residual) is " << Jw;
-		const SpaceElement_ptr_t u = refs.A_t * Jw;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "u is " << u;
+		searchdir.update(refs, returnvalues.m_residual);
 
 		/// output prior to iterate update
 		returnvalues.output(ynorm);
@@ -166,7 +161,7 @@ LandweberMinimizer::operator()(
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
 		double alpha = (*stepwidth)(
 				dual_solution,
-				u,
+				searchdir.u,
 				returnvalues.m_solution,
 				returnvalues.m_residual,
 				returnvalues.residuum,
@@ -187,7 +182,7 @@ LandweberMinimizer::operator()(
 		per_iteration_tuple.replace( "stepwidth", alpha);
 
 		/// update iterate
-		*dual_solution -= alpha * u;
+		*dual_solution -= alpha * searchdir.u;
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x^*_n+1 is " << dual_solution;
 		// finally map back from X^{\conj} to X: x_{n+1}

@@ -131,25 +131,22 @@ SequentialSubspaceMinimizerNoise::operator()(
 		if ((istate.NumberOuterIterations == 0)
 			|| (istate.residuum > TolY)) {
 			/// Calculation of search direction
-			const SpaceElement_ptr_t Jw = refs.j_r( istate.m_residual );
-			BOOST_LOG_TRIVIAL(trace)
-				<< "Jw= j_r (R_n) is " << Jw;
-			const SpaceElement_ptr_t newdir = refs.A_t * Jw;
+			searchdir.update(refs, istate.m_residual);
 
 			/// output prior to iterate update
 			istate.output(ynorm);
 
 			/// update search space with new direction
 			// uNorm=norm(u,DualNormX);
-			const double uNorm = refs.DualNormX(newdir);
+			const double uNorm = refs.DualNormX(searchdir.u);
 			BOOST_LOG_TRIVIAL(trace)
 				<< "uNorm is " << uNorm;
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
-					newdir * istate.m_solution - ::pow(istate.residuum,refs.j_r.getPower());
+					searchdir.u * istate.m_solution - ::pow(istate.residuum,refs.j_r.getPower());
 			BOOST_LOG_TRIVIAL(trace)
 				<< "alpha is " << alpha;
-			updateSearchspace(_truesolution, dual_solution, newdir, alpha);
+			updateSearchspace(_truesolution, dual_solution, searchdir.u, alpha);
 
 			// d=Delta*Residual^(PowerY-1);
 			const double d =

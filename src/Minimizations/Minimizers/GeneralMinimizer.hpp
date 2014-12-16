@@ -38,6 +38,23 @@ public:
 
 	virtual ~GeneralMinimizer() {}
 
+	/** Internal structure containing the current search direction.
+	 *
+	 */
+	struct SearchDirection {
+		 SpaceElement_ptr_t Jw;
+		 SpaceElement_ptr_t u;
+
+		 /** Updates the search direction
+		  *
+		  * @param _refs quick access to Banach space objects
+		  * @param _residual residual vector
+		  */
+		 void update(
+		 	 	 const QuickAccessReferences &_refs,
+		 	 	 const SpaceElement_ptr_t &_residual);
+	} searchdir;
+
 	/** Internal structure for return values.
 	 *
 	 */
