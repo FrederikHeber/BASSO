@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <Eigen/Dense>
+#include <functional>
 #include <list>
 
 #include "Log/Logging.hpp"
@@ -40,7 +41,8 @@ LastNSearchDirections::LastNSearchDirections(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
 		const unsigned int _N) :
 	Searchspace(_SearchDirectionSpace_ptr,_N),
-	index(0)
+	index(0),
+	lastIndices(_N, 0)
 {}
 
 void LastNSearchDirections::update(
@@ -51,6 +53,11 @@ void LastNSearchDirections::update(
 		)
 {
 	assert( _newdir->getSpace() == SearchDirectionSpace_ptr );
+
+	// add one to all in lastIndices
+	std::transform(
+			lastIndices.begin(), lastIndices.end(),
+			lastIndices.begin(), std::bind2nd(std::plus<unsigned int>(), 1));
 
 	switch (updateIndexType) {
 		case RoundRobin:
@@ -71,6 +78,7 @@ void LastNSearchDirections::update(
 		<< "Updated index is " << index;
 	*(U[index]) = _newdir;
 	alphas[index] = _alpha;
+	lastIndices[index] = 0; // reset current search direction offset
 }
 
 unsigned int

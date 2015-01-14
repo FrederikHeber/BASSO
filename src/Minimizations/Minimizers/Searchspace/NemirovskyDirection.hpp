@@ -46,6 +46,13 @@ public:
 	 */
 	const unsigned int getIndex() const
 	{ return 0; }
+
+	/** Returns 0, as is always the search direction.
+	 *
+	 * @return vector(1,0)
+	 */
+	const std::vector<unsigned int> getLastIndices() const
+	{ return std::vector<unsigned int>(1,0); }
 };
 
 

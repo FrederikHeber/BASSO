@@ -58,6 +58,14 @@ public:
 		return index;
 	}
 
+	/** Const ref getter for \a lastIndices.
+	 *
+	 * @return array of offset w.r.t current search direction
+	 */
+	const std::vector<unsigned int> getLastIndices() const {
+		return lastIndices;
+	}
+
 	//!> enumeration of available update index methods
 	enum UpdateAlgorithmType {
 		RoundRobin=0,
@@ -128,6 +136,12 @@ private:
 protected:
 	//!> index of the last updated search direction
 	unsigned int index;
+
+	/** Array of offsets to indicate sequence of search direction
+	 * updates in SearchSpace, i.e. current search direction has offset
+	 * of 0.
+	 */
+	std::vector<unsigned int> lastIndices;
 
 	//!> current set of indices remaining for enforcing random mapping
 	mutable indexset_t current_indexset;

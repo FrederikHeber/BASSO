@@ -76,6 +76,13 @@ public:
 	 */
 	virtual const unsigned int getIndex() const = 0;
 
+	/** Returns an array giving the offset of each search direction in the
+	 * search space to the current one, i.e. current one has offset of 0.
+	 *
+	 * @return array of offsets with respect to current search direction
+	 */
+	virtual const std::vector<unsigned int> getLastIndices() const = 0;
+
 	/** This function performs the update of the search space.
 	 *
 	 * @param _newdir current search direction
