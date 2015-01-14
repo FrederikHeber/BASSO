@@ -121,7 +121,10 @@ protected:
 	const unsigned int calculateStepWidth(
 			const QuickAccessReferences& refs,
 			const SpaceElement_ptr_t& dual_solution,
-			std::vector<double>& tmin) const;
+			std::vector<double>& tmin,
+			const std::vector<SpaceElement_ptr_t> &_searchspace,
+			const std::vector<double> &_alphas
+			) const;
 
 	/** Checks whether we exceed \a initial_residuum by a certain
 	 * factor and signals for stopping the iteration.

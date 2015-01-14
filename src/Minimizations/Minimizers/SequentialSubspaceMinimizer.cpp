@@ -12,6 +12,7 @@
 #include <boost/chrono.hpp>
 #include <boost/assign.hpp>
 #include <boost/log/trivial.hpp>
+#include <cassert>
 #include <cmath>
 #include <iterator>
 #include <numeric>
@@ -222,18 +223,27 @@ void SequentialSubspaceMinimizer::fillAngleTable(
 const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 		const QuickAccessReferences& refs,
 		const SpaceElement_ptr_t& dual_solution,
-		std::vector<double> & tmin) const
+		std::vector<double> & tmin,
+		const std::vector<SpaceElement_ptr_t> &_searchspace,
+		const std::vector<double> &_alphas
+		) const
 {
+	// consistency checks
+	const size_t Ndirs = _searchspace.size();
+	assert( Ndirs == _alphas.size() );
+	assert( Ndirs == tmin.size() );
+
 	// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 	BregmanProjectionFunctional bregman(refs.DualNormX,
 			dynamic_cast<const PowerTypeDualityMapping&>(refs.J_q),
 			refs.J_q.getPower());
 	const HyperplaneProjection functional(bregman, dual_solution,
-			istate.getSearchSpace(), istate.getAlphas());
+			_searchspace, _alphas);
+
 	// due to templation we need to instantiate both, as user
 	// decides during runtime which we need
-	Minimizer<gsl_vector> minimizer_gsl(N);
-	Minimizer<NLopt_vector> minimizer_nlopt(N);
+	Minimizer<gsl_vector> minimizer_gsl(Ndirs);
+	Minimizer<NLopt_vector> minimizer_nlopt(Ndirs);
 	const unsigned int current_index = istate.searchspace->getIndex();
 	Wolfe_indexset_t Wolfe_indexset(1, current_index);
 	if (MinLib == gnuscientificlibrary) {
@@ -255,10 +265,10 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 				constant_interpolation);
 		switch (MinLib) {
 		case gnuscientificlibrary:
-			inner_iterations = fmin_gsl(N, TolFun, Wolfe_indexset, tmin);
+			inner_iterations = fmin_gsl(Ndirs, TolFun, Wolfe_indexset, tmin);
 			break;
 		case nonlinearoptimization:
-			inner_iterations = fmin_nlopt(N, TolFun, Wolfe_indexset, tmin);
+			inner_iterations = fmin_nlopt(Ndirs, TolFun, Wolfe_indexset, tmin);
 			break;
 		default:
 			throw MinimizationIllegalValue_exception()
@@ -272,10 +282,10 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 				functional, minimizer_nlopt, tmin);
 		switch (MinLib) {
 		case gnuscientificlibrary:
-			inner_iterations = fmin_gsl(N, TolFun, tmin);
+			inner_iterations = fmin_gsl(Ndirs, TolFun, tmin);
 			break;
 		case nonlinearoptimization:
-			inner_iterations = fmin_nlopt(N, TolFun, tmin);
+			inner_iterations = fmin_nlopt(Ndirs, TolFun, tmin);
 			break;
 		default:
 			throw MinimizationIllegalValue_exception()
@@ -433,7 +443,8 @@ SequentialSubspaceMinimizer::operator()(
 		/// get optimal stepwidth
 		std::vector<double> tmin(N, 0.);
 		const unsigned int inner_iterations =
-				calculateStepWidth(refs, dual_solution, tmin);
+				calculateStepWidth(refs, dual_solution, tmin,
+						istate.getSearchSpace(), istate.getAlphas());
 		double stepwidth_norm = 0.;
 		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 
