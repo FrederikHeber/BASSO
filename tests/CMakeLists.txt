@@ -22,4 +22,6 @@ add_subdirectory (Landweber)
 # tests for SESOP algorithm
 add_subdirectory (SESOP)
 
+# tests for RESESOP algorithm
+add_subdirectory (RESESOP)
 
