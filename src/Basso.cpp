@@ -24,6 +24,7 @@
 #include "Minimizations/Elements/SpaceElementWriter.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
@@ -103,7 +104,9 @@ int main (int argc, char *argv[])
 	        		"set the vector file of the right-hand side")
 			("searchspace", po::value<std::string>(), "set the type of search directions used (SSO")
 			("solution", po::value< boost::filesystem::path >(),
-					"set the file name to write solution vector to")
+					"set the file name to write solution vector to, i.e. x in y = A*x")
+			("solution-image", po::value< boost::filesystem::path >(),
+					"set the file name to write image of solution vector to, i.e. A*x")
 			("stepwidth-algorithm", po::value<unsigned int>(), "set which step width algorithm to use (Landweber)")
 			("tau", po::value<double>(), "set the value for tau (SSO)")
 	        ("update-algorithm", po::value<unsigned int>(), "sets the algorithm which search direction is updated for multiple ones (SSO)")
@@ -714,7 +717,7 @@ int main (int argc, char *argv[])
 		if (vm.count("solution")) {
 			solution_file = vm["solution"].as<boost::filesystem::path>();
 			BOOST_LOG_TRIVIAL(debug)
-				<< "Writing solution vector to " << solution_file << ".\n";
+				<< "Writing solution vector to " << solution_file;
 
 			using namespace MatrixIO;
 			std::ofstream ost(solution_file.string().c_str());
@@ -730,6 +733,30 @@ int main (int argc, char *argv[])
 			}
 		} else {
 			std::cout << "No solution file given." << std::endl;
+		}
+
+		boost::filesystem::path solution_image_file;
+		if (vm.count("solution-image")) {
+			solution_image_file = vm["solution-image"].as<boost::filesystem::path>();
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Writing image of solution vector to " << solution_image_file;
+
+			using namespace MatrixIO;
+			std::ofstream ost(solution_image_file.string().c_str());
+			if (ost.good())
+				try {
+					SpaceElementWriter::output(
+							ost,
+							dynamic_cast<LinearMapping &>(*inverseproblem->A.get()) * result.m_solution);
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write image of solution to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << solution_image_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No image of solution file given." << std::endl;
 		}
 	}
 
