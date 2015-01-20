@@ -3,8 +3,8 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Minimizations 
-	Elements/SpaceElement.cpp
 	Elements/ElementCreator.cpp
+	Elements/SpaceElement.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/HyperplaneProjection.cpp
@@ -46,6 +46,7 @@ add_library (Minimizations
 install (TARGETS Minimizations DESTINATION bin)
 
 install (FILES Elements/SpaceElement.hpp DESTINATION include)
+install (FILES Elements/SpaceElementWriter.hpp DESTINATION include)
 install (FILES Elements/ElementCreator.hpp DESTINATION include)
 install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
 

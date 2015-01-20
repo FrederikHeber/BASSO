@@ -19,6 +19,7 @@ class LpDualityMapping;
 class LinearMapping;
 class LInfinityDualityMapping;
 class SoftThresholdingMapping;
+struct SpaceElementWriter;
 
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
@@ -31,9 +32,10 @@ class RepresentationAdvocate
 private:
 	friend class L1DualityMapping;
 	friend class LpDualityMapping;
+	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class SoftThresholdingMapping;
-	friend class LinearMapping;
+	friend struct SpaceElementWriter;
 
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)

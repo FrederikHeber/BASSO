@@ -17,6 +17,7 @@
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Elements/SpaceElementWriter.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -654,7 +655,7 @@ int main (int argc, char *argv[])
 			std::ofstream ost(solution_file.string().c_str());
 			if (ost.good())
 				try {
-					ost << result.m_solution;
+					SpaceElementWriter::output(ost, result.m_solution);
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write solution to file.\n";
 				}
