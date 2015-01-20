@@ -60,6 +60,7 @@ install (FILES Functions/Minimizers/MinimizationFunctional.hpp DESTINATION inclu
 install (FILES Functions/Minimizers/Minimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer_gsl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer_nlopt.hpp DESTINATION include)
+install (FILES Functions/Minimizers/MinimizerExceptions.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessModulus.hpp DESTINATION include)

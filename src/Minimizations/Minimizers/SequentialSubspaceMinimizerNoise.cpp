@@ -28,6 +28,7 @@
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -172,45 +173,48 @@ SequentialSubspaceMinimizerNoise::operator()(
 //			per_iteration_tuple.replace("inner_iterations",
 //					(int) (inner_iterations));
 //			per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
-		// submit current tuples
-		per_iteration_table.addTuple(per_iteration_tuple);
 
 		/// 1st update onto new hyperplane
 		// index contains newest direction on whose associated hyperplane
 		// x in general does not lie.
 		double stepwidth_norm = 0.;
-		std::vector<double> tmin(1, 0.);
-		if (dual_solution->isApproxToConstant(0, TolX)) {
-			// tmin=beta^(PowerX-1);
-			tmin[0] = ::pow(beta, refs.J_p.getPower() - 1.);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "tmin is " << tmin[0];
-		} else {
-			// t0=(beta/G)^(PowerX-1);
-			// wrong, rather we have
-			// t0=(Residual*(Residual-Delta)/(G*uNorm^DualPowerX))^(PowerX-1);
-			// see Remark b) on page 17
-			std::vector<double> t0(1, 0.);
-			tmin[0] = ::pow(beta/G, refs.J_p.getPower() - 1.);
-			BOOST_LOG_TRIVIAL(trace)
-				<< "Initial tmin[0] is " << t0[0];
+		try {
+			std::vector<double> tmin(1, 0.);
+			if (dual_solution->isApproxToConstant(0, TolX)) {
+				// tmin=beta^(PowerX-1);
+				tmin[0] = ::pow(beta, refs.J_p.getPower() - 1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "tmin is " << tmin[0];
+			} else {
+				// t0=(beta/G)^(PowerX-1);
+				// wrong, rather we have
+				// t0=(Residual*(Residual-Delta)/(G*uNorm^DualPowerX))^(PowerX-1);
+				// see Remark b) on page 17
+				std::vector<double> t0(1, 0.);
+				tmin[0] = ::pow(beta/G,refs.J_p.getPower() - 1.);
+				BOOST_LOG_TRIVIAL(trace)
+					<< "Initial tmin[0] is " << t0[0];
 
-			std::vector<SpaceElement_ptr_t> ConstrainedSearchSpace(1);
-			ConstrainedSearchSpace[0] = istate.getSearchSpace()[index];
-			std::vector<double> steps(1);
-			steps[0] = istate.getAlphas()[index]+d[index];
+				std::vector<SpaceElement_ptr_t> ConstrainedSearchSpace(1);
+				ConstrainedSearchSpace[0] = istate.getSearchSpace()[index];
+				std::vector<double> steps(1);
+				steps[0] = istate.getAlphas()[index]+d[index];
 
-			const unsigned int inner_iterations =
-					calculateStepWidth(refs, dual_solution, tmin,
-							ConstrainedSearchSpace, steps);
+				const unsigned int inner_iterations =
+						calculateStepWidth(refs, dual_solution, tmin,
+								ConstrainedSearchSpace, steps);
+			}
+			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
+			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
+			/// update iterate
+			tmin.resize(2, 0.);
+			if (index != 0)
+				std::swap(tmin[index], tmin[0]);
+			updateIterates(refs, tmin, _problem->x, dual_solution);
+		} catch (MinimizerIllegalNumber_exception &e) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Encountered illegal number in line search minimum, not updating.";
 		}
-		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
-		// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
-		/// update iterate
-		tmin.resize(2, 0.);
-		if (index != 0)
-			std::swap(tmin[index], tmin[0]);
-		updateIterates(refs, tmin, _problem->x, dual_solution);
 
 		if (istate.NumberOuterIterations > 0) {
 			/// 2nd update onto intersection of hyperspaces
@@ -241,12 +245,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 				const unsigned int inner_iterations =
 						calculateStepWidth(refs, dual_solution, tmin,
 								istate.getSearchSpace(), steps);
+				stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 
 				/// update iterate
 				updateIterates(refs, tmin, _problem->x, dual_solution);
 			}
 		}
-		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 
 		/// submit current tuples

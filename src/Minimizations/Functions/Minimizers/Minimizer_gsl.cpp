@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "Log/Logging.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 
 Minimizer<gsl_vector>::Minimizer(
 		const unsigned int _N
@@ -83,11 +84,28 @@ Minimizer<gsl_vector>::minimize(
 		int gsl_status = gsl_multimin_fdfminimizer_iterate (s);
 
 		optimum = gsl_multimin_fdfminimizer_minimum(s);
+		if (isnan(optimum) || isinf(optimum))
+			throw MinimizerIllegalNumber_exception()
+			<< MinimizerIllegalNumber_variablename("optimum");
 		convertInternalTypeToArrayType(
 				gsl_multimin_fdfminimizer_x(s), tempoptimum);
 		convertInternalTypeToArrayType(
 				gsl_multimin_fdfminimizer_gradient(s), tempgradient);
 
+		{
+			const gsl_vector * const currentiterate =
+					gsl_multimin_fdfminimizer_x(s);
+			std::stringstream iterate;
+			iterate << "currentiterate";
+			for (unsigned int i=0;i<N;++i) {
+				const double &value = gsl_vector_get(currentiterate, i);
+				if (isnan(value) || isinf(value)) {
+					iterate << ", #" << i;
+					throw MinimizerIllegalNumber_exception()
+					<< MinimizerIllegalNumber_variablename(iterate.str());
+				}
+			}
+		}
 		{
 			std::stringstream iterate;
 			const gsl_vector * const currentiterate =

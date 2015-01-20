@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "Log/Logging.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 
 Minimizer<NLopt_vector>::Minimizer(
 		const unsigned int _N
@@ -79,6 +80,12 @@ Minimizer<NLopt_vector>::minimize(
 				<< (_checkfunction(_Tol) == Minimization::gradient_success ?
 						"valid" : "INVALID");
 	}
+	if (isnan(optimum) || isinf(optimum))
+		throw MinimizerIllegalNumber_exception()
+		<< MinimizerIllegalNumber_variablename("optimum");
+	if (isnan(minf) || isinf(minf))
+		throw MinimizerIllegalNumber_exception()
+		<< MinimizerIllegalNumber_variablename("minf");
 
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Inner iteration took " << iter << " steps";
