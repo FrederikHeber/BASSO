@@ -83,7 +83,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			refs.NormX.getPvalue() > 2. ?
 			::pow(2., 2. - refs.DualNormX.getPvalue()) :
 			 refs.DualNormX.getPvalue() - 1.;
-	BOOST_LOG_TRIVIAL(trace)
+	BOOST_LOG_TRIVIAL(debug)
 		<< "G is " << G;
 
 	// reset inner state if problem has changed
@@ -139,7 +139,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			/// update search space with new direction
 			// uNorm=norm(u,DualNormX);
 			const double uNorm = refs.DualNormX(searchdir.u);
-			BOOST_LOG_TRIVIAL(trace)
+			BOOST_LOG_TRIVIAL(debug)
 				<< "uNorm is " << uNorm;
 			// alpha=u'*x-Residual^PowerY;
 			const double alpha =
@@ -173,11 +173,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 			if (dual_solution->isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
 				tmin[0] = ::pow(beta, refs.J_p.getPower() - 1.);
-				std::stringstream tmin_stream;
-				std::copy(tmin.begin(),tmin.end(),
-						std::ostream_iterator<double>(tmin_stream, " "));
-				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin_stream;
+				BOOST_LOG_TRIVIAL(debug)
+					<< "tmin is " << tmin[0];
 			} else {
 				// t0=(beta/G)^(PowerX-1);
 				std::vector<double> t0(1, 0.);
