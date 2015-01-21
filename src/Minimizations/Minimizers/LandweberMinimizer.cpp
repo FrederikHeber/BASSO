@@ -124,7 +124,7 @@ LandweberMinimizer::operator()(
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
-	StopCriterion = (fabs(returnvalues.residuum/ynorm) <= TolY);
+	StopCriterion = CheckRelativeResiduum(returnvalues.residuum, ynorm);
 
 	// calculate some values prior to loop
 	SpaceElement_ptr_t dual_solution = refs.DualSpaceX.createElement();
@@ -205,10 +205,9 @@ LandweberMinimizer::operator()(
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++returnvalues.NumberOuterIterations;
-		const double current_relative_residuum = fabs(returnvalues.residuum/ynorm);
 		StopCriterion =
 				CheckIterations(returnvalues.NumberOuterIterations)
-				|| CheckResiduum(current_relative_residuum)
+				|| CheckRelativeResiduum(returnvalues.residuum,ynorm)
 				|| CheckWalltime(boost::chrono::duration<double>(
 						timing_intermediate - timing_start));
 

@@ -123,8 +123,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	/// -# check stopping criterion
 	const double ynorm = refs.NormY(refs.y);
 	bool StopCriterion = false;
-	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
-	StopCriterion = (initial_relative_residuum <= TolY);
+	const double initial_residuum = istate.residuum;
+	StopCriterion = CheckResiduum(initial_residuum);
 
 	while (!StopCriterion) {
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
@@ -228,21 +228,22 @@ SequentialSubspaceMinimizerNoise::operator()(
 			boost::chrono::high_resolution_clock::time_point timing_intermediate =
 					boost::chrono::high_resolution_clock::now();
 			++istate.NumberOuterIterations;
-			const double current_relative_residuum = fabs(istate.residuum/ynorm);
+			const double current_residuum = istate.residuum;
 			StopCriterion =
 					CheckIterations(istate.NumberOuterIterations)
-					|| CheckResiduum(current_relative_residuum)
+					|| CheckResiduum(current_residuum)
 					|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
 			/// check for non-convergence
-			if (isNonConverging(current_relative_residuum,
-					initial_relative_residuum))
+			if (isNonConverging(current_residuum,
+					initial_residuum))
 				fillPerIterationTable(per_iteration_tuple, per_iteration_table);
 
 			/// print intermediate solution
 			printIntermediateSolution(
 					istate.m_solution, refs.A, istate.NumberOuterIterations);
 		}
+
 
 		/// submit current tuple
 		per_iteration_table.addTuple(per_iteration_tuple);

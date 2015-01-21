@@ -175,6 +175,18 @@ public:
 	bool CheckResiduum(
 			const double _residuum) const;
 
+	/** Checks whether the residuum relative to the norm of \a y has fallen
+	 * beneath a specified limit.
+	 *
+	 * @param _residuum current residuum
+	 * @param _ynorm norm of the right-hand side
+	 * @return true - \a _residuum relative to \a _ynorm is less than \a TolY,
+	 * 		   false - may continue
+	 */
+	bool CheckRelativeResiduum(
+			const double _residuum,
+			const double _ynorm) const;
+
 protected:
 	/** Internal helper function for specific Minimizers to print debugging
 	 *  solutions.

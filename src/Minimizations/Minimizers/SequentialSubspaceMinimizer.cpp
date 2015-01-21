@@ -420,7 +420,7 @@ SequentialSubspaceMinimizer::operator()(
 	const double ynorm = refs.NormY(refs.y);
 	bool StopCriterion = false;
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
-	StopCriterion = (initial_relative_residuum <= TolY);
+	StopCriterion = CheckRelativeResiduum(istate.residuum, ynorm);
 
 	while (!StopCriterion) {
 		/// Calculation of search direction
@@ -475,13 +475,13 @@ SequentialSubspaceMinimizer::operator()(
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++istate.NumberOuterIterations;
-		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		StopCriterion =
 				CheckIterations(istate.NumberOuterIterations)
-				|| CheckResiduum(current_relative_residuum)
+				|| CheckRelativeResiduum(istate.residuum, ynorm)
 				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
 		/// check for non-convergence
+		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		if (isNonConverging(current_relative_residuum,
 				initial_relative_residuum)) {
 			fillPerIterationTable(per_iteration_tuple, per_iteration_table);

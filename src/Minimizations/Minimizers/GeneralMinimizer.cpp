@@ -103,6 +103,13 @@ bool GeneralMinimizer::CheckResiduum(
 	return _residuum <= TolY;
 }
 
+bool GeneralMinimizer::CheckRelativeResiduum(
+		const double _residuum,
+		const double _ynorm) const
+{
+	return _residuum/_ynorm <= TolY;
+}
+
 void GeneralMinimizer::ReturnValues::output(
 		const double ynorm) const
 {
