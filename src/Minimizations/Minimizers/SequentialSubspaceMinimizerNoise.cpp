@@ -158,6 +158,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 			/// database update prior to iterate update
 			per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+			per_iteration_tuple.replace( "residual", istate.residuum);
 			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
 			per_iteration_tuple.replace( "bregman_distance",
 					calculateBregmanDistance(
@@ -257,7 +258,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );
-	overall_tuple.replace( "relative_residual", istate.residuum );
+	overall_tuple.replace( "residual", istate.residuum );
+	overall_tuple.replace( "relative_residual", istate.residuum/ynorm );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	finalizeOverallTuple(overall_tuple, refs);
