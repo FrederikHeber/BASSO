@@ -49,11 +49,8 @@ const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
 	const double factor = ::pow(factor_index.first, (double)power-1.)
 			* Helpers::sign((*_x)[factor_index.second]);
 	// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
-	SpaceElement_ptr_t temp = getTargetSpace()->createElement();
-	(*temp)[0] = 1.;
-	SpaceElement_ptr_t Jx =
-			temp->getCircShiftedVector(factor_index.second);  // no -1 here, as index starts at 0 here, not 1
-	*Jx *= factor;
+	SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
+	(*Jx)[factor_index.second] = factor;
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
