@@ -10,6 +10,7 @@
 #include "SequentialSubspaceMinimizerNoise.hpp"
 
 #include <algorithm>
+#include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
 #include <Eigen/Dense>
@@ -145,7 +146,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 		// uNorm=norm(u,DualNormX);
 		const double uNorm = refs.DualNormX(searchdir.u);
-		BOOST_LOG_TRIVIAL(trace) << "uNorm is " << uNorm;
+		BOOST_LOG_TRIVIAL(debug) << "uNorm is " << uNorm;
+		const double ScaleFactor = 1./uNorm;
 		// alpha=u'*x-Residual^PowerY; (29) or (24) in original form
 		const double alpha =
 				searchdir.u * istate.m_solution - ::pow(istate.residuum, refs.j_r.getPower());
@@ -191,18 +193,21 @@ SequentialSubspaceMinimizerNoise::operator()(
 				// t0=(Residual*(Residual-Delta)/(G*uNorm^DualPowerX))^(PowerX-1);
 				// see Remark b) on page 17
 				std::vector<double> t0(1, 0.);
-				tmin[0] = ::pow(beta/G,refs.J_p.getPower() - 1.);
+				tmin[0] = uNorm * ::pow(beta/G,refs.J_p.getPower() - 1.);
 				BOOST_LOG_TRIVIAL(trace)
 					<< "Initial tmin[0] is " << t0[0];
 
 				std::vector<SpaceElement_ptr_t> ConstrainedSearchSpace(1);
-				ConstrainedSearchSpace[0] = istate.getSearchSpace()[index];
+				ConstrainedSearchSpace[0] =
+						ScaleFactor * istate.getSearchSpace()[index];
 				std::vector<double> steps(1);
-				steps[0] = istate.getAlphas()[index]+d[index];
+				steps[0] = ScaleFactor*(istate.getAlphas()[index]+d[index]);
 
 				const unsigned int inner_iterations =
 						calculateStepWidth(refs, dual_solution, tmin,
 								ConstrainedSearchSpace, steps);
+
+				tmin[0] *= ScaleFactor;
 			}
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 			// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
@@ -232,19 +237,44 @@ SequentialSubspaceMinimizerNoise::operator()(
 			std::vector<double> steps(N);
 			steps[index] = istate.getAlphas()[index]+d[index];
 			steps[lastIndex] = istate.getAlphas()[lastIndex];
-			if ((Resold > steps[lastIndex]+d[lastIndex]+BASSOTOLERANCE)
-					|| (Resold < steps[lastIndex]-d[lastIndex]-BASSOTOLERANCE)) {
-				if (Resold > steps[lastIndex]+d[lastIndex]+BASSOTOLERANCE) {
+			BOOST_LOG_TRIVIAL(debug)
+				<< "On intersection? "
+				<< Resold << " in ["
+				<< steps[lastIndex]-d[lastIndex]
+				<< ","
+				<< steps[lastIndex]+d[lastIndex]<< "]?";
+			// numerically stabler: first subtract hyperplane offset
+			const double planeOffset = Resold - steps[lastIndex];
+			if (fabs(planeOffset) > d[lastIndex]) {
+				if (planeOffset > d[lastIndex]) {
 					steps[lastIndex] = steps[lastIndex]+d[lastIndex];
 				} else {
 					steps[lastIndex] = steps[lastIndex]-d[lastIndex];
 				}
 
-				// only update a second time if we are not in intersection already
-				std::vector<double> tmin(2, 0.);
+				// rescale noisy offset
+				std::transform(
+						steps.begin(), steps.end(),
+						steps.begin(),
+						std::bind2nd(std::multiplies<double>(), ScaleFactor));
+
+
+				// scale search space such that current dir has norm 1
+				std::vector<SpaceElement_ptr_t> ScaledSearchSpace(N, SpaceElement_ptr_t());
+				for (size_t i=0;i<N;++i)
+					ScaledSearchSpace[i] = ScaleFactor * istate.getSearchSpace()[i];
+
+				std::vector<double> tmin(N, 0.);
 				const unsigned int inner_iterations =
 						calculateStepWidth(refs, dual_solution, tmin,
-								istate.getSearchSpace(), steps);
+								ScaledSearchSpace, steps);
+
+				// scale tmin back
+				std::transform(
+						tmin.begin(), tmin.end(),
+						tmin.begin(),
+						std::bind2nd(std::multiplies<double>(), ScaleFactor));
+
 				stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 
 				/// update iterate
