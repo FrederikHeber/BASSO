@@ -83,7 +83,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	// make sure we have two search directions
 	// TODO: Remove this when scheme allows for any number of search directions
-	assert ( N == 2);
+	assert ( N <= 2);
 
 	// gather some refs for convenient access
 	QuickAccessReferences refs(_problem);
@@ -221,7 +221,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					<< "Encountered illegal number in line search minimum, not updating.";
 		}
 
-		if (istate.NumberOuterIterations > 0) {
+		if ((istate.NumberOuterIterations > 0) && (N == 2)) {
 			/// 2nd update onto intersection of hyperspaces
 			// find "old" index (one before current index)
 			const std::vector<unsigned int> &lastIndices = istate.searchspace->getLastIndices();
