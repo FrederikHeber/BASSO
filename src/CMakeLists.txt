@@ -9,7 +9,6 @@ target_link_libraries ( Basso
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 
-
 # add the install targets
 install (TARGETS Basso DESTINATION bin)
 
