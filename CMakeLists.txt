@@ -127,6 +127,10 @@ include_directories ("${PROJECT_SOURCE_DIR}/MatrixIO")
 add_subdirectory (src/MatrixIO)
 # is header only
 
+# add the SolutionFactory folder
+add_subdirectory (src/SolutionFactory)
+set (EXTRA_LIBS ${EXTRA_LIBS} SolutionFactory)
+
 # add the Minimizations library
 include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
 add_subdirectory (src/Minimizations)
