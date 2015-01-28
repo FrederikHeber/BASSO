@@ -169,6 +169,56 @@ Table::Tuple_t SequentialSubspaceMinimizer::addInfoToAnglesTable(
 	return angle_tuple;
 }
 
+bool SequentialSubspaceMinimizer::isNonConverging(
+		const double current_residuum,
+		const double initial_residuum) const
+{
+	static const double threshold_factor = 1e4;
+	/// check for non-convergence
+	if (current_residuum/initial_residuum >= threshold_factor) {
+		BOOST_LOG_TRIVIAL(info)<< "Current residuum is "
+		<< current_residuum
+		<< " exceeding initial value of 1. by "
+		<< current_residuum/initial_residuum;
+		BOOST_LOG_TRIVIAL(error)
+		<< "STOPPING ITERATION";
+		return true;
+	} else
+		return false;
+}
+
+void SequentialSubspaceMinimizer::fillPerIterationTable(
+		Table::Tuple_t& per_iteration_tuple,
+		Table& per_iteration_table)
+{
+	// create a sequence of entries in Database till MaxOuterIterations
+	for (;istate.NumberOuterIterations < MaxOuterIterations;
+			++istate.NumberOuterIterations) {
+		// update iterations in tuple
+		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+
+		// submit current tuples
+		per_iteration_table.addTuple(per_iteration_tuple);
+	}
+}
+
+void SequentialSubspaceMinimizer::fillAngleTable(
+		Table::Tuple_t& angle_tuple,
+		Table& angle_table)
+{
+	// create a sequence of entries in Database till MaxOuterIterations
+	for (;istate.NumberOuterIterations < MaxOuterIterations;
+			++istate.NumberOuterIterations) {
+		// update iterations in tuple
+		if (DoCalculateAngles)
+		angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+
+		// submit current tuples
+		if (DoCalculateAngles)
+			angle_table.addTuple(angle_tuple);
+	}
+}
+
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -439,29 +489,11 @@ SequentialSubspaceMinimizer::operator()(
 				|| CheckResiduum(current_relative_residuum)
 				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
 
-		// check for non-convergence
-		if (current_relative_residuum >= 1e4) {
-			BOOST_LOG_TRIVIAL(info)
-					<< "Current relative residuum is "
-					<< current_relative_residuum
-					<< " exceeding initial value of 1. by "
-					<< current_relative_residuum/initial_relative_residuum;
-			BOOST_LOG_TRIVIAL(error)
-					<< "STOPPING ITERATION";
-
-			// create a sequence of entries in Database till MaxOuterIterations
-			for (;istate.NumberOuterIterations < MaxOuterIterations;
-					++istate.NumberOuterIterations) {
-				// update iterations in tuple
-				per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-				if (DoCalculateAngles)
-					angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-
-				// submit current tuples
-				per_iteration_table.addTuple(per_iteration_tuple);
-				if (DoCalculateAngles)
-					angle_table.addTuple(angle_tuple);
-			}
+		/// check for non-convergence
+		if (isNonConverging(current_relative_residuum,
+				initial_relative_residuum)) {
+			fillPerIterationTable(per_iteration_tuple, per_iteration_table);
+			fillAngleTable(angle_tuple,angle_table);
 		}
 
 		// print intermediate solution

@@ -118,6 +118,28 @@ protected:
 	Table::Tuple_t addInfoToAnglesTable(
 			const QuickAccessReferences &_refs) const;
 
+	/** Checks whether we exceed \a initial_residuum by a certain
+	 * factor and signals for stopping the iteration.
+	 *
+	 * \note Whether absolute or relative residuum is measured depends
+	 * solely on the values given.
+	 *
+	 * @param current_residuum current residuum
+	 * @param initial_residuum initial residuum
+	 * @return true - stop iteration, false - continue
+	 */
+	bool isNonConverging(
+			const double current_residuum,
+			const double initial_residuum) const;
+
+	void fillPerIterationTable(
+			Table::Tuple_t& per_iteration_tuple,
+			Table& per_iteration_table);
+
+	void fillAngleTable(
+			Table::Tuple_t& angle_tuple,
+			Table& angle_table);
+
 protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all
