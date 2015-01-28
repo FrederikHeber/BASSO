@@ -7,8 +7,8 @@ add_test (Basso_Landweber_StraightLine1
 		--delta 0.0001 
 		--C 1 
 		--maxiter 50 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/vector.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/matrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/vector.m)
 set_tests_properties (Basso_Landweber_StraightLine1
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution .* is 8.0.*e-01 4.0.*e-01")
 
@@ -21,8 +21,8 @@ add_test (Basso_Landweber_StraightLine2
 		--delta 0.01 
 		--C 6 
 		--maxiter 50 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/vector.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/matrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/vector.m)
 set_tests_properties (Basso_Landweber_StraightLine2
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution .* is 7.1.*e-01 5.6.*e-01")
 
@@ -35,8 +35,8 @@ add_test (Basso_Landweber_StraightLine3
 		--delta 0.0001 
 		--C 2 
 		--maxiter 50 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/vector.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/matrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/vector.m)
 set_tests_properties (Basso_Landweber_StraightLine3
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution .* is 8.8.*e-01 2.2.*e-01")
 
@@ -51,7 +51,7 @@ add_test (Basso_Landweber_RandomMatrix
 		--delta 0.01 
 		--C 1 
 		--maxiter 100 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Landweber/pre/randomvector.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/pre/randomvector.m)
 set_tests_properties (Basso_Landweber_RandomMatrix
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 100 with relative residual of 0.87.*")

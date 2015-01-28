@@ -5,8 +5,8 @@ add_test (BassoSimple
 		--normy 2 
 		--powery 2 
 		--delta 0.01 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/simple/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/simple/pre/vector.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/matrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
 set_tests_properties (BassoSimple
 	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of X.*2")
 set_tests_properties (BassoSimple

@@ -10,9 +10,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r2_regularized
 		--tau 1.1
 		--delta 0.1496300733072937
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 23 with relative residual of 0.082.*")
 
@@ -28,9 +28,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r11_regularized
 		--tau 1.1
 		--delta 0.02967849813273046
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 30 with relative residual of 0.074.*")
 
@@ -46,9 +46,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_rinf_regularized
 		--tau 1.1
 		--delta 0.02495206594467164
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 21 with relative residual of 0.074.*")
 	
@@ -64,9 +64,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r2_regularized
 		--tau 1.1
 		--delta 0.1496300733072937
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 29 with relative residual of 0.082.*")
 
@@ -82,9 +82,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r11_regularized
 		--tau 1.1
 		--delta 0.02967849813273046
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 50 with relative residual of 0.074.*")
 
@@ -100,9 +100,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_rinf_regularized
 		--tau 1.1
 		--delta 0.02495206594467164
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noisy/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf_regularized
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 59 with relative residual of 0.077.*")
 

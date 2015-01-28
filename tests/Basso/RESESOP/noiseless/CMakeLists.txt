@@ -10,9 +10,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r2
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 42 with relative residual of 0.013.*")
 
@@ -28,9 +28,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r11
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 17 with relative residual of 0.05.*")
 
@@ -46,9 +46,9 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_rinf
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 20 with relative residual of 0.072.*")
 
@@ -64,9 +64,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r2
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 100 with relative residual of 0.013.*")
 
@@ -82,9 +82,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r11
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 56 with relative residual of 0.056.*")
 
@@ -100,9 +100,9 @@ add_test (Basso_RESESOP_RandomMatrix_p2_rinf
 		--tau 1.1
 		--delta 0.025
 		--maxiter 500 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/randomvector.m
-		--compare-against ${PROJECT_SOURCE_DIR}/tests/RESESOP/noiseless/pre/solution.m)
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randommatrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/randomvector.m
+		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/pre/solution.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 44 with relative residual of 0.076.*")
 
