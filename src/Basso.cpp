@@ -2,17 +2,17 @@
 #include "BassoConfig.h"
 
 // A simple program that computes the square root of a number
+#include <Eigen/Dense>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <string>
 #include <vector>
 
 #include <boost/assign.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/fusion/algorithm/iteration/for_each.hpp>
-#include <boost/fusion/include/for_each.hpp>
+//#include <boost/filesystem/path.hpp>
+//#include <boost/fusion/algorithm/iteration/for_each.hpp>
+//#include <boost/fusion/include/for_each.hpp>
 #include <boost/mpl/for_each.hpp>
 
 #include "CommandLineOptions/BassoOptions.hpp"
@@ -31,16 +31,14 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
-#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
-#include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
+//#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+//#include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
-#include "Minimizations/Norms/Norm.hpp"
-#include "Minimizations/Norms/NormFactory.hpp"
+//#include "Minimizations/Norms/Norm.hpp"
+//#include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
-
-namespace po = boost::program_options;
 
 using namespace boost::assign;
 
