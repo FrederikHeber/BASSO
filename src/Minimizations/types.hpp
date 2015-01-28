@@ -12,6 +12,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+class Database;
 class DetermineStepWidth;
 class InverseProblem;
 class Mapping;
@@ -20,6 +21,7 @@ class NormedSpace;
 class PowerTypeDualityMapping;
 class SpaceElement;
 
+typedef boost::shared_ptr<Database> Database_ptr_t;
 typedef boost::shared_ptr<DetermineStepWidth> DetermineStepWidth_ptr_t;
 typedef boost::shared_ptr<InverseProblem> InverseProblem_ptr_t;
 typedef boost::shared_ptr<Mapping> Mapping_ptr_t;

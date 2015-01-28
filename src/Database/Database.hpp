@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/shared_ptr.hpp>
 #include <boost/variant.hpp>
 #include <map>
 #include <string>
@@ -26,6 +27,9 @@ class Table;
 class Database
 {
 public:
+	//!> typedef for wrapping Database instance in shared_ptr
+	typedef boost::shared_ptr<Database> Database_ptr_t;
+
 	typedef boost::variant<int, double, std::string > typevariant_t;
 
 	enum types_t
