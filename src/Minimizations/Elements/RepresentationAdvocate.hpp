@@ -36,6 +36,7 @@ private:
 	friend class LInfinityDualityMapping;
 	friend class SoftThresholdingMapping;
 	friend struct SpaceElementWriter;
+	template <class vector_type> friend struct VectorSetter;
 
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)
