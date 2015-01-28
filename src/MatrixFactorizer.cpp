@@ -6,9 +6,14 @@
 #include <string>
 
 #include "CommandLineOptions/MatrixFactorizerOptions.hpp"
+#include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
-
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/MinimizerFactory.hpp"
+#include "SolutionFactory/SolutionFactory.hpp"
 
 int main(int argc, char **argv)
 {
@@ -31,8 +36,6 @@ int main(int argc, char **argv)
 
 	/// parse the matrices
 	Eigen::MatrixXd data;
-	Eigen::MatrixXd spectral_matrix;
-	Eigen::MatrixXd picture_matrix;
 	{
 		using namespace MatrixIO;
 
@@ -63,9 +66,77 @@ int main(int argc, char **argv)
 					<< data << "." << std::endl;
 	}
 
-	/// loop over pixel and channel dimensions
+	// create Database
+	Database database;
+	if (!opts.iteration_file.string().empty())
+		database.setDatabaseFile(opts.iteration_file.string());
+	database.setReplacePresentParameterTuples(opts.database_replace);
 
-	// construct and solve (approximately) inverse problem
+	// create Minimizer
+	MinimizerFactory factory;
+
+	/// construct solution starting points
+	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
+	Eigen::MatrixXd pixel_matrix(opts.sparse_dim, data.cols());
+
+	/// loop over pixel dimensions
+	for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
+			++pixel_dim) {
+		/// construct and solve (approximately) inverse problem
+
+		// prepare inverse problem
+		InverseProblem_ptr_t inverseproblem =
+				SolutionFactory::createInverseProblem(
+						opts, spectral_matrix, data.col(pixel_dim));
+		Database_ptr_t database =
+				SolutionFactory::createDatabase(opts);
+		MinimizerFactory::instance_ptr_t minimizer =
+				SolutionFactory::createMinimizer(
+						opts, inverseproblem, database, opts.inner_iterations);
+		if (minimizer == NULL) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Minimizer could not be constructed, exiting.";
+			return 255;
+		}
+
+		// empty true solution
+		SpaceElement_ptr_t truesolution =
+				inverseproblem->x->getSpace()->createElement();
+
+		// prepare start value and dual solution
+		SpaceElement_ptr_t x0 =
+				inverseproblem->x->getSpace()->createElement();
+		x0->setZero();
+		if (x0->getSpace()->getDimension() < 10)
+			std::cout << "Starting at x0 = " << x0 << std::endl;
+		SpaceElement_ptr_t dualx0 =
+				(opts.dualitytype == CommandLineOptions::defaulttype) ?
+				(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
+				inverseproblem->x->getSpace()->getDualSpace()->createElement();
+
+		// and minimize
+		GeneralMinimizer::ReturnValues result;
+		try{
+			result = (*minimizer)(
+							inverseproblem,
+							x0,
+							dualx0,
+							truesolution);
+			minimizer->resetState();
+		} catch (MinimizationIllegalValue_exception &e) {
+			std::cerr << "Illegal value for "
+					<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
+					<< std::endl;
+			return 255;
+		}
+	}
+
+	/// loop over channel dimensions
+	for (unsigned int spectral_dim = 0; spectral_dim < data.rows();
+			++spectral_dim) {
+		// construct and solve (approximately) inverse problem
+	}
+
 
 	/// output solution
 
