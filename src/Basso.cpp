@@ -10,9 +10,6 @@
 #include <vector>
 
 #include <boost/assign.hpp>
-//#include <boost/filesystem/path.hpp>
-//#include <boost/fusion/algorithm/iteration/for_each.hpp>
-//#include <boost/fusion/include/for_each.hpp>
 #include <boost/mpl/for_each.hpp>
 
 #include "CommandLineOptions/BassoOptions.hpp"
@@ -23,22 +20,14 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/SpaceElementWriter.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
-#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
-#include "Minimizations/Minimizers/LandweberMinimizer.hpp"
-#include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
-#include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
-//#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
-//#include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
-#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
-//#include "Minimizations/Norms/Norm.hpp"
-//#include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
+#include "SolutionFactory/SolutionFactory.hpp"
 
 using namespace boost::assign;
 
@@ -154,28 +143,9 @@ int main (int argc, char *argv[])
 	}
 
 	// prepare inverse problem
-	InverseProblem_ptr_t inverseproblem;
-	switch (opts.dualitytype) {
-	case CommandLineOptions::regularizedl1norm:
-		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
-				opts.regularization_parameter,
-				opts.powerx,
-				opts.normy,
-				opts.powery,
-				matrix,
-				rhs);
-		break;
-	case CommandLineOptions::defaulttype:
-	default:
-		inverseproblem = InverseProblemFactory::createLpInstance(
-				opts.normx,
-				opts.powerx,
-				opts.normy,
-				opts.powery,
-				matrix,
-				rhs);
-		break;
-	}
+	InverseProblem_ptr_t inverseproblem =
+			SolutionFactory::createInverseProblem(
+					opts, matrix, rhs);
 
 	// prepare true solution
 	SpaceElement_ptr_t truesolution =
@@ -183,89 +153,36 @@ int main (int argc, char *argv[])
 					inverseproblem->x->getSpace(),
 					solution);
 
-	// prepare start value
+	// create database
+	Database_ptr_t database =
+			SolutionFactory::createDatabase(opts);
+
+	// create minimizer
+	MinimizerFactory::instance_ptr_t minimizer =
+			SolutionFactory::createMinimizer(
+					opts, inverseproblem, database, opts.maxiter);
+	if (minimizer == NULL) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Minimizer could not be constructed, exiting.";
+		return 255;
+	}
+	minimizer->MaxWalltime =
+			static_cast<boost::chrono::duration<double> >(opts.maxwalltime);
+
+	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
 	x0->setZero();
 	if (x0->getSpace()->getDimension() < 10)
 		std::cout << "Starting at x0 = " << x0 << std::endl;
-
-	// set good maximum of inner iterations
-	if (opts.maxinneriter == 0)
-		opts.maxinneriter = opts.N*100;
-
-	// call minimizer
-	MinimizerFactory factory;
-	Database database;
-	if (!opts.iteration_file.string().empty())
-		database.setDatabaseFile(opts.iteration_file.string());
-	database.setReplacePresentParameterTuples(opts.database_replace);
-	MinimizerFactory::instance_ptr_t minimizer;
-	// set regularization parameter in case of regularizedl1norm
-	minimizer =
-		factory.createInstance(
-				opts.type,
-			inverseproblem,
-			opts.delta,
-			opts.maxiter,
-			opts.maxinneriter,
-			database,
-			(const enum DetermineStepWidthFactory::stepwidth_enumeration)opts.stepwidth_type,
-			opts.outputsteps);
-	minimizer->MaxWalltime =
-			static_cast<boost::chrono::duration<double> >(opts.maxwalltime);
-	minimizer->setMinLib(opts.minlib);
-
-	// calculate initial dual solution
 	SpaceElement_ptr_t dualx0 =
 			(opts.dualitytype == CommandLineOptions::defaulttype) ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
 			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 
+	// and minimize
 	GeneralMinimizer::ReturnValues result;
-	try {
-		// create instance with some specifics
-		switch(opts.type) {
-		case MinimizerFactory::landweber:
-			static_cast<LandweberMinimizer*>(
-					minimizer.get())->setC(opts.C);
-			break;
-		case MinimizerFactory::sequentialsubspace:
-			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setN(opts.N);
-			static_cast<SequentialSubspaceMinimizer*>(
-					minimizer.get())->setupdateIndexAlgorithm(
-							opts.updatetype);
-			static_cast<SequentialSubspaceMinimizer*>(
-					minimizer.get())->setEnforceRandomMapping(
-							opts.enforceRandomMapping);
-			static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setInexactLinesearch(
-					opts.inexactLinesearch);
-			if (opts.wolfe_constants.size() == 2) {
-				static_cast<SequentialSubspaceMinimizer*>(minimizer.get())->setWolfeConstants(
-						opts.wolfe_constants);
-				// warning in case sanity check fails
-				if (!opts.inexactLinesearch)
-					BOOST_LOG_TRIVIAL(warning)
-						<< "Wolfe constants set although we do perform an exact line search.";
-			}
-			static_cast<SequentialSubspaceMinimizer*>(
-					minimizer.get())->setDoCalculateAngles(
-							opts.calculateAngles);
-			break;
-		case MinimizerFactory::sequentialsubspace_noise:
-			static_cast<SequentialSubspaceMinimizerNoise*>(
-					minimizer.get())->setTau(opts.tau);
-			static_cast<SequentialSubspaceMinimizerNoise*>(
-					minimizer.get())->setN(opts.N);
-			break;
-		default:
-			std::cerr << "Unknown InstanceType"
-				<< MinimizerFactory::getNameForType(opts.type) << "." << std::endl;
-			return 255;
-			break;
-		}
-
-		// and minimize
+	try{
 		result = (*minimizer)(
 						inverseproblem,
 						x0,
