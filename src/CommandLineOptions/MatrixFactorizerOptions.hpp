@@ -46,6 +46,7 @@ public:
 	unsigned int max_loops;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
+	boost::filesystem::path solution_product_file;
 	unsigned int sparse_dim;
 };
 

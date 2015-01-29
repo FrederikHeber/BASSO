@@ -30,6 +30,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the maximum number of iterations spent on either matrix factor before switching")
 			("max-loops", po::value<unsigned int>(),
 					"set the maximum number of loops iterating over each factor")
+			("solution-product", po::value< boost::filesystem::path >(),
+					"set the file name to write the product of the two solution factors to")
 			("solution-first-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the first matrix factor")
 			("solution-second-factor", po::value< boost::filesystem::path >(),
@@ -56,6 +58,12 @@ void MatrixFactorizerOptions::internal_parse()
 		max_loops = vm["max-loops"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Performing " << max_loops << " loop iterations over the two factors.";
+	}
+
+	if (vm.count("solution-product")) {
+		solution_product_file = vm["solution-product"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Solution product file name is " << solution_product_file.string();
 	}
 
 	if (vm.count("solution-first-factor")) {

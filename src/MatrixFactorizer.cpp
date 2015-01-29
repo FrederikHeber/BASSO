@@ -226,17 +226,71 @@ int main(int argc, char **argv)
 			<< " exceeded, stopping iteration.";
 
 	/// output solution
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Resulting first factor is " << spectral_matrix;
-	BOOST_LOG_TRIVIAL(debug)
+	{
+		using namespace MatrixIO;
+		if (!opts.solution_factor_one_file.string().empty()) {
+			std::ofstream ost(opts.solution_factor_one_file.string().c_str());
+			if (ost.good())
+				try {
+					ost << spectral_matrix;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write first solution factor to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.solution_factor_one_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No first solution factor file name given." << std::endl;
+		}
+
+		if (!opts.solution_factor_two_file.string().empty()) {
+			std::ofstream ost(opts.solution_factor_two_file.string().c_str());
+			if (ost.good())
+				try {
+					ost << pixel_matrix;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write second solution factor to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.solution_factor_two_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No second solution factor file name given." << std::endl;
+		}
+
+		if (!opts.solution_product_file.string().empty()) {
+			std::ofstream ost(opts.solution_product_file.string().c_str());
+			if (ost.good())
+				try {
+					ost << spectral_matrix * pixel_matrix;
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write solution product to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.solution_product_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No solution product file name given." << std::endl;
+		}
+
+	}
+	BOOST_LOG_TRIVIAL(info)
+		<< "Resulting first factor transposed is " << spectral_matrix.transpose();
+	BOOST_LOG_TRIVIAL(info)
 		<< "Resulting second factor is " << pixel_matrix;
+
 	const Eigen::MatrixXd difference_matrix =
 			data - spectral_matrix * pixel_matrix;
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Data matrix was " << data;
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Difference matrix is " << difference_matrix;
-	BOOST_LOG_TRIVIAL(debug)
+	if ((data.innerSize() <= 10) && (data.outerSize() <= 10)) {
+		BOOST_LOG_TRIVIAL(info)
+			<< "Data matrix was " << data;
+		BOOST_LOG_TRIVIAL(info)
+			<< "Difference matrix is " << difference_matrix;
+	}
+	BOOST_LOG_TRIVIAL(info)
 		<< "Norm of difference is " << difference_matrix.norm();
 
 	/// exit
