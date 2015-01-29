@@ -37,7 +37,7 @@ inline std::ostream & operator<<(std::ostream &ost, const Eigen::MatrixXd &m)
 		Eigen::MatrixXd::Index row = 0;
 		for (; (row < rows) && ost.good(); ++row ) {
 			Eigen::MatrixXd::Index col = 0;
-			for (; (col < cols) && ost.good(); ++row )
+			for (; (col < cols) && ost.good(); ++col )
 				ost << m(row, col) << " ";
 			ost << std::endl;
 			if (col != cols)
