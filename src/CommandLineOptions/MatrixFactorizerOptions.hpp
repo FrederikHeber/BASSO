@@ -43,6 +43,7 @@ private:
 public:
 	boost::filesystem::path data_file;
 	unsigned int inner_iterations;
+	unsigned int max_loops;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
 	unsigned int sparse_dim;

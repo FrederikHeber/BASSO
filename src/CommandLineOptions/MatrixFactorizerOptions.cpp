@@ -17,14 +17,19 @@
 namespace po = boost::program_options;
 
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
-		inner_iterations(10)
+		inner_iterations(10),
+		max_loops(100)
 {}
 
 void MatrixFactorizerOptions::internal_init()
 {
 	desc.add_options()
-			("data", po::value<boost::filesystem::path>(), "set the file name of the data matrix")
-			("inner-iterations", po::value<unsigned int>(), "set the maximum number of iterations spent on either matrix factor before switching")
+			("data", po::value<boost::filesystem::path>(),
+					"set the file name of the data matrix")
+			("inner-iterations", po::value<unsigned int>(),
+					"set the maximum number of iterations spent on either matrix factor before switching")
+			("max-loops", po::value<unsigned int>(),
+					"set the maximum number of loops iterating over each factor")
 			("solution-first-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the first matrix factor")
 			("solution-second-factor", po::value< boost::filesystem::path >(),
@@ -45,6 +50,12 @@ void MatrixFactorizerOptions::internal_parse()
 		inner_iterations = vm["inner-iterations"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Performing " << inner_iterations << " inner iterations per factor.";
+	}
+
+	if (vm.count("max-loops")) {
+		max_loops = vm["max-loops"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Performing " << max_loops << " loop iterations over the two factors.";
 	}
 
 	if (vm.count("solution-first-factor")) {

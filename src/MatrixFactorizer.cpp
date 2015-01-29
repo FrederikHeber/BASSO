@@ -137,8 +137,12 @@ int main(int argc, char **argv)
 	pixel_matrix.setZero();
 
 	/// iterate over the two factors
-	bool stop_condition = true;
-	while (stop_condition) {
+	unsigned int loop_nr = 0;
+	double residual = 0.;
+	bool stop_condition = loop_nr > opts.max_loops;
+	while (!stop_condition) {
+		// update loop count
+		++loop_nr;
 		/// loop over pixel dimensions
 		for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
 				++pixel_dim) {
@@ -166,6 +170,14 @@ int main(int argc, char **argv)
 //				<< pixel_matrix.col(pixel_dim).innerSize()
 //				<< "," << pixel_matrix.col(pixel_dim).outerSize();
 			pixel_matrix.col(pixel_dim) = result_vector;
+		}
+		// check criterion
+		{
+			const Eigen::MatrixXd difference_matrix =
+					data - spectral_matrix * pixel_matrix;
+			residual = difference_matrix.norm();
+			BOOST_LOG_TRIVIAL(info)
+				<< "#" << loop_nr << " 1/2, residual is " << residual;
 		}
 
 		/// loop over channel dimensions
@@ -198,8 +210,20 @@ int main(int argc, char **argv)
 		}
 
 		// check criterion
-		stop_condition = false;
+		{
+			const Eigen::MatrixXd difference_matrix =
+					data - spectral_matrix * pixel_matrix;
+			residual = difference_matrix.norm();
+			BOOST_LOG_TRIVIAL(info)
+				<< "#" << loop_nr << " 2/2, residual is " << residual;
+			stop_condition = (residual < opts.delta)
+					|| (loop_nr > opts.max_loops);
+		}
 	}
+	if (loop_nr > opts.max_loops)
+		BOOST_LOG_TRIVIAL(error)
+			<< "Maximum number of loops " << opts.max_loops
+			<< " exceeded, stopping iteration.";
 
 	/// output solution
 	BOOST_LOG_TRIVIAL(debug)
