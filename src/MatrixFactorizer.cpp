@@ -129,6 +129,15 @@ int main(int argc, char **argv)
 	// create Database
 	Database_ptr_t database =
 			SolutionFactory::createDatabase(opts);
+	Table& loop_table = database->addTable("loop");
+	Table::Tuple_t loop_tuple;
+	loop_tuple.insert( std::make_pair("k", (int)data.innerSize()), Table::Parameter);
+	loop_tuple.insert( std::make_pair("n", (int)data.outerSize()), Table::Parameter);
+	loop_tuple.insert( std::make_pair("p", opts.normx), Table::Parameter);
+	loop_tuple.insert( std::make_pair("r", opts.normy), Table::Parameter);
+	loop_tuple.insert( std::make_pair("sparse_dim", (int)opts.sparse_dim), Table::Parameter);
+	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
+	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
@@ -150,6 +159,8 @@ int main(int argc, char **argv)
 	while (!stop_condition) {
 		// update loop count
 		++loop_nr;
+		loop_tuple.replace("loop_nr", (int)loop_nr);
+
 		/// loop over pixel dimensions
 		for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
 				++pixel_dim) {
@@ -217,9 +228,13 @@ int main(int argc, char **argv)
 			residual = difference_matrix.norm();
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
+			loop_tuple.replace("residual", residual);
 			stop_condition = (residual < opts.delta)
 					|| (loop_nr > opts.max_loops);
 		}
+
+		// submit loop tuple
+		loop_table.addTuple(loop_tuple);
 	}
 	if (loop_nr > opts.max_loops)
 		BOOST_LOG_TRIVIAL(error)
