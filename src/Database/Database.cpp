@@ -26,7 +26,7 @@ using namespace boost::assign;
 std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
 
 
-#define BASSO_MAXKEYS 16
+#define BASSO_MAXKEYS 18
 
 Database::Database() :
 		DatabaseFileGiven(false),
