@@ -136,6 +136,13 @@ int main(int argc, char **argv)
 	loop_tuple.insert( std::make_pair("p", opts.normx), Table::Parameter);
 	loop_tuple.insert( std::make_pair("r", opts.normy), Table::Parameter);
 	loop_tuple.insert( std::make_pair("sparse_dim", (int)opts.sparse_dim), Table::Parameter);
+	for (std::vector<std::string>::const_iterator iter = opts.tuple_parameters.begin();
+			iter != opts.tuple_parameters.end(); iter+=2) {
+		BOOST_LOG_TRIVIAL(debug)
+				<< " Adding additional parameter ("
+				<< *iter << "," << *(iter+1) << ") to loop tuple.";
+		loop_tuple.insert( std::make_pair(*iter, *(iter+1)), Table::Parameter);
+	}
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 
