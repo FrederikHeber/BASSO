@@ -10,6 +10,7 @@
 #include "CommandLineOptions.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
@@ -85,10 +86,12 @@ void CommandLineOptions::init()
 	        		"set the power type of the duality mapping's weight of the space Y")
 	        ("regularization-parameter", po::value<double>(),
 	        		"set the regularization parameter for the L1 norm (if normx is 1) (adaptive if set to zero)")
-			("searchspace", po::value<std::string>(),
+			("searchspace", po::value< std::string >(),
 					"set the type of search directions used (SSO")
 			("stepwidth-algorithm", po::value<unsigned int>(),
 					"set which step width algorithm to use (Landweber)")
+			("tuple-parameters", po::value< std::vector<std::string> >()->multitoken(),
+					"set additional parameters to add to tables in iteration database for distinguishing tuples")
 			("tau", po::value<double>(),
 					"set the value for tau (SSO)")
 			("update-algorithm", po::value<unsigned int>(),
@@ -257,6 +260,15 @@ void CommandLineOptions::parse(int argc, char **argv)
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau was set to " << tau;
+	}
+
+	if (vm.count("tuple-parameters")) {
+		tuple_parameters = vm["tuple-parameters"].as< std::vector<std::string> >();
+		std::stringstream output;
+		std::copy(tuple_parameters.begin(), tuple_parameters.end(),
+				std::ostream_iterator<std::string>(output, ","));
+		BOOST_LOG_TRIVIAL(debug)
+			<< "tuple parameters was set to " << output.str();
 	}
 
 	if (vm.count("update-algorithm")) {

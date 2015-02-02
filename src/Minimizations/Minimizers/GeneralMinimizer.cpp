@@ -15,6 +15,7 @@
 #include <boost/assign.hpp>
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -33,6 +34,7 @@ using namespace boost::assign;
 
 // static entities
 GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
+const std::vector<std::string> GeneralMinimizer::tuple_params;
 
 GeneralMinimizer::GeneralMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -253,6 +255,12 @@ Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
 	per_iteration_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
+	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
+			iter != tuple_params.end(); ) {
+		const std::string &token = *iter++;
+		const std::string &value = *iter++;
+		per_iteration_tuple.insert( std::make_pair(token, value), Table::Parameter);
+	}
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("residual", 0.), Table::Data);
@@ -276,6 +284,12 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 	overall_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	overall_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
 	overall_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
+	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
+			iter != tuple_params.end(); ) {
+		const std::string &token = *iter++;
+		const std::string &value = *iter++;
+		overall_tuple.insert( std::make_pair(token, value), Table::Parameter);
+	}
 	overall_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
@@ -324,3 +338,9 @@ void GeneralMinimizer::finalizeOverallTuple(
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 }
 
+void GeneralMinimizer::setAdditionalTupleParameters(
+			const std::vector<std::string> &_tuple_params)
+{
+	assert ( _tuple_params.size() % 2 == 0);
+	const_cast< std::vector<std::string> &>(tuple_params) = _tuple_params;
+}

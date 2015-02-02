@@ -90,6 +90,13 @@ static Table::Tuple_t prepareAngleTuple(
 	angle_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	angle_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	angle_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
+	for (std::vector<std::string>::const_iterator iter
+			= GeneralMinimizer::tuple_params.begin();
+			iter != GeneralMinimizer::tuple_params.end(); ++iter) {
+		const std::string &token = *iter++;
+		const std::string &value = *iter++;
+		angle_tuple.insert( std::make_pair(token, value), Table::Parameter);
+	}
 	angle_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	std::vector<std::string> names;
 	names += "angle","bregman_angle";

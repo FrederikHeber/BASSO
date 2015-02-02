@@ -139,6 +139,13 @@ public:
 	 */
 	void setMinLib(const std::string &_name);
 
+	/** Sets the vector with additional parameters to make tuples unique in database.
+	 *
+	 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
+	 */
+	static void setAdditionalTupleParameters(
+			const std::vector<std::string> &_tuple_params);
+
 	/** Checks whether \a _name represents a valid name for a
 	 * minimization library.
 	 *
@@ -217,6 +224,8 @@ public:
 	const double TolFun;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
+	//!> additional parameter, value pairs that are added to each submitted tuple
+	static const std::vector<std::string> tuple_params;
 
 	//!> enumeration of all available minimization libraries (for line search)
 	enum MinimizationLibraries {

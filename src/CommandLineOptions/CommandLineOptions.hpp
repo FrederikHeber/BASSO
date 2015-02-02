@@ -132,6 +132,7 @@ public:
 	std::string searchspace_type;
 	unsigned int stepwidth_type;
 	double tau;
+	std::vector<std::string> tuple_parameters;
 	enum LastNSearchDirections::UpdateAlgorithmType updatetype;
 	std::vector<double> wolfe_constants;
 
