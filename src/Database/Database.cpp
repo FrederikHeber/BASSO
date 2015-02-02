@@ -213,7 +213,8 @@ bool Database::writeSQLitefile()
 			/// finally, we write all information to the table
 		} else {
 			BOOST_LOG_TRIVIAL(warning)
-					<< "The database is empty, not writing iteration-file.";
+					<< "The table " << tableiter->first
+					<< " is empty, not writing to iteration-file.";
 		}
 	}
 
