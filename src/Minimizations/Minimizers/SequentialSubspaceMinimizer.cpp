@@ -511,9 +511,6 @@ SequentialSubspaceMinimizer::operator()(
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	std::cout << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< "." << std::endl;
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );

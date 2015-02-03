@@ -85,6 +85,10 @@ void removeSmallTables(Database_ptr_t &_database)
 
 int main(int argc, char **argv)
 {
+	/// starting timing
+	boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	/// some required parameters
 	MatrixFactorizerOptions opts;
 	opts.init();
@@ -330,6 +334,12 @@ int main(int argc, char **argv)
 	}
 	BOOST_LOG_TRIVIAL(info)
 		<< "Norm of difference is " << (data - product_matrix).norm();
+
+	boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	BOOST_LOG_TRIVIAL(info) << "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start)
+			<< ".";
 
 	/// exit
 	return 0;

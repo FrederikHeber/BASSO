@@ -52,6 +52,10 @@ private:
 
 int main (int argc, char *argv[])
 {
+	// starting timing
+	boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+
 	BassoOptions opts;
 	opts.init();
 
@@ -291,6 +295,12 @@ int main (int argc, char *argv[])
 			std::cout << "No image of solution file given." << std::endl;
 		}
 	}
+
+	boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	BOOST_LOG_TRIVIAL(info) << "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start)
+			<< ".";
 
 	// exit
 	return 0;
