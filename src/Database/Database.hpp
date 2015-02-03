@@ -53,6 +53,13 @@ public:
 	 */
 	Table& addTable(const std::string &_name);
 
+	/** Removes a table with name \a _name from this database.
+	 *
+	 * @param _name name of new table
+	 * @return true - table found and removed, false - else
+	 */
+	bool removeTable(const std::string &_name);
+
 	/** Getter for a table by its name \a _name.
 	 *
 	 * @param _name name of table

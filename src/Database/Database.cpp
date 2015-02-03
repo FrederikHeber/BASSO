@@ -232,6 +232,15 @@ Table& Database::addTable(const std::string &_name)
 	return iter->second;
 }
 
+bool Database::removeTable(const std::string &_name)
+{
+	tables_t::iterator iter = tables.find(_name);
+	const bool status = iter != tables.end();
+	if (status)
+		tables.erase(iter);
+	return status;
+}
+
 Table& Database::getTable(const std::string &_name)
 {
 	tables_t::iterator iter = tables.find(_name);

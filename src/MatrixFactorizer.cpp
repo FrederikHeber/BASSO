@@ -75,6 +75,14 @@ bool solveProblem(
 	return true;
 }
 
+void removeSmallTables(Database_ptr_t &_database)
+{
+	// remove tables
+	_database->removeTable("per_iteration");
+	_database->removeTable("overall");
+	_database->removeTable("angles");
+}
+
 int main(int argc, char **argv)
 {
 	/// some required parameters
@@ -180,6 +188,7 @@ int main(int argc, char **argv)
 					data.col(pixel_dim),
 					result))
 				return 255;
+			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
 
@@ -214,6 +223,7 @@ int main(int argc, char **argv)
 					data.row(spectral_dim).transpose(),
 					result))
 				return 255;
+			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
 
