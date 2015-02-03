@@ -178,7 +178,8 @@ int main (int argc, char *argv[])
 			inverseproblem->x->getSpace()->createElement();
 	x0->setZero();
 	if (x0->getSpace()->getDimension() < 10)
-		std::cout << "Starting at x0 = " << x0 << std::endl;
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Starting at x0 = " << x0;
 	SpaceElement_ptr_t dualx0 =
 			(opts.dualitytype == CommandLineOptions::defaulttype) ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
