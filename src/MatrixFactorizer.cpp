@@ -9,6 +9,7 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/VectorSetter.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
@@ -21,6 +22,7 @@ bool solveProblem(
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
+		const Eigen::VectorXd &_startingvalue,
 		GeneralMinimizer::ReturnValues &_result
 		)
 {
@@ -42,10 +44,10 @@ bool solveProblem(
 			inverseproblem->x->getSpace()->createElement();
 
 	// prepare start value and dual solution
-	SpaceElement_ptr_t x0 =
-			inverseproblem->x->getSpace()->createElement();
-	x0->setZero();
-	inverseproblem->x->setZero();
+	SpaceElement_ptr_t x0 = ElementCreator::create(
+			inverseproblem->x->getSpace(),
+			_startingvalue);
+	*inverseproblem->x = x0;
 	if (x0->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
@@ -190,11 +192,13 @@ int main(int argc, char **argv)
 					opts,
 					spectral_matrix,
 					data.col(pixel_dim),
+					pixel_matrix.col(pixel_dim),
 					result))
 				return 255;
 			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
+
 
 			Eigen::VectorXd result_vector(opts.sparse_dim, 1);
 			VectorSetter<Eigen::VectorXd>::set(
@@ -225,6 +229,7 @@ int main(int argc, char **argv)
 					opts,
 					pixel_matrix.transpose(),
 					data.row(spectral_dim).transpose(),
+					spectral_matrix.row(spectral_dim).transpose(),
 					result))
 				return 255;
 			removeSmallTables(database);
