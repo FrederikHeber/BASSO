@@ -118,11 +118,11 @@ int main(int argc, char **argv)
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Y=K*X with Y = "
+			<< "We solve for Y=K*X with Y =\n"
 			<< data << "." << std::endl;
 	} else {
 		BOOST_LOG_TRIVIAL(info)
-					<< "We solve for Y=K*X with Y = "
+					<< "We solve for Y=K*X with Y =\n"
 					<< data << "." << std::endl;
 	}
 
@@ -133,6 +133,13 @@ int main(int argc, char **argv)
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
 	spectral_matrix.setRandom();
+	if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+				<< "Initial spectral matrix is\n" << spectral_matrix;
+	} else {
+		BOOST_LOG_TRIVIAL(info)
+				<< "Initial spectral matrix is\n" << spectral_matrix;
+	}
 	Eigen::MatrixXd pixel_matrix(opts.sparse_dim, data.cols());
 	pixel_matrix.setZero();
 
@@ -148,15 +155,12 @@ int main(int argc, char **argv)
 				++pixel_dim) {
 			/// construct and solve (approximately) inverse problem
 			GeneralMinimizer::ReturnValues result;
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Spectral_matrix has dimensions "
-//				<< spectral_matrix.innerSize()
-//				<< "," << pixel_matrix.outerSize();
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Data column has dimensions "
-//				<< data.col(pixel_dim).transpose().innerSize()
-//				<< "," << data.col(pixel_dim).transpose().outerSize();
-			if (!solveProblem(database, opts, spectral_matrix, data.col(pixel_dim), result))
+			if (!solveProblem(
+					database,
+					opts,
+					spectral_matrix,
+					data.col(pixel_dim),
+					result))
 				return 255;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
@@ -185,15 +189,12 @@ int main(int argc, char **argv)
 				++spectral_dim) {
 			/// construct and solve (approximately) inverse problem
 			GeneralMinimizer::ReturnValues result;
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Pixel_matrix has dimensions "
-//				<< pixel_matrix.innerSize()
-//				<< "," << pixel_matrix.outerSize();
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Data row has dimensions "
-//				<< data.row(spectral_dim).transpose().innerSize()
-//				<< "," << data.row(spectral_dim).transpose().outerSize();
-			if (!solveProblem(database, opts, pixel_matrix.transpose(), data.row(spectral_dim).transpose(), result))
+			if (!solveProblem(
+					database,
+					opts,
+					pixel_matrix.transpose(),
+					data.row(spectral_dim).transpose(),
+					result))
 				return 255;
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
@@ -224,6 +225,10 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(error)
 			<< "Maximum number of loops " << opts.max_loops
 			<< " exceeded, stopping iteration.";
+	else
+		BOOST_LOG_TRIVIAL(info)
+			<< "Loop iteration performed " << loop_nr
+			<< " times.";
 
 	/// output solution
 	{
@@ -278,20 +283,21 @@ int main(int argc, char **argv)
 
 	}
 	BOOST_LOG_TRIVIAL(info)
-		<< "Resulting first factor transposed is " << spectral_matrix.transpose();
+		<< "Resulting first factor transposed is\n" << spectral_matrix.transpose();
 	BOOST_LOG_TRIVIAL(info)
-		<< "Resulting second factor is " << pixel_matrix;
+		<< "Resulting second factor is\n" << pixel_matrix;
 
-	const Eigen::MatrixXd difference_matrix =
-			data - spectral_matrix * pixel_matrix;
+	const Eigen::MatrixXd product_matrix = spectral_matrix * pixel_matrix;
 	if ((data.innerSize() <= 10) && (data.outerSize() <= 10)) {
 		BOOST_LOG_TRIVIAL(info)
-			<< "Data matrix was " << data;
+			<< "Data matrix was\n" << data;
 		BOOST_LOG_TRIVIAL(info)
-			<< "Difference matrix is " << difference_matrix;
+			<< "Product matrix is\n" << product_matrix;
+		BOOST_LOG_TRIVIAL(info)
+			<< "Difference matrix is\n" << data - product_matrix;
 	}
 	BOOST_LOG_TRIVIAL(info)
-		<< "Norm of difference is " << difference_matrix.norm();
+		<< "Norm of difference is " << (data - product_matrix).norm();
 
 	/// exit
 	return 0;

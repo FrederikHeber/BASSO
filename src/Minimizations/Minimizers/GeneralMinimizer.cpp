@@ -77,8 +77,12 @@ void GeneralMinimizer::SearchDirection::update(
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw;
 		u = _refs.A_t * Jw;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "newdir is " << u;
+		if (u->getSpace()->getDimension() > 10)
+			BOOST_LOG_TRIVIAL(trace)
+					<< "newdir is " << u;
+		else
+			BOOST_LOG_TRIVIAL(debug)
+					<< "newdir is " << u;
 }
 
 bool GeneralMinimizer::CheckWalltime(
