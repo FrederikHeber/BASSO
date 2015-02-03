@@ -60,6 +60,16 @@ Minimizer<gsl_vector>::checkGradient(
 	}
 }
 
+static void doWarnIterate()
+{
+	static bool repeating = false;
+	if (!repeating) {
+		BOOST_LOG_TRIVIAL(warning)
+			<< "gsl_multimin could not improve iterate anymore, not warning any longer.";
+		repeating = true;
+	}
+}
+
 const unsigned int
 Minimizer<gsl_vector>::minimize(
 		const double _Tol,
@@ -118,8 +128,7 @@ Minimizer<gsl_vector>::minimize(
 		}
 
 		if (gsl_status == GSL_ENOPROG) {
-			BOOST_LOG_TRIVIAL(warning)
-					<< "gsl_multimin could not improve iterate anymore.";
+			doWarnIterate();
 			break;
 		}
 
