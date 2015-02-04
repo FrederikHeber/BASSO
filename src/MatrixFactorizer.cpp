@@ -97,6 +97,14 @@ void renormalizeMatrixByTrace(
 //		<< MinimizerIllegalNumber_variablename("matrix");
 }
 
+template <class T>
+void setResultingVector(
+		const SpaceElement_ptr_t &_element,
+		T _vector)
+{
+	_vector = RepresentationAdvocate::get(_element);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -214,16 +222,18 @@ int main(int argc, char **argv)
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
 
-
-			Eigen::VectorXd result_vector(opts.sparse_dim, 1);
-			VectorSetter<Eigen::VectorXd>::set(
+			setResultingVector(
 					result.m_solution,
-					result_vector);
+					pixel_matrix.col(pixel_dim));
+//			Eigen::VectorXd result_vector(opts.sparse_dim, 1);
+//			VectorSetter<Eigen::VectorXd>::set(
+//					result.m_solution,
+//					result_vector);
 //			BOOST_LOG_TRIVIAL(info)
 //				<< "Pixel_matrix column has dimensions "
 //				<< pixel_matrix.col(pixel_dim).innerSize()
 //				<< "," << pixel_matrix.col(pixel_dim).outerSize();
-			pixel_matrix.col(pixel_dim) = result_vector;
+//			pixel_matrix.col(pixel_dim) = result_vector.transpose();
 		}
 		// check criterion
 		{
@@ -252,15 +262,18 @@ int main(int argc, char **argv)
 			BOOST_LOG_TRIVIAL(debug)
 				<< "Resulting vector is " << *(result.m_solution);
 
-			Eigen::VectorXd result_vector(opts.sparse_dim,1);
-			VectorSetter<Eigen::VectorXd>::set(
+			setResultingVector(
 					result.m_solution,
-					result_vector);
+					spectral_matrix.row(spectral_dim));
+//			Eigen::VectorXd result_vector(opts.sparse_dim,1);
+//			VectorSetter<Eigen::VectorXd>::set(
+//					result.m_solution,
+//					result_vector);
 //			BOOST_LOG_TRIVIAL(info)
 //				<< "Spectral_matrix row has dimensions "
 //				<< spectral_matrix.row(spectral_dim).innerSize()
 //				<< "," << spectral_matrix.row(spectral_dim).outerSize();
-			spectral_matrix.row(spectral_dim) = result_vector.transpose();
+//			spectral_matrix.row(spectral_dim) = result_vector.transpose();
 		}
 
 		// check criterion
