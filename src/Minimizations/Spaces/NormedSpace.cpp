@@ -15,6 +15,7 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 NormedSpace::NormedSpace(
 		const unsigned int _dimension) :
@@ -50,3 +51,15 @@ const Mapping_ptr_t& NormedSpace::getDualityMapping() const
 	return dualitymapping;
 }
 
+const NormedSpace_ptr_t NormedSpace::getDualSpace() const
+{
+	if (DualSpace.expired()) {
+		// create adjoint instance properly
+		NormedSpace_ptr_t dualspace =
+				NormedSpaceFactory::createDualInstance(
+						NormedSpace_ptr_t(Space));
+		return dualspace;
+	} else {
+		return NormedSpace_ptr_t(DualSpace);
+	}
+}

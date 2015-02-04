@@ -41,14 +41,20 @@ public:
 
 	//!> mapping, defining problem from some space X to another space Y
 	const Mapping_ptr_t A;
+	//!> mapping, defining problem from some space X to another space Y
+	const Mapping_ptr_t A_t;
 	//!> sought-for solution in space X
 	SpaceElement_ptr_t x;
 	//!> right-hand side of the problem in space Y
 	const SpaceElement_ptr_t y;
 	//!> source space
 	const NormedSpace_ptr_t SourceSpace;
+	//!> dual source space
+	const NormedSpace_ptr_t DualSourceSpace;
 	//!> target space
 	const NormedSpace_ptr_t TargetSpace;
+	//!> dual target space
+	const NormedSpace_ptr_t DualTargetSpace;
 };
 
 

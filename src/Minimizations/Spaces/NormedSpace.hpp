@@ -51,8 +51,8 @@ private:
 	 *
 	 * @param _space space reference
 	 */
-	void setSpace(const NormedSpace_ptr_t& _space)
-	{	const_cast<boost::weak_ptr<NormedSpace> &>(Space) = _space; }
+	void setSpace(const NormedSpace_weakptr_t& _space)
+	{	const_cast<NormedSpace_weakptr_t &>(Space) = _space; }
 
 	/** Setter of the dual space.
 	 *
@@ -61,8 +61,8 @@ private:
 	 *
 	 * @param _dualspace
 	 */
-	void setDualSpace(const NormedSpace_ptr_t& _dualspace)
-	{	const_cast<NormedSpace_ptr_t&>(DualSpace) = _dualspace;	}
+	void setDualSpace(const NormedSpace_weakptr_t& _dualspace)
+	{	const_cast<NormedSpace_weakptr_t&>(DualSpace) = _dualspace;	}
 
 	/** Setter of the norm.
 	 *
@@ -126,8 +126,7 @@ public:
 	 *
 	 * @return const reference to dual space
 	 */
-	const NormedSpace_ptr_t& getDualSpace() const
-	{ return DualSpace; }
+	const NormedSpace_ptr_t getDualSpace() const;
 
 	/** Const getter for the norm in this space.
 	 *
@@ -161,10 +160,10 @@ private:
 	 * Otherwise this NormedSpace instance is never deleted as itself
 	 * always holds a shared_ptr, keeping the reference count at 1.
 	 */
-	const boost::weak_ptr<NormedSpace> Space;
+	const NormedSpace_weakptr_t Space;
 
 	//!> Reference to the dual of this space.
-	const NormedSpace_ptr_t DualSpace;
+	const NormedSpace_weakptr_t DualSpace;
 
 	//!> Norm object
 	const Norm_ptr_t norm;

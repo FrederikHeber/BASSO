@@ -23,10 +23,13 @@ InverseProblem::InverseProblem(
 		const SpaceElement_ptr_t &_y
 		) :
 	A(_A),
+	A_t(_A->getAdjointMapping()),
 	x(_SourceSpace->createElement()),
 	y(_y),
 	SourceSpace(_SourceSpace),
-	TargetSpace(_TargetSpace)
+	DualSourceSpace(_SourceSpace->getDualSpace()),
+	TargetSpace(_TargetSpace),
+	DualTargetSpace(_TargetSpace->getDualSpace())
 {
 	assert( A->getTargetSpace() == y->getSpace() );
 }
