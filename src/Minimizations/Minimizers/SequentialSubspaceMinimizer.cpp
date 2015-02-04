@@ -28,6 +28,7 @@
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -442,11 +443,18 @@ SequentialSubspaceMinimizer::operator()(
 
 		/// get optimal stepwidth
 		std::vector<double> tmin(N, 0.);
-		const unsigned int inner_iterations =
-				calculateStepWidth(refs, dual_solution, tmin,
-						istate.getSearchSpace(), istate.getAlphas());
 		double stepwidth_norm = 0.;
-		stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
+		unsigned int inner_iterations = 0;
+		try {
+			inner_iterations =
+					calculateStepWidth(refs, dual_solution, tmin,
+							istate.getSearchSpace(), istate.getAlphas());
+			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
+		} catch (MinimizerIllegalNumber_exception &e) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Encountered illegal number in line search minimum, not updating.";
+			tmin = std::vector<double>(N,0.);
+		}
 
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
