@@ -33,10 +33,10 @@ BregmanDistance::BregmanDistance(
 
 BregmanDistance::BregmanDistance(
 		const InverseProblem_ptr_t &_problem) :
-			power(_problem->x->getSpace()->getDualityMapping()->getPower()),
-			norm(*_problem->x->getSpace()->getNorm()),
+			power(_problem->SourceSpace->getDualityMapping()->getPower()),
+			norm(*_problem->SourceSpace->getNorm()),
 			J_p(dynamic_cast<const PowerTypeDualityMapping&>(
-							*_problem->x->getSpace()->getDualityMapping())
+							*_problem->SourceSpace->getDualityMapping())
 			)
 {
 	if ((power != 0.) && (power <= 1.))

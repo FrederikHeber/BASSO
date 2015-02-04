@@ -30,10 +30,10 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const InverseProblem_ptr_t &_problem
 		) :
-	dualpower(_problem->x->getSpace()->getDualSpace()->getDualityMapping()->getPower()),
-	dualnorm(*_problem->x->getSpace()->getDualSpace()->getNorm()),
+	dualpower(_problem->SourceSpace->getDualSpace()->getDualityMapping()->getPower()),
+	dualnorm(*_problem->SourceSpace->getDualSpace()->getNorm()),
 	J_q(dynamic_cast<const PowerTypeDualityMapping&>(
-			*_problem->x->getSpace()->getDualSpace()->getDualityMapping())
+			*_problem->SourceSpace->getDualSpace()->getDualityMapping())
 			)
 {}
 

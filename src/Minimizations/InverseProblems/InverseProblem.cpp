@@ -18,11 +18,15 @@
 
 InverseProblem::InverseProblem(
 		const Mapping_ptr_t &_A,
+		const NormedSpace_ptr_t &_SourceSpace,
+		const NormedSpace_ptr_t &_TargetSpace,
 		const SpaceElement_ptr_t &_y
 		) :
 	A(_A),
+	x(_SourceSpace->createElement()),
 	y(_y),
-	x( A->getSourceSpace()->createElement() )
+	SourceSpace(_SourceSpace),
+	TargetSpace(_TargetSpace)
 {
 	assert( A->getTargetSpace() == y->getSpace() );
 }
