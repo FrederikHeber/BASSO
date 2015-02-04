@@ -108,10 +108,10 @@ private:
 	 * also holds a weak_ptr reference to itself in order to return
 	 * it on specific operators
 	 */
-	const boost::weak_ptr<Mapping> SelfRef;
+	const Mapping_weakptr_t SelfRef;
 
 	//!> internal pointer to adjoint
-	const Mapping_ptr_t AdjointLinearMapping;
+	const Mapping_weakptr_t AdjointLinearMapping;
 
 	/** Setter for the internal weak_ptr to \a this.
 	 *
@@ -130,7 +130,7 @@ private:
 	 *
 	 * @param _adjoint adjoint instance to set
 	 */
-	void setAdjointMapping(const Mapping_ptr_t &_adjoint);
+	void setAdjointMapping(const Mapping_weakptr_t &_adjoint);
 
 	//!> internally bound function to count matrix vector products
 	boost::function<

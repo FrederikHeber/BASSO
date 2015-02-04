@@ -69,7 +69,7 @@ SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) 
 
 const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 {
-	if (AdjointLinearMapping == NULL) {
+	if (AdjointLinearMapping.expired()) {
 		// create adjoint instance properly
 		Mapping_ptr_t adjoint = LinearMappingFactory::createInstance(
 				getTargetSpace()->getDualSpace(),
@@ -80,10 +80,12 @@ const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 		const_cast<LinearMapping *>(
 				static_cast<const LinearMapping *>(
 						adjoint.get())
-						)->setAdjointMapping(
-								Mapping_ptr_t(SelfRef));
+						)->setAdjointMapping(SelfRef);
+		return adjoint;
+	} else {
+		// this throws if AdjointLinearMapping is expired
+		return Mapping_ptr_t(AdjointLinearMapping);
 	}
-	return AdjointLinearMapping;
 }
 
 void LinearMapping::setSelfRef(const Mapping_ptr_t &_selfref)
@@ -91,10 +93,10 @@ void LinearMapping::setSelfRef(const Mapping_ptr_t &_selfref)
 	const_cast<boost::weak_ptr<Mapping> &>(SelfRef) = _selfref;
 }
 
-void LinearMapping::setAdjointMapping(const Mapping_ptr_t &_adjoint)
+void LinearMapping::setAdjointMapping(const Mapping_weakptr_t &_adjoint)
 {
-	assert( AdjointLinearMapping == NULL );
-	const_cast<Mapping_ptr_t &>(AdjointLinearMapping) = _adjoint;
+	assert( AdjointLinearMapping.expired() );
+	const_cast<boost::weak_ptr<Mapping> &>(AdjointLinearMapping) = _adjoint;
 }
 
 const double LinearMapping::Norm() const

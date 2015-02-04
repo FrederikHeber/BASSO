@@ -26,6 +26,7 @@ typedef boost::shared_ptr<Database> Database_ptr_t;
 typedef boost::shared_ptr<DetermineStepWidth> DetermineStepWidth_ptr_t;
 typedef boost::shared_ptr<InverseProblem> InverseProblem_ptr_t;
 typedef boost::shared_ptr<Mapping> Mapping_ptr_t;
+typedef boost::weak_ptr<Mapping> Mapping_weakptr_t;
 typedef boost::shared_ptr<Norm> Norm_ptr_t;
 typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
 typedef boost::weak_ptr<NormedSpace> NormedSpace_weakptr_t;
