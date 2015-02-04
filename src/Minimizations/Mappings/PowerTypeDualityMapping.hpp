@@ -25,7 +25,7 @@ public:
 	 * @param _power power type of this duality mapping
 	 */
 	PowerTypeDualityMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef,
+			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _power) :
 		DualityMapping(_NormedSpaceRef),
 		power(_power),

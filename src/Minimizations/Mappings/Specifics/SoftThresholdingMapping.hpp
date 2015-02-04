@@ -27,7 +27,7 @@ public:
 	 *
 	 * @param _NormedSpaceRef reference to space
 	 */
-	SoftThresholdingMapping(const NormedSpace_ptr_t &_NormedSpaceRef);
+	SoftThresholdingMapping(const NormedSpace_weakptr_t &_NormedSpaceRef);
 
 	/** Default constructor of class SoftThresholdingMapping.
 	 *
@@ -35,7 +35,7 @@ public:
 	 * @param _lambda soft thresholding parameter
 	 */
 	SoftThresholdingMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef,
+			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _lambda);
 
 	/** Evaluates for the given \a _x the soft thresholding result with respect

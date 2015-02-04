@@ -27,9 +27,11 @@ public:
 	 * @param _NormedSpaceRef reference to space
 	 */
 	DualityMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef
+			const NormedSpace_weakptr_t &_NormedSpaceRef
 			) :
-		Mapping(_NormedSpaceRef,_NormedSpaceRef->getDualSpace())
+		Mapping(
+				_NormedSpaceRef,
+				NormedSpace_ptr_t(_NormedSpaceRef)->getDualSpace())
 	{}
 
 	/** Evaluates duality mapping at \a _x.

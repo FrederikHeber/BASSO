@@ -29,7 +29,7 @@ public:
 	 * @param _ref reference to the space this norm is associated with
 	 */
 	DualRegularizedL1Norm(
-			const NormedSpace_ptr_t& _ref,
+			const NormedSpace_weakptr_t& _ref,
 			const double _lambda = 0.1) :
 		LpNorm(_ref, 2.),
 		softthresholder(_ref, _lambda)

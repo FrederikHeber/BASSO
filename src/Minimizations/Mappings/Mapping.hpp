@@ -28,8 +28,8 @@ public:
 	 * @param _TargetSpaceRef target space reference
 	 */
 	Mapping(
-			const NormedSpace_ptr_t &_SourceSpaceRef,
-			const NormedSpace_ptr_t &_TargetSpaceRef
+			const NormedSpace_weakptr_t &_SourceSpaceRef,
+			const NormedSpace_weakptr_t &_TargetSpaceRef
 			) :
 		SourceSpaceRef(_SourceSpaceRef),
 		TargetSpaceRef(_TargetSpaceRef)

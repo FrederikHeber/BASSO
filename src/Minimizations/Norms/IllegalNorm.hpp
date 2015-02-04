@@ -32,7 +32,7 @@ public:
 	 * @param _ref reference to the space this norm is associated with
 	 */
 	IllegalNorm(
-			const NormedSpace_ptr_t& _ref) :
+			const NormedSpace_weakptr_t& _ref) :
 		Norm(_ref)
 	{}
 

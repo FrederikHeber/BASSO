@@ -13,7 +13,7 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 SoftThresholdingMapping::SoftThresholdingMapping(
-		const NormedSpace_ptr_t &_NormedSpaceRef) :
+		const NormedSpace_weakptr_t &_NormedSpaceRef) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
 	lambda(0.1),
 	count(0),
@@ -21,7 +21,7 @@ SoftThresholdingMapping::SoftThresholdingMapping(
 {}
 
 SoftThresholdingMapping::SoftThresholdingMapping(
-		const NormedSpace_ptr_t &_NormedSpaceRef,
+		const NormedSpace_weakptr_t &_NormedSpaceRef,
 		const double _lambda) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
 	lambda(_lambda),

@@ -31,7 +31,7 @@ public:
 	 * @param _power power type of this duality mapping
 	 */
 	LInfinityDualityMapping(
-			const NormedSpace_ptr_t &_NormedSpaceRef,
+			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _power) :
 		PowerTypeDualityMapping(_NormedSpaceRef, _power),
 		count(0),

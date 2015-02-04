@@ -26,8 +26,7 @@ public:
 	 * @param _ref reference to the space this norm is associated with
 	 * @param _p p value of the norm
 	 */
-	LpNorm(
-			const NormedSpace_ptr_t& _ref,
+	LpNorm(const NormedSpace_weakptr_t& _ref,
 			const double _p) :
 		Norm(_ref),
 		p(_p)

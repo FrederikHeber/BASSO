@@ -19,7 +19,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 
 LpDualityMapping::LpDualityMapping(
-		const NormedSpace_ptr_t &_NormedSpaceRef,
+		const NormedSpace_weakptr_t &_NormedSpaceRef,
 		const double _power) :
 	PowerTypeDualityMapping(_NormedSpaceRef, _power),
 	count(0),

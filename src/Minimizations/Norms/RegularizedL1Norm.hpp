@@ -28,7 +28,7 @@ public:
 	 * @param _ref reference to the space this norm is associated with
 	 */
 	RegularizedL1Norm(
-			const NormedSpace_ptr_t& _ref,
+			const NormedSpace_weakptr_t& _ref,
 			const double _lambda = 0.1) :
 		L1Norm(_ref),
 		l2norm(_ref, 2.),

@@ -29,8 +29,7 @@ public:
 	 *
 	 * @param _ref reference to the space this norm is associated with
 	 */
-	L1Norm(
-			const NormedSpace_ptr_t& _ref) :
+	L1Norm(const NormedSpace_weakptr_t& _ref) :
 		Norm(_ref)
 	{}
 
