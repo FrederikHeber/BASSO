@@ -60,7 +60,7 @@ protected:
 	 */
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
-		assert( NormedSpaceRef == _x->getSpace() );
+		assert( getSpace() == _x->getSpace() );
 		double value = 0.;
 		value += lambda * L1Norm::operator()(_x);
 		value += .5 * ::pow(l2norm(_x),2);

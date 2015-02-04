@@ -14,14 +14,14 @@ IllegalDualityMapping::IllegalDualityMapping() :
 	LpDualityMapping(NormedSpaceFactory::DummySpace, 2.)
 {}
 
-const NormedSpace_ptr_t& IllegalDualityMapping::getSourceSpace() const
+const NormedSpace_ptr_t IllegalDualityMapping::getSourceSpace() const
 {
 	// we just throw as this function must now be called
 	throw MinimizationIllegalValue_exception()
 		<< MinimizationIllegalValue_name("illegally called");
 }
 
-const NormedSpace_ptr_t& IllegalDualityMapping::getTargetSpace() const
+const NormedSpace_ptr_t IllegalDualityMapping::getTargetSpace() const
 {
 	// we just throw as this function must now be called
 	throw MinimizationIllegalValue_exception()

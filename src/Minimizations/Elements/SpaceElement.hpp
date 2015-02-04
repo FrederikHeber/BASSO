@@ -240,8 +240,8 @@ public:
 	 *
 	 * @return const ref to space
 	 */
-	const NormedSpace_ptr_t& getSpace() const
-	{ return NormedSpaceRef; }
+	const NormedSpace_ptr_t getSpace() const
+	{ return NormedSpace_ptr_t(NormedSpaceRef); }
 
 	/** Sets the whole representation vector to zero.
 	 *
@@ -269,10 +269,10 @@ private:
 	 * also holds a weak_ptr reference to itself in order to return
 	 * it on specific operators
 	 */
-	const boost::weak_ptr<SpaceElement> SelfRef;
+	const SpaceElement_weakptr_t SelfRef;
 
 	//!> reference to space to which this element belongs
-	const NormedSpace_ptr_t NormedSpaceRef;
+	const NormedSpace_weakptr_t NormedSpaceRef;
 
 	//!> Vector object representation of the element
 	Eigen::VectorXd vector;

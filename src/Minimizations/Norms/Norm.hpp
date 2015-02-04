@@ -46,7 +46,7 @@ public:
 	{
 		TIMEKEEPER(VectorSpaceOperations::getCountTiming<
 				VectorSpaceOperations::VectorNorm>(
-				NormedSpaceRef->opcounts.instance));
+						getSpace()->opcounts.instance));
 		return internal_operator(_element);
 	}
 
@@ -57,9 +57,16 @@ public:
 	virtual const double getPvalue() const
 	{ return 0.; }
 
+	/** Getter for the space associated with this Norm.
+	 *
+	 * @return shared_ptr to NormedSpace
+	 */
+	virtual const NormedSpace_ptr_t getSpace() const
+	{ return NormedSpace_ptr_t(NormedSpaceRef); }
+
 protected:
 	//!> internal reference to the space this norm belongs to
-	const NormedSpace_ptr_t NormedSpaceRef;
+	const NormedSpace_weakptr_t NormedSpaceRef;
 
 	/** Evaluates the norm for a given \a _element.
 	 *

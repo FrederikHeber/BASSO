@@ -45,7 +45,7 @@ protected:
 
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
-		assert( NormedSpaceRef == _x->getSpace() );
+		assert( getSpace() == _x->getSpace() );
 		double value = 0.;
 		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
 			value += fabs((*_x)[i]);

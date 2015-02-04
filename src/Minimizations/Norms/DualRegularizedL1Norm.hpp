@@ -60,7 +60,7 @@ protected:
 	 */
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
-		assert( NormedSpaceRef == _x->getSpace() );
+		assert( getSpace() == _x->getSpace() );
 		const double value =
 				LpNorm::operator()(softthresholder(_x));
 		return value;

@@ -39,15 +39,15 @@ public:
 	 *
 	 * @return ref to source space
 	 */
-	virtual const NormedSpace_ptr_t& getSourceSpace() const
-	{ return SourceSpaceRef; }
+	virtual const NormedSpace_ptr_t getSourceSpace() const
+	{ return NormedSpace_ptr_t(SourceSpaceRef); }
 
 	/** Getter for the target space of this mapping.
 	 *
 	 * @return ref to target space
 	 */
-	virtual const NormedSpace_ptr_t& getTargetSpace() const
-	{ return TargetSpaceRef; }
+	virtual const NormedSpace_ptr_t getTargetSpace() const
+	{ return NormedSpace_ptr_t(TargetSpaceRef); }
 
 	/** Dummy setter for tolerance.
 	 *
@@ -95,10 +95,10 @@ public:
 
 protected:
 	//!> reference to space from which this mappings projects
-	const NormedSpace_ptr_t SourceSpaceRef;
+	const NormedSpace_weakptr_t SourceSpaceRef;
 
 	//!> reference to space into which this mappings projects
-	const NormedSpace_ptr_t TargetSpaceRef;
+	const NormedSpace_weakptr_t TargetSpaceRef;
 };
 
 

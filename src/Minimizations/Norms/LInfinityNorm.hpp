@@ -50,7 +50,7 @@ protected:
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		// infinity norm
-		assert( NormedSpaceRef == _x->getSpace() );
+		assert( getSpace() == _x->getSpace() );
 		return _x->getMaxCoefficientAndIndex().first;
 	}
 };

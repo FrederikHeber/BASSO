@@ -31,6 +31,7 @@ typedef boost::shared_ptr<NormedSpace> NormedSpace_ptr_t;
 typedef boost::weak_ptr<NormedSpace> NormedSpace_weakptr_t;
 typedef boost::shared_ptr<PowerTypeDualityMapping> PowerTypeDualityMapping_ptr_t;
 typedef boost::shared_ptr<SpaceElement> SpaceElement_ptr_t;
+typedef boost::weak_ptr<SpaceElement> SpaceElement_weakptr_t;
 
 
 

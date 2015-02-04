@@ -37,18 +37,18 @@ LinearMapping::LinearMapping(
 	),
 	MatrixVectorProduct(matrix_vector_fctor)
 {
-	assert( matrix.outerSize() == SourceSpaceRef->getDimension() );
-	assert( matrix.innerSize() == TargetSpaceRef->getDimension() );
+	assert( matrix.outerSize() == getSourceSpace()->getDimension() );
+	assert( matrix.innerSize() == getTargetSpace()->getDimension() );
 }
 
 const SpaceElement_ptr_t LinearMapping::operator()(
 		const SpaceElement_ptr_t &_sourceelement
 		) const
 {
-	assert( _sourceelement->getSpace() == SourceSpaceRef );
+	assert( _sourceelement->getSpace() == getSourceSpace() );
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
-					TargetSpaceRef,
+					getTargetSpace(),
 					MatrixVectorProduct(
 						matrix,
 						 RepresentationAdvocate::get(_sourceelement)));
@@ -57,10 +57,10 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
-	assert( _element->getSpace() == SourceSpaceRef );
+	assert( _element->getSpace() == getSourceSpace() );
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
-					TargetSpaceRef,
+					getTargetSpace(),
 					MatrixVectorProduct(
 						matrix,
 						RepresentationAdvocate::get(_element)));
@@ -72,8 +72,8 @@ const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 	if (AdjointLinearMapping == NULL) {
 		// create adjoint instance properly
 		Mapping_ptr_t adjoint = LinearMappingFactory::createInstance(
-				TargetSpaceRef->getDualSpace(),
-				SourceSpaceRef->getDualSpace(),
+				getTargetSpace()->getDualSpace(),
+				getSourceSpace()->getDualSpace(),
 				matrix.transpose());
 		const_cast<LinearMapping *>(this)->
 				setAdjointMapping(adjoint);
