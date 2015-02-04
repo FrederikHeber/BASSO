@@ -24,10 +24,10 @@ NormedSpace::NormedSpace(
 NormedSpace::NormedSpace(
 		const unsigned int _dimension,
 		const Norm_ptr_t &_norm,
-		const Mapping_ptr_t &_dualitymapping
+		const constructDualityMapping_t &_constructDualityMapping
 		) :
 	norm(_norm),
-	dualitymapping(_dualitymapping),
+	constructDualityMapping(_constructDualityMapping),
 	dimension(_dimension)
 {}
 
@@ -40,3 +40,13 @@ SpaceElement_ptr_t NormedSpace::createElement() const
 	newelement->setSelfRef(newelement);
 	return newelement;
 }
+
+const Mapping_ptr_t& NormedSpace::getDualityMapping() const
+{
+	if (dualitymapping == NULL) {
+		const_cast<Mapping_ptr_t &>(dualitymapping) =
+				constructDualityMapping();
+	}
+	return dualitymapping;
+}
+

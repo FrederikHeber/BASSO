@@ -30,6 +30,9 @@ private:
 	//!> grant factory access to default cstor.
 	friend class NormedSpaceFactory;
 
+	//!> typedef for the (lazy) dualitymapping constructor
+	typedef boost::function<Mapping_ptr_t()> constructDualityMapping_t;
+
 	/** Private default constructor to which only NormedSpaceFactory has access.
 	 *
 	 * @param _dimension dimension of this space
@@ -81,6 +84,19 @@ private:
 	void setDualityMapping(const Mapping_ptr_t &_mapping)
 	{	const_cast<Mapping_ptr_t &>(dualitymapping) = _mapping;	}
 
+	/** Setter of the duality mapping constructor.
+	 *
+	 * We need the constructor to overcome the problem of space and dual
+	 * space not being constructed at the same time.
+	 *
+	 * @param _constructDualityMapping duality mapping object constructor
+	 */
+	void setDualityMappingConstructor(
+			const constructDualityMapping_t &_constructDualityMapping)
+	{	const_cast<constructDualityMapping_t &>(constructDualityMapping) =
+			_constructDualityMapping;
+	}
+
 public:
 	/** Constructor of NormedSpace.
 	 *
@@ -90,13 +106,13 @@ public:
 	 *
 	 * @param _dimension dimension of this space
 	 * @param _norm norm object of the space
-	 * @param _dualitymapping duality mapping object from space to its dual
+	 * @param _constructDualityMapping stored function call for constructing
+	 * 		\a dualitymapping on demand
 	 */
 	NormedSpace(
 			const unsigned int _dimension,
 			const Norm_ptr_t &_norm,
-			const Mapping_ptr_t &_dualitymapping
-			);
+			const constructDualityMapping_t &_constructDualityMapping);
 
 	/** Getter for the this space.
 	 *
@@ -124,8 +140,7 @@ public:
 	 *
 	 * @return const reference to duality mapping
 	 */
-	const Mapping_ptr_t& getDualityMapping() const
-	{ return dualitymapping; }
+	const Mapping_ptr_t& getDualityMapping() const;
 
 	/** Const getter for the dimension of the representations in this space.
 	 *
@@ -153,6 +168,9 @@ private:
 
 	//!> Norm object
 	const Norm_ptr_t norm;
+
+	//!> stored function call for lazy creation of duality mapping
+	const constructDualityMapping_t constructDualityMapping;
 
 	//!> duality mapping from this into the dual space
 	const Mapping_ptr_t dualitymapping;

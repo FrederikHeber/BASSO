@@ -42,6 +42,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 
 	// calculate conjugate value
 	const double q = Helpers::ConjugateValue(_p);
+	const double qpower = Helpers::ConjugateValue(_power);
 
 	// create norm instances and hand over to spaces
 	Norm_ptr_t norm = NormFactory::createLpInstance(instance, _p);
@@ -49,14 +50,19 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	Norm_ptr_t dualnorm = NormFactory::createLpInstance(dualinstance, q);
 	dualinstance->setNorm(dualnorm);
 
-	// create duality mapping instance
-	Mapping_ptr_t mapping =
-			PowerTypeDualityMappingFactory::createInstance(
-					instance, _power);
-	instance->setDualityMapping(mapping);
-	Mapping_ptr_t dualmapping =
-			mapping->getAdjointMapping();
-	dualinstance->setDualityMapping(dualmapping);
+	// create duality mapping instance function call
+	NormedSpace::constructDualityMapping_t mapping_cstor =
+			boost::bind(
+					&PowerTypeDualityMappingFactory::createInstance,
+					instance,
+					_power);
+	instance->setDualityMappingConstructor(mapping_cstor);
+	NormedSpace::constructDualityMapping_t dualmapping_cstor =
+			boost::bind(
+					&PowerTypeDualityMappingFactory::createInstance,
+					dualinstance,
+					qpower);
+	dualinstance->setDualityMappingConstructor(dualmapping_cstor);
 
 	return instance;
 }
