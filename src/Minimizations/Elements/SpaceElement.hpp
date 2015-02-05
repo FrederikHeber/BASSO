@@ -55,7 +55,7 @@ class SpaceElement
 	 *
 	 * @param _ref reference to the NormedSpace this element belongs
 	 */
-	SpaceElement(const NormedSpace_ptr_t &_ref);
+	SpaceElement(const NormedSpace_weakptr_t _ref);
 
 	/** Setter for the internal weak_ptr to \a this.
 	 *

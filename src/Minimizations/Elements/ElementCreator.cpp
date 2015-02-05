@@ -11,10 +11,10 @@
 #include "ElementCreator.hpp"
 
 const SpaceElement_ptr_t ElementCreator::create(
-		const NormedSpace_ptr_t &_space,
+		const NormedSpace_weakptr_t _space,
 		const Eigen::VectorXd &_vector)
 {
-	return create(*_space, _vector);
+	return create(*NormedSpace_ptr_t(_space), _vector);
 }
 
 const SpaceElement_ptr_t ElementCreator::create(

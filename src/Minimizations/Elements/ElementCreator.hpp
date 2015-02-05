@@ -21,7 +21,7 @@
 struct ElementCreator
 {
 	static const SpaceElement_ptr_t create(
-			const NormedSpace_ptr_t &_space,
+			const NormedSpace_weakptr_t _space,
 			const Eigen::VectorXd &_vector);
 
 	static const SpaceElement_ptr_t create(

@@ -19,9 +19,9 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
-SpaceElement::SpaceElement(const NormedSpace_ptr_t &_ref) :
+SpaceElement::SpaceElement(const NormedSpace_weakptr_t _ref) :
 	NormedSpaceRef(_ref),
-	vector(Eigen::VectorXd::Zero(_ref->getDimension()))
+	vector(Eigen::VectorXd::Zero(NormedSpace_ptr_t(_ref)->getDimension()))
 {}
 
 const bool SpaceElement::isInSpace(
