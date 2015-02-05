@@ -22,14 +22,14 @@ InverseProblem::InverseProblem(
 		const NormedSpace_ptr_t &_TargetSpace,
 		const SpaceElement_ptr_t &_y
 		) :
-	A(_A),
-	A_t(_A->getAdjointMapping()),
-	x(_SourceSpace->createElement()),
-	y(_y),
 	SourceSpace(_SourceSpace),
 	DualSourceSpace(_SourceSpace->getDualSpace()),
 	TargetSpace(_TargetSpace),
-	DualTargetSpace(_TargetSpace->getDualSpace())
+	DualTargetSpace(_TargetSpace->getDualSpace()),
+	A(_A),
+	A_t(_A->getAdjointMapping()),
+	x(_SourceSpace->createElement()),
+	y(_y)
 {
 	assert( A->getTargetSpace() == y->getSpace() );
 }
