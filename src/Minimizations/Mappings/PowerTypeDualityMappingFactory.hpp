@@ -22,7 +22,7 @@ struct PowerTypeDualityMappingFactory
 	 * @return
 	 */
 	static const Mapping_ptr_t createInstance(
-			const NormedSpace_weakptr_t &_NormedSpaceRef,
+			const NormedSpace_weakptr_t _NormedSpaceRef,
 			const double _power);
 };
 

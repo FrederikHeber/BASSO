@@ -120,7 +120,7 @@ private:
 	 *
 	 * @param _selfref reference to this entity wrapped in weak_ptr.
 	 */
-	void setSelfRef(const Mapping_ptr_t &_selfref);
+	void setSelfRef(const Mapping_weakptr_t &_selfref);
 
 	/** Internal setter for the adjoint mapping
 	 *

@@ -19,19 +19,18 @@
 
 const Mapping_ptr_t
 PowerTypeDualityMappingFactory::createInstance(
-		const NormedSpace_weakptr_t &_NormedSpaceRef,
+		const NormedSpace_weakptr_t _NormedSpaceRef,
 		const double _power)
 {
 	PowerTypeDualityMapping *mapping = NULL;
-	const NormedSpace_ptr_t Space(_NormedSpaceRef);
 	const double p =
-			Space->getNorm()->getPvalue();
+			NormedSpace_ptr_t(_NormedSpaceRef)->getNorm()->getPvalue();
 	if (p == std::numeric_limits<double>::infinity()) {
-		mapping = new LInfinityDualityMapping(Space,_power);
+		mapping = new LInfinityDualityMapping(_NormedSpaceRef,_power);
 	} else if (p > 1.) {
-		mapping = new LpDualityMapping(Space,_power);
+		mapping = new LpDualityMapping(_NormedSpaceRef,_power);
 	} else if (p == 1.) {
-		mapping = new L1DualityMapping(Space,_power);
+		mapping = new L1DualityMapping(_NormedSpaceRef,_power);
 	}
 	return Mapping_ptr_t(mapping);
 }

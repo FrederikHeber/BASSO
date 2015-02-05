@@ -31,8 +31,8 @@ struct LinearMappingFactory
 	 * @return
 	 */
 	static const Mapping_ptr_t createInstance(
-			const NormedSpace_ptr_t &_SourceSpaceRef,
-			const NormedSpace_ptr_t &_TargetSpaceRef,
+			const NormedSpace_weakptr_t _SourceSpaceRef,
+			const NormedSpace_weakptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd & _matrix);
 };
 

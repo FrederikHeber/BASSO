@@ -78,7 +78,7 @@ const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 		const_cast<LinearMapping *>(this)->
 				setAdjointMapping(adjoint);
 		const_cast<LinearMapping *>(
-				static_cast<const LinearMapping *>(
+				static_cast<LinearMapping *>(
 						adjoint.get())
 						)->setAdjointMapping(SelfRef);
 		return adjoint;
@@ -88,15 +88,15 @@ const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 	}
 }
 
-void LinearMapping::setSelfRef(const Mapping_ptr_t &_selfref)
+void LinearMapping::setSelfRef(const Mapping_weakptr_t &_selfref)
 {
-	const_cast<boost::weak_ptr<Mapping> &>(SelfRef) = _selfref;
+	const_cast<Mapping_weakptr_t &>(SelfRef) = _selfref;
 }
 
 void LinearMapping::setAdjointMapping(const Mapping_weakptr_t &_adjoint)
 {
 	assert( AdjointLinearMapping.expired() );
-	const_cast<boost::weak_ptr<Mapping> &>(AdjointLinearMapping) = _adjoint;
+	const_cast<Mapping_weakptr_t &>(AdjointLinearMapping) = _adjoint;
 }
 
 const double LinearMapping::Norm() const
