@@ -165,6 +165,7 @@ int main(int argc, char **argv)
 	Database_ptr_t database =
 			SolutionFactory::createDatabase(opts);
 	Table& loop_table = database->addTable("loop");
+	Table& loop_overall_table = database->addTable("loop_overall");
 	Table::Tuple_t loop_tuple;
 	loop_tuple.insert( std::make_pair("k", (int)data.innerSize()), Table::Parameter);
 	loop_tuple.insert( std::make_pair("n", (int)data.outerSize()), Table::Parameter);
@@ -178,8 +179,11 @@ int main(int argc, char **argv)
 				<< *iter << "," << *(iter+1) << ") to loop tuple.";
 		loop_tuple.insert( std::make_pair(*iter, *(iter+1)), Table::Parameter);
 	}
+	Table::Tuple_t overall_tuple = loop_tuple;
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
+	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
@@ -299,6 +303,9 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info)
 			<< "Loop iteration performed " << loop_nr
 			<< " times.";
+	overall_tuple.replace("loops", (int)loop_nr);
+	overall_tuple.replace("residual", residual);
+	loop_overall_table.addTuple(overall_tuple);
 
 	/// output solution
 	{
