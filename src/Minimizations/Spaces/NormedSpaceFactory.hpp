@@ -42,14 +42,6 @@ struct NormedSpaceFactory
 			const double _lambda,
 			const double _power);
 
-	/** For a given \a _space creates the associated dual space.
-	 *
-	 * @param _space space to return dual space instance for
-	 * @return dual space to given \a _space
-	 */
-	static NormedSpace_ptr_t createDualInstance(
-			NormedSpace_ptr_t _space);
-
 	/** This is a placeholder instance to let entities such as
 	 * DualityMappings receive a NormedSpace_ptr_t and to be
 	 * able to call getDualSpace() properly.

@@ -37,7 +37,7 @@ SpaceElement_ptr_t NormedSpace::createElement() const
 	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
 			VectorSpaceOperations::ElementCreation>(
 					opcounts.instance));
-	SpaceElement_ptr_t newelement(new SpaceElement(getSpace()));
+	SpaceElement_ptr_t newelement(new SpaceElement(Space));
 	newelement->setSelfRef(newelement);
 	return newelement;
 }
@@ -45,21 +45,8 @@ SpaceElement_ptr_t NormedSpace::createElement() const
 const Mapping_ptr_t& NormedSpace::getDualityMapping() const
 {
 	if (dualitymapping == NULL) {
-		const_cast<Mapping_ptr_t &>(dualitymapping) =
-				constructDualityMapping();
+		const Mapping_ptr_t _dualitymapping = constructDualityMapping();
+		const_cast<NormedSpace *>(this)->setDualityMapping(_dualitymapping);
 	}
 	return dualitymapping;
-}
-
-const NormedSpace_ptr_t NormedSpace::getDualSpace() const
-{
-	if (DualSpace.expired()) {
-		// create adjoint instance properly
-		NormedSpace_ptr_t dualspace =
-				NormedSpaceFactory::createDualInstance(
-						NormedSpace_ptr_t(Space));
-		return dualspace;
-	} else {
-		return NormedSpace_ptr_t(DualSpace);
-	}
 }

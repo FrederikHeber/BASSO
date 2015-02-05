@@ -26,7 +26,7 @@ class SpaceElement;
 
 class NormedSpace
 {
-private:
+protected:
 	//!> grant factory access to default cstor.
 	friend class NormedSpaceFactory;
 
@@ -40,6 +40,7 @@ private:
 	NormedSpace(
 			const unsigned int _dimension);
 
+private:
 	/** Setter of the internal space ref.
 	 *
 	 * \note This is necessary due to current interface limitation working
@@ -61,8 +62,8 @@ private:
 	 *
 	 * @param _dualspace
 	 */
-	void setDualSpace(const NormedSpace_weakptr_t& _dualspace)
-	{	const_cast<NormedSpace_weakptr_t&>(DualSpace) = _dualspace;	}
+	virtual void setDualSpace(const NormedSpace_ptr_t& _dualspace)
+	{	const_cast<NormedSpace_ptr_t&>(DualSpace) = _dualspace;	}
 
 	/** Setter of the norm.
 	 *
@@ -126,7 +127,8 @@ public:
 	 *
 	 * @return const reference to dual space
 	 */
-	const NormedSpace_ptr_t getDualSpace() const;
+	virtual const NormedSpace_ptr_t getDualSpace() const
+	{ return DualSpace; }
 
 	/** Const getter for the norm in this space.
 	 *
@@ -163,7 +165,7 @@ private:
 	const NormedSpace_weakptr_t Space;
 
 	//!> Reference to the dual of this space.
-	const NormedSpace_weakptr_t DualSpace;
+	const NormedSpace_ptr_t DualSpace;
 
 	//!> Norm object
 	const Norm_ptr_t norm;
