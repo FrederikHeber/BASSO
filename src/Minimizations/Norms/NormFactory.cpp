@@ -39,7 +39,7 @@ Norm_ptr_t NormFactory::createLpInstance(
 }
 
 Norm_ptr_t NormFactory::createLpInstance(
-		const NormedSpace_ptr_t& _ref,
+		const NormedSpace_weakptr_t _ref,
 		const double _p)
 {
 	Norm *NormY = NULL;
@@ -54,21 +54,21 @@ Norm_ptr_t NormFactory::createLpInstance(
 }
 
 Norm_ptr_t NormFactory::createRegularizedL1Instance(
-		const NormedSpace_ptr_t& _ref,
+		const NormedSpace_weakptr_t _ref,
 		const double _lambda)
 {
 	return Norm_ptr_t(new RegularizedL1Norm(_ref, _lambda));
 }
 
 Norm_ptr_t NormFactory::createDualRegularizedL1Instance(
-		const NormedSpace_ptr_t& _ref,
+		const NormedSpace_weakptr_t _ref,
 		const double _lambda)
 {
 	return Norm_ptr_t(new DualRegularizedL1Norm(_ref, _lambda));
 }
 
 Norm_ptr_t NormFactory::createIllegalInstance(
-		const NormedSpace_ptr_t& _ref)
+		const NormedSpace_weakptr_t _ref)
 {
 	return Norm_ptr_t(new IllegalNorm(_ref));
 }

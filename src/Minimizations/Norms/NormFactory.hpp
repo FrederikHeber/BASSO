@@ -43,7 +43,7 @@ public:
 	 * @return Norm instance
 	 */
 	static Norm_ptr_t createLpInstance(
-			const NormedSpace_ptr_t& _ref,
+			const NormedSpace_weakptr_t _ref,
 			const double _p);
 
 	/** Creates a regularized l1 norm.
@@ -53,7 +53,7 @@ public:
 	 * @return Norm instance
 	 */
 	static Norm_ptr_t createRegularizedL1Instance(
-			const NormedSpace_ptr_t& _ref,
+			const NormedSpace_weakptr_t _ref,
 			const double _lambda);
 
 	/** Creates a dual norm to regularized l1 norm.
@@ -63,7 +63,7 @@ public:
 	 * @return Norm instance
 	 */
 	static Norm_ptr_t createDualRegularizedL1Instance(
-			const NormedSpace_ptr_t& _ref,
+			const NormedSpace_weakptr_t _ref,
 			const double _lambda);
 
 	/** Creates an illegal norm.
@@ -72,7 +72,7 @@ public:
 	 * @return Norm instance
 	 */
 	static Norm_ptr_t createIllegalInstance(
-			const NormedSpace_ptr_t& _ref);
+			const NormedSpace_weakptr_t _ref);
 };
 
 
