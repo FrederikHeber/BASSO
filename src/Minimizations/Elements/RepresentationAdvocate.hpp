@@ -16,6 +16,7 @@
 
 class L1DualityMapping;
 class LpDualityMapping;
+struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
 class SoftThresholdingMapping;
@@ -32,6 +33,7 @@ class RepresentationAdvocate
 private:
 	friend class L1DualityMapping;
 	friend class LpDualityMapping;
+	friend struct LinearDependencyChecker;
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class SoftThresholdingMapping;

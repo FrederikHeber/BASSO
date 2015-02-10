@@ -4,6 +4,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Minimizations 
 	Elements/ElementCreator.cpp
+	Elements/LinearDependencyChecker.cpp
 	Elements/SpaceElement.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
@@ -46,10 +47,11 @@ add_library (Minimizations
 
 install (TARGETS Minimizations DESTINATION bin)
 
+install (FILES Elements/ElementCreator.hpp DESTINATION include)
+install (FILES Elements/LinearDependencyChecker.hpp DESTINATION include)
+install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
 install (FILES Elements/SpaceElement.hpp DESTINATION include)
 install (FILES Elements/SpaceElementWriter.hpp DESTINATION include)
-install (FILES Elements/ElementCreator.hpp DESTINATION include)
-install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
 install (FILES Elements/VectorSetter.hpp DESTINATION include)
 
 install (FILES Functions/BregmanDistance.hpp DESTINATION include)
