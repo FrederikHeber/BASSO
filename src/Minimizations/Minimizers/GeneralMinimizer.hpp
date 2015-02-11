@@ -100,9 +100,17 @@ public:
 	/** Resets the iteration state of this minimizer in case
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
+	 *
+	 * \sa resetState_interal();
 	 */
-	virtual void resetState() = 0;
+	void resetState();
 
+	/** Calculates the residual for the given inverse \a _problem.
+	 *
+	 * @param _problem inverse problem containing matrix and right-hand side
+	 * @param _residual residual vector on return
+	 * @return magnitude of residual in the norm of its specified space
+	 */
 	double calculateResidual(
 			const InverseProblem_ptr_t &_problem,
 			SpaceElement_ptr_t &_residual
@@ -193,8 +201,20 @@ public:
 	bool CheckRelativeResiduum(
 			const double _residuum,
 			const double _ynorm) const;
-
 protected:
+	/** Internal function called after GeneralMinimizer state has been
+	 * resetted.
+	 */
+	virtual void resetState_interal()
+	{}
+
+
+	/** Resets the old Bregman distance if iteration is restarted or solver
+	 * reused.
+	 */
+	void resetBregmanDistance() const
+	{ OldBregmanDistance = 0.;	}
+
 	/** Internal helper function for specific Minimizers to print debugging
 	 *  solutions.
 	 *

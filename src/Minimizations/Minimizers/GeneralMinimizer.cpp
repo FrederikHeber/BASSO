@@ -160,7 +160,8 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Bregman distance is " << distance;
 		// check that distance truly decreases
-		assert( (OldBregmanDistance == 0.) || ((OldBregmanDistance - distance) > - BASSOTOLERANCE) );
+		assert( (OldBregmanDistance == 0.)
+				|| ((OldBregmanDistance - distance) > - BASSOTOLERANCE) );
 		OldBregmanDistance = distance;
 	}
 	return distance;
@@ -347,4 +348,12 @@ void GeneralMinimizer::setAdditionalTupleParameters(
 {
 	assert ( _tuple_params.size() % 2 == 0);
 	const_cast< std::vector<std::string> &>(tuple_params) = _tuple_params;
+}
+
+void GeneralMinimizer::resetState()
+{
+	// reset Bregman distance check variable
+	resetBregmanDistance();
+	// reset state of derived objects
+	resetState_interal();
 }

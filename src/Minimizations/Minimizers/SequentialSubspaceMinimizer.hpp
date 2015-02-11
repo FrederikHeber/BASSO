@@ -98,7 +98,7 @@ public:
 	 * the same object is to be used for another minimization with
 	 * different problem matrix, right-hand side, ...
 	 */
-	void resetState()
+	void resetState_interal()
 	{ istate.reset(); }
 
 	/** Sets the updateIndex function object of IterationState to
