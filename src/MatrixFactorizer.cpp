@@ -18,6 +18,8 @@
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "SolutionFactory/SolutionFactory.hpp"
 
+#define TRUESOLUTION 1
+
 bool solveProblem(
 		Database_ptr_t &_database,
 		const MatrixFactorizerOptions &_opts,
@@ -40,9 +42,25 @@ bool solveProblem(
 		return false;
 	}
 
-	// empty true solution
+#ifdef TRUESOLUTION
+	// empty or true solution from diagonalization
+	Eigen::MatrixXd copymatrix = _matrix;
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd =
+			copymatrix.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+	const Eigen::VectorXd truesolution_vector =
+			svd.solve(_rhs);
+	BOOST_LOG_TRIVIAL(info)
+			<< "True solution is " << truesolution_vector.transpose()
+			<< " with norm "
+			<< (_matrix*truesolution_vector - _rhs).norm()/_rhs.norm();
 	SpaceElement_ptr_t truesolution =
+			ElementCreator::create(
+					inverseproblem->x->getSpace(),
+					truesolution_vector);
+#else 
+	SpaceElement_ptr_t truesolution = 
 			inverseproblem->x->getSpace()->createElement();
+#endif
 
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 = ElementCreator::create(

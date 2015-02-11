@@ -36,6 +36,7 @@ To allow for debugging, you might futher add "-DBoost_DEBUG=ON".
 
 In general, to compile in debugging information add "-DCMAKE_BUILD_TYPE=Debug", to compile without use "-DCMAKE_BUILD_TYPE=Release".
 
+
 Timing Measurements
 -------------------
 
@@ -46,4 +47,12 @@ Add
 to activate the timing measurements of each part of the algorithm.
 
 
-2014-08-22 Frederik Heber
+Various Tests
+-------------
+
+Various compile switches exist to enable more testing of the algorithm.
+
+TRUESOLUTION			Calculates true solution in inner MatrixFactorizer loop to calculate Bregman distance and check convergence (see src/MatrixFactorizer.cpp).
+
+
+2015-03-18 Frederik Heber
