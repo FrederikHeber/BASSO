@@ -13,11 +13,14 @@
 #include "Minimizer.hpp"
 
 #include <boost/function.hpp>
-#include <nlopt.hpp>
 
 #include <vector>
 
 #include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+
+#ifdef NLOPT_FOUND
+#include <nlopt.hpp>
+#endif /* NLOPT_FOUND */
 
 typedef std::vector<double> NLopt_vector;
 
@@ -161,7 +164,9 @@ private:
 			);
 
 private:
+#ifdef NLOPT_FOUND
 	nlopt::opt opt;
+#endif /* NLOPT_FOUND */
 	const unsigned int N;
 	unsigned int iter;
 	unsigned int maxiterations;

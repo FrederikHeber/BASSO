@@ -18,7 +18,9 @@
 Minimizer<NLopt_vector>::Minimizer(
 		const unsigned int _N
 		) :
+#ifdef NLOPT_FOUND
 		opt(nlopt::LD_MMA, _N),
+#endif /* NLOPT_FOUND */
 		N(_N),
 		iter(0),
 		maxiterations(100),
@@ -29,8 +31,10 @@ Minimizer<NLopt_vector>::Minimizer(
 		tempgradient(N)
 {
 	// prepare objective function
+#ifdef NLOPT_FOUND
 	opt.set_min_objective(&FunctionGradientCaller,
 			static_cast<void *>(this));
+#endif /* NLOPT_FOUND */
 }
 
 enum Minimization::GradientStatus
@@ -64,6 +68,7 @@ Minimizer<NLopt_vector>::minimize(
 		if (_startvalue[*it] < constant_positivity)
 			_startvalue[*it] = constant_positivity;
 	}
+#ifdef NLOPT_FOUND
 	opt.set_lower_bounds(lb);
 
 	// set tolerance
@@ -89,6 +94,11 @@ Minimizer<NLopt_vector>::minimize(
 
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Inner iteration took " << iter << " steps";
+#else
+	BOOST_LOG_TRIVIAL(error)
+		<< "NLopt support not compiled in.";
+	assert(0);
+#endif /* NLOPT_FOUND */
 
 	return iter;
 }
@@ -112,12 +122,15 @@ Minimizer<NLopt_vector>::FunctionGradientCaller(
 	++(minimizer->iter);
 
 	// check stop conditions
+#ifdef NLOPT_FOUND
 	if (minimizer->iter >= minimizer->maxiterations)
 		throw nlopt::forced_stop();
 	if (minimizer->checkfunction(minimizer->tolerance)
 			!= Minimization::gradient_continue)
 		throw nlopt::forced_stop();
+#endif /* NLOPT_FOUND */
 
 	// return
 	return minimizer->optimum;
 }
+
