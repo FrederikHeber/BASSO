@@ -7,7 +7,8 @@ add_executable (LpNormUnitTest
 target_link_libraries (LpNormUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}") 
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
 
 add_test (LpNormUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Norms/unittests/LpNormUnitTest)
@@ -19,7 +20,8 @@ add_executable (L1NormUnitTest
 target_link_libraries (L1NormUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}") 
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
 
 add_test (L1NormUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Norms/unittests/L1NormUnitTest)
@@ -31,7 +33,8 @@ add_executable (LInfinityNormUnitTest
 target_link_libraries (LInfinityNormUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}") 
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
 
 add_test (LInfinityNormUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Norms/unittests/LInfinityNormUnitTest)
@@ -43,7 +46,8 @@ add_executable (NormFactoryUnitTest
 target_link_libraries (NormFactoryUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}") 
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES}) 
 
 add_test (NormFactoryUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Norms/unittests/NormFactoryUnitTest)

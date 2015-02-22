@@ -7,7 +7,8 @@ add_executable (IllegalDualityMappingUnitTest
 target_link_libraries (IllegalDualityMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (IllegalDualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/IllegalDualityMappingUnitTest)
@@ -19,7 +20,8 @@ add_executable (LpDualityMappingUnitTest
 target_link_libraries (LpDualityMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (LpDualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LpDualityMappingUnitTest)
@@ -31,7 +33,8 @@ add_executable (L1DualityMappingUnitTest
 target_link_libraries (L1DualityMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (L1DualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/L1DualityMappingUnitTest)
@@ -43,7 +46,8 @@ add_executable (LInfinityDualityMappingUnitTest
 target_link_libraries (LInfinityDualityMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (LInfinityDualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LInfinityDualityMappingUnitTest)
@@ -55,7 +59,8 @@ add_executable (SoftThresholdingMappingUnitTest
 target_link_libraries (SoftThresholdingMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
-	"${CPPUNIT_LIBRARY}")
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
 
 add_test (SoftThresholdingMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/SoftThresholdingMappingUnitTest)
