@@ -42,7 +42,7 @@ Timing Measurements
 
 Add
 
--DUSE_TIMING
+-DUSE_TIMINGS=true
 
 to activate the timing measurements of each part of the algorithm.
 
