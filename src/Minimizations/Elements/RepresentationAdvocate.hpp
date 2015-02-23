@@ -41,7 +41,8 @@ private:
 	template <class vector_type> friend struct VectorSetter;
 	template <class T> friend void setResultingVector(
 			const SpaceElement_ptr_t &_element,
-			T _vector);
+			T &_vector,
+			bool _nonnegative);
 
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)

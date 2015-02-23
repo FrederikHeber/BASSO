@@ -20,15 +20,18 @@
 
 #define TRUESOLUTION 1
 
+template <class T>
 bool solveProblem(
 		Database_ptr_t &_database,
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
 		const Eigen::VectorXd &_startingvalue,
-		GeneralMinimizer::ReturnValues &_result
+		T &_solution,
+		bool _nonnegative = false
 		)
 {
+	GeneralMinimizer::ReturnValues result;
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
 			SolutionFactory::createInverseProblem(
@@ -80,7 +83,7 @@ bool solveProblem(
 
 	// and minimize
 	try{
-		_result = (*minimizer)(
+		result = (*minimizer)(
 						inverseproblem,
 						x0,
 						dualx0,
@@ -92,6 +95,7 @@ bool solveProblem(
 				<< std::endl;
 		return false;
 	}
+	setResultingVector(result.m_solution, _solution, _nonnegative);
 
 	return true;
 }
@@ -118,9 +122,13 @@ void renormalizeMatrixByTrace(
 template <class T>
 void setResultingVector(
 		const SpaceElement_ptr_t &_element,
-		T _vector)
+		T &_vector,
+		bool _nonnegative)
 {
 	_vector = RepresentationAdvocate::get(_element);
+	if (_nonnegative)
+		for (unsigned int i=0;i<_element->getSpace()->getDimension();++i)
+			_vector[i] = std::max(0.,_vector[i]);
 }
 
 
@@ -232,30 +240,20 @@ int main(int argc, char **argv)
 				++pixel_dim) {
 			/// construct and solve (approximately) inverse problem
 			GeneralMinimizer::ReturnValues result;
+			Eigen::VectorXd pixel_matrix_col(pixel_matrix.col(pixel_dim));
 			if (!solveProblem(
 					database,
 					opts,
 					spectral_matrix,
 					data.col(pixel_dim),
 					pixel_matrix.col(pixel_dim),
-					result))
+					pixel_matrix_col,
+					loop_nr >= 3))
 				return 255;
+			pixel_matrix.col(pixel_dim) = pixel_matrix_col;
 			removeSmallTables(database);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Resulting vector is " << *(result.m_solution);
-
-			setResultingVector(
-					result.m_solution,
-					pixel_matrix.col(pixel_dim));
-//			Eigen::VectorXd result_vector(opts.sparse_dim, 1);
-//			VectorSetter<Eigen::VectorXd>::set(
-//					result.m_solution,
-//					result_vector);
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Pixel_matrix column has dimensions "
-//				<< pixel_matrix.col(pixel_dim).innerSize()
-//				<< "," << pixel_matrix.col(pixel_dim).outerSize();
-//			pixel_matrix.col(pixel_dim) = result_vector.transpose();
+			BOOST_LOG_TRIVIAL(info)
+				<< "Resulting vector is " << pixel_matrix.col(pixel_dim).transpose();
 		}
 		// check criterion
 		{
@@ -272,30 +270,20 @@ int main(int argc, char **argv)
 				++spectral_dim) {
 			/// construct and solve (approximately) inverse problem
 			GeneralMinimizer::ReturnValues result;
+			Eigen::VectorXd spectral_matrix_row(spectral_matrix.row(spectral_dim));
 			if (!solveProblem(
 					database,
 					opts,
 					pixel_matrix.transpose(),
 					data.row(spectral_dim).transpose(),
 					spectral_matrix.row(spectral_dim).transpose(),
-					result))
+					spectral_matrix_row,
+					loop_nr >= 3))
 				return 255;
+			spectral_matrix.row(spectral_dim) = spectral_matrix_row;
 			removeSmallTables(database);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Resulting vector is " << *(result.m_solution);
-
-			setResultingVector(
-					result.m_solution,
-					spectral_matrix.row(spectral_dim));
-//			Eigen::VectorXd result_vector(opts.sparse_dim,1);
-//			VectorSetter<Eigen::VectorXd>::set(
-//					result.m_solution,
-//					result_vector);
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Spectral_matrix row has dimensions "
-//				<< spectral_matrix.row(spectral_dim).innerSize()
-//				<< "," << spectral_matrix.row(spectral_dim).outerSize();
-//			spectral_matrix.row(spectral_dim) = result_vector.transpose();
+			BOOST_LOG_TRIVIAL(info)
+				<< "Resulting vector is " << spectral_matrix.row(spectral_dim).transpose();
 		}
 
 		// check criterion
