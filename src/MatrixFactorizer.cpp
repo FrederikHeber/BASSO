@@ -222,6 +222,24 @@ void renormalizeMatrixByTrace(
 //		<< MinimizerIllegalNumber_variablename("matrix");
 }
 
+void renormalizeMatrixProduct(
+		Eigen::MatrixXd &_matrixone,
+		Eigen::MatrixXd &_matrixtwo)
+{
+	const double factorone = _matrixone.diagonal().maxCoeff();
+	const double factortwo = _matrixtwo.diagonal().maxCoeff();
+	double factor = .5*(factorone + factortwo);
+	if (fabs(factor) > BASSOTOLERANCE) {
+		if (factorone > factortwo)
+			factor = 1./factor;
+		_matrixone *= factor;
+		_matrixtwo *= 1./factor;
+	}
+//	if (_matrix.hasNaN())
+//		throw MinimizerIllegalNumber_exception()
+//		<< MinimizerIllegalNumber_variablename("matrix");
+}
+
 template <class T>
 void setResultingVector(
 		const SpaceElement_ptr_t &_element,
@@ -370,7 +388,19 @@ int main(int argc, char **argv)
 		++loop_nr;
 		loop_tuple.replace("loop_nr", (int)loop_nr);
 
-		renormalizeMatrixByTrace(spectral_matrix);
+		BOOST_LOG_TRIVIAL(debug)
+			<< "======================== #" << loop_nr << "/1 ==================";
+
+//		renormalizeMatrixByTrace(spectral_matrix);
+
+		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Current spectral matrix is\n" << spectral_matrix;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Current spectral matrix is\n" << spectral_matrix;
+		}
+
 		/// loop over pixel dimensions
 		for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
 				++pixel_dim) {
@@ -436,7 +466,19 @@ int main(int argc, char **argv)
 				<< "#" << loop_nr << " 1/2, residual is " << residual;
 		}
 
-		renormalizeMatrixByTrace(pixel_matrix);
+		BOOST_LOG_TRIVIAL(debug)
+			<< "======================== #" << loop_nr << "/2 ==================";
+
+//		renormalizeMatrixByTrace(pixel_matrix);
+
+		if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Current pixel matrix is\n" << pixel_matrix;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Current pixel matrix is\n" << pixel_matrix;
+		}
+
 		/// loop over channel dimensions
 		for (unsigned int spectral_dim = 0; spectral_dim < data.rows();
 				++spectral_dim) {
@@ -496,6 +538,9 @@ int main(int argc, char **argv)
 			BOOST_LOG_TRIVIAL(info)
 					<< "Resulting spectral matrix is\n" << spectral_matrix;
 		}
+
+		// remove ambiguity
+		renormalizeMatrixProduct(spectral_matrix, pixel_matrix);
 
 		// check criterion
 		{
