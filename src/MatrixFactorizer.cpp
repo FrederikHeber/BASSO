@@ -132,6 +132,31 @@ void setResultingVector(
 }
 
 
+inline bool checkResidualCondition(
+		const double _residual,
+		const double _delta)
+{
+	return _residual < _delta;
+}
+
+inline bool checkIterationCondition(
+		const unsigned int _iterations,
+		const unsigned int _max_iterations)
+{
+	return _iterations > _max_iterations;
+}
+
+inline double calculateResidual(
+		const Eigen::MatrixXd &_data,
+		const Eigen::MatrixXd &_spectral_matrix,
+		const Eigen::MatrixXd &_pixel_matrix
+		)
+{
+	const Eigen::MatrixXd difference_matrix =
+			_data - _spectral_matrix * _pixel_matrix;
+	return difference_matrix.norm();
+}
+
 int main(int argc, char **argv)
 {
 	/// starting timing
@@ -227,8 +252,16 @@ int main(int argc, char **argv)
 
 	/// iterate over the two factors
 	unsigned int loop_nr = 0;
-	double residual = 0.;
-	bool stop_condition = loop_nr > opts.max_loops;
+	double residual = calculateResidual(data, spectral_matrix, pixel_matrix);
+	BOOST_LOG_TRIVIAL(info)
+		<< "#" << loop_nr << " 1/2, residual is " << residual;
+	loop_tuple.replace("residual", residual);
+	bool stop_condition =
+			checkResidualCondition(residual, opts.delta)
+			|| checkIterationCondition(loop_nr, opts.max_loops);
+	// submit loop tuple
+	loop_table.addTuple(loop_tuple);
+
 	while (!stop_condition) {
 		// update loop count
 		++loop_nr;
@@ -257,9 +290,7 @@ int main(int argc, char **argv)
 		}
 		// check criterion
 		{
-			const Eigen::MatrixXd difference_matrix =
-					data - spectral_matrix * pixel_matrix;
-			residual = difference_matrix.norm();
+			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 1/2, residual is " << residual;
 		}
@@ -288,14 +319,13 @@ int main(int argc, char **argv)
 
 		// check criterion
 		{
-			const Eigen::MatrixXd difference_matrix =
-					data - spectral_matrix * pixel_matrix;
-			residual = difference_matrix.norm();
+			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
 			loop_tuple.replace("residual", residual);
-			stop_condition = (residual < opts.delta)
-					|| (loop_nr > opts.max_loops);
+			stop_condition =
+						checkResidualCondition(residual, opts.delta)
+						|| checkIterationCondition(loop_nr, opts.max_loops);
 		}
 
 		// submit loop tuple
