@@ -16,6 +16,7 @@
 #include <boost/chrono.hpp>
 #include <boost/log/trivial.hpp>
 #include <cassert>
+#include <fenv.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -29,6 +30,8 @@
 #include "Minimizations/Norms/RegularizedL1Norm.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+
+//#define BREGMANDISTANCEERRORTHRESHOLD 1
 
 using namespace boost::assign;
 
@@ -155,10 +158,32 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		distance = (*_Delta_p)(
 			_solution,
 			_truesolution,
-			_dual_solution)
-			+ 1e4*BASSOTOLERANCE; // make sure its larger
+			_dual_solution);
+#ifdef BREGMANDISTANCEERRORTHRESHOLD
+		const int roundmode = fegetround();
+		fesetround(FE_DOWNWARD);
+		const double lower_bound = (*_Delta_p)(
+			_solution,
+			_truesolution,
+			_dual_solution);
+		fesetround(FE_UPWARD);
+		const double upper_bound = (*_Delta_p)(
+			_solution,
+			_truesolution,
+			_dual_solution);
+		fesetround(roundmode);
+		const double errorvalue =
+				std::max(distance-lower_bound, upper_bound-distance);
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Reduction in Bregman Distance is " << OldBregmanDistance-distance;
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Bregman distance is " << distance
+				<< "+-" << errorvalue;
+//				<< " in [" << lower_bound << "," << upper_bound << "]";
+#else
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Bregman distance is " << distance;
+#endif
 		// check that distance truly decreases
 		assert( (OldBregmanDistance == 0.)
 				|| ((OldBregmanDistance - distance) > - BASSOTOLERANCE) );
