@@ -470,6 +470,19 @@ SequentialSubspaceMinimizer::operator()(
 			tmin = std::vector<double>(N,0.);
 		}
 
+#ifdef FULLMATRIXNORM
+		/// give estimate on reduction in Bregman distance
+		if (!_truesolution->isZero()) {
+			const double C = 1.;
+			const double p = refs.NormX.getPvalue();
+			const double reduction =
+					::pow(istate.residuum, p)
+					 /(p*::pow(C,p-1.)*::pow(refs.A.Norm(),p));
+			BOOST_LOG_TRIVIAL(debug)
+					<< "Estimated reduction in Bregman distance is " << reduction;
+		}
+#endif
+
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 		per_iteration_tuple.replace( "residual", istate.residuum);
