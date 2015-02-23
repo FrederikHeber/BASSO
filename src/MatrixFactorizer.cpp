@@ -8,14 +8,20 @@
 #include "CommandLineOptions/MatrixFactorizerOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
+#include "Math/Helpers.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/VectorSetter.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
+#include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "SolutionFactory/SolutionFactory.hpp"
 
 #define TRUESOLUTION 1
@@ -96,6 +102,103 @@ bool solveProblem(
 		return false;
 	}
 	setResultingVector(result.m_solution, _solution, _nonnegative);
+
+	return true;
+}
+
+bool projectOntoImage(
+		Database_ptr_t &_database,
+		const MatrixFactorizerOptions &_opts,
+		const Eigen::MatrixXd &_matrix,
+		const Eigen::VectorXd &_rhs,
+		Eigen::VectorXd &_resultingvalue
+		)
+{
+	// require dual values
+	const double dualnormx =
+			Helpers::ConjugateValue(_opts.normy);
+	const double dualnormy =
+			Helpers::ConjugateValue(_opts.normx);
+	const double dualpowerx =
+			Helpers::ConjugateValue(_opts.powerx);
+	const double dualpowery =
+			Helpers::ConjugateValue(_opts.powery);
+
+	// prepare right-hand side
+	NormedSpace_ptr_t Ys =
+			NormedSpaceFactory::createLpInstance(
+					_matrix.innerSize(), dualnormy, dualpowery);
+	NormedSpace_ptr_t Xs =
+			NormedSpaceFactory::createLpInstance(
+					_matrix.outerSize(), dualnormx, dualpowerx);
+	// and the LinearMapping
+	Mapping_ptr_t As =
+			LinearMappingFactory::createInstance(Ys,Xs,_matrix.transpose());
+	const NormedSpace &Y = *Ys->getDualSpace();
+
+	SpaceElement_ptr_t rhs = ElementCreator::create(Y, _rhs);
+	SpaceElement_ptr_t dualrhs =
+			(*Y.getDualityMapping())((-1.)*rhs);
+	SpaceElement_ptr_t dualmappedrhs = (-1.)*((*As)(dualrhs));
+
+	// prepare inverse problem: Y^\ast \rightarrow X^\ast
+	InverseProblem_ptr_t inverseproblem(
+			new InverseProblem(As,Ys,Xs,dualmappedrhs) );
+
+	// prepare minimizer
+	MinimizerFactory::instance_ptr_t minimizer =
+			SolutionFactory::createMinimizer(
+					_opts, inverseproblem, _database, _opts.inner_iterations);
+	if (minimizer == NULL) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Minimizer could not be constructed, exiting.";
+		return false;
+	}
+
+	// empty true solution
+	SpaceElement_ptr_t truesolution =
+			inverseproblem->x->getSpace()->createElement();
+	truesolution->setZero();
+
+	// prepare start value and dual solution
+	SpaceElement_ptr_t dualy0 =
+			inverseproblem->x->getSpace()->createElement();
+	dualy0->setZero();
+	*inverseproblem->x = dualy0;
+	if (dualy0->getSpace()->getDimension() < 10)
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Starting at dualy0 = " << dualy0;
+	SpaceElement_ptr_t y0;
+	if (_opts.dualitytype == CommandLineOptions::defaulttype) {
+		y0 = (*inverseproblem->x->getSpace()->getDualityMapping())(dualy0);
+	} else {
+		y0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();
+		y0->setZero();
+	}
+
+	// and minimize
+	{
+		GeneralMinimizer::ReturnValues result;
+		try{
+			result = (*minimizer)(
+							inverseproblem,
+							dualy0,
+							y0,
+							truesolution);
+			minimizer->resetState();
+		} catch (MinimizationIllegalValue_exception &e) {
+			std::cerr << "Illegal value for "
+					<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
+					<< std::endl;
+			return false;
+		}
+		*result.m_solution += dualrhs;
+		SpaceElement_ptr_t projected_solution =
+				rhs +
+				(*inverseproblem->x->getSpace()->getDualityMapping())
+					(result.m_solution);
+		setResultingVector(projected_solution, _resultingvalue, false);
+	}
 
 	return true;
 }
@@ -271,14 +374,44 @@ int main(int argc, char **argv)
 		/// loop over pixel dimensions
 		for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
 				++pixel_dim) {
-			/// construct and solve (approximately) inverse problem
+			Eigen::VectorXd projected_data_col(data.col(pixel_dim));
+			if (1) { // (loop_nr == 1) {
+				BOOST_LOG_TRIVIAL(debug)
+					<< "------------------------ n=" << pixel_dim << " ------------------";
+				// project right-hand side onto range of matrix
+				BOOST_LOG_TRIVIAL(info)
+						<< "Initial y_" << pixel_dim << " is "
+						<< data.col(pixel_dim).transpose();
+				{
+					// project y onto image of K
+					if (!projectOntoImage(
+							database,
+							opts,
+							spectral_matrix,
+							data.col(pixel_dim),
+							projected_data_col))
+						return 255;
+				}
+				BOOST_LOG_TRIVIAL(info)
+						<< "Projected y_" << pixel_dim << " is "
+						<< projected_data_col.transpose();
+				BOOST_LOG_TRIVIAL(info)
+						<< "Difference y_" << pixel_dim << "-y'_" << pixel_dim << " is "
+						<< (data.col(pixel_dim)-projected_data_col).transpose();
+				BOOST_LOG_TRIVIAL(debug)
+						<< "........................ n=" << pixel_dim << " ..................";
+			} else {
+				projected_data_col = data.col(pixel_dim);
+			}
+
+			// solve inverse problem for projected right-hand side
 			GeneralMinimizer::ReturnValues result;
 			Eigen::VectorXd pixel_matrix_col(pixel_matrix.col(pixel_dim));
 			if (!solveProblem(
 					database,
 					opts,
 					spectral_matrix,
-					data.col(pixel_dim),
+					projected_data_col,
 					pixel_matrix.col(pixel_dim),
 					pixel_matrix_col,
 					loop_nr >= 3))
@@ -288,6 +421,14 @@ int main(int argc, char **argv)
 			BOOST_LOG_TRIVIAL(info)
 				<< "Resulting vector is " << pixel_matrix.col(pixel_dim).transpose();
 		}
+		if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Resulting pixel matrix is\n" << pixel_matrix;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Resulting pixel matrix is\n" << pixel_matrix;
+		}
+
 		// check criterion
 		{
 			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
@@ -299,14 +440,46 @@ int main(int argc, char **argv)
 		/// loop over channel dimensions
 		for (unsigned int spectral_dim = 0; spectral_dim < data.rows();
 				++spectral_dim) {
-			/// construct and solve (approximately) inverse problem
+			BOOST_LOG_TRIVIAL(debug)
+				<< "------------------------ k=" << spectral_dim << " ------------------";
+			// project right-hand side onto range of matrix
+			Eigen::VectorXd projected_data_row_transpose(
+					data.row(spectral_dim).transpose());
+			if (1) {
+				BOOST_LOG_TRIVIAL(info)
+						<< "Initial y^t_" << spectral_dim << " is "
+						<< data.row(spectral_dim);
+				{
+					// project y onto image of K
+					if (!projectOntoImage(
+							database,
+							opts,
+							pixel_matrix.transpose(),
+							data.row(spectral_dim).transpose(),
+							projected_data_row_transpose))
+						return 255;
+				}
+				BOOST_LOG_TRIVIAL(info)
+						<< "Projected y^t_" << spectral_dim << " is "
+						<< projected_data_row_transpose.transpose();
+				BOOST_LOG_TRIVIAL(info)
+						<< "Difference y^t_" << spectral_dim << "-y^'t_" << spectral_dim << " is "
+						<< (data.row(spectral_dim).transpose()-projected_data_row_transpose).transpose();
+			} else {
+				projected_data_row_transpose = data.row(spectral_dim).transpose();
+			}
+
+			BOOST_LOG_TRIVIAL(debug)
+					<< "........................ k=" << spectral_dim << " ..................";
+
+			// solve inverse problem for projected right-hand side
 			GeneralMinimizer::ReturnValues result;
 			Eigen::VectorXd spectral_matrix_row(spectral_matrix.row(spectral_dim));
 			if (!solveProblem(
 					database,
 					opts,
 					pixel_matrix.transpose(),
-					data.row(spectral_dim).transpose(),
+					projected_data_row_transpose,
 					spectral_matrix.row(spectral_dim).transpose(),
 					spectral_matrix_row,
 					loop_nr >= 3))
@@ -315,6 +488,13 @@ int main(int argc, char **argv)
 			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(info)
 				<< "Resulting vector is " << spectral_matrix.row(spectral_dim).transpose();
+		}
+		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Resulting spectral matrix is\n" << spectral_matrix;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Resulting spectral matrix is\n" << spectral_matrix;
 		}
 
 		// check criterion
