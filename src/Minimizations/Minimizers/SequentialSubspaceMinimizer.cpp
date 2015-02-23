@@ -434,6 +434,12 @@ SequentialSubspaceMinimizer::operator()(
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
 		searchdir.update(refs, istate.m_residual);
+		if (searchdir.u->isZero(BASSOTOLERANCE)) {
+			StopCriterion = true;
+			BOOST_LOG_TRIVIAL(debug)
+				<< "newdir is zero, stopping.";
+			continue;
+		}
 		updateAngleTable(searchdir.u, angle_tuple);
 
 		/// output prior to iterate update
@@ -445,6 +451,7 @@ SequentialSubspaceMinimizer::operator()(
 				searchdir.Jw * refs.y;
 		BOOST_LOG_TRIVIAL(trace)
 			<< "alpha is " << alpha;
+
 		// add u to U and alpha to alphas
 		updateSearchspace(_truesolution, dual_solution, searchdir.u, alpha);
 
@@ -491,7 +498,7 @@ SequentialSubspaceMinimizer::operator()(
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++istate.NumberOuterIterations;
-		StopCriterion =
+		StopCriterion |=
 				CheckIterations(istate.NumberOuterIterations)
 				|| CheckRelativeResiduum(istate.residuum, ynorm)
 				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
