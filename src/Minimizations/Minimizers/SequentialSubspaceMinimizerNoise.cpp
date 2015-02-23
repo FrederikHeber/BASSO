@@ -308,6 +308,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 		printIntermediateSolution(
 				istate.m_solution, refs.A, istate.NumberOuterIterations);
 	}
+	/// last output of istate
+	istate.output(ynorm);
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
