@@ -17,3 +17,6 @@
 
 // use NLopt for minimization
 #cmakedefine NLOPT_FOUND
+
+// use SVD to calculate real operator norm
+#cmakedefine FULLMATRIXNORM

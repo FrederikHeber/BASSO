@@ -18,6 +18,10 @@ set (Basso_VERSION_MINOR 0)
 option (USE_TIMINGS 
 	"Use counter and timings on all vector space operations" OFF)
 
+# use operator norm instead of matrix norm
+option (FULLMATRIXNORM
+	"Use operator norm instead of matrix norm, requires SVD calculation" OFF)
+
 ######################## CHECK HEADERS  ##################################
 
 # does the system provide the log and exp functions?

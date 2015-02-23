@@ -53,6 +53,7 @@ Various Tests
 Various compile switches exist to enable more testing of the algorithm.
 
 TRUESOLUTION			Calculates true solution in inner MatrixFactorizer loop to calculate Bregman distance and check convergence (see src/MatrixFactorizer.cpp).
+FULLMATRIXNORM			Calculates operator norm via SVD instead of matrix norm (takes O(N^3) !) (cmake define or compile switch)
 
 
 2015-03-18 Frederik Heber

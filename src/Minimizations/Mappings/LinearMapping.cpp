@@ -11,6 +11,7 @@
 #include "LinearMapping.hpp"
 
 #include <cassert>
+#include <Eigen/Dense>
 
 #include "Log/Logging.hpp"
 
@@ -101,9 +102,19 @@ void LinearMapping::setAdjointMapping(const Mapping_weakptr_t &_adjoint)
 
 const double LinearMapping::Norm() const
 {
-	BOOST_LOG_TRIVIAL(warning)
-			<< "BEWARE: Is this calculating the right matrix norm?";
+#ifdef FULLMATRIXNORM
+	Eigen::JacobiSVD<Eigen::MatrixXd> svd =
+			matrix.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
+	const Eigen::JacobiSVD<Eigen::MatrixXd>::SingularValuesType &singular_values =
+			svd.singularValues();
+	return singular_values[0];
+#else
+//	if ((matrix.innerSize() != matrix.outerSize())
+//			|| (!matrix.isApprox(matrix.transpose())))
+		BOOST_LOG_TRIVIAL(warning)
+				<< "BEWARE: Is this calculating the right matrix norm?";
 	return matrix.norm();
+#endif
 }
 
 const double LinearMapping::MutualCoherence() const
