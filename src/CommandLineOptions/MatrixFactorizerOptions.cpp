@@ -18,7 +18,9 @@ namespace po = boost::program_options;
 
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
 		inner_iterations(10),
-		max_loops(100)
+		max_loops(100),
+		residual_threshold(0.),
+		sparse_dim(1)
 {}
 
 void MatrixFactorizerOptions::internal_init()
@@ -30,6 +32,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the maximum number of iterations spent on either matrix factor before switching")
 			("max-loops", po::value<unsigned int>(),
 					"set the maximum number of loops iterating over each factor")
+			("residual-threshold", po::value<double>(),
+					"set the threshold of the matrix residual when to stop the iteration")
 			("solution-product", po::value< boost::filesystem::path >(),
 					"set the file name to write the product of the two solution factors to")
 			("solution-first-factor", po::value< boost::filesystem::path >(),
@@ -58,6 +62,12 @@ void MatrixFactorizerOptions::internal_parse()
 		max_loops = vm["max-loops"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Performing " << max_loops << " loop iterations over the two factors.";
+	}
+
+	if (vm.count("residual-threshold")) {
+		residual_threshold = vm["residual-threshold"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Stopping when matrix residual is less than " << residual_threshold << ".";
 	}
 
 	if (vm.count("solution-product")) {
@@ -116,5 +126,22 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 				<< "Number of search directions must not be greater than the sparse dimension.";
 		return false;
 	}
+
+	if (residual_threshold < 0.) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "residual-threshold must be greater than non-negative";
+		return false;
+	}
+
 	return true;
+}
+
+void MatrixFactorizerOptions::internal_setSecondaryValues()
+{
+	if (residual_threshold == 0.) {
+		residual_threshold = delta;
+		BOOST_LOG_TRIVIAL(info)
+			<< "Residual threshold not set, defaulting to delta of "
+			<< residual_threshold;
+	}
 }

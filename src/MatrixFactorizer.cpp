@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 		<< "#" << loop_nr << " 1/2, residual is " << residual;
 	loop_tuple.replace("residual", residual);
 	bool stop_condition =
-			checkResidualCondition(residual, opts.delta)
+			checkResidualCondition(residual, opts.residual_threshold)
 			|| checkIterationCondition(loop_nr, opts.max_loops);
 	// submit loop tuple
 	loop_table.addTuple(loop_tuple);
@@ -324,7 +324,7 @@ int main(int argc, char **argv)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
 			loop_tuple.replace("residual", residual);
 			stop_condition =
-						checkResidualCondition(residual, opts.delta)
+						checkResidualCondition(residual, opts.residual_threshold)
 						|| checkIterationCondition(loop_nr, opts.max_loops);
 		}
 

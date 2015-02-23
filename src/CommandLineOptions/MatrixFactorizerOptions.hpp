@@ -40,10 +40,16 @@ private:
 	 */
 	bool internal_checkSensibility() const;
 
+	/** Add more secondary values.
+	 *
+	 */
+	void internal_setSecondaryValues();
+
 public:
 	boost::filesystem::path data_file;
 	unsigned int inner_iterations;
 	unsigned int max_loops;
+	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
 	boost::filesystem::path solution_product_file;
