@@ -103,6 +103,8 @@ public:
 	/** Helper function to calculate the angles between each search
 	 * direction in ::U and the given _newdir.
 	 *
+	 * \see [Schoepfer, 2009, p.16] "gamma"
+	 *
 	 * @param _newdir new direction to compare to present ones
 	 * @return vector of doubles, the angles
 	 */

@@ -98,8 +98,9 @@ Searchspace::calculateAngles(
 			continue;
 		}
 		// first: minimum, second: minimizer (equals length in LpNorm here)
-		const double projected_distance = U[l] * _newdir / U[l]->Norm();
-		const double original_distance = _newdir->Norm();
+		Mapping &J = *_newdir->getSpace()->getDualityMapping();
+		const double projected_distance = U[l] * J(_newdir) / U[l]->Norm();
+		const double original_distance = J(_newdir)->Norm();
 		if (fabs(original_distance) > std::numeric_limits<double>::epsilon()*1e2) {
 			angles[l] = fabs(projected_distance / original_distance);
 		} else {

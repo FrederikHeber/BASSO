@@ -31,21 +31,21 @@ add_test (Basso_SESOP_RandomMatrix_Angles
 		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/pre/randommatrix.m 
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/pre/randomvector.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #0 is 0.1")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #0 is 0.1.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #1 is 0.1.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #1 is 0.15.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #2 is 0.04.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #3 is 0.05.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #0 is 0.22.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #0 is 0.11.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #1 is 0.38.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #1 is 0.15.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #2 is 0.16.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #2 is 0.04.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
-	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #3 is 0.23.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Angles #3 is 0.05.*")
 
 # test 3: updateToMostParallel
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel
