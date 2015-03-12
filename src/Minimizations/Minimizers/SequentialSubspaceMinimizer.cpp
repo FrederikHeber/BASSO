@@ -315,6 +315,9 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 		Table::Tuple_t& angle_tuple) const
 {
 	if (DoCalculateAngles) {
+		const LastNSearchDirections& searchspace =
+				static_cast<const LastNSearchDirections &>(*istate.searchspace);
+		const std::vector<unsigned int> &lastIndices = searchspace.getLastIndices();
 		angle_tuple.replace("iteration", (int) (istate.NumberOuterIterations));
 		// calculate bregman angles for angles database
 		{
@@ -323,7 +326,7 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
 					++i) {
 				std::stringstream componentname;
-				componentname << "bregman_angle" << i + 1;
+				componentname << "bregman_angle" << lastIndices[i] + 1;
 				angle_tuple.replace(componentname.str(), angles[i]);
 			}
 		}
@@ -334,7 +337,7 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
 					++i) {
 				std::stringstream componentname;
-				componentname << "angle" << i + 1;
+				componentname << "angle" << lastIndices[i] + 1;
 				angle_tuple.replace(componentname.str(), angles[i]);
 			}
 		}
