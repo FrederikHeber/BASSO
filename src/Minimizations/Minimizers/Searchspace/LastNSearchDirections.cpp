@@ -78,9 +78,45 @@ void LastNSearchDirections::update(
 	}
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Updated index is " << index;
-	*(U[index]) = _newdir;
-	alphas[index] = _alpha;
 	lastIndices[index] = 0; // reset current search direction offset
+
+	/// orthogonalize with respect to all old search directions
+	if (orthogonal_directions) {
+		SpaceElement_ptr_t newdir = _newdir->getSpace()->createElement();
+		*newdir = _newdir;
+		// we need to first orthogonalize w.r.t last search direction, then
+		// last but one, ...
+		std::vector<unsigned int> orderOfApplication(lastIndices.size(), 0);
+		for (size_t l = 0;l<lastIndices.size(); ++l)
+			orderOfApplication[ lastIndices[l] ] = l;
+		const double prenorm = newdir->Norm();
+		for (size_t l = 0;l<orderOfApplication.size(); ++l) {
+			const double searchdir_norm = U[ orderOfApplication[l] ]->Norm();
+			if (searchdir_norm < std::numeric_limits<double>::epsilon())
+				continue;
+			const std::pair<double, double> tmp =
+					projector(
+							U[ orderOfApplication[l] ],
+							newdir,
+							1e-8);
+			const double projected_distance = tmp.second;
+			const double searchdir_distance = pow(searchdir_norm,2);
+			*newdir -=
+					projected_distance/searchdir_distance * U[ orderOfApplication[l] ];
+		}
+		const double postnorm = newdir->Norm();
+		BOOST_LOG_TRIVIAL(info)
+			<< "Norm after Bregman projection changed from "
+			<< prenorm << " to " << postnorm;
+
+		*(U[index]) = newdir;
+	} else {
+		*(U[index]) = _newdir;
+	}
+
+	// TODO: Can we use the "old" alpha or do we require a projection
+	// here as well?
+	alphas[index] = _alpha;
 }
 
 unsigned int
