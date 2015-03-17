@@ -10,7 +10,6 @@
 #include "GeneralMinimizer.hpp"
 
 #include "MatrixIO/MatrixIO.hpp"
-#include "MatrixIO/OperationCounter.hpp"
 
 #include <boost/assign.hpp>
 #include <boost/chrono.hpp>

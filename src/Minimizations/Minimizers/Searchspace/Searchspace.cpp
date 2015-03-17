@@ -10,6 +10,7 @@
 
 #include "Searchspace.hpp"
 
+#include <boost/bind.hpp>
 #include <cmath>
 #include <iterator>
 #include <limits>

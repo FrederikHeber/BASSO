@@ -16,8 +16,6 @@
 #include <boost/weak_ptr.hpp>
 #include <Eigen/Dense>
 
-#include "MatrixIO/OperationCounter.hpp"
-
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
 class Norm;

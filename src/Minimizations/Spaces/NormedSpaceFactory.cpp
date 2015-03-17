@@ -10,6 +10,8 @@
 
 #include "NormedSpaceFactory.hpp"
 
+#include <boost/bind.hpp>
+
 #include "Math/Helpers.hpp"
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"

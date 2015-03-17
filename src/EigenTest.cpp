@@ -18,7 +18,6 @@
 #include <numeric>
 #include <sstream>
 
-#include "MatrixIO/OperationCounter.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"

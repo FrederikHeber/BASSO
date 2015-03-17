@@ -14,8 +14,6 @@
 #include <Eigen/Dense>
 #include <vector>
 
-#include "MatrixIO/OperationCounter.hpp"
-
 #include "Minimizations/types.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
 
