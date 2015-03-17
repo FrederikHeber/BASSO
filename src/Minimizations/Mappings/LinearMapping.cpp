@@ -28,15 +28,7 @@ LinearMapping::LinearMapping(
 		) :
 	Mapping(_SourceSpaceRef,_TargetSpaceRef),
 	matrix(_matrix),
-	matrix_vector_fctor(
-			boost::bind(
-					static_cast<const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type
-						(Eigen::MatrixBase<Eigen::MatrixXd>::*)(const Eigen::MatrixBase<Eigen::VectorXd>&) const>(
-								&Eigen::MatrixBase<Eigen::MatrixXd>::operator*),
-								_1, _2
-			)
-	),
-	MatrixVectorProduct(matrix_vector_fctor)
+	MatrixVectorProductCounts(0)
 {
 	assert( matrix.outerSize() == getSourceSpace()->getDimension() );
 	assert( matrix.innerSize() == getTargetSpace()->getDimension() );
@@ -47,25 +39,26 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 		) const
 {
 	assert( _sourceelement->getSpace() == getSourceSpace() );
+	++MatrixVectorProductCounts;
+
+	const boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
+	const Eigen::VectorXd tempvector =
+			matrix * RepresentationAdvocate::get(_sourceelement);
+	const boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	MatrixVectorProductTimings += timing_end - timing_start;
+
 	SpaceElement_ptr_t targetelement =
 			ElementCreator::create(
 					getTargetSpace(),
-					MatrixVectorProduct(
-						matrix,
-						 RepresentationAdvocate::get(_sourceelement)));
+					tempvector);
 	return targetelement;
 }
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
 {
-	assert( _element->getSpace() == getSourceSpace() );
-	SpaceElement_ptr_t targetelement =
-			ElementCreator::create(
-					getTargetSpace(),
-					MatrixVectorProduct(
-						matrix,
-						RepresentationAdvocate::get(_element)));
-	return targetelement;
+	return operator()(_element);
 }
 
 const Mapping_ptr_t LinearMapping::getAdjointMapping() const

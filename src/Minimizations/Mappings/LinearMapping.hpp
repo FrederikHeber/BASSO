@@ -14,8 +14,6 @@
 #include <boost/weak_ptr.hpp>
 #include <Eigen/Dense>
 
-#include "MatrixIO/OperationCounter.hpp"
-
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -90,15 +88,18 @@ public:
 	 * @return number of calls
 	 */
 	const unsigned int getCount() const
-	{ return MatrixVectorProduct.getCount(); }
+	{ return MatrixVectorProductCounts; }
 
 	/** Returns the total runtime the program spent so far on
 	 * its operator().
 	 *
+	 * \warning Due to Eigen's lazy evaluation we cannot really
+	 * measure the time required on matrix-vector products.
+	 *
 	 * @return runtime summed over all calls
 	 */
 	const boost::chrono::nanoseconds getTiming() const
-	{ return MatrixVectorProduct.getTiming(); }
+	{ return boost::chrono::nanoseconds(0); }
 
 private:
 	//!> matrix representation of this linear mapping
@@ -139,13 +140,14 @@ private:
 				const Eigen::MatrixBase<Eigen::VectorXd>&
 				)> matrix_vector_fctor;
 
-public:
-	//!> matrix vector product counter
-	const OperationCounter<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type,
-		const Eigen::MatrixBase<Eigen::MatrixXd>&,
-		const Eigen::MatrixBase<Eigen::VectorXd>&
-		> MatrixVectorProduct;
+	//!> typedef for counting mvps
+	typedef unsigned int Count_t;
+
+	//!> Counts the number of calculated matrix-vector products
+	mutable Count_t MatrixVectorProductCounts;
+
+	//!> counts the time used for matrix-vector products
+	mutable boost::chrono::nanoseconds MatrixVectorProductTimings;
 };
 
 
