@@ -84,6 +84,7 @@ void LastNSearchDirections::update(
 	if (orthogonal_directions) {
 		SpaceElement_ptr_t newdir = _newdir->getSpace()->createElement();
 		*newdir = _newdir;
+		double alpha = _alpha;
 		// we need to first orthogonalize w.r.t last search direction, then
 		// last but one, ...
 		std::vector<unsigned int> orderOfApplication(lastIndices.size(), 0);
@@ -103,6 +104,9 @@ void LastNSearchDirections::update(
 			const double searchdir_distance = pow(searchdir_norm,2);
 			*newdir -=
 					projected_distance/searchdir_distance * U[ orderOfApplication[l] ];
+			alpha -= projected_distance/searchdir_distance * alphas[ orderOfApplication[l] ];
+			BOOST_LOG_TRIVIAL(info)
+				<< "Projection coefficient is " << projected_distance << "/" << searchdir_distance << " = " << projected_distance/searchdir_distance;
 		}
 		const double postnorm = newdir->Norm();
 		BOOST_LOG_TRIVIAL(info)
@@ -110,13 +114,11 @@ void LastNSearchDirections::update(
 			<< prenorm << " to " << postnorm;
 
 		*(U[index]) = newdir;
+		alphas[index] = alpha;
 	} else {
 		*(U[index]) = _newdir;
+		alphas[index] = _alpha;
 	}
-
-	// TODO: Can we use the "old" alpha or do we require a projection
-	// here as well?
-	alphas[index] = _alpha;
 }
 
 unsigned int
