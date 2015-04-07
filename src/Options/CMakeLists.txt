@@ -2,7 +2,7 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (CommandLineOptions 
+add_library (Options 
 	BassoOptions.cpp
 	CommandLineOptions.cpp
 	MatrixFactorizerOptions.cpp

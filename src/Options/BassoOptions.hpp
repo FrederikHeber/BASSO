@@ -12,7 +12,7 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "CommandLineOptions/CommandLineOptions.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 class BassoOptions : public CommandLineOptions
 {

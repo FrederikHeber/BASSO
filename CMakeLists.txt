@@ -121,10 +121,10 @@ install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 # include source folder
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 
-# add the CommandLineOptions library
-include_directories ("${PROJECT_SOURCE_DIR}/CommandLineOptions")
-add_subdirectory (src/CommandLineOptions)
-set (EXTRA_LIBS ${EXTRA_LIBS} CommandLineOptions)
+# add the Options library
+include_directories ("${PROJECT_SOURCE_DIR}/Options")
+add_subdirectory (src/Options)
+set (EXTRA_LIBS ${EXTRA_LIBS} Options)
 
 # add the MatrixIO library
 include_directories ("${PROJECT_SOURCE_DIR}/MatrixIO")

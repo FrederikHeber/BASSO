@@ -10,7 +10,7 @@
 
 #include "SolutionFactory.hpp"
 
-#include "CommandLineOptions/CommandLineOptions.hpp"
+#include "Options/CommandLineOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"

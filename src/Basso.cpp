@@ -12,7 +12,7 @@
 #include <boost/assign.hpp>
 #include <boost/mpl/for_each.hpp>
 
-#include "CommandLineOptions/BassoOptions.hpp"
+#include "Options/BassoOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-#include "CommandLineOptions/MatrixFactorizerOptions.hpp"
+#include "Options/MatrixFactorizerOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"

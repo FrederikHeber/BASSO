@@ -21,7 +21,7 @@ class CommandLineOptions;
  * that require solving of inverse problems.
  *
  * The difficulty is that all classes in the folder Minimizations/
- * need many options but the CommandLineOptions/ folder should not be
+ * need many options but the Options/ folder should not be
  * known as the manner of parsing these options has nothing to do with
  * the inverse problem solving. Hence, we basically need an adaptor
  * between the CommandLineOptions and derived classes, wherein all the
