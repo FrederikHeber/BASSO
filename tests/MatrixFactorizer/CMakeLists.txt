@@ -20,6 +20,9 @@ add_test (MatrixFactorizerUsageMessage
 set_tests_properties (MatrixFactorizerUsageMessage
 	PROPERTIES PASS_REGULAR_EXPRESSION "General options:")
 
+# configuration file tests
+add_subdirectory (config)
+
 # various symmetric rank decompositions
 add_subdirectory (SymmetricRank1)
 add_subdirectory (SymmetricRank2)

@@ -18,6 +18,9 @@ set_tests_properties (BassoUsageMessage
 
 add_subdirectory (simple)
 
+# configuration file tests
+add_subdirectory (config)
+
 # tests for Landweber algorithm
 add_subdirectory (Landweber)
 
