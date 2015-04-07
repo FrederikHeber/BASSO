@@ -18,7 +18,7 @@ set_tests_properties (MatrixFactorizerUsage
 add_test (MatrixFactorizerUsageMessage 
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizer --help)
 set_tests_properties (MatrixFactorizerUsageMessage
-	PROPERTIES PASS_REGULAR_EXPRESSION "Allowed options:")
+	PROPERTIES PASS_REGULAR_EXPRESSION "General options:")
 
 # various symmetric rank decompositions
 add_subdirectory (SymmetricRank1)

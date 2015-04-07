@@ -14,7 +14,7 @@ set_tests_properties (BassoUsage
 	
 add_test (BassoUsageMessage ${PROJECT_BINARY_DIR}/src/Basso --help)
 set_tests_properties (BassoUsageMessage
-	PROPERTIES PASS_REGULAR_EXPRESSION "Allowed options:")
+	PROPERTIES PASS_REGULAR_EXPRESSION "General options:")
 
 add_subdirectory (simple)
 

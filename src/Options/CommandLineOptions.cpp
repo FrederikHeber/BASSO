@@ -1,5 +1,4 @@
 /*
- * CommandLineOptions.cpp
  *
  *  Created on: Jan 27, 2015
  *      Author: heber
@@ -18,7 +17,6 @@
 namespace po = boost::program_options;
 
 CommandLineOptions::CommandLineOptions() :
-	desc("Allowed options"),
 	algorithm_name(
 			MinimizerFactory::TypeNames[MinimizerFactory::landweber]),
 	C(.9),
@@ -51,63 +49,89 @@ CommandLineOptions::~CommandLineOptions()
 
 void CommandLineOptions::init()
 {
-	desc.add_options()
+	boost::program_options::options_description desc_algorithm("Algorithm options");
+	boost::program_options::options_description desc_banachspace("Banach space options");
+	boost::program_options::options_description desc_general("General options");
+	boost::program_options::options_description desc_landweber("Landweber options");
+	boost::program_options::options_description desc_sesop("SESOP options");
+
+	desc_algorithm.add_options()
 			("algorithm", po::value<std::string>(),
 					"set the used iteration algorithm")
-			("C", po::value<double>(),
-					"set the value for C (landweber)")
-			("calculateAngles", po::value<bool>(),
-					"set whether to calculate angles between search directions (SSO)")
-			("database-replace", po::value<bool>(),
-					"whether to replace tuples in database file (true) or just add (default=false)")
 	        ("delta", po::value<double>(),
 	        		"set the amount of noise")
-			("enforceRandomMapping", po::value<bool>(),
-					"whether to enforce update index algorithm in SSO to be a random mapping")
-	        ("help", "produce help message")
-	        ("inexact-linesearch", po::value<bool>(),
-	        		"set the line search to be inexact or (quasi) exact")
 	        ("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
 			("minimization-library", po::value<std::string>(),
 					"set which minimization library to use (gsl,nlopt)")
 			("max-inner-iterations", po::value<unsigned int>(),
 					"set the maximum amount of inner iterations")
-	        ("normx", po::value<double>(),
-	        		"set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
-	        ("normy", po::value<double>(),
-	        		"set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
-	        ("number-directions", po::value<unsigned int>(),
-	        		"set the number of search directions (SSO)")
+			;
+
+	desc_banachspace.add_options()
+			("normx", po::value<double>(),
+					"set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
+			("normy", po::value<double>(),
+					"set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
+			("powerx", po::value<double>(),
+					"set the power type of the duality mapping's weight of the space X")
+			("powery", po::value<double>(),
+					"set the power type of the duality mapping's weight of the space Y")
+			("regularization-parameter", po::value<double>(),
+					"set the regularization parameter for the L1 norm (if normx is 1) (adaptive if set to zero)")
+			;
+
+	desc_general.add_options()
+			("config", po::value<boost::filesystem::path>(),
+					"filename of a configuration file containing default option parameters. Note that other command-line values override those in this file.")
+			("database-replace", po::value<bool>(),
+					"whether to replace tuples in database file (true) or just add (default=false)")
+			("help", "produce help message")
 	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
-	        ("powerx", po::value<double>(),
-	        		"set the power type of the duality mapping's weight of the space X")
-	        ("powery", po::value<double>(),
-	        		"set the power type of the duality mapping's weight of the space Y")
-	        ("regularization-parameter", po::value<double>(),
-	        		"set the regularization parameter for the L1 norm (if normx is 1) (adaptive if set to zero)")
-			("searchspace", po::value< std::string >(),
-					"set the type of search directions used (SSO")
-			("stepwidth-algorithm", po::value<unsigned int>(),
-					"set which step width algorithm to use (Landweber)")
 			("tuple-parameters", po::value< std::vector<std::string> >()->multitoken(),
 					"set additional parameters to add to tables in iteration database for distinguishing tuples")
-			("tau", po::value<double>(),
-					"set the value for tau (SSO)")
-			("update-algorithm", po::value<unsigned int>(),
-					"sets the algorithm which search direction is updated for multiple ones (SSO)")
-	        ("verbose", po::value<unsigned int>(),
-	        		"set the amount of verbosity")
-			("wolfe-constants", po::value< std::vector<double> >()->multitoken(),
-					"set the two wolfe conditions for positivity and stronger than linear (SSO, inexact line search)")
+			("verbose", po::value<unsigned int>(),
+					"set the amount of verbosity")
 			;
+
+	desc_landweber.add_options()
+			("C", po::value<double>(),
+					"set the value for C")
+			("stepwidth-algorithm", po::value<unsigned int>(),
+					"set which step width algorithm to use")
+			;
+
+	desc_sesop.add_options()
+			("number-directions", po::value<unsigned int>(),
+					"set the number of search directions")
+			("calculateAngles", po::value<bool>(),
+					"set whether to calculate angles between search directions")
+			("enforceRandomMapping", po::value<bool>(),
+					"whether to enforce update index algorithm to be a random mapping")
+			("inexact-linesearch", po::value<bool>(),
+					"set the line search to be inexact or (quasi) exact")
+			("searchspace", po::value< std::string >(),
+					"set the type of search directions used")
+			("tau", po::value<double>(),
+					"set the value for discrepancy parameter tau")
+			("update-algorithm", po::value<unsigned int>(),
+					"sets the algorithm which search direction is updated for multiple ones")
+			("wolfe-constants", po::value< std::vector<double> >()->multitoken(),
+					"set the two wolfe conditions for positivity and stronger than linear (inexact line search)")
+			;
+
+	desc_all.add(desc_general)
+		.add(desc_banachspace)
+		.add(desc_algorithm)
+		.add(desc_landweber)
+		.add(desc_sesop);
 
 	internal_init();
 }
 
 void CommandLineOptions::parse(int argc, char **argv)
 {
-	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::store(po::parse_command_line(argc, argv, desc_all), vm);
 	po::notify(vm);
 
 	// get desired algorithm
@@ -129,6 +153,10 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "CalculateAngles was set to "
 			<< (calculateAngles ? "true" : "false")
 			<< ".";
+	}
+
+	if (vm.count("config")) {
+		vm["config"].as<boost::filesystem::path>();
 	}
 
 	if (vm.count("delta")) {
@@ -307,7 +335,7 @@ bool CommandLineOptions::showHelpConditions(const char * const program_name) con
 		std::cout << program_name << " version "
 				<< Basso_VERSION_MAJOR << "."
 				<< Basso_VERSION_MINOR << std::endl;
-	    std::cout << desc << "\n";
+	    std::cout << desc_all << "\n";
 	    return true;
 	} else if (vm.count("version")) {
 		std::cout << program_name << " version "

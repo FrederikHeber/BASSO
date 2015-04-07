@@ -25,7 +25,9 @@ MatrixFactorizerOptions::MatrixFactorizerOptions() :
 
 void MatrixFactorizerOptions::internal_init()
 {
-	desc.add_options()
+	boost::program_options::options_description desc_matrixfactorizer("MatrixFactorizer Options");
+
+	desc_matrixfactorizer.add_options()
 			("data", po::value<boost::filesystem::path>(),
 					"set the file name of the data matrix")
 			("inner-iterations", po::value<unsigned int>(),
@@ -42,6 +44,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the file name to write the second matrix factor")
 			("sparse-dimension", po::value<unsigned int>(), "set the inner dimension of the matrix product")
 			;
+
+	desc_all.add(desc_matrixfactorizer);
 }
 
 void MatrixFactorizerOptions::internal_parse()

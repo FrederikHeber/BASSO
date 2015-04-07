@@ -17,13 +17,15 @@
 namespace po = boost::program_options;
 
 BassoOptions::BassoOptions() :
-			maxiter(50),
-			maxwalltime(0.)
+		maxiter(50),
+		maxwalltime(0.)
 {}
 
 void BassoOptions::internal_init()
 {
-	desc.add_options()
+	boost::program_options::options_description desc_basso("Basso options");
+
+	desc_basso.add_options()
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
 	        ("matrix", po::value< boost::filesystem::path >(),
@@ -39,6 +41,8 @@ void BassoOptions::internal_init()
 			("solution-image", po::value< boost::filesystem::path >(),
 					"set the file name to write image of solution vector to, i.e. A*x")
 	        ;
+
+	desc_all.add(desc_basso);
 }
 
 void BassoOptions::internal_parse()

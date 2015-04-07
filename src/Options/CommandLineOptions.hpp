@@ -105,8 +105,9 @@ private:
 	bool furtherHelpConditions() const;
 
 protected:
-	//!> container for all options
-	boost::program_options::options_description desc;
+	//!> container for all options combined
+	boost::program_options::options_description desc_all;
+
 	//!> key-value map of all parsed options
 	boost::program_options::variables_map vm;
 
