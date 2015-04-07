@@ -249,7 +249,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		powerx = vm["powerx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in X was set to " << powerx;
-	} else {
+	} else if (vm.count("normx")) {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normx as powerx." << "\n.";
 		powerx = normx;
@@ -259,7 +259,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		powery = vm["powery"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in Y was set to " << powery;
-	} else {
+	} else if (vm.count("normy")) {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Using normy as powery." << "\n.";
 		powery = normy;
@@ -270,9 +270,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Regularization parameter of regularized L1 norm set to "
 			<< regularization_parameter << ".";
-	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "No regularization parameter set.";
 	}
 
 	if (vm.count("searchspace")) {
@@ -330,17 +327,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 	internal_parse();
 }
 
-bool CommandLineOptions::furtherHelpConditions() const
-{
-	if (!vm.count("delta")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Noise level delta not set";
-		return true;
-	}
-
-	return false;
-}
-
 bool CommandLineOptions::showHelpConditions(const char * const program_name) const
 {
 	if (vm.count("help")) {
@@ -354,13 +340,13 @@ bool CommandLineOptions::showHelpConditions(const char * const program_name) con
 				<< Basso_VERSION_MAJOR << "."
 				<< Basso_VERSION_MINOR << std::endl;
 		return true;
-	} else if (furtherHelpConditions() || internal_help_conditions()) {
-		std::cout << "There was an error parsing options, use"
-				<< "\n\t" << program_name << " --help\n"
-				<< "to learn more." << std::endl;
-	    return true;
 	} else
 		return false;
+}
+
+void CommandLineOptions::showHelpinErrorCase() const
+{
+	std::cout << "There was an error parsing options, use '--help' to learn more." << std::endl;
 }
 
 void CommandLineOptions::setVerbosity() const
@@ -395,7 +381,17 @@ void CommandLineOptions::setVerbosity() const
 	startLogging();
 }
 
-bool CommandLineOptions::checkSensibility() const
+bool CommandLineOptions::checkSensibility_delta() const
+{
+	if (!vm.count("delta")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Noise level delta not set";
+		return false;
+	}
+	return true;
+}
+
+bool CommandLineOptions::checkSensibility_regularizationparameter() const
 {
 	if (((normx == 1.) && !vm.count("regularization-parameter"))
 		|| ((normx != 1.) && vm.count("regularization-parameter"))) {
@@ -415,7 +411,11 @@ bool CommandLineOptions::checkSensibility() const
 			return false;
 		}
 	}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_tau() const
+{
 	if (vm.count("tau")) {
 		const std::string &resesop_name =
 				MinimizerFactory::getNameForType(
@@ -426,27 +426,54 @@ bool CommandLineOptions::checkSensibility() const
 			return false;
 		}
 	}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_tuple_parameters() const
+{
+	if (vm.count("tuple-parameters")) {
+		if (tuple_parameters.size() % 2 == 0)
+			return true;
+		else
+			return false;
+	}
+	return true;
+}
+
+bool CommandLineOptions::checkSensibility_algorithm() const
+{
 	// check whether algorithm_name states valid type
 	if (!MinimizerFactory::isValidTypeName(algorithm_name)) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Unknown algorithm specified by " << algorithm_name;
 		return false;
 	}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_minlib() const
+{
 	if ((minlib != "gsl") && (minlib != "nlopt")) {
 		BOOST_LOG_TRIVIAL(error)
 			<< "Minimization library must be either 'gsl' or 'nlopt'.";
 		return false;
 	}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_searchspace() const
+{
 	if (!SearchspaceFactory::isValidName(searchspace_type)) {
 		BOOST_LOG_TRIVIAL(error)
 					<< "Search space type " << searchspace_type
 					<< " is unknown to factory.";
 		return false;
 	}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_updatealgorithm() const
+{
 	if (vm.count("update-algorithm"))
 		if (!((updatetype >= LastNSearchDirections::RoundRobin)
 				&& (updatetype < LastNSearchDirections::MAX_UpdateAlgorithmType))) {
@@ -454,7 +481,11 @@ bool CommandLineOptions::checkSensibility() const
 					<< "Illegal update type set.";
 			return false;
 		}
+	return true;
+}
 
+bool CommandLineOptions::checkSensibility_wolfeconstants() const
+{
 	if (vm.count("wolfe-constants"))
 		if ((wolfe_constants.size() != 2)
 				|| (wolfe_constants[0] <= 0)
@@ -463,10 +494,28 @@ bool CommandLineOptions::checkSensibility() const
 					<< "Illegal Wolfe constants given, must be two and positive.";
 			return false;
 		}
-
-	return internal_checkSensibility();
+	return true;
 }
 
+bool CommandLineOptions::checkSensibility() const
+{
+	bool status = true;
+	status &= checkSensibility_delta();
+	status &= checkSensibility_regularizationparameter();
+	status &= checkSensibility_tau();
+	status &= checkSensibility_tuple_parameters();
+	status &= checkSensibility_algorithm();
+	status &= checkSensibility_minlib();
+	status &= checkSensibility_searchspace();
+	status &= checkSensibility_updatealgorithm();
+	status &= checkSensibility_wolfeconstants();
+	status &= internal_checkSensibility();
+
+	if (!status)
+		showHelpinErrorCase();
+
+	return status;
+}
 
 void CommandLineOptions::setSecondaryValues()
 {

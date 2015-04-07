@@ -81,16 +81,12 @@ void BassoOptions::internal_parse()
 		solution_file = vm["solution"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Writing solution vector to " << solution_file;
-	} else {
-		BOOST_LOG_TRIVIAL(debug) << "No solution file given.";
 	}
 
 	if (vm.count("solution-image")) {
 		solution_image_file = vm["solution-image"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Writing image of solution vector to " << solution_image_file;
-	} else {
-		BOOST_LOG_TRIVIAL(debug) << "No image of solution file given.";
 	}
 }
 

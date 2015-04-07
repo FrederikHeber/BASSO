@@ -49,6 +49,11 @@ public:
 	 */
 	bool showHelpConditions(const char * const program_name) const;
 
+	/** Shows a help message in case an error parsing the option occurs.
+	 *
+	 */
+	void showHelpinErrorCase() const;
+
 	/** Sets the verbosity as specified by the command-line option.
 	 *
 	 */
@@ -110,6 +115,18 @@ protected:
 	 */
 	virtual void internal_store(std::ostream &_output) const {}
 
+private:
+	bool checkSensibility_delta() const;
+	bool checkSensibility_regularizationparameter() const;
+	bool checkSensibility_tau() const;
+	bool checkSensibility_tuple_parameters() const;
+	bool checkSensibility_algorithm() const;
+	bool checkSensibility_minlib() const;
+	bool checkSensibility_searchspace() const;
+	bool checkSensibility_updatealgorithm() const;
+	bool checkSensibility_wolfeconstants() const;
+
+
 protected:
 	/** Helper template to write "key = value" pair to a stream.
 	 *
@@ -135,13 +152,6 @@ protected:
 			_output << "\t" <<
 				_token << " = " << _vm[_token].as<T>() << std::endl;
 	}
-
-private:
-	/** Internal function with own help condition checking.
-	 *
-	 * @return true - show help, false - else
-	 */
-	bool furtherHelpConditions() const;
 
 protected:
 	//!> container for all options combined
