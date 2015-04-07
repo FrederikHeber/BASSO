@@ -8,6 +8,8 @@
 
 #include "CommandLineOptions.hpp"
 
+#include <cassert>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -17,6 +19,7 @@
 namespace po = boost::program_options;
 
 CommandLineOptions::CommandLineOptions() :
+	desc_all("Configuration Options"),
 	algorithm_name(
 			MinimizerFactory::TypeNames[MinimizerFactory::landweber]),
 	C(.9),
@@ -67,7 +70,6 @@ void CommandLineOptions::init()
 			("max-inner-iterations", po::value<unsigned int>(),
 					"set the maximum amount of inner iterations")
 			;
-
 	desc_banachspace.add_options()
 			("normx", po::value<double>(),
 					"set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
@@ -82,8 +84,6 @@ void CommandLineOptions::init()
 			;
 
 	desc_general.add_options()
-			("config", po::value<boost::filesystem::path>(),
-					"filename of a configuration file containing default option parameters. Note that other command-line values override those in this file.")
 			("database-replace", po::value<bool>(),
 					"whether to replace tuples in database file (true) or just add (default=false)")
 			("help", "produce help message")
@@ -120,7 +120,14 @@ void CommandLineOptions::init()
 					"set the two wolfe conditions for positivity and stronger than linear (inexact line search)")
 			;
 
-	desc_all.add(desc_general)
+	desc_config.add_options()
+			("config", po::value<boost::filesystem::path>(),
+					"filename of a configuration file containing default option parameters. Note that other command-line values override those in this file.")
+			;
+
+	desc_all
+		.add(desc_config)
+		.add(desc_general)
 		.add(desc_banachspace)
 		.add(desc_algorithm)
 		.add(desc_landweber)
@@ -131,8 +138,17 @@ void CommandLineOptions::init()
 
 void CommandLineOptions::parse(int argc, char **argv)
 {
+	/// parse the usual command line options
 	po::store(po::parse_command_line(argc, argv, desc_all), vm);
 	po::notify(vm);
+
+	/// additionally parse config file
+	if (vm.count("config")) {
+		config_filename = vm["config"].as<boost::filesystem::path>();
+		std::ifstream config_file(config_filename.string().c_str());
+		po::store(po::parse_config_file(config_file, desc_all), vm);
+		po::notify(vm);
+	}
 
 	// get desired algorithm
 	if (vm.count("algorithm")) {
@@ -153,10 +169,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "CalculateAngles was set to "
 			<< (calculateAngles ? "true" : "false")
 			<< ".";
-	}
-
-	if (vm.count("config")) {
-		vm["config"].as<boost::filesystem::path>();
 	}
 
 	if (vm.count("delta")) {
@@ -469,4 +481,53 @@ void CommandLineOptions::setSecondaryValues()
 	// set good maximum of inner iterations
 	if (maxinneriter == 0)
 		maxinneriter = N*100;
+}
+
+void CommandLineOptions::store(std::ostream &_output)
+{
+	_output << "# [General]" << std::endl;
+	writeValue<bool>(_output, vm,  "database-replace");
+	writeValue<unsigned int>(_output, vm,  "output-steps");
+	if (tuple_parameters.size() != 0) {
+		for (std::vector<std::string>::const_iterator iter = tuple_parameters.begin();
+				iter != tuple_parameters.end();)
+			_output << "\ttuple-parameters = " << *(iter++) << std::endl;
+	}
+	writeValue<unsigned int>(_output, vm,  "verbose");
+
+	_output << "# [Banach Space]" << std::endl;
+	writeValue<double>(_output, vm,  "normx");
+	writeValue<double>(_output, vm,  "normy");
+	writeValue<double>(_output, vm,  "powerx");
+	writeValue<double>(_output, vm,  "powery");
+	writeValue<double>(_output, vm,  "regularization-parameter");
+
+	_output << "# [Algorithm]" << std::endl;
+	writeValue<std::string>(_output, vm,  "algorithm");
+	writeValue<double>(_output, vm,  "delta");
+	writeValue<boost::filesystem::path>(_output, vm,  "iteration-file");
+	writeValue<std::string>(_output, vm,  "minimization-library");
+	writeValue<unsigned int>(_output, vm,  "max-inner-iterations");
+
+	_output << "# [Landweber]" << std::endl;
+	writeValue<double>(_output, vm,  "C");
+	writeValue<unsigned int>(_output, vm,  "stepwidth-algorithm");
+
+	_output << "# [SESOP]" << std::endl;
+	writeValue<unsigned int>(_output, vm,  "number-directions");
+	writeValue<bool>(_output, vm,  "calculateAngles");
+	writeValue<bool>(_output, vm,  "enforceRandomMapping");
+	writeValue<bool>(_output, vm,  "inexact-linesearch");
+	writeValue<std::string>(_output, vm,  "searchspace");
+	writeValue<double>(_output, vm,  "tau");
+	writeValue<unsigned int>(_output, vm,  "update-algorithm");
+	if (vm.count("wolfe-constants") != 0) {
+		const std::vector<double> values =
+				vm["wolfe-constants"].as< std::vector<double> >();
+		for (std::vector<double>::const_iterator iter = values.begin();
+				iter != values.end();)
+			_output << "\twolfe-constants = " << *(iter++) << std::endl;
+	}
+
+	internal_store(_output);
 }

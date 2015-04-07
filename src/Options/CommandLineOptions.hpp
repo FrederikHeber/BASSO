@@ -12,6 +12,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -71,6 +72,13 @@ public:
 		MAX_DualityContainerType//!< MAX_DualityContainerType
 	};
 
+	/** Stores all variables as "key = value" pairs per line under the given
+	 * stream \a _output.
+	 *
+	 * @param _output output stream to write to
+	 */
+	void store(std::ostream &_output);
+
 protected:
 	/** Override this function to add more options to \a desc.
 	 *
@@ -97,6 +105,37 @@ protected:
 	 */
 	virtual void internal_setSecondaryValues() const {}
 
+	/** Override this function to store values from deriving classes.
+	 *
+	 */
+	virtual void internal_store(std::ostream &_output) const {}
+
+protected:
+	/** Helper template to write "key = value" pair to a stream.
+	 *
+	 * Note that the template class \a T designates the type of the
+	 * value.
+	 *
+	 * \note This function resides here to allow use by derived classes
+	 * while not requiring to have a new namespace (i.e. we just use
+	 * CommandLineOptions as a namespace).
+	 *
+	 * @param _output output stream
+	 * @param _vm map containing all option keys and variables
+	 * @param _token key as string
+	 */
+	template <class T>
+	static
+	void writeValue(
+			std::ostream &_output,
+			const boost::program_options::variables_map &_vm,
+			const std::string &_token)
+	{
+		if (_vm.count(_token))
+			_output << "\t" <<
+				_token << " = " << _vm[_token].as<T>() << std::endl;
+	}
+
 private:
 	/** Internal function with own help condition checking.
 	 *
@@ -108,6 +147,9 @@ protected:
 	//!> container for all options combined
 	boost::program_options::options_description desc_all;
 
+	//!> container for options specifying the configuration file
+	boost::program_options::options_description desc_config;
+
 	//!> key-value map of all parsed options
 	boost::program_options::variables_map vm;
 
@@ -116,6 +158,7 @@ public:
 	std::string algorithm_name;
 	double C;
 	bool calculateAngles;
+	boost::filesystem::path config_filename;
 	bool database_replace;
 	double delta;
 	bool enforceRandomMapping;

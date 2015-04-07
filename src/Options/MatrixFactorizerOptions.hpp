@@ -45,6 +45,11 @@ private:
 	 */
 	void internal_setSecondaryValues();
 
+	/** Store additional values to output stream.
+	 *
+	 */
+	void internal_store(std::ostream &_output) const;
+
 public:
 	boost::filesystem::path data_file;
 	unsigned int inner_iterations;

@@ -140,3 +140,15 @@ bool BassoOptions::internal_checkSensibility() const
 
 void BassoOptions::internal_setSecondaryValues()
 {}
+
+void BassoOptions::internal_store(std::ostream &_output) const
+{
+	_output << "# [Basso]" << std::endl;
+	writeValue<boost::filesystem::path>(_output, vm,  "compare-against");
+	writeValue<boost::filesystem::path>(_output, vm,  "matrix");
+	writeValue<unsigned int>(_output, vm,  "maxiter");
+	writeValue<double>(_output, vm,  "max-walltime");
+	writeValue<boost::filesystem::path>(_output, vm,  "rhs");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-image");
+}

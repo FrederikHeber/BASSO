@@ -149,3 +149,16 @@ void MatrixFactorizerOptions::internal_setSecondaryValues()
 			<< residual_threshold;
 	}
 }
+
+void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
+{
+	_output << "# [MatrixFactorizer]" << std::endl;
+	writeValue<boost::filesystem::path>(_output, vm,  "data");
+	writeValue<unsigned int>(_output, vm,  "inner-iterations");
+	writeValue<unsigned int>(_output, vm,  "max-loops");
+	writeValue<double>(_output, vm,  "residual-threshold");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-second-factor");
+	writeValue<unsigned int>(_output, vm,  "sparse-dimension");
+}
