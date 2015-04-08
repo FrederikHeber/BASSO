@@ -23,8 +23,7 @@ using namespace Poco::Data;
 using namespace boost::assign;
 
 // static entities
-std::vector<std::string> Database::TypeNames(Database::MAX_TYPES);
-
+std::vector<std::string> Database::TypeNames(Database_types::MAX_TYPES);
 
 #define BASSO_MAXKEYS 18
 
@@ -33,9 +32,9 @@ Database::Database() :
 		ReplacePresentParameterTuples(false),
 		MaxKeys(BASSO_MAXKEYS)
 {
-	TypeNames[inttype] = "int";
-	TypeNames[doubletype] = "double";
-	TypeNames[valchartype] = "valchar(255)";
+	TypeNames[Database_types::inttype] = "int";
+	TypeNames[Database_types::doubletype] = "double";
+	TypeNames[Database_types::valchartype] = "valchar(255)";
 }
 
 Database::~Database()
@@ -120,7 +119,7 @@ bool Database::writeSQLitefile()
 									KeyTypes.find(paramiter->first);
 							assert( keytypeiter != KeyTypes.end() );
 							switch(keytypeiter->second) {
-							case valchartype:
+							case Database_types::valchartype:
 								sql_delete << "'" << paramiter->second << "'";
 								break;
 							default:
@@ -150,21 +149,21 @@ bool Database::writeSQLitefile()
 						keytypeiter != KeyTypes.end(); ++keytypeiter) {
 					if (tempkeys.find(keytypeiter->first) != tempkeys.end()) {
 						switch(keytypeiter->second) {
-						case inttype:
+						case Database_types::inttype:
 						{
 							Table::values_t values =
 									currenttable.getAllValuesPerType<int>(keytypeiter->first);
 							valuevector.push_back(values);
 							break;
 						}
-						case doubletype:
+						case Database_types::doubletype:
 						{
 							Table::values_t values =
 									currenttable.getAllValuesPerType<double>(keytypeiter->first);
 							valuevector.push_back(values);
 							break;
 						}
-						case valchartype:
+						case Database_types::valchartype:
 						{
 							Table::values_t values =
 									currenttable.getAllValuesPerType<std::string>(keytypeiter->first);

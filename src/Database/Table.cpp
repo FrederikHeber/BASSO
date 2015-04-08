@@ -21,17 +21,17 @@ void Table::addTuple(const Tuple_t &_tuple)
 }
 
 static
-enum Database::types_t
+enum Database_types::types_t
 getVariantsType(const boost::variant<int, double, std::string> &_variant)
 {
 	if (boost::get<const int>(&_variant) != NULL)
-		return Database::inttype;
+		return Database_types::inttype;
 	else if (boost::get<const double>(&_variant) != NULL)
-		return Database::doubletype;
+		return Database_types::doubletype;
 	else if (boost::get<const std::string>(&_variant) != NULL)
-		return Database::valchartype;
+		return Database_types::valchartype;
 	else
-		return Database::MAX_TYPES;
+		return Database_types::MAX_TYPES;
 }
 
 Table::KeyType_t Table::getKeyToTypeMap(
@@ -70,7 +70,8 @@ bool Table::checkTableSanity(const keys_t &_keys) const
 				keyiter != iter->end(); ++keyiter) {
 			// if key present in given ones
 			if (_keys.count(keyiter->first)) {
-				const enum Database::types_t type = getVariantsType(keyiter->second);
+				const enum Database_types::types_t type =
+						getVariantsType(keyiter->second);
 				std::pair< KeyType_t::iterator, bool > inserter =
 						KeyType.insert( std::make_pair(
 								keyiter->first,

@@ -12,7 +12,7 @@
 #include <cassert>
 #include <string>
 
-#include "Database.hpp"
+#include "Database/types.hpp"
 
 bool Table::Tuple_t::operator<(const Table::Tuple_t &_a) const
 {
@@ -35,24 +35,26 @@ bool Table::Tuple_t::operator<(const Table::Tuple_t &_a) const
 
 void Table::Tuple_t::replace(
 		const std::string &_key,
-		const Database::typevariant_t &_value)
+		const Database_types::typevariant_t &_value)
 {
 	std::pair<iterator, bool> inserter =
-			std::map<std::string,
-					Database::typevariant_t >::insert(
+			std::map<
+					std::string,
+					Database_types::typevariant_t >::insert(
 							std::make_pair(_key, _value) );
 	assert( !inserter.second );
 	inserter.first->second = _value;
 }
 
 void Table::Tuple_t::insert(const std::pair<std::string,
-	Database::typevariant_t> &_pair,
-	const enum ColumnType _type)
+		Database_types::typevariant_t> &_pair,
+		const enum ColumnType _type)
 {
 	{
 		std::pair<iterator, bool> inserter =
-				std::map<std::string,
-						Database::typevariant_t >::insert(
+				std::map<
+						std::string,
+						Database_types::typevariant_t >::insert(
 								_pair );
 		assert( inserter.second );
 	}

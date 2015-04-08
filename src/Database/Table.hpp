@@ -10,13 +10,14 @@
 
 #include "BassoConfig.h"
 
-#include "Database.hpp"
-
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Database/DefaultValue.hpp"
+#include "Database/types.hpp"
 
 class Database;
 
@@ -50,8 +51,8 @@ public:
 	 */
 	struct Tuple_t :
 		public std::map<
-			std::string,
-			Database::typevariant_t >
+					std::string,
+					Database_types::typevariant_t >
 	{
 		bool operator<(const Tuple_t &_a) const;
 
@@ -62,7 +63,9 @@ public:
 		 * @param _key name of pair (column name)
 		 * @param _value value of pair
 		 */
-		void replace(const std::string &_key, const Database::typevariant_t &_value);
+		void replace(
+				const std::string &_key,
+				const Database_types::typevariant_t &_value);
 
 		/** Inserts a new (name, value) pair.
 		 *
@@ -72,16 +75,18 @@ public:
 		 * @param _type type of this pair
 		 */
 		void insert(
-				const std::pair<std::string,
-					Database::typevariant_t> &_pair,
+				const std::pair<
+						std::string,
+						Database_types::typevariant_t> &_pair,
 				const enum ColumnType _type);
 
 		bool isParameter(const std::string &_name) const;
 
 	private:
 		void insert(
-				const std::pair<std::string,
-					Database::typevariant_t> &_pair);
+				const std::pair<
+						std::string,
+						Database_types::typevariant_t> &_pair);
 
 	private:
 		typedef std::map<std::string, enum ColumnType> TypeMap_t;
@@ -119,6 +124,7 @@ private:
 	//!> grant Database access to private functions
 	friend class Database;
 
+	//!> unique set of all column names
 	typedef std::set<std::string> keys_t;
 
 	/** Returns the set of unique keys currently found in the table.
@@ -127,7 +133,8 @@ private:
 	 */
 	keys_t getSetofUniqueKeys() const;
 
-	typedef std::map< std::string, enum Database::types_t > KeyType_t;
+	//!> map of keys (column names) to types (all possible type variants)
+	typedef std::map< std::string, enum Database_types::types_t > KeyType_t;
 
 	/** Determines for every key the unique type from the tuples present in
 	 * the internal_table.
@@ -142,11 +149,12 @@ private:
 	 * same type over all tuples in internal_table.
 	 *
 	 * @param _keys set of unique keys to check
-	 * @return true - all keys are ok, false - some keys have ambigious type
+	 * @return true - all keys are ok, false - some keys have ambiguous type
 	 */
 	bool checkTableSanity(const keys_t &_keys) const;
 
-    typedef std::vector< std::string > values_t;
+	//!> typedef for a single row in stringized form (vector of strings)
+	typedef std::vector< std::string > values_t;
 
     /** Returns all values of \a _keys for each tuple.
      *

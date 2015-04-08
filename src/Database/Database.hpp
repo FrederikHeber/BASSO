@@ -11,14 +11,11 @@
 #include "BassoConfig.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/variant.hpp>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "Database/DefaultValue.hpp"
-
-class Table;
+#include "Database/Table.hpp"
 
 /** The Database class provides a single instance to contain all iteration-
  * related data. The data is eventually placed in a single-file (sqlite)
@@ -29,16 +26,6 @@ class Database
 public:
 	//!> typedef for wrapping Database instance in shared_ptr
 	typedef boost::shared_ptr<Database> Database_ptr_t;
-
-	typedef boost::variant<int, double, std::string > typevariant_t;
-
-	enum types_t
-	{
-		inttype=0,
-		doubletype=1,
-		valchartype=2,
-		MAX_TYPES
-	};
 
 	Database();
 	~Database();
