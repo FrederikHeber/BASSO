@@ -208,7 +208,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				std::vector<double> steps(1);
 				steps[0] = ScaleFactor*(istate.getAlphas()[index]+d[index]);
 
-				const unsigned int inner_iterations =
+//				const unsigned int inner_iterations =
 						calculateStepWidth(refs, dual_solution, tmin,
 								ConstrainedSearchSpace, steps);
 
@@ -270,7 +270,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 					ScaledSearchSpace[i] = ScaleFactor * istate.getSearchSpace()[i];
 
 				std::vector<double> tmin(N, 0.);
-				const unsigned int inner_iterations =
+//				const unsigned int inner_iterations =
 						calculateStepWidth(refs, dual_solution, tmin,
 								ScaledSearchSpace, steps);
 
