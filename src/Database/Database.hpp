@@ -88,7 +88,49 @@ private:
 	 *
 	 * @return true - succesfully written, false - something went wrong
 	 */
-	bool writeSQLitefile();
+	bool writeSQLitefile() const;
+
+	/** Adds the table to the sqlite file if it not already exists.
+	 *
+	 * @param _table table to create
+	 * @param _KeyTypes map with type for each key (column name)
+	 * @param _allowed_keys vector of all allowed keys (filter for column names)
+	 * @return true - everything ok, false - else
+	 */
+	bool createTableIfNotExists(
+			const Table &_table,
+			const Table::KeyType_t &_KeyTypes,
+			const Table::keys_t &_allowed_keys) const;
+
+	/** Deletes all present tuples in given \a _table the sqlite file.
+	 *
+	 * @param _table table whose present tuples to remove
+	 * @param _KeyTypes map with type for each key (column name)
+	 * @return true - everything ok, false - else
+	 */
+	bool deletePresentTuplesinTable(
+			const Table &_table,
+			const Table::KeyType_t &_KeyTypes) const;
+
+	/** Updates a single table \a _table in the sqlite file.
+	 *
+	 * @param _table table to update
+	 * @return true - everything ok, false - else
+	 */
+	bool writeTable(const Table &_table) const;
+
+	/** Updates the values in the sqlite table with the same named
+	 * table \a _table.
+	 *
+	 * @param _table table to take values from for update
+	 * @param _KeyTypes column name to type map
+	 * @param _allowed_keys set of keys (column names) to modify
+	 * @return true - everything ok, false - else
+	 */
+	bool updateTable(
+			const Table &_table,
+			const Table::KeyType_t &_KeyTypes,
+			const Table::keys_t &_allowed_keys) const;
 
 private:
 	//!> states whether a database file name has been given or not.
@@ -103,7 +145,7 @@ private:
 	//!> static vector with all type names
 	static std::vector<std::string> TypeNames;
 
-	//!> typedef for the set 1of tables
+	//!> typedef for the set of tables
 	typedef std::map<std::string, Table> tables_t;
 
 	//!> list of all tables of this database

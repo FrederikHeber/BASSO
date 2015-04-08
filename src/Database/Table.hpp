@@ -184,6 +184,19 @@ private:
     	return values;
     }
 
+
+	/** Returns all tuples as an array (vector of vectors) of string
+	 * values.
+	 *
+	 * \param _KeyTypes map with type for each key (column name)
+	 * \param _allowed_keys vector of all allowed keys (filter for column names)
+	 * \return vector of tuples, each a vector of string values of each cell
+	 * 		   in the table
+	 */
+	std::vector<values_t> convertTuplesToValueVector(
+			const KeyType_t &_KeyTypes,
+			const keys_t &_allowed_keys) const;
+
 private:
 
 	//!> typedef for the format how the tuples are internally stored.

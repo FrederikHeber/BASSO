@@ -100,3 +100,48 @@ Table::keys_t Table::getSetofUniqueKeys() const
 
 	return keys;
 }
+
+std::vector<Table::values_t> Table::convertTuplesToValueVector(
+		const KeyType_t &_KeyTypes,
+		const keys_t &_allowed_keys) const
+{
+	std::vector<Table::values_t> valuevector;
+	valuevector.reserve(_allowed_keys.size());
+
+	Table::keys_t tempkeys(_allowed_keys);
+	for (Table::KeyType_t::const_iterator keytypeiter = _KeyTypes.begin();
+			keytypeiter != _KeyTypes.end(); ++keytypeiter) {
+		if (tempkeys.find(keytypeiter->first) != tempkeys.end()) {
+			switch(keytypeiter->second) {
+			case Database_types::inttype:
+			{
+				Table::values_t values =
+						getAllValuesPerType<int>(keytypeiter->first);
+				valuevector.push_back(values);
+				break;
+			}
+			case Database_types::doubletype:
+			{
+				Table::values_t values =
+						getAllValuesPerType<double>(keytypeiter->first);
+				valuevector.push_back(values);
+				break;
+			}
+			case Database_types::valchartype:
+			{
+				Table::values_t values =
+						getAllValuesPerType<std::string>(keytypeiter->first);
+				valuevector.push_back(values);
+				break;
+			}
+			default:
+				BOOST_LOG_TRIVIAL(error)
+					<< "Unknown type for key " << keytypeiter->first;
+				break;
+			}
+			tempkeys.erase(keytypeiter->first);
+		}
+	}
+
+	return valuevector;
+}

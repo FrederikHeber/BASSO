@@ -51,173 +51,182 @@ Database::~Database()
 	SQLite::Connector::unregisterConnector();
 }
 
-bool Database::writeSQLitefile()
+bool Database::writeSQLitefile() const
 {
 
 	for (tables_t::const_iterator tableiter = tables.begin();
 			tableiter != tables.end(); ++tableiter) {
 		const Table &currenttable = tableiter->second;
+		writeTable(currenttable);
+	}
 
-		/// first, we need to find the set of unique keys
-		const Table::keys_t keys = currenttable.getSetofUniqueKeys();
+    return true;
+}
 
-		if (!keys.empty()) {
-			/// second, we need to gather a type for each key
-			Table::KeyType_t KeyTypes = currenttable.getKeyToTypeMap(keys);
-			assert(keys.size() == KeyTypes.size());
-
-			/// third, we create the table with the given keys
-			Table::keys_t::const_iterator specialiter = keys.begin();
-			std::advance(specialiter, keys.size() > MaxKeys ? MaxKeys : keys.size());
-			if (keys.size() > MaxKeys)
-				BOOST_LOG_TRIVIAL(error)
-						<< "Truncating database output by " << (keys.size() - MaxKeys)
-						<< " columns as too many columns are to be stored.";
-			Table::keys_t allowed_keys(keys.begin(), specialiter);
-			Session ses("SQLite", filename.c_str());
-			// Don't drop table, we might want to accumulate multiple datasets
-	//		ses << "DROP TABLE IF EXISTS " << currenttable.getName(), now;
-			std::stringstream sql;
-			{
-				Table::keys_t tempkeys(allowed_keys);
-				sql << "CREATE TABLE IF NOT EXISTS " << currenttable.getName() << " (";
-				for (Table::KeyType_t::const_iterator iter = KeyTypes.begin();
-						iter != KeyTypes.end();) {
-					if (tempkeys.find(iter->first) != tempkeys.end()) {
-						sql << iter->first << " " << TypeNames[iter->second];
-						tempkeys.erase(iter->first);
-						if (!tempkeys.empty())
-							sql << ",";
-					}
-					++iter;
-				}
-				sql << ")";
+bool Database::createTableIfNotExists(
+		const Table &_table,
+		const Table::KeyType_t &_KeyTypes,
+		const Table::keys_t &_allowed_keys) const
+{
+	Session ses("SQLite", filename.c_str());
+	// Don't drop table, we might want to accumulate multiple datasets
+//		ses << "DROP TABLE IF EXISTS " << _table.getName(), now;
+	std::stringstream sql;
+	{
+		Table::keys_t tempkeys(_allowed_keys);
+		sql << "CREATE TABLE IF NOT EXISTS " << _table.getName() << " (";
+		for (Table::KeyType_t::const_iterator iter = _KeyTypes.begin();
+				iter != _KeyTypes.end();) {
+			if (tempkeys.find(iter->first) != tempkeys.end()) {
+				sql << iter->first << " " << TypeNames[iter->second];
+				tempkeys.erase(iter->first);
+				if (!tempkeys.empty())
+					sql << ",";
 			}
-			BOOST_LOG_TRIVIAL(trace)
-				<< "SQL: " << sql.str();
-			Statement stmt = ( ses << sql.str() );
-			stmt.execute();
+			++iter;
+		}
+		sql << ")";
+	}
+	BOOST_LOG_TRIVIAL(trace)
+		<< "SQL: " << sql.str();
+	Statement stmt = ( ses << sql.str() );
+	stmt.execute();
 
-			if (ReplacePresentParameterTuples) {
-				/// convert all tuples associated with parameters to pairs
-				/// containing column name and associated value, this is
-				/// required for specifying which present rows to remove
-				ses << "BEGIN", now;
-				for (Table::internal_table_t::const_iterator tupleiter = tableiter->second.internal_table.begin();
-						tupleiter != tableiter->second.internal_table.end(); ++tupleiter) {
-					std::stringstream sql_delete;
-					sql_delete << "DELETE FROM " << currenttable.getName()
-						<< " WHERE ";
-					bool AtLeastOneParameter = false;
-					for (Table::Tuple_t::const_iterator paramiter = tupleiter->begin();
-							paramiter != tupleiter->end(); ++paramiter) {
-						if (tupleiter->isParameter(paramiter->first)) {
-							if (AtLeastOneParameter)
-								sql_delete << " AND ";
-							sql_delete << paramiter->first << "=";
-							Table::KeyType_t::const_iterator keytypeiter =
-									KeyTypes.find(paramiter->first);
-							assert( keytypeiter != KeyTypes.end() );
-							switch(keytypeiter->second) {
-							case Database_types::valchartype:
-								sql_delete << "'" << paramiter->second << "'";
-								break;
-							default:
-								sql_delete << paramiter->second;
-								break;
-							}
-							AtLeastOneParameter = true;
-						}
-					}
-					sql_delete << ";";
-					// only execute if WHERE statement makes sense
-					if (AtLeastOneParameter) {
-						ses << sql_delete.str(), now;
-						BOOST_LOG_TRIVIAL(trace)
-							<< "SQL: " << sql_delete.str();
-					}
-				}
-				ses << "END", now;
-			}
+	return true;
+}
 
-			/// then, convert the information in tuples in vector per type
-			/// each having the same length
-			std::vector<Table::values_t> valuevector;
-			{
-				Table::keys_t tempkeys(allowed_keys);
-				for (Table::KeyType_t::const_iterator keytypeiter = KeyTypes.begin();
-						keytypeiter != KeyTypes.end(); ++keytypeiter) {
-					if (tempkeys.find(keytypeiter->first) != tempkeys.end()) {
-						switch(keytypeiter->second) {
-						case Database_types::inttype:
-						{
-							Table::values_t values =
-									currenttable.getAllValuesPerType<int>(keytypeiter->first);
-							valuevector.push_back(values);
-							break;
-						}
-						case Database_types::doubletype:
-						{
-							Table::values_t values =
-									currenttable.getAllValuesPerType<double>(keytypeiter->first);
-							valuevector.push_back(values);
-							break;
-						}
-						case Database_types::valchartype:
-						{
-							Table::values_t values =
-									currenttable.getAllValuesPerType<std::string>(keytypeiter->first);
-							valuevector.push_back(values);
-							break;
-						}
-						default:
-							BOOST_LOG_TRIVIAL(error)
-								<< "Unknown type for key " << keytypeiter->first;
-							break;
-						}
-						tempkeys.erase(keytypeiter->first);
-					}
-				}
-			}
-
-			ses << "BEGIN", now;
-
-			// add all new ones
-			// note that due to use(..) this cannot be debugged into
-			// a printable string
-			{
-				switch (valuevector.size()) {
-				case 0:
-					BOOST_LOG_TRIVIAL(warning)
-						<< "Database contains no values";
+bool Database::deletePresentTuplesinTable(
+		const Table &_table,
+		const Table::KeyType_t &_KeyTypes) const
+{
+	/// convert all tuples associated with parameters to pairs
+	/// containing column name and associated value, this is
+	/// required for specifying which present rows to remove
+	Session ses("SQLite", filename.c_str());
+	ses << "BEGIN", now;
+	for (Table::internal_table_t::const_iterator tupleiter = _table.internal_table.begin();
+			tupleiter != _table.internal_table.end(); ++tupleiter) {
+		std::stringstream sql_delete;
+		sql_delete << "DELETE FROM " << _table.getName()
+			<< " WHERE ";
+		bool AtLeastOneParameter = false;
+		for (Table::Tuple_t::const_iterator paramiter = tupleiter->begin();
+				paramiter != tupleiter->end(); ++paramiter) {
+			if (tupleiter->isParameter(paramiter->first)) {
+				if (AtLeastOneParameter)
+					sql_delete << " AND ";
+				sql_delete << paramiter->first << "=";
+				Table::KeyType_t::const_iterator keytypeiter =
+						_KeyTypes.find(paramiter->first);
+				assert( keytypeiter != _KeyTypes.end() );
+				switch(keytypeiter->second) {
+				case Database_types::valchartype:
+					sql_delete << "'" << paramiter->second << "'";
 					break;
-				// use preprocessor magic to create the range of cases
+				default:
+					sql_delete << paramiter->second;
+					break;
+				}
+				AtLeastOneParameter = true;
+			}
+		}
+		sql_delete << ";";
+		// only execute if WHERE statement makes sense
+		if (AtLeastOneParameter) {
+			ses << sql_delete.str(), now;
+			BOOST_LOG_TRIVIAL(trace)
+				<< "SQL: " << sql_delete.str();
+		}
+	}
+	ses << "END", now;
+
+	return true;
+}
+
+bool Database::updateTable(
+		const Table &_table,
+		const Table::KeyType_t &_KeyTypes,
+		const Table::keys_t &_allowed_keys) const
+{
+	// first, convert the information in tuples in vector per type
+	// each having the same length
+	std::vector<Table::values_t> valuevector =
+			_table.convertTuplesToValueVector(_KeyTypes, _allowed_keys);
+
+	Session ses("SQLite", filename.c_str());
+	ses << "BEGIN", now;
+
+	// then, add all new ones
+	// note that due to use(..) this cannot be debugged into
+	// a printable string
+	{
+		switch (valuevector.size()) {
+		case 0:
+			BOOST_LOG_TRIVIAL(warning)
+				<< "Database contains no values";
+			break;
+		// use preprocessor magic to create the range of cases
 #include <boost/preprocessor/iteration/local.hpp>
 #include "Database_impl.hpp"
-#define BASSO_ARGUMENTLIST (ses)(currenttable.getName())(valuevector)
+#define BASSO_ARGUMENTLIST (ses)(_table.getName())(valuevector)
 #define BOOST_PP_LOCAL_MACRO(n) CasePrinter(~, n, BASSO_ARGUMENTLIST)
 #define BOOST_PP_LOCAL_LIMITS (1, BASSO_MAXKEYS)
 #include BOOST_PP_LOCAL_ITERATE()
 #undef BASSO_ARGUMENTLIST
 #include "Database_undef.hpp"
-				default:
-					BOOST_LOG_TRIVIAL(error)
-						<< "Cannot deal (yet) with tuple size" << valuevector.size();
-					break;
-				}
-			}
-
-			ses << "END", now;
-
-			/// finally, we write all information to the table
-		} else {
-			BOOST_LOG_TRIVIAL(warning)
-					<< "The table " << tableiter->first
-					<< " is empty, not writing to iteration-file.";
+		default:
+			BOOST_LOG_TRIVIAL(error)
+				<< "Cannot deal (yet) with tuple size" << valuevector.size();
+			break;
 		}
 	}
 
-    return true;
+	// finally, we write all information to the table, i.e. end transaction
+	ses << "END", now;
+
+	// set uptodate flag
+	_table.uptodate = true;
+
+	return true;
+}
+
+bool Database::writeTable(const Table &_table) const
+{
+	// skip if table is uptodate
+	if (_table.uptodate)
+		return true;
+
+	/// first, we need to find the set of unique keys
+	const Table::keys_t keys = _table.getSetofUniqueKeys();
+
+	if (!keys.empty()) {
+		/// second, we need to gather a type for each key
+		Table::KeyType_t KeyTypes = _table.getKeyToTypeMap(keys);
+		assert(keys.size() == KeyTypes.size());
+
+		/// third, we create the table with the given keys
+		Table::keys_t::const_iterator specialiter = keys.begin();
+		std::advance(specialiter, keys.size() > MaxKeys ? MaxKeys : keys.size());
+		if (keys.size() > MaxKeys)
+			BOOST_LOG_TRIVIAL(error)
+					<< "Truncating database output by " << (keys.size() - MaxKeys)
+					<< " columns as too many columns are to be stored.";
+		Table::keys_t allowed_keys(keys.begin(), specialiter);
+		createTableIfNotExists(_table, KeyTypes, allowed_keys);
+
+		if (ReplacePresentParameterTuples)
+			deletePresentTuplesinTable(_table, KeyTypes);
+
+		/// Combine the following update into single transaction
+		updateTable(_table, KeyTypes, allowed_keys);
+
+	} else {
+		BOOST_LOG_TRIVIAL(warning)
+				<< "The table " << _table.getName()
+				<< " is empty, not writing to iteration-file.";
+	}
+
+	return true;
 }
 
 Table& Database::addTable(const std::string &_name)
