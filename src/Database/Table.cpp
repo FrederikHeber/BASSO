@@ -16,6 +16,7 @@
 
 void Table::addTuple(const Tuple_t &_tuple)
 {
+	uptodate = false;
 	internal_table.insert(_tuple);
 }
 

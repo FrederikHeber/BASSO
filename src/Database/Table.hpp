@@ -30,7 +30,8 @@ public:
 	 *
 	 */
 	Table(const std::string &_tablename) :
-		tablename(_tablename)
+		tablename(_tablename),
+		uptodate(true)
 	{}
 
 	/** Destructor for class Table.
@@ -107,6 +108,13 @@ public:
 	const std::string & getName() const
 	{ return tablename; }
 
+	/** Getter whether table has not been changed since last update.
+	 *
+	 * @return true - table is unchanged, false - else
+	 */
+	const bool isUptodate() const
+	{ return uptodate; }
+
 private:
 	//!> grant Database access to private functions
 	friend class Database;
@@ -178,6 +186,11 @@ private:
 
 	//!> contains the name of this table
 	const std::string tablename;
+
+	/** Flag indicating whether written SQL database is up-to-date
+	 * with respect to this table.
+	 */
+	mutable bool uptodate;
 };
 
 
