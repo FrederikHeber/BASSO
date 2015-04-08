@@ -120,6 +120,18 @@ public:
 	const bool isUptodate() const
 	{ return uptodate; }
 
+	/** Removes all tuples contained in a table.
+	 *
+	 */
+	void clear();
+
+	/** Returns whether table is empty.
+	 *
+	 * @return true - no tuples present, false - else
+	 */
+	bool empty() const
+	{ return internal_table.empty(); }
+
 private:
 	//!> grant Database access to private functions
 	friend class Database;

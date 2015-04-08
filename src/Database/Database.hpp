@@ -112,12 +112,30 @@ private:
 			const Table &_table,
 			const Table::KeyType_t &_KeyTypes) const;
 
-	/** Updates a single table \a _table in the sqlite file.
+	/** Writes a single table \a _table in the sqlite file.
 	 *
-	 * @param _table table to update
+	 * @param _table table to write to sqlite file
 	 * @return true - everything ok, false - else
 	 */
 	bool writeTable(const Table &_table) const;
+
+	/** Reads a single table \a _table from the sqlite file.
+	 *
+	 * \note We can only parse columns that are already present in \a
+	 * _table. This is basically a limitation of the poco library we
+	 * use to get sqlite functionality. Sqlite knows about
+	 * \code
+	 * 	PRAGMA table_info(table_name);
+	 * \endcode
+	 * but we cannot squeeze the information into an STL container; it
+	 * will just go into void. Hence, the tables is deleted (if non-
+	 * empty) and filled with all tuples from columns that were present
+	 * already before.
+	 *
+	 * @param _table table to read
+	 * @return true - everything ok, false - else
+	 */
+	bool readTable(Table &_table);
 
 	/** Updates the values in the sqlite table with the same named
 	 * table \a _table.

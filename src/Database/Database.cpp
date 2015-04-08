@@ -11,6 +11,7 @@
 #include "Database.hpp"
 
 #include <boost/assign.hpp>
+//#include <iterator>
 #include <sstream>
 
 #include "Log/Logging.hpp"
@@ -224,6 +225,158 @@ bool Database::writeTable(const Table &_table) const
 		BOOST_LOG_TRIVIAL(warning)
 				<< "The table " << _table.getName()
 				<< " is empty, not writing to iteration-file.";
+	}
+
+	return true;
+}
+
+bool Database::readTable(
+		Table& _table)
+{
+	/// check if table is uptodate
+	if (!_table.isUptodate()) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Table " << _table.getName() << " has not been written.";
+		return false;
+	}
+
+	// first, we need to keep the set of unique keys
+	const Table::keys_t keys = _table.getSetofUniqueKeys();
+	if (!keys.empty()) {
+		// second, we need to keep the type for each key fixed
+		Table::KeyType_t KeyTypes = _table.getKeyToTypeMap(keys);
+		assert(keys.size() == KeyTypes.size());
+
+		// clear table if not empty
+		if (!_table.empty())
+			_table.clear();
+
+		// parse tuples from sqlite database
+		Session ses("SQLite", filename.c_str());
+		typedef std::map<std::string, Table::values_t > KeyValueMap_t;
+		KeyValueMap_t KeyValueMap;
+		for (Table::keys_t::const_iterator iter = keys.begin();
+				iter != keys.end(); ++iter) {
+			Table::values_t valuevector;
+			ses << "SELECT " << *iter
+				<< " FROM " << _table.getName(), into(valuevector), now;
+//			BOOST_LOG_TRIVIAL(trace)
+//				<< "SQL: " << "SELECT " << *iter
+//				<< " FROM " << _table.getName();
+//			std::stringstream valuestream;
+//			std::copy(valuevector.begin(),valuevector.end(),
+//					std::ostream_iterator<std::string>(valuestream, ","));
+//			BOOST_LOG_TRIVIAL(trace)
+//				<< "RESULT: #" << valuevector.size() << " elements ("
+//				<< valuestream.str() << ")";
+			KeyValueMap.insert( std::make_pair(*iter, valuevector) );
+		}
+
+		if (KeyValueMap.empty()) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Table " << _table.getName() << " is empty in sqlite file.";
+			return false;
+		}
+
+		// check that each entry's vector in map has same size
+		KeyValueMap_t::const_iterator checkiter = KeyValueMap.begin();
+		const size_t firstsize = checkiter->second.size();
+		assert(firstsize != 0);
+		for (++checkiter; checkiter != KeyValueMap.end(); ++checkiter)
+			if (firstsize != checkiter->second.size()) {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Table " << _table.getName() << "'s column "
+						<< checkiter->first << " has different number of rows ("
+						<< checkiter->second.size() << ") than first column "
+						<< KeyValueMap.begin()->first << "( "
+						<< firstsize << ")";
+				return false;
+			}
+
+		// initialize the tuple from first row
+		Table::Tuple_t tuple;
+		for (KeyValueMap_t::const_iterator iter = KeyValueMap.begin();
+				iter != KeyValueMap.end(); ++iter) {
+			assert( KeyTypes.count(iter->first) );
+			std::stringstream valuestream(iter->second[firstsize-1]);
+			switch (KeyTypes[iter->first]) {
+			case Database_types::inttype:
+			{
+				int tempval;
+				valuestream >> tempval;
+				tuple.insert(
+						std::make_pair(
+								iter->first,
+								tempval),
+						Table::Data);
+				break;
+			}
+			case Database_types::doubletype:
+			{
+				double tempval;
+				valuestream >> tempval;
+				tuple.insert(
+						std::make_pair(
+								iter->first,
+								tempval),
+						Table::Data);
+				break;
+			}
+			case Database_types::valchartype:
+			{
+				tuple.insert(
+						std::make_pair(
+								iter->first,
+								iter->second[firstsize-1]),
+						Table::Data);
+				break;
+			}
+			default:
+				BOOST_LOG_TRIVIAL(error)
+					<< "Key " << iter->first << " has unknown type.";
+				return false;
+			}
+		}
+		_table.addTuple(tuple);
+		// and insert each tuple
+		for (int row = firstsize-2; row >= 0; --row) {
+			for (KeyValueMap_t::const_iterator iter = KeyValueMap.begin();
+					iter != KeyValueMap.end(); ++iter) {
+				assert( KeyTypes.count(iter->first) );
+				std::stringstream valuestream(iter->second[row]);
+				switch (KeyTypes[iter->first]) {
+				case Database_types::inttype:
+				{
+					int tempval;
+					valuestream >> tempval;
+					tuple.replace(iter->first, tempval);
+					break;
+				}
+				case Database_types::doubletype:
+				{
+					double tempval;
+					valuestream >> tempval;
+					tuple.replace(iter->first, tempval);
+					break;
+				}
+				case Database_types::valchartype:
+				{
+					tuple.replace(iter->first, iter->second[row]);
+					break;
+				}
+				default:
+					BOOST_LOG_TRIVIAL(error)
+						<< "Key " << iter->first << " has unknown type.";
+					return false;
+				}
+
+			}
+			_table.addTuple(tuple);
+		}
+	} else {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Table " << _table.getName() << " has no keys in sqlite file.";
+		return false;
 	}
 
 	return true;
