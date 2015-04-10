@@ -44,9 +44,7 @@ Database::Database() :
 Database::~Database()
 {
 	// write information
-	if (DatabaseFileGiven) {
-		writeAllTables();
-	}
+	writeAllTables();
 
     // quit
 	SQLite::Connector::unregisterConnector();
@@ -167,6 +165,13 @@ bool Database::updateTable(
 		const Table::KeyType_t &_KeyTypes,
 		const Table::keys_t &_allowed_keys) const
 {
+	if (!DatabaseFileGiven) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "No database file given, cannot write table "
+				<< _table.getName() << " to file.";
+		return false;
+	}
+
 	// first, convert the information in tuples in vector per type
 	// each having the same length
 	std::vector<Table::values_t> valuevector =
