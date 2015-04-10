@@ -96,6 +96,46 @@ bool Database::createTableIfNotExists(
 	return true;
 }
 
+std::string Database::printTupleWhereStatement(
+		const Table::Tuple_t &_tuple,
+		const Table::KeyType_t &_KeyTypes) const
+{
+	std::stringstream valuestream;
+	bool AtLeastOneParameter = false;
+	for (Table::Tuple_t::const_iterator paramiter = _tuple.begin();
+			paramiter != _tuple.end(); ++paramiter) {
+		if (_tuple.isParameter(paramiter->first)) {
+			if (AtLeastOneParameter)
+				valuestream << " AND ";
+			valuestream << paramiter->first << "=";
+			Table::KeyType_t::const_iterator keytypeiter =
+					_KeyTypes.find(paramiter->first);
+			assert( keytypeiter != _KeyTypes.end() );
+			switch(keytypeiter->second) {
+			case Database_types::valchartype:
+				valuestream << "'" << paramiter->second << "'";
+				break;
+			default:
+				valuestream << paramiter->second;
+				break;
+			}
+			AtLeastOneParameter = true;
+		}
+	}
+	return valuestream.str();
+}
+
+bool Database::hasTupleOneParameter(
+		const Table::Tuple_t &_tuple) const
+{
+	for (Table::Tuple_t::const_iterator paramiter = _tuple.begin();
+			paramiter != _tuple.end(); ++paramiter) {
+		if (_tuple.isParameter(paramiter->first))
+			return true;
+	}
+	return false;
+}
+
 bool Database::deletePresentTuplesinTable(
 		const Table &_table,
 		const Table::KeyType_t &_KeyTypes) const
@@ -109,31 +149,10 @@ bool Database::deletePresentTuplesinTable(
 			tupleiter != _table.internal_table.end(); ++tupleiter) {
 		std::stringstream sql_delete;
 		sql_delete << "DELETE FROM " << _table.getName()
-			<< " WHERE ";
-		bool AtLeastOneParameter = false;
-		for (Table::Tuple_t::const_iterator paramiter = tupleiter->begin();
-				paramiter != tupleiter->end(); ++paramiter) {
-			if (tupleiter->isParameter(paramiter->first)) {
-				if (AtLeastOneParameter)
-					sql_delete << " AND ";
-				sql_delete << paramiter->first << "=";
-				Table::KeyType_t::const_iterator keytypeiter =
-						_KeyTypes.find(paramiter->first);
-				assert( keytypeiter != _KeyTypes.end() );
-				switch(keytypeiter->second) {
-				case Database_types::valchartype:
-					sql_delete << "'" << paramiter->second << "'";
-					break;
-				default:
-					sql_delete << paramiter->second;
-					break;
-				}
-				AtLeastOneParameter = true;
-			}
-		}
+			<< " WHERE " << printTupleWhereStatement(*tupleiter,_KeyTypes);
 		sql_delete << ";";
 		// only execute if WHERE statement makes sense
-		if (AtLeastOneParameter) {
+		if (hasTupleOneParameter(*tupleiter)) {
 			ses << sql_delete.str(), now;
 			BOOST_LOG_TRIVIAL(trace)
 				<< "SQL: " << sql_delete.str();

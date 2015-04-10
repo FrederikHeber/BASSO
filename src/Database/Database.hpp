@@ -182,6 +182,13 @@ private:
 			const Table::KeyType_t &_KeyTypes,
 			const Table::keys_t &_allowed_keys) const;
 
+	std::string printTupleWhereStatement(
+			const Table::Tuple_t &_tuple,
+			const Table::KeyType_t &_KeyTypes) const;
+
+	bool hasTupleOneParameter(
+			const Table::Tuple_t &_tuple) const;
+
 private:
 	//!> states whether a database file name has been given or not.
 	bool DatabaseFileGiven;
