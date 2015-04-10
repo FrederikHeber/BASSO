@@ -36,13 +36,13 @@ Database::Database() :
 	TypeNames[Database_types::inttype] = "int";
 	TypeNames[Database_types::doubletype] = "double";
 	TypeNames[Database_types::valchartype] = "valchar(255)";
+
+	// open connection
+	SQLite::Connector::registerConnector();
 }
 
 Database::~Database()
 {
-	// open connection
-	SQLite::Connector::registerConnector();
-
 	// write information
 	if (DatabaseFileGiven) {
 		writeAllTables();
