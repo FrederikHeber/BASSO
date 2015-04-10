@@ -111,6 +111,28 @@ public:
 	void setReplacePresentParameterTuples(const bool _flag)
 	{ ReplacePresentParameterTuples = _flag; }
 
+	/** Checks whether a tuple is present in the sqlite table without
+	 * causing any warning if table is not uptodate.
+	 *
+	 * @param _table table to inspect
+	 * @param _tuple tuple to look for
+	 * @return true - tuple present, false - not present
+	 */
+	bool isTuplePresentInTable(
+			const Table &_table,
+			const Table::Tuple_t &_tuple) const;
+
+	/** Returns the rowid (sqlite specific primary key) for the requested
+	 * \a _tuple in table \a _table.
+	 *
+	 * @param _table table to inspect
+	 * @param _tuple tuple to look for
+	 * @return rowid or (size_t)-1 of not present
+	 */
+	size_t getIdOfTuplePresentInTable(
+			const Table &_table,
+			const Table::Tuple_t &_tuple) const;
+
 	/** Writes a single table \a _table in the sqlite file.
 	 *
 	 * @param _table table to write to sqlite file

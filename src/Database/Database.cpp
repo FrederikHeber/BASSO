@@ -17,6 +17,7 @@
 #include "Log/Logging.hpp"
 #include "Poco/Data/Common.h"
 #include "Poco/Data/SQLite/Connector.h"
+#include "Poco/Data/SQLite/SQLiteException.h"
 
 #include "Table.hpp"
 
@@ -445,3 +446,74 @@ const Table& Database::getTableConst(const std::string &_name) const
 	return *iter->second;
 }
 
+bool Database::isTuplePresentInTable(
+		const Table &_table,
+		const Table::Tuple_t &_tuple) const
+{
+	std::vector<size_t> rowid;
+	const Table::keys_t keys = _table.getSetofUniqueKeys();
+	if (!keys.empty()) {
+		Table::KeyType_t KeyTypes = _table.getKeyToTypeMap(keys);
+		assert(keys.size() == KeyTypes.size());
+
+		Session ses("SQLite", filename.c_str());
+		std::stringstream sql;
+		sql << "SELECT rowid FROM " << _table.getName()
+			<< " WHERE " << printTupleWhereStatement(_tuple,KeyTypes);
+		BOOST_LOG_TRIVIAL(debug)
+			<< "SQL: " << sql.str();
+		try {
+			ses << sql.str(), into(rowid), now;
+		} catch (SQLite::InvalidSQLStatementException &e) {
+			// database not present
+			return false;
+		}
+	}
+	return (rowid.size() != 0);
+}
+
+size_t Database::getIdOfTuplePresentInTable(
+		const Table &_table,
+		const Table::Tuple_t &_tuple) const
+{
+	// we cannot admonish this: If a tuple is already in the sqlite table,
+	// we still have to add it to Database's tables as otherwise we cannot
+	// form sensible SQL statements (without knowing the table structure).
+//	if (!_table.isUptodate())
+//		BOOST_LOG_TRIVIAL(warning)
+//			<< "Table " << _table.getName()
+//			<< " is not up-to-date. Parameter tuple may be yet unknown.";
+
+	std::vector<size_t> rowid;
+	const Table::keys_t keys = _table.getSetofUniqueKeys();
+	if (!keys.empty()) {
+		Table::KeyType_t KeyTypes = _table.getKeyToTypeMap(keys);
+		assert(keys.size() == KeyTypes.size());
+
+		Session ses("SQLite", filename.c_str());
+		std::stringstream sql;
+		sql << "SELECT rowid FROM " << _table.getName()
+			<< " WHERE " << printTupleWhereStatement(_tuple,KeyTypes);
+		BOOST_LOG_TRIVIAL(debug)
+			<< "SQL: " << sql.str();
+		ses << sql.str(), into(rowid), now;
+	}
+	switch (rowid.size()) {
+		case 0:
+			return (size_t)-1;
+		case 1:
+			return rowid[0];
+		default:
+		{
+			std::stringstream valuestream;
+			std::copy(rowid.begin(), rowid.end(),
+					std::ostream_iterator<size_t>(valuestream, " "));
+			BOOST_LOG_TRIVIAL(warning)
+				<< "Table " << _table.getName()
+				<< " contains more than one row with the given tuple: "
+				<< valuestream.str()
+				<< ". Returning first.";
+			return rowid[0];
+		}
+	}
+}
