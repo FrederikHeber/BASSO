@@ -20,6 +20,38 @@
 /** The Database class provides a single instance to contain all iteration-
  * related data. The data is eventually placed in a single-file (sqlite)
  * allowing for command-line parsing and data extraction for creating figures.
+ *
+ * \section Outline of the class and usage outline
+ *
+ * The Database is used by adding tables via addTable(), which immediately
+ * returns a reference to the instantiated table. The reference of the new
+ * table can retrieved any time via getTable() via its unique table name.
+ * After the table has been filled with tuples, writeSQLitefile() writes
+ * the whole set of known tables to disc. For updating just a single
+ * table writeTable() can be used.
+ *
+ * \section A brief walk in SQL land sql-walkthru
+ *
+ * In general, SQL databases have multiple tables. They are linked via keys
+ * where each row in a table is identified by a unique so-called \b primary
+ * key. These keys may also be stored in other tables as so-called \b foreign
+ * keys. Via matching primary and foreign keys two (or more) tables can
+ * be linked in a so-called \b join to create a larger, combined table.
+ * Last but not least, a so-called \b view can be thought of like a filter
+ * that for example performs the stored join magically in the background,
+ * while the user in the foreground simply operates with a normal table. In
+ * this case the larger, combined table directly.
+ *
+ * \section Central idea idea
+ *
+ * The central idea for the database in a laboratory code is that you have
+ * (at least) two tables: one table stores the parameter set and another
+ * all the data -- e.g. iteration counts, residual information, ... for an
+ * iterative method. The parameter set is identified via its (row)id and
+ * this id is stored along with all associated (iterative) data in the
+ * second table. Multiple runs with varying parameter sets differ by this
+ * foreign key in the data table
+ *
  */
 class Database
 {
