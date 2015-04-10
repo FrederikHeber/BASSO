@@ -111,9 +111,15 @@ public:
 	void setReplacePresentParameterTuples(const bool _flag)
 	{ ReplacePresentParameterTuples = _flag; }
 
-private:
+	/** Writes a single table \a _table in the sqlite file.
+	 *
+	 * @param _table table to write to sqlite file
+	 * @return true - everything ok, false - else
+	 */
+	bool writeTable(const Table &_table) const;
 
-	/** Internal function to write the database as an sqlite file.
+
+	/** Writes all tables in the database as an sqlite file.
 	 *
 	 * This takes the internal_database and writes it as a single
 	 * table contained in a sqlite-compatible file.
@@ -121,6 +127,8 @@ private:
 	 * @return true - succesfully written, false - something went wrong
 	 */
 	bool writeAllTables() const;
+
+private:
 
 	/** Adds the table to the sqlite file if it not already exists.
 	 *
@@ -143,13 +151,6 @@ private:
 	bool deletePresentTuplesinTable(
 			const Table &_table,
 			const Table::KeyType_t &_KeyTypes) const;
-
-	/** Writes a single table \a _table in the sqlite file.
-	 *
-	 * @param _table table to write to sqlite file
-	 * @return true - everything ok, false - else
-	 */
-	bool writeTable(const Table &_table) const;
 
 	/** Reads a single table \a _table from the sqlite file.
 	 *
