@@ -120,7 +120,7 @@ private:
 	 *
 	 * @return true - succesfully written, false - something went wrong
 	 */
-	bool writeSQLitefile() const;
+	bool writeAllTables() const;
 
 	/** Adds the table to the sqlite file if it not already exists.
 	 *

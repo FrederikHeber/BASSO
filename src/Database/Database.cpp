@@ -45,16 +45,15 @@ Database::~Database()
 
 	// write information
 	if (DatabaseFileGiven) {
-		writeSQLitefile();
+		writeAllTables();
 	}
 
     // quit
 	SQLite::Connector::unregisterConnector();
 }
 
-bool Database::writeSQLitefile() const
+bool Database::writeAllTables() const
 {
-
 	for (tables_t::const_iterator tableiter = tables.begin();
 			tableiter != tables.end(); ++tableiter) {
 		const Table &currenttable = *tableiter->second;
