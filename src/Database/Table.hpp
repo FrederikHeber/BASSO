@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/shared_ptr.hpp>
 #include <map>
 #include <set>
 #include <sstream>
@@ -26,7 +27,13 @@ class Database;
  */
 class Table
 {
-public:
+private:
+	//!> grant Database access to private functions
+	friend class Database;
+
+	//!> typedef for this instance wrapped in a shared_ptr
+	typedef boost::shared_ptr<Table> ptr;
+
 	/** Constructor for class Table.
 	 *
 	 */
@@ -35,10 +42,7 @@ public:
 		uptodate(true)
 	{}
 
-	/** Destructor for class Table.
-	 *
-	 */
-	~Table() {}
+public:
 
 	//!> enumeration on what a column represents
 	enum ColumnType {
@@ -133,8 +137,6 @@ public:
 	{ return internal_table.empty(); }
 
 private:
-	//!> grant Database access to private functions
-	friend class Database;
 
 	//!> unique set of all column names
 	typedef std::set<std::string> keys_t;

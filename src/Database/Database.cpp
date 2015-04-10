@@ -57,7 +57,7 @@ bool Database::writeSQLitefile() const
 
 	for (tables_t::const_iterator tableiter = tables.begin();
 			tableiter != tables.end(); ++tableiter) {
-		const Table &currenttable = tableiter->second;
+		const Table &currenttable = *tableiter->second;
 		writeTable(currenttable);
 	}
 
@@ -387,10 +387,11 @@ Table& Database::addTable(const std::string &_name)
 	// check whether table of such a name is not already present
 	tables_t::iterator iter = tables.find(_name);
 	if (iter == tables.end()) {
-		tables.insert( std::make_pair(_name, Table(_name)) );
+		Table::ptr insert_table(new Table(_name));
+		tables.insert( std::make_pair(_name, insert_table) );
 		iter = tables.find(_name);
 	}
-	return iter->second;
+	return *iter->second;
 }
 
 bool Database::removeTable(const std::string &_name)
@@ -406,13 +407,13 @@ Table& Database::getTable(const std::string &_name)
 {
 	tables_t::iterator iter = tables.find(_name);
 	assert( iter != tables.end() );
-	return iter->second;
+	return *iter->second;
 }
 
 const Table& Database::getTableConst(const std::string &_name) const
 {
 	tables_t::const_iterator iter = tables.find(_name);
 	assert( iter != tables.end() );
-	return iter->second;
+	return *iter->second;
 }
 

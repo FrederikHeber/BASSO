@@ -196,7 +196,7 @@ private:
 	static std::vector<std::string> TypeNames;
 
 	//!> typedef for the set of tables
-	typedef std::map<std::string, Table> tables_t;
+	typedef std::map<std::string, Table::ptr> tables_t;
 
 	//!> list of all tables of this database
 	tables_t tables;
