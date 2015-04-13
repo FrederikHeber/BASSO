@@ -76,14 +76,12 @@ void SequentialSubspaceMinimizer::setN(
 	istate.reset();
 }
 
-//!> limit for angle columns in angles table
-static const unsigned int MAXANGLES = 4;
-
 static Table::Tuple_t prepareAngleTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
-		const unsigned int _dim)
+		const unsigned int _dim,
+		const size_t _maxangles)
 {
 	Table::Tuple_t angle_tuple;
 	angle_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
@@ -102,7 +100,7 @@ static Table::Tuple_t prepareAngleTuple(
 	names += "angle","bregman_angle";
 	for (std::vector<std::string>::const_iterator nameiter = names.begin();
 			nameiter != names.end(); ++nameiter)
-		for (unsigned int i=0; i<MAXANGLES; ++i) {
+		for (unsigned int i=0; i<_maxangles; ++i) {
 			std::stringstream componentname;
 			componentname << *nameiter << i+1;
 			BOOST_LOG_TRIVIAL(debug)
@@ -171,7 +169,7 @@ Table::Tuple_t SequentialSubspaceMinimizer::addInfoToAnglesTable(
 				_refs.NormX.getPvalue(),
 				_refs.NormY.getPvalue(),
 				N,
-				_refs.SpaceX.getDimension());
+				_refs.SpaceX.getDimension(), N);
 		angle_tuple.insert( std::make_pair("max_iterations", MaxOuterIterations), Table::Parameter);
 		angle_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 	}
@@ -323,7 +321,7 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 		{
 			const IterationState::angles_t angles =
 					istate.calculateBregmanAngles(newdir);
-			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
+			for (unsigned int i = 0; i < angles.size();
 					++i) {
 				std::stringstream componentname;
 				componentname << "bregman_angle" << lastIndices[i] + 1;
@@ -334,7 +332,7 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 		{
 			const IterationState::angles_t angles = istate.calculateAngles(
 					newdir);
-			for (unsigned int i = 0; (i < MAXANGLES) && (i < angles.size());
+			for (unsigned int i = 0; i < angles.size();
 					++i) {
 				std::stringstream componentname;
 				componentname << "angle" << lastIndices[i] + 1;
