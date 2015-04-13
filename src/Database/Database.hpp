@@ -128,6 +128,16 @@ public:
 	 */
 	bool writeAllTables() const;
 
+	/** Getter for whether a database file was given.
+	 *
+	 * This is important for whether tables can be written to file and thus
+	 * whether a unique rowid id (for parameter sets) can be obtained or not.
+	 *
+	 * @return true - filename given, false - else
+	 */
+	bool isDatabaseFileGiven() const
+	{ return DatabaseFileGiven; }
+
 private:
 
 	/** Adds the table to the sqlite file if it not already exists.
