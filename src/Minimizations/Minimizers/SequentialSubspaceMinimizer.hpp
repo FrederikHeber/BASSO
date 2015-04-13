@@ -111,12 +111,8 @@ public:
 
 protected:
 
-	Table::Tuple_t addInfoToPerIterationTable(
-			const QuickAccessReferences &_refs) const;
-	Table::Tuple_t addInfoToOverallTable(
-			const QuickAccessReferences &_refs) const;
-	Table::Tuple_t addInfoToAnglesTable(
-			const QuickAccessReferences &_refs) const;
+	void addAdditionalParametersToTuple(
+			Table::Tuple_t &_tuple) const;
 
 	const unsigned int calculateStepWidth(
 			const QuickAccessReferences& refs,

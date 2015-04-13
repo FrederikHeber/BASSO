@@ -278,7 +278,7 @@ Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
 		const double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
-		const int _MaxOuterIterations)
+		const int _MaxOuterIterations) const
 {
 	Table::Tuple_t per_iteration_tuple;
 	per_iteration_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
@@ -286,6 +286,9 @@ Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
 	per_iteration_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
+	// add additional parameters from derived classes
+	addAdditionalParametersToTuple(per_iteration_tuple);
+	// add additional parameters specified from user
 	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
 			iter != tuple_params.end(); ) {
 		const std::string &token = *iter++;
@@ -307,7 +310,7 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 		const double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
-		const int _MaxOuterIterations)
+		const int _MaxOuterIterations) const
 {
 	Table::Tuple_t overall_tuple;
 	overall_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
@@ -315,6 +318,9 @@ Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
 	overall_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
 	overall_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
 	overall_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
+	// add additional parameters from derived classes
+	addAdditionalParametersToTuple(overall_tuple);
+	// add additional parameters specified from user
 	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
 			iter != tuple_params.end(); ) {
 		const std::string &token = *iter++;

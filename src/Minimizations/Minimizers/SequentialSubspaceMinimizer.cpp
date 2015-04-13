@@ -121,59 +121,15 @@ SpaceElement_ptr_t calculateDualStartingValue(
 	return dual_solution;
 }
 
-Table::Tuple_t SequentialSubspaceMinimizer::addInfoToPerIterationTable(
-		const QuickAccessReferences &_refs) const
+void
+SequentialSubspaceMinimizer::addAdditionalParametersToTuple(
+		Table::Tuple_t &_tuple) const
 {
-	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
-			_refs.NormX.getPvalue(),
-			_refs.NormY.getPvalue(),
-			N,
-			_refs.SpaceX.getDimension(),
-			MaxOuterIterations);
 	if (inexactLinesearch) {
-		per_iteration_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
-		per_iteration_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
+		_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
+		_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
 	}
-	per_iteration_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-
-	return per_iteration_tuple;
-}
-
-Table::Tuple_t SequentialSubspaceMinimizer::addInfoToOverallTable(
-		const QuickAccessReferences &_refs) const
-{
-	Table::Tuple_t overall_tuple = prepareOverallTuple(
-			_refs.NormX.getPvalue(),
-			_refs.NormY.getPvalue(),
-			N,
-			_refs.SpaceX.getDimension(),
-			MaxOuterIterations);
-	if (inexactLinesearch) {
-		overall_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
-		overall_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
-	}
-	overall_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-	// due to Eigen's lazy evaluation runtime is not measured accurately
-
-	return overall_tuple;
-}
-
-Table::Tuple_t SequentialSubspaceMinimizer::addInfoToAnglesTable(
-		const QuickAccessReferences &_refs) const
-{
-	Table::Tuple_t angle_tuple;
-	if (DoCalculateAngles) {
-		// build angle tuple for search direction angle information
-		angle_tuple = prepareAngleTuple(
-				_refs.NormX.getPvalue(),
-				_refs.NormY.getPvalue(),
-				N,
-				_refs.SpaceX.getDimension(), N);
-		angle_tuple.insert( std::make_pair("max_iterations", MaxOuterIterations), Table::Parameter);
-		angle_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
-	}
-	return angle_tuple;
+	_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 }
 
 bool SequentialSubspaceMinimizer::isNonConverging(
@@ -418,10 +374,26 @@ SequentialSubspaceMinimizer::operator()(
 				refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	Table::Tuple_t per_iteration_tuple = addInfoToPerIterationTable(refs);
-	Table::Tuple_t overall_tuple = addInfoToOverallTable(refs);
+	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
+			refs.NormX.getPvalue(),
+			refs.NormY.getPvalue(),
+			N,
+			refs.SpaceX.getDimension(),
+			MaxOuterIterations);
+	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
+	Table::Tuple_t overall_tuple = prepareOverallTuple(
+			refs.NormX.getPvalue(),
+			refs.NormY.getPvalue(),
+			N,
+			refs.SpaceX.getDimension(),
+			MaxOuterIterations);
 	Table& angle_table = database.addTable("angles");
-	Table::Tuple_t angle_tuple = addInfoToAnglesTable(refs);
+	Table::Tuple_t angle_tuple = prepareAngleTuple(
+			refs.NormX.getPvalue(),
+			refs.NormY.getPvalue(),
+			N,
+			refs.SpaceX.getDimension(),
+			MaxOuterIterations);
 
 	/// -# check initial stopping criterion
 	const double ynorm = refs.NormY(refs.y);

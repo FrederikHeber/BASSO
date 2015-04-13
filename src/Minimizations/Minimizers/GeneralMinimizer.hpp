@@ -208,7 +208,6 @@ protected:
 	virtual void resetState_interal()
 	{}
 
-
 	/** Resets the old Bregman distance if iteration is restarted or solver
 	 * reused.
 	 */
@@ -227,6 +226,15 @@ protected:
 			const LinearMapping &_A,
 			unsigned int _NumberOuterIterations
 			) const;
+
+	/** Allows to add more parameters to the current parameter tuple before
+	 * it is inserted into the sqlite database.
+	 *
+	 * @param _tuple tuple to insert parameters to
+	 */
+	virtual void addAdditionalParametersToTuple(
+			Table::Tuple_t &_tuple) const {}
+
 public:
 	//!> magnitude of noise
 	const double Delta;
@@ -277,19 +285,19 @@ protected:
 	//!> table with overall iteration information
 	Table& overall_table;
 
-	static Table::Tuple_t preparePerIterationTuple(
+	Table::Tuple_t preparePerIterationTuple(
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,
 			const unsigned int _dim,
-			const int _MaxOuterIterations);
+			const int _MaxOuterIterations) const;
 
-	static Table::Tuple_t prepareOverallTuple(
+	Table::Tuple_t prepareOverallTuple(
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,
 			const unsigned int _dim,
-			const int _MaxOuterIterations);
+			const int _MaxOuterIterations) const;
 
 	static void finalizeOverallTuple(
 			Table::Tuple_t &_overall_tuple,
