@@ -52,13 +52,14 @@ Database::~Database()
 
 bool Database::writeAllTables() const
 {
+	bool status = true;
 	for (tables_t::const_iterator tableiter = tables.begin();
 			tableiter != tables.end(); ++tableiter) {
 		const Table &currenttable = *tableiter->second;
-		writeTable(currenttable);
+		status &= writeTable(currenttable);
 	}
 
-    return true;
+    return status;
 }
 
 bool Database::createTableIfNotExists(
@@ -66,6 +67,9 @@ bool Database::createTableIfNotExists(
 		const Table::KeyType_t &_KeyTypes,
 		const Table::keys_t &_allowed_keys) const
 {
+	if (!DatabaseFileGiven)
+		return false;
+
 	Session ses("SQLite", filename.c_str());
 	// Don't drop table, we might want to accumulate multiple datasets
 //		ses << "DROP TABLE IF EXISTS " << _table.getName(), now;
@@ -166,7 +170,7 @@ bool Database::updateTable(
 		const Table::keys_t &_allowed_keys) const
 {
 	if (!DatabaseFileGiven) {
-		BOOST_LOG_TRIVIAL(error)
+		BOOST_LOG_TRIVIAL(warning)
 				<< "No database file given, cannot write table "
 				<< _table.getName() << " to file.";
 		return false;
@@ -223,6 +227,7 @@ bool Database::writeTable(const Table &_table) const
 	/// first, we need to find the set of unique keys
 	const Table::keys_t keys = _table.getSetofUniqueKeys();
 
+	bool status = true;
 	if (!keys.empty()) {
 		/// second, we need to gather a type for each key
 		Table::KeyType_t KeyTypes = _table.getKeyToTypeMap(keys);
@@ -242,7 +247,7 @@ bool Database::writeTable(const Table &_table) const
 			deletePresentTuplesinTable(_table, KeyTypes);
 
 		/// Combine the following update into single transaction
-		updateTable(_table, KeyTypes, allowed_keys);
+		status &= updateTable(_table, KeyTypes, allowed_keys);
 
 	} else {
 		BOOST_LOG_TRIVIAL(warning)
@@ -250,7 +255,7 @@ bool Database::writeTable(const Table &_table) const
 				<< " is empty, not writing to iteration-file.";
 	}
 
-	return true;
+	return status;
 }
 
 bool Database::readTable(
