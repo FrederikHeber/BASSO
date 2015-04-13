@@ -140,6 +140,12 @@ public:
 	 */
 	bool writeTable(const Table &_table) const;
 
+	/** Execute a given string SQL command \a _command.
+	 *
+	 * \param _command SQL statement to execute
+	 * \return true - everything ok, false - command failed
+	 */
+	bool executeSQLStatement(const std::string &_command) const;
 
 	/** Writes all tables in the database as an sqlite file.
 	 *

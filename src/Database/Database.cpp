@@ -517,3 +517,15 @@ size_t Database::getIdOfTuplePresentInTable(
 		}
 	}
 }
+
+bool Database::executeSQLStatement(const std::string &_command) const
+{
+	// if we don't connect to sqlite file, we transparently drop the statement
+	if (!DatabaseFileGiven)
+		return true;
+
+	Session ses("SQLite", filename.c_str());
+	Statement stmt = ( ses << _command );
+	stmt.execute();
+	return stmt.done();
+}
