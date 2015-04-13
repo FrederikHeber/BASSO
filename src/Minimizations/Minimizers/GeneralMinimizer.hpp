@@ -36,7 +36,7 @@ public:
 			const unsigned int _outputsteps=0
 			);
 
-	virtual ~GeneralMinimizer() {}
+	virtual ~GeneralMinimizer();
 
 	/** Internal structure containing the current search direction.
 	 *
@@ -227,6 +227,7 @@ protected:
 			unsigned int _NumberOuterIterations
 			) const;
 
+
 	/** Allows to add more parameters to the current parameter tuple before
 	 * it is inserted into the sqlite database.
 	 *
@@ -234,6 +235,13 @@ protected:
 	 */
 	virtual void addAdditionalParametersToTuple(
 			Table::Tuple_t &_tuple) const {}
+
+private:
+	/** Create (deprecated) overall and per_iteration tables as views.
+	 *
+	 * \return true - views created, false - statements failed
+	 */
+	bool createViews() const;
 
 public:
 	//!> magnitude of noise

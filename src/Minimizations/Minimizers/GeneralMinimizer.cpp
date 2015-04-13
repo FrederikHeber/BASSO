@@ -73,6 +73,10 @@ GeneralMinimizer::GeneralMinimizer(
 			std::make_pair( "nlopt", nonlinearoptimization);
 }
 
+GeneralMinimizer::~GeneralMinimizer()
+{
+}
+
 void GeneralMinimizer::SearchDirection::update(
 	 	 const QuickAccessReferences &_refs,
 	 	 const SpaceElement_ptr_t &_residual)
@@ -374,6 +378,39 @@ void GeneralMinimizer::finalizeOverallTuple(
 			boost::chrono::duration<double>(
 					_refs.A.getTiming()+_refs.A_t.getTiming()).count() );
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
+}
+
+bool GeneralMinimizer::createViews() const
+{
+	// write tables beforehand
+	database.writeAllTables();
+
+	// we create views overall, and per_iteration (which were present
+	// before the switch to distinct data and parameters table)
+	bool status = true;
+	{
+		// check whether tables are present and contain elements
+		status &= !overall_table.empty();
+		status &= !per_iteration_table.empty();
+	}
+	if (!status)
+		BOOST_LOG_TRIVIAL(error)
+			<< "(Some of the) Required Tables are empty, not creating views.";
+	if (status) {
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		status &= database.executeSQLStatement(sql.str());
+	}
+	if (status) {
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS per_iteration AS SELECT * FROM parameters p INNER JOIN data_per_iteration d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		status &= database.executeSQLStatement(sql.str());
+	}
+	return status;
 }
 
 void GeneralMinimizer::setAdditionalTupleParameters(

@@ -111,6 +111,33 @@ static Table::Tuple_t& prepareAngleTuple(
 	return angle_tuple;
 }
 
+
+bool createAnglesViews(const Database &_database)
+{
+	// write tables beforehand
+	_database.writeAllTables();
+	// we create views angles (which were present before the switch to distinct
+	// data and parameters table)
+	bool status = true;
+	{
+		// check whether tables are present and contain elements
+		const Table &angles_table = _database.getTableConst("angles");
+		status &= !angles_table.empty();
+	}
+	if (!status)
+		BOOST_LOG_TRIVIAL(error)
+			<< "(Some of the) Required Tables are empty, not creating angle views.";
+	if (status) {
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS angles AS SELECT * FROM parameters p INNER JOIN data_angles d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		status &= _database.executeSQLStatement(sql.str());
+	}
+	return status;
+}
+
+
 SpaceElement_ptr_t calculateDualStartingValue(
 		const SpaceElement_ptr_t &_dualstartvalue)
 {
