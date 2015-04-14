@@ -58,10 +58,17 @@ public:
 
 	/** The Tuple_t contains the data as a map of key/value pairs.
 	 */
-	struct Tuple_t :
+		class Tuple_t :
 		public TokenTypeMap_t
 	{
-		bool operator<(const Tuple_t &_a) const;
+	protected:
+			//!> grant only Table access to Tuple's cstor and dstor
+			friend class Table;
+
+			Tuple_t() {}
+	public:
+
+		virtual bool operator<(const Tuple_t &_a) const;
 
 		/** Replaces a present (name, value) pair with a new \a _value.
 		 *
@@ -104,6 +111,13 @@ public:
 		typedef std::map<std::string, enum ColumnType> TypeMap_t;
 		TypeMap_t TypeMap;
 	};
+
+	/** Getter for the default tuple associated to this table.
+	 *
+	 * @return ref to tuple
+	 */
+	virtual Tuple_t& getTuple()
+	{ return internal_tuple; }
 
 	/** Adds a data tuple to the table.
 	 *
@@ -234,6 +248,11 @@ private:
 	 * with respect to this table.
 	 */
 	mutable bool uptodate;
+
+	/** Internal tuple used for this table.
+	 *
+	 */
+	Tuple_t internal_tuple;
 };
 
 

@@ -323,7 +323,7 @@ bool Database::readTable(
 			}
 
 		// initialize the tuple from first row
-		Table::Tuple_t tuple;
+		Table::Tuple_t& tuple = _table.getTuple();
 		for (KeyValueMap_t::const_iterator iter = KeyValueMap.begin();
 				iter != KeyValueMap.end(); ++iter) {
 			assert( KeyTypes.count(iter->first) );

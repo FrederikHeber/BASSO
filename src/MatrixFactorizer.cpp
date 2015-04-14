@@ -26,6 +26,14 @@
 
 #define TRUESOLUTION 1
 
+void clearSmallTables(Database_ptr_t &_database)
+{
+	// remove tables
+	_database->clearTable("per_iteration");
+	_database->clearTable("overall");
+	_database->clearTable("angles");
+}
+
 template <class T>
 bool solveProblem(
 		Database_ptr_t &_database,
@@ -86,6 +94,9 @@ bool solveProblem(
 		dualx0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();
 		dualx0->setZero();
 	}
+
+	// remove some tables beforehand
+	clearSmallTables(_database);
 
 	// and minimize
 	try{
@@ -178,6 +189,9 @@ bool projectOntoImage(
 
 	// and minimize
 	{
+		// remove some tables beforehand
+		clearSmallTables(_database);
+
 		GeneralMinimizer::ReturnValues result;
 		try{
 			result = (*minimizer)(
@@ -201,14 +215,6 @@ bool projectOntoImage(
 	}
 
 	return true;
-}
-
-void removeSmallTables(Database_ptr_t &_database)
-{
-	// remove tables
-	_database->removeTable("per_iteration");
-	_database->removeTable("overall");
-	_database->removeTable("angles");
 }
 
 void renormalizeMatrixByTrace(
@@ -338,7 +344,7 @@ int main(int argc, char **argv)
 			SolutionFactory::createDatabase(opts);
 	Table& loop_table = database->addTable("loop");
 	Table& loop_overall_table = database->addTable("loop_overall");
-	Table::Tuple_t loop_tuple;
+	Table::Tuple_t& loop_tuple = loop_table.getTuple();
 	loop_tuple.insert( std::make_pair("k", (int)data.innerSize()), Table::Parameter);
 	loop_tuple.insert( std::make_pair("n", (int)data.outerSize()), Table::Parameter);
 	loop_tuple.insert( std::make_pair("p", opts.normx), Table::Parameter);
@@ -351,7 +357,7 @@ int main(int argc, char **argv)
 				<< *iter << "," << *(iter+1) << ") to loop tuple.";
 		loop_tuple.insert( std::make_pair(*iter, *(iter+1)), Table::Parameter);
 	}
-	Table::Tuple_t overall_tuple = loop_tuple;
+	Table::Tuple_t& overall_tuple = loop_overall_table.getTuple();
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
@@ -447,7 +453,6 @@ int main(int argc, char **argv)
 					loop_nr >= 3))
 				return 255;
 			pixel_matrix.col(pixel_dim) = pixel_matrix_col;
-			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(info)
 				<< "Resulting vector is " << pixel_matrix.col(pixel_dim).transpose();
 		}
@@ -527,7 +532,6 @@ int main(int argc, char **argv)
 					loop_nr >= 3))
 				return 255;
 			spectral_matrix.row(spectral_dim) = spectral_matrix_row;
-			removeSmallTables(database);
 			BOOST_LOG_TRIVIAL(info)
 				<< "Resulting vector is " << spectral_matrix.row(spectral_dim).transpose();
 		}

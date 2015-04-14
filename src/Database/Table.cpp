@@ -149,4 +149,5 @@ std::vector<Table::values_t> Table::convertTuplesToValueVector(
 void Table::clear()
 {
 	internal_table.clear();
+	internal_tuple.clear();
 }

@@ -285,14 +285,14 @@ protected:
 	//!> table with overall iteration information
 	Table& overall_table;
 
-	Table::Tuple_t preparePerIterationTuple(
+	Table::Tuple_t& preparePerIterationTuple(
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,
 			const unsigned int _dim,
 			const int _MaxOuterIterations) const;
 
-	Table::Tuple_t prepareOverallTuple(
+	Table::Tuple_t& prepareOverallTuple(
 			const double _val_NormX,
 			const double _val_NormY,
 			const unsigned int _N,

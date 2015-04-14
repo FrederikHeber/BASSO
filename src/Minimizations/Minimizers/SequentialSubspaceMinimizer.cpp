@@ -76,14 +76,15 @@ void SequentialSubspaceMinimizer::setN(
 	istate.reset();
 }
 
-static Table::Tuple_t prepareAngleTuple(
+static Table::Tuple_t& prepareAngleTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
-		const size_t _maxangles)
+		const size_t _maxangles,
+		Table &_table)
 {
-	Table::Tuple_t angle_tuple;
+	Table::Tuple_t &angle_tuple = _table.getTuple();
 	angle_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
 	angle_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	angle_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
@@ -374,26 +375,27 @@ SequentialSubspaceMinimizer::operator()(
 				refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
+	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t overall_tuple = prepareOverallTuple(
+	Table::Tuple_t& overall_tuple = prepareOverallTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
 	Table& angle_table = database.addTable("angles");
-	Table::Tuple_t angle_tuple = prepareAngleTuple(
+	Table::Tuple_t& angle_tuple = prepareAngleTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
-			MaxOuterIterations);
+			MaxOuterIterations,
+			angle_table);
 
 	/// -# check initial stopping criterion
 	const double ynorm = refs.NormY(refs.y);

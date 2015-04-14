@@ -27,7 +27,7 @@ void DatabaseUnitTest::simpleTest()
 {
     Database mydata;
     Table &mytable = mydata.addTable("mytable");
-    Table::Tuple_t tuple;
+    Table::Tuple_t& tuple = mytable.getTuple();
     tuple.insert( std::make_pair("p", 1), Table::Parameter );
     mytable.addTuple(tuple);
     CPPUNIT_ASSERT_EQUAL( (size_t)1, mydata.size() );

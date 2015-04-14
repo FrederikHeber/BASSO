@@ -273,14 +273,15 @@ void GeneralMinimizer::printIntermediateSolution(
 	}
 }
 
-Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
+Table::Tuple_t& GeneralMinimizer::preparePerIterationTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
 		const int _MaxOuterIterations) const
 {
-	Table::Tuple_t per_iteration_tuple;
+	// create tuple
+	Table::Tuple_t &per_iteration_tuple = per_iteration_table.getTuple();
 	per_iteration_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
@@ -305,14 +306,14 @@ Table::Tuple_t GeneralMinimizer::preparePerIterationTuple(
 	return per_iteration_tuple;
 }
 
-Table::Tuple_t GeneralMinimizer::prepareOverallTuple(
+Table::Tuple_t& GeneralMinimizer::prepareOverallTuple(
 		const double _val_NormX,
 		const double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
 		const int _MaxOuterIterations) const
 {
-	Table::Tuple_t overall_tuple;
+	Table::Tuple_t &overall_tuple = overall_table.getTuple();
 	overall_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
 	overall_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
 	overall_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);

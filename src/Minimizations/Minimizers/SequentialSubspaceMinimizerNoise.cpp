@@ -125,14 +125,14 @@ SequentialSubspaceMinimizerNoise::operator()(
 				refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
+	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t overall_tuple = prepareOverallTuple(
+	Table::Tuple_t& overall_tuple = prepareOverallTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
