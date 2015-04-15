@@ -32,13 +32,13 @@ public:
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
 	 * @param _N number of search directions
-	 * @param _MatrixVectorProduct_subspace counts for matrix-vector
-	 * @param _ScalarVectorProduct_subspace counts for vector-vector
+	 * @param _orthogonal_directions orthogonalize new search direction?
 	 * @return shared_ptr containing created instance
 	 */
 	static Searchspace::ptr_t create(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-			const unsigned int _N
+			const unsigned int _N,
+			const bool _orthogonal_directions
 			);
 
 	/** Setter for the desired type to produce.

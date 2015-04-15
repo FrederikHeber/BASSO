@@ -33,6 +33,7 @@ CommandLineOptions::CommandLineOptions() :
 	normx(2.),
 	normy(2.),
 	N(2),
+	orthogonal_directions(false),
 	outputsteps(0),
 	powerx(2.),
 	powery(2.),
@@ -61,9 +62,9 @@ void CommandLineOptions::init()
 	desc_algorithm.add_options()
 			("algorithm", po::value<std::string>(),
 					"set the used iteration algorithm")
-	        ("delta", po::value<double>(),
+			("delta", po::value<double>(),
 	        		"set the amount of noise")
-	        ("iteration-file", po::value< boost::filesystem::path >(),
+			("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
 			("minimization-library", po::value<std::string>(),
 					"set which minimization library to use (gsl,nlopt)")
@@ -87,7 +88,7 @@ void CommandLineOptions::init()
 			("database-replace", po::value<bool>(),
 					"whether to replace tuples in database file (true) or just add (default=false)")
 			("help", "produce help message")
-	        ("output-steps", po::value<unsigned int>(), "output solution each ... steps")
+	        	("output-steps", po::value<unsigned int>(), "output solution each ... steps")
 			("tuple-parameters", po::value< std::vector<std::string> >()->multitoken(),
 					"set additional parameters to add to tables in iteration database for distinguishing tuples")
 			("verbose", po::value<unsigned int>(),
@@ -110,6 +111,8 @@ void CommandLineOptions::init()
 					"whether to enforce update index algorithm to be a random mapping")
 			("inexact-linesearch", po::value<bool>(),
 					"set the line search to be inexact or (quasi) exact")
+			("orthogonal-directions", po::value<bool>(),
+					"set whether to always orthogonalize search directions or not")
 			("searchspace", po::value< std::string >(),
 					"set the type of search directions used")
 			("tau", po::value<double>(),
@@ -237,6 +240,13 @@ void CommandLineOptions::parse(int argc, char **argv)
 		N = vm["number-directions"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Number of search directions was set to " << N;
+	}
+
+	if (vm.count("orthogonal-directions")) {
+		orthogonal_directions = vm["orthogonal-directions"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Orthogonalizing search directions: "
+			<< (orthogonal_directions ? "true" : "false");
 	}
 
 	if (vm.count("output-steps")) {
@@ -567,6 +577,7 @@ void CommandLineOptions::store(std::ostream &_output)
 	writeValue<bool>(_output, vm,  "calculateAngles");
 	writeValue<bool>(_output, vm,  "enforceRandomMapping");
 	writeValue<bool>(_output, vm,  "inexact-linesearch");
+	writeValue<bool>(_output, vm,  "orthogonal-directions");
 	writeValue<std::string>(_output, vm,  "searchspace");
 	writeValue<double>(_output, vm,  "tau");
 	writeValue<unsigned int>(_output, vm,  "update-algorithm");

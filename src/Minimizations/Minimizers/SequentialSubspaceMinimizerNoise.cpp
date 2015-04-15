@@ -41,7 +41,8 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
-		const unsigned int _outputsteps
+		const unsigned int _outputsteps,
+		const bool _orthogonal_directions
 		) :
 	SequentialSubspaceMinimizer(
 		_inverseproblem,
@@ -49,7 +50,8 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		_maxiter,
 		_maxinneriter,
 		_database,
-		_outputsteps
+		_outputsteps,
+		_orthogonal_directions
 		),
 	tau(1.1)
 {
@@ -106,7 +108,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 				_startvalue,
 				residual,
 				residuum,
-				N);
+				N,
+				DoOrthogonalizeDirections);
 	}
 
 	/// calculate some values prior to loop

@@ -39,10 +39,12 @@ bool LastNSearchDirections::enforceRandomMapping = false;
 
 LastNSearchDirections::LastNSearchDirections(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-		const unsigned int _N) :
+		const unsigned int _N,
+		const bool _orthogonal_directions) :
 	Searchspace(_SearchDirectionSpace_ptr,_N),
 	index(0),
-	lastIndices(_N, 0)
+	lastIndices(_N, 0),
+	orthogonal_directions(_orthogonal_directions)
 {}
 
 void LastNSearchDirections::update(

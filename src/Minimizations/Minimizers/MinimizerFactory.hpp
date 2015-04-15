@@ -51,6 +51,7 @@ public:
 	 * @param _database database to store iteration information to
 	 * @param _stepwidth_type which step width procedure to use (landweber)
 	 * @param _outputsteps write temporary solution each .. steps
+	 * @param _orthogonal_directions orthogonalize new search direction?
 	 * @return wrapped instance of desired \a _type
 	 */
 	instance_ptr_t createInstance(
@@ -61,7 +62,8 @@ public:
 			const unsigned int _maxinneriter,
 			Database &_database,
 			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
-			const unsigned int _outputsteps=0
+			const unsigned int _outputsteps=0,
+			const bool _orthogonal_directions=false
 			);
 
 	/** Helper function to check whether the given \a _name designates a

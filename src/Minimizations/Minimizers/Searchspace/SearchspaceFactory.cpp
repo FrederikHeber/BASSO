@@ -25,7 +25,8 @@ SearchspaceFactory::InstanceType = SearchspaceFactory::LastNDirections;
 
 Searchspace::ptr_t SearchspaceFactory::create(
 		const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-		const unsigned int _N
+		const unsigned int _N,
+		const bool _orthogonal_directions
 		)
 {
 	Searchspace::ptr_t returninstance;
@@ -33,7 +34,8 @@ Searchspace::ptr_t SearchspaceFactory::create(
 	case LastNDirections:
 		returninstance.reset(new LastNSearchDirections(
 				_SearchDirectionSpace_ptr,
-				_N)
+				_N,
+				_orthogonal_directions)
 				);
 		break;
 	case Nemirovsky:

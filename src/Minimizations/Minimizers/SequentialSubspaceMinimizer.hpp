@@ -33,7 +33,8 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
-			const unsigned int _outputsteps
+			const unsigned int _outputsteps,
+			const bool _orthogonal_directions = false
 			);
 
 	~SequentialSubspaceMinimizer() {}
@@ -183,12 +184,14 @@ protected:
 		 * @param _residual initial residual vector
 		 * @param _residuum initial residuum
 		 * @param _N number of search directions
+		 * @param _orthogonal_directions orthogonalize new search direction?
 		 */
 		void set(
 				const SpaceElement_ptr_t &_x0,
 				const SpaceElement_ptr_t &_residual,
 				const double _residuum,
-				const unsigned int _N
+				const unsigned int _N,
+				const bool _orthogonal_directions
 				);
 
 		/** Getter for the dimension of the search directions in \a U.
@@ -287,6 +290,9 @@ protected:
 
 	//!> whether to calculate angles between current and old search dirs
 	bool DoCalculateAngles;
+
+	//!> whether to orthogonalize search directions w.r.t old ones
+	const bool DoOrthogonalizeDirections;
 };
 
 inline

@@ -179,6 +179,7 @@ public:
 	double normx;
 	double normy;
 	unsigned int N;
+	bool orthogonal_directions;
 	unsigned int outputsteps;
 	double powerx;
 	double powery;

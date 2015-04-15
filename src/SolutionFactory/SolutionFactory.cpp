@@ -85,7 +85,8 @@ MinimizerFactory::instance_ptr_t SolutionFactory::createMinimizer(
 			_opts.maxinneriter,
 			*_database,
 			(const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type,
-			_opts.outputsteps);
+			_opts.outputsteps,
+			_opts.orthogonal_directions);
 	minimizer->setMinLib(_opts.minlib);
 	// hand over additional parameters to add to submitted tuples
 	minimizer->setAdditionalTupleParameters(_opts.tuple_parameters);

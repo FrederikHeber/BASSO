@@ -29,12 +29,13 @@ public:
 	 * Sets update function to simple advanceIndex().
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
-	 * @param _N number of search directions
-	 * products in the subspace (i.e. search space)
+	 * @param _N number of search directions in the subspace (i.e. search space)
+	 * @param _orthogonal_directions orthogonalize new search direction?
 	 */
 	LastNSearchDirections(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
-			const unsigned int _N);
+			const unsigned int _N,
+			const bool _orthogonal_directions);
 
 	/** This function performs the actual update of the search space.
 	 *
@@ -145,6 +146,9 @@ protected:
 
 	//!> current set of indices remaining for enforcing random mapping
 	mutable indexset_t current_indexset;
+
+	//!> whether to orthogonalize new search directions w.r.t old ones
+	const bool orthogonal_directions;
 };
 
 
