@@ -77,25 +77,14 @@ void SequentialSubspaceMinimizer::setN(
 }
 
 static Table::Tuple_t& prepareAngleTuple(
-		const double _val_NormX,
-		const double _val_NormY,
-		const unsigned int _N,
-		const unsigned int _dim,
-		const size_t _maxangles,
-		Table &_table)
+		Table &_table,
+		const int _parameter_key,
+		const size_t _maxangles)
 {
+	assert(_parameter_key != 0);
+
 	Table::Tuple_t &angle_tuple = _table.getTuple();
-	angle_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
-	angle_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
-	angle_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
-	angle_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
-	for (std::vector<std::string>::const_iterator iter
-			= GeneralMinimizer::tuple_params.begin();
-			iter != GeneralMinimizer::tuple_params.end(); ++iter) {
-		const std::string &token = *iter++;
-		const std::string &value = *iter++;
-		angle_tuple.insert( std::make_pair(token, value), Table::Parameter);
-	}
+	angle_tuple.insert( std::make_pair("parameters_fk", (int)_parameter_key), Table::Parameter);
 	angle_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	std::vector<std::string> names;
 	names += "angle","bregman_angle";
@@ -121,8 +110,11 @@ bool createAnglesViews(const Database &_database)
 	bool status = true;
 	{
 		// check whether tables are present and contain elements
-		const Table &angles_table = _database.getTableConst("angles");
-		status &= !angles_table.empty();
+		const Table &data_angles_table = _database.getTableConst("data_angles");
+		status &= !data_angles_table.empty();
+		// we don't  check for parameter table's non-emptiness as is
+		// possibly might be if the used parameter tuple is already in
+		// the database, see setParameterKey()
 	}
 	if (!status)
 		BOOST_LOG_TRIVIAL(error)
@@ -151,13 +143,22 @@ SpaceElement_ptr_t calculateDualStartingValue(
 
 void
 SequentialSubspaceMinimizer::addAdditionalParametersToTuple(
-		Table::Tuple_t &_tuple) const
+		Table::Tuple_t &_tuple,
+		const bool _do_replace) const
 {
-	if (inexactLinesearch) {
-		_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
-		_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
+	if (!_do_replace) {
+		if (inexactLinesearch) {
+			_tuple.insert( std::make_pair("c1", constant_positivity), Table::Parameter);
+			_tuple.insert( std::make_pair("c2", constant_interpolation), Table::Parameter);
+		}
+		_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
+	} else {
+		if (inexactLinesearch) {
+			_tuple.replace( "c1", constant_positivity);
+			_tuple.replace( "c2", constant_interpolation);
+		}
+		_tuple.replace( "max_inner_iterations", MaxInnerIterations);
 	}
-	_tuple.insert( std::make_pair("max_inner_iterations", MaxInnerIterations), Table::Parameter);
 }
 
 bool SequentialSubspaceMinimizer::isNonConverging(
@@ -179,8 +180,7 @@ bool SequentialSubspaceMinimizer::isNonConverging(
 }
 
 void SequentialSubspaceMinimizer::fillPerIterationTable(
-		Table::Tuple_t& per_iteration_tuple,
-		Table& per_iteration_table)
+		Table::Tuple_t& per_iteration_tuple)
 {
 	// create a sequence of entries in Database till MaxOuterIterations
 	for (;istate.NumberOuterIterations < MaxOuterIterations;
@@ -189,13 +189,13 @@ void SequentialSubspaceMinimizer::fillPerIterationTable(
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 
 		// submit current tuples
-		per_iteration_table.addTuple(per_iteration_tuple);
+		data_per_iteration_table.addTuple(per_iteration_tuple);
 	}
 }
 
 void SequentialSubspaceMinimizer::fillAngleTable(
 		Table::Tuple_t& angle_tuple,
-		Table& angle_table)
+		Table& data_angle_table)
 {
 	// create a sequence of entries in Database till MaxOuterIterations
 	for (;istate.NumberOuterIterations < MaxOuterIterations;
@@ -206,7 +206,7 @@ void SequentialSubspaceMinimizer::fillAngleTable(
 
 		// submit current tuples
 		if (DoCalculateAngles)
-			angle_table.addTuple(angle_tuple);
+			data_angle_table.addTuple(angle_tuple);
 	}
 }
 
@@ -402,27 +402,20 @@ SequentialSubspaceMinimizer::operator()(
 				refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
+	setParameterKey(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
+	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple();
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t& overall_tuple = prepareOverallTuple(
-			refs.NormX.getPvalue(),
-			refs.NormY.getPvalue(),
-			N,
-			refs.SpaceX.getDimension(),
-			MaxOuterIterations);
-	Table& angle_table = database.addTable("angles");
+	Table::Tuple_t& overall_tuple = prepareOverallTuple();
+	Table& data_angle_table = database.addTable("data_angles");
 	Table::Tuple_t& angle_tuple = prepareAngleTuple(
-			refs.NormX.getPvalue(),
-			refs.NormY.getPvalue(),
-			N,
-			refs.SpaceX.getDimension(),
-			MaxOuterIterations,
-			angle_table);
+			data_angle_table,
+			parameter_key,
+			N);
 
 	/// -# check initial stopping criterion
 	const double ynorm = refs.NormY(refs.y);
@@ -497,9 +490,9 @@ SequentialSubspaceMinimizer::operator()(
 				(int) (inner_iterations));
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 		// submit current tuples
-		per_iteration_table.addTuple(per_iteration_tuple);
+		data_per_iteration_table.addTuple(per_iteration_tuple);
 		if (DoCalculateAngles)
-			angle_table.addTuple(angle_tuple);
+			data_angle_table.addTuple(angle_tuple);
 
 		/// update iterate
 		updateIterates(refs, tmin, _problem->x, dual_solution);
@@ -520,8 +513,8 @@ SequentialSubspaceMinimizer::operator()(
 		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		if (isNonConverging(current_relative_residuum,
 				initial_relative_residuum)) {
-			fillPerIterationTable(per_iteration_tuple, per_iteration_table);
-			fillAngleTable(angle_tuple,angle_table);
+			fillPerIterationTable(per_iteration_tuple);
+			fillAngleTable(angle_tuple,data_angle_table);
 		}
 
 		// print intermediate solution
@@ -541,7 +534,12 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	finalizeOverallTuple(overall_tuple, refs);
-	overall_table.addTuple(overall_tuple);
+	data_overall_table.addTuple(overall_tuple);
+
+	// create angles view if desired
+	if ((DoCalculateAngles) && (!createAnglesViews(database)))
+		BOOST_LOG_TRIVIAL(warning)
+			<< "Could not create angles view in SQLite database.";
 
 	// and return solution
 	return static_cast<ReturnValues &>(istate);

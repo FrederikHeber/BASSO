@@ -29,9 +29,10 @@
 void clearSmallTables(Database_ptr_t &_database)
 {
 	// remove tables
-	_database->clearTable("per_iteration");
-	_database->clearTable("overall");
-	_database->clearTable("angles");
+	_database->clearTable("parameters");
+	_database->clearTable("data_per_iteration");
+	_database->clearTable("data_overall");
+	_database->clearTable("data_angles");
 }
 
 template <class T>

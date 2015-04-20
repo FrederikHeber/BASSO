@@ -13,6 +13,7 @@
 
 #include <boost/assign.hpp>
 #include <boost/chrono.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/log/trivial.hpp>
 #include <cassert>
 #include <fenv.h>
@@ -20,6 +21,7 @@
 #include <iostream>
 #include <sstream>
 #include "Database/Database.hpp"
+#include "Database/Table.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
@@ -37,7 +39,6 @@ using namespace boost::assign;
 
 // static entities
 GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
-const std::vector<std::string> GeneralMinimizer::tuple_params;
 
 GeneralMinimizer::GeneralMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -57,9 +58,11 @@ GeneralMinimizer::GeneralMinimizer(
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
+	parameter_key(0),
 	database(_database),
-	per_iteration_table(database.addTable("per_iteration")),
-	overall_table(database.addTable("overall"))
+	parameters_table(database.addTable("parameters")),
+	data_per_iteration_table(database.addTable("data_per_iteration")),
+	data_overall_table(database.addTable("data_overall"))
 {
 	// set tolerances values
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
@@ -75,6 +78,10 @@ GeneralMinimizer::GeneralMinimizer(
 
 GeneralMinimizer::~GeneralMinimizer()
 {
+	// add view to database if not present
+	if (!createViews())
+		BOOST_LOG_TRIVIAL(warning)
+			<< "Could not create overall or per_iteration views.";
 }
 
 void GeneralMinimizer::SearchDirection::update(
@@ -277,29 +284,103 @@ void GeneralMinimizer::printIntermediateSolution(
 	}
 }
 
-Table::Tuple_t& GeneralMinimizer::preparePerIterationTuple(
-		const double _val_NormX,
-		const double _val_NormY,
+void GeneralMinimizer::setParameterKey(
+		double _val_NormX,
+		double _val_NormY,
 		const unsigned int _N,
 		const unsigned int _dim,
 		const int _MaxOuterIterations) const
 {
+	// convert tuple values for "inf" case (not valid SQL number)
+	if (isinf(_val_NormX))
+		_val_NormX = 0.;
+	if (isinf(_val_NormY))
+		_val_NormY = 0.;
+ 
 	// create tuple
-	Table::Tuple_t &per_iteration_tuple = per_iteration_table.getTuple();
-	per_iteration_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
-	per_iteration_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
-	// add additional parameters from derived classes
-	addAdditionalParametersToTuple(per_iteration_tuple);
-	// add additional parameters specified from user
-	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
-			iter != tuple_params.end(); ) {
-		const std::string &token = *iter++;
-		const std::string &value = *iter++;
-		per_iteration_tuple.insert( std::make_pair(token, value), Table::Parameter);
+	Table::Tuple_t &parameter_tuple = parameters_table.getTuple();
+	const bool do_replace = !parameter_tuple.empty();
+	if (!do_replace) {
+		parameter_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
+		parameter_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
+		parameter_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
+		parameter_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
+		parameter_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
+		// add additional parameters from derived classes
+		addAdditionalParametersToTuple(parameter_tuple, do_replace);
+		// add additional parameters specified from user
+		for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
+				iter != tuple_params.end(); ) {
+			const std::string &token = (*iter++);
+			const std::string &value = (*iter++);
+			try {
+				const int int_value = boost::lexical_cast<int>(value);
+				const double double_value = boost::lexical_cast<double>(value);
+				if ((double)int_value == double_value)
+					parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
+				else
+					parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
+			} catch(const boost::bad_lexical_cast &) {
+				parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
+			}
+		}
+	} else {
+		parameter_tuple.replace( "p", _val_NormX);
+		parameter_tuple.replace( "r", _val_NormY);
+		parameter_tuple.replace( "N", (int)_N);
+		parameter_tuple.replace( "dim", (int)_dim);
+		parameter_tuple.replace( "max_iterations", _MaxOuterIterations);
+		// add additional parameters from derived classes
+		addAdditionalParametersToTuple(parameter_tuple, do_replace);
+		// add additional parameters specified from user
+		for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
+				iter != tuple_params.end(); ) {
+			const std::string &token = (*iter++);
+			const std::string &value = (*iter++);
+			try {
+				const int int_value = boost::lexical_cast<int>(value);
+				const double double_value = boost::lexical_cast<double>(value);
+				if ((double)int_value == double_value)
+					parameter_tuple.replace( token, int_value);
+				else
+					parameter_tuple.replace( token, double_value);
+			} catch(const boost::bad_lexical_cast &) {
+				parameter_tuple.replace( token, value);
+			}
+		}
 	}
+	// we need to add it, otherwise we cannot use checks for presence
+	// as they rely on complete table info
+	parameters_table.addTuple(parameter_tuple);
+
+	size_t rowid = 0;
+	if (database.isDatabaseFileGiven()) {
+		// check for presence
+		if (!database.isTuplePresentInTable(parameters_table, parameter_tuple)) {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "Parameter tuple not present, adding to table.";
+			database.writeTable(parameters_table);
+		}
+		// and store rowid
+		rowid = database.getIdOfTuplePresentInTable(
+					parameters_table, parameter_tuple);
+		// clear table such that present tuple is not stored again
+		database.clearTable(parameters_table.getName());
+		BOOST_LOG_TRIVIAL(info)
+			<< "Setting parameter_key to " << rowid;
+	} else {
+		// else set rowid to arbitrary value as there is no file anyway
+		rowid = 1;
+	}
+	const_cast<size_t &>(parameter_key) = rowid;
+}
+
+Table::Tuple_t & GeneralMinimizer::preparePerIterationTuple() const
+{
+	assert(parameter_key != 0);
+
+	Table::Tuple_t &per_iteration_tuple = data_per_iteration_table.getTuple();
+	per_iteration_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("residual", 0.), Table::Data);
@@ -310,28 +391,12 @@ Table::Tuple_t& GeneralMinimizer::preparePerIterationTuple(
 	return per_iteration_tuple;
 }
 
-Table::Tuple_t& GeneralMinimizer::prepareOverallTuple(
-		const double _val_NormX,
-		const double _val_NormY,
-		const unsigned int _N,
-		const unsigned int _dim,
-		const int _MaxOuterIterations) const
+Table::Tuple_t & GeneralMinimizer::prepareOverallTuple() const
 {
-	Table::Tuple_t &overall_tuple = overall_table.getTuple();
-	overall_tuple.insert( std::make_pair("p", _val_NormX), Table::Parameter);
-	overall_tuple.insert( std::make_pair("r", _val_NormY), Table::Parameter);
-	overall_tuple.insert( std::make_pair("N", (int)_N), Table::Parameter);
-	overall_tuple.insert( std::make_pair("dim", (int)_dim), Table::Parameter);
-	overall_tuple.insert( std::make_pair("max_iterations", _MaxOuterIterations), Table::Parameter);
-	// add additional parameters from derived classes
-	addAdditionalParametersToTuple(overall_tuple);
-	// add additional parameters specified from user
-	for (std::vector<std::string>::const_iterator iter = tuple_params.begin();
-			iter != tuple_params.end(); ) {
-		const std::string &token = *iter++;
-		const std::string &value = *iter++;
-		overall_tuple.insert( std::make_pair(token, value), Table::Parameter);
-	}
+	assert(parameter_key != 0);
+
+	Table::Tuple_t &overall_tuple = data_overall_table.getTuple();
+	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
@@ -347,7 +412,7 @@ Table::Tuple_t& GeneralMinimizer::prepareOverallTuple(
 
 void GeneralMinimizer::finalizeOverallTuple(
 		Table::Tuple_t &_overall_tuple,
-		QuickAccessReferences &_refs)
+		QuickAccessReferences &_refs) const
 {
 	_overall_tuple.replace( "element_creation_operations",
 			(int)(_refs.SpaceX.getOpCounts().getTotalConstantCounts()
@@ -390,8 +455,11 @@ bool GeneralMinimizer::createViews() const
 	bool status = true;
 	{
 		// check whether tables are present and contain elements
-		status &= !overall_table.empty();
-		status &= !per_iteration_table.empty();
+		status &= !data_overall_table.empty();
+		status &= !data_per_iteration_table.empty();
+		// we don't  check for parameter table's non-emptiness as is
+		// possibly might be if the used parameter tuple is already in
+		// the database, see setParameterKey()
 	}
 	if (!status)
 		BOOST_LOG_TRIVIAL(error)

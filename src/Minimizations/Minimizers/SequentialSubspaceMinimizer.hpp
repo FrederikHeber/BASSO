@@ -112,7 +112,8 @@ public:
 protected:
 
 	void addAdditionalParametersToTuple(
-			Table::Tuple_t &_tuple) const;
+			Table::Tuple_t &_tuple,
+			const bool _do_replace) const;
 
 	const unsigned int calculateStepWidth(
 			const QuickAccessReferences& refs,
@@ -137,12 +138,11 @@ protected:
 			const double initial_residuum) const;
 
 	void fillPerIterationTable(
-			Table::Tuple_t& per_iteration_tuple,
-			Table& per_iteration_table);
+			Table::Tuple_t& per_iteration_tuple);
 
 	void fillAngleTable(
 			Table::Tuple_t& angle_tuple,
-			Table& angle_table);
+			Table& data_angle_table);
 
 	void updateAngleTable(
 			const SpaceElement_ptr_t& newdir,

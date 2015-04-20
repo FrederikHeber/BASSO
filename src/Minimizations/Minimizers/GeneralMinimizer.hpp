@@ -151,7 +151,7 @@ public:
 	 *
 	 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
 	 */
-	static void setAdditionalTupleParameters(
+	void setAdditionalTupleParameters(
 			const std::vector<std::string> &_tuple_params);
 
 	/** Checks whether \a _name represents a valid name for a
@@ -234,7 +234,8 @@ protected:
 	 * @param _tuple tuple to insert parameters to
 	 */
 	virtual void addAdditionalParametersToTuple(
-			Table::Tuple_t &_tuple) const {}
+			Table::Tuple_t &_tuple,
+			const bool _do_replace) const {}
 
 private:
 	/** Create (deprecated) overall and per_iteration tables as views.
@@ -260,8 +261,6 @@ public:
 	const double TolFun;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
-	//!> additional parameter, value pairs that are added to each submitted tuple
-	static const std::vector<std::string> tuple_params;
 
 	//!> enumeration of all available minimization libraries (for line search)
 	enum MinimizationLibraries {
@@ -283,33 +282,45 @@ private:
 
 protected:
 
+	//!> additional parameter, value pairs that are added to each submitted tuple
+	const std::vector<std::string> tuple_params;
+	//!> contains the primary key of the current parameter set
+	const size_t parameter_key;
+
 	/** reference to an external database where we store infomation
 	 * about the behavior of the iteration procedure.
 	 */
 	Database &database;
 
+	//!> table with parameter information
+	Table& parameters_table;
 	//!> table with per iteration step information
-	Table& per_iteration_table;
+	Table& data_per_iteration_table;
 	//!> table with overall iteration information
-	Table& overall_table;
+	Table& data_overall_table;
 
-	Table::Tuple_t& preparePerIterationTuple(
-			const double _val_NormX,
-			const double _val_NormY,
+	/** Sets the parameter key by supplying a given tuple of values
+	 *
+	 * @param _val_NormX norm of space X
+	 * @param _val_NormY norm of space Y
+	 * @param _N number of search directions
+	 * @param _dim dimension of solution vector
+	 * @param _MaxOuterIterations maximum number of outer iterations
+	 */
+	void setParameterKey(
+			double _val_NormX,
+			double _val_NormY,
 			const unsigned int _N,
 			const unsigned int _dim,
 			const int _MaxOuterIterations) const;
 
-	Table::Tuple_t& prepareOverallTuple(
-			const double _val_NormX,
-			const double _val_NormY,
-			const unsigned int _N,
-			const unsigned int _dim,
-			const int _MaxOuterIterations) const;
+	Table::Tuple_t & preparePerIterationTuple() const;
 
-	static void finalizeOverallTuple(
+	Table::Tuple_t & prepareOverallTuple() const;
+
+	void finalizeOverallTuple(
 			Table::Tuple_t &_overall_tuple,
-			QuickAccessReferences &_refs);
+			QuickAccessReferences &_refs) const;
 };
 
 
