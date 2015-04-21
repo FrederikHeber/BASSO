@@ -123,7 +123,7 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_r11
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/RandomMatrix/pre/randomvector.m
 		--solution solution_p1_1_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 14 with relative residual of 0.045.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 16 with relative residual of 0.044.*")
 
 # test 5b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_r11_check
@@ -204,7 +204,7 @@ add_test (Basso_SESOP_RandomMatrix_p6_r11
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/RandomMatrix/pre/randomvector.m
 		--solution solution_p6_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 31 with relative residual of 0.046.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 31 with relative residual of 0.051.*")
 
 # test 8b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_r11_check

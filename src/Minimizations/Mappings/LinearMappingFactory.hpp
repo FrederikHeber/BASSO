@@ -28,12 +28,14 @@ struct LinearMappingFactory
 	 * @param _SourceSpaceRef reference to source space
 	 * @param _TargetSpaceRef reference to target space
 	 * @param _matrix matrix of this linear mapping
+	 * @param _isAdjoint states whether matrix is to be applied as transposed or not
 	 * @return
 	 */
 	static const Mapping_ptr_t createInstance(
 			const NormedSpace_weakptr_t _SourceSpaceRef,
 			const NormedSpace_weakptr_t _TargetSpaceRef,
-			const Eigen::MatrixXd & _matrix);
+			const Eigen::MatrixXd & _matrix,
+			const bool _isAdjoint = false);
 };
 
 

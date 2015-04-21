@@ -36,11 +36,13 @@ private:
 	 * @param _SourceSpaceRef source space
 	 * @param _TargetSpaceRef target space
 	 * @param _matrix finite-dimensional representation of the mapping
+	 * @param _isAdjoint states whether matrix is to be applied as transposed or not
 	 */
 	LinearMapping(
 			const NormedSpace_weakptr_t _SourceSpaceRef,
 			const NormedSpace_weakptr_t _TargetSpaceRef,
-			const Eigen::MatrixXd &_matrix
+			const Eigen::MatrixXd &_matrix,
+			const bool _isAdjoint = false
 			);
 
 public:
@@ -133,12 +135,8 @@ private:
 	 */
 	void setAdjointMapping(const Mapping_weakptr_t &_adjoint);
 
-	//!> internally bound function to count matrix vector products
-	boost::function<
-		const Eigen::ProductReturnType<Eigen::MatrixXd, Eigen::VectorXd>::Type  (
-				const Eigen::MatrixBase<Eigen::MatrixXd>&,
-				const Eigen::MatrixBase<Eigen::VectorXd>&
-				)> matrix_vector_fctor;
+	//!> states whethet this is the normal or the adjoint operator
+	const bool isAdjoint;
 
 	//!> typedef for counting mvps
 	typedef unsigned int Count_t;

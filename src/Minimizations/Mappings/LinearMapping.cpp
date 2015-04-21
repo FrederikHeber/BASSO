@@ -24,14 +24,21 @@
 LinearMapping::LinearMapping(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
-		const Eigen::MatrixXd &_matrix
+		const Eigen::MatrixXd &_matrix,
+		const bool _isAdjoint
 		) :
 	Mapping(_SourceSpaceRef,_TargetSpaceRef),
 	matrix(_matrix),
+	isAdjoint(_isAdjoint),
 	MatrixVectorProductCounts(0)
 {
-	assert( matrix.outerSize() == getSourceSpace()->getDimension() );
-	assert( matrix.innerSize() == getTargetSpace()->getDimension() );
+	if (!isAdjoint) {
+		assert( matrix.outerSize() == getSourceSpace()->getDimension() );
+		assert( matrix.innerSize() == getTargetSpace()->getDimension() );
+	} else {
+		assert( matrix.innerSize() == getSourceSpace()->getDimension() );
+		assert( matrix.outerSize() == getTargetSpace()->getDimension() );
+	}
 }
 
 const SpaceElement_ptr_t LinearMapping::operator()(
@@ -43,8 +50,11 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 
 	const boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
-	const Eigen::VectorXd tempvector =
-			matrix * RepresentationAdvocate::get(_sourceelement);
+	Eigen::VectorXd tempvector;
+	if (!isAdjoint)
+		tempvector = matrix * RepresentationAdvocate::get(_sourceelement);
+	else
+		tempvector = matrix.transpose() * RepresentationAdvocate::get(_sourceelement);
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
 	MatrixVectorProductTimings += timing_end - timing_start;
@@ -68,7 +78,8 @@ const Mapping_ptr_t LinearMapping::getAdjointMapping() const
 		Mapping_ptr_t adjoint = LinearMappingFactory::createInstance(
 				getTargetSpace()->getDualSpace(),
 				getSourceSpace()->getDualSpace(),
-				matrix.transpose());
+				matrix,
+				!isAdjoint);
 		const_cast<LinearMapping *>(this)->
 				setAdjointMapping(adjoint);
 		const_cast<LinearMapping *>(

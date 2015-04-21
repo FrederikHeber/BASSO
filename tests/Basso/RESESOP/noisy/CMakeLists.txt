@@ -184,7 +184,7 @@ add_test (Basso_RESESOP_RandomMatrix_p6_r2_regularized
 		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m
 		--solution solution_p6_r2.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r2_regularized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 500 with relative residual of 0.092.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 500 with relative residual of 0.089.*")
 
 # test 7b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p6_r2_regularized_check
@@ -212,7 +212,7 @@ add_test (Basso_RESESOP_RandomMatrix_p6_r11_regularized
 		--compare-against ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noisy/pre/solution.m
 		--solution solution_p6_r11.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r11_regularized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 500 with relative residual of 0.37.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 500 with relative residual of 0.14.*")
 
 # test 8b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p6_r11_regularized_check
