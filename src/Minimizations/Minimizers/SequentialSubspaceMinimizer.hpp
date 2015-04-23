@@ -278,7 +278,7 @@ protected:
 	IterationState istate;
 
 	//!> bool whether to do an inexact line search with Wolfe conditions
-	int inexactLinesearch;
+	bool inexactLinesearch;
 
 	//!> constant above which the step width must always lie
 	double constant_positivity;
