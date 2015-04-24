@@ -17,6 +17,7 @@
 #include "Log/Logging.hpp"
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -92,21 +93,30 @@ void LastNSearchDirections::update(
 			orderOfApplication[ lastIndices[l] ] = l;
 		const double prenorm = newdir->Norm();
 		for (size_t l = 0;l<orderOfApplication.size(); ++l) {
-			const double searchdir_norm = U[ orderOfApplication[l] ]->Norm();
+			const double searchdir_norm =  U[ orderOfApplication[l] ]->Norm();
 			if (searchdir_norm < std::numeric_limits<double>::epsilon())
 				continue;
-			const std::pair<double, double> tmp =
-					projector(
-							U[ orderOfApplication[l] ],
-							newdir,
-							1e-8);
-			const double projected_distance = tmp.second;
-			const double searchdir_distance = pow(searchdir_norm,2);
-			*newdir -=
-					projected_distance/searchdir_distance * U[ orderOfApplication[l] ];
-			alpha -= projected_distance/searchdir_distance * alphas[ orderOfApplication[l] ];
+//			const std::pair<double, double> tmp =
+//					projector(
+//							U[ orderOfApplication[l] ],
+//							newdir,
+//							1e-8);
+//			const double projected_distance = tmp.second;
+			const DualityMapping &J_q = static_cast<const DualityMapping &>(
+					*newdir->getSpace()->getDualityMapping());
+			const double gamma_projected_distance =
+					J_q(newdir) * U[ orderOfApplication[l] ] / searchdir_norm;
+			const double searchdir_distance = searchdir_norm;
+			const double projection_coefficient =
+					gamma_projected_distance/searchdir_distance;
+			*newdir -= projection_coefficient * U[ orderOfApplication[l] ];
+			alpha -= projection_coefficient * alphas[ orderOfApplication[l] ];
 			BOOST_LOG_TRIVIAL(info)
-				<< "Projection coefficient is " << projected_distance << "/" << searchdir_distance << " = " << projected_distance/searchdir_distance;
+				<< "Projection coefficient is " << gamma_projected_distance << "/"
+				<< searchdir_distance << " = " << projection_coefficient;
+//			BOOST_LOG_TRIVIAL(info)
+//				<< "Compare numerator to "
+//				<< J_q(newdir) * U[ orderOfApplication[l] ] / searchdir_norm;
 		}
 		const double postnorm = newdir->Norm();
 		BOOST_LOG_TRIVIAL(info)
