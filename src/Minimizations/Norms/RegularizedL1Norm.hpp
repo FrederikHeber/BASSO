@@ -62,7 +62,7 @@ protected:
 	{
 		assert( getSpace() == _x->getSpace() );
 		double value = 0.;
-		value += lambda * L1Norm::operator()(_x);
+		value += lambda * L1Norm::internal_operator(_x);
 		value += .5 * ::pow(l2norm(_x),2);
 		return value;
 	}
