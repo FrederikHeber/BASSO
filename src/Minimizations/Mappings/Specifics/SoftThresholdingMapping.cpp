@@ -10,6 +10,7 @@
 #include "Math/Helpers.hpp"
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 SoftThresholdingMapping::SoftThresholdingMapping(
@@ -52,4 +53,11 @@ SoftThresholdingMapping::operator()(
 	return result;
 }
 
+const Mapping_ptr_t SoftThresholdingMapping::getAdjointMapping() const
+{
+	Mapping_ptr_t instance(
+			new IllegalDualityMapping
+	);
+	return instance;
+}
 

@@ -46,6 +46,12 @@ public:
 	const SpaceElement_ptr_t operator()(
 			const SpaceElement_ptr_t &_x) const;
 
+	/** Creates the adjoint mapping to this mapping.
+	 *
+	 * @return mapping instance with adjoint
+	 */
+	const Mapping_ptr_t getAdjointMapping() const;
+
 	/** Setter for soft thresholding parameter \a lambda.
 	 *
 	 * @param _lambda new value for parameter
