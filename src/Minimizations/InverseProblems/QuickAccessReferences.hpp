@@ -47,7 +47,7 @@ struct QuickAccessReferences
 		j_r(*SpaceY.getDualityMapping()),
 		y(_problem->y),
 		A(dynamic_cast<const LinearMapping &>(*_problem->A)),
-		A_t(dynamic_cast<const LinearMapping &>(*A.getAdjointMapping()))
+		A_t(dynamic_cast<const LinearMapping &>(*_problem->A_t))
 	{}
 
 	// spaces
