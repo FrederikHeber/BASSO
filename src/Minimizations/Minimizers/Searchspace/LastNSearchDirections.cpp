@@ -91,14 +91,22 @@ void LastNSearchDirections::update(
 		std::vector<unsigned int> orderOfApplication(lastIndices.size(), 0);
 		for (size_t l = 0;l<lastIndices.size(); ++l)
 			orderOfApplication[ lastIndices[l] ] = l;
-		const double prenorm = newdir->Norm();
-		for (size_t l = 0;l<orderOfApplication.size(); ++l) {
-			const double searchdir_norm =  U[ orderOfApplication[l] ]->Norm();
+		// put updated index (lastIndices[index]=0) at end of list as it is the
+		// oldes search direction
+		std::vector<unsigned int> indices_to_orthogonalize;
+		indices_to_orthogonalize.insert(
+				indices_to_orthogonalize.begin(),
+				orderOfApplication.begin()+1,
+				orderOfApplication.end());
+		indices_to_orthogonalize.push_back(*orderOfApplication.begin());
+		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
+				iter != indices_to_orthogonalize.end(); ++iter) {
+			const double searchdir_norm =  U[ *iter ]->Norm();
 			if (searchdir_norm < std::numeric_limits<double>::epsilon())
 				continue;
 //			const std::pair<double, double> tmp =
 //					projector(
-//							U[ orderOfApplication[l] ],
+//							U[ *iter ],
 //							newdir,
 //							1e-8);
 //			const double projected_distance = tmp.second;
@@ -107,20 +115,23 @@ void LastNSearchDirections::update(
 			const double p = J_q.getPower();
 			const double q = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
 			const double gamma_projected_distance =
-					J_q(newdir) * U[ orderOfApplication[l] ] / searchdir_norm;
+					J_q(newdir) * U[ *iter ] / searchdir_norm;
 			const double searchdir_distance = searchdir_norm;
 			const double projection_coefficient = ::pow(
 					gamma_projected_distance/searchdir_distance,
 					q/p);
-			*newdir -= projection_coefficient * U[ orderOfApplication[l] ];
-			alpha -= projection_coefficient * alphas[ orderOfApplication[l] ];
+//			const double projection_coefficient =
+//					projected_distance/searchdir_distance;
+			*newdir -= projection_coefficient * U[ *iter ];
+			alpha -= projection_coefficient * alphas[ *iter ];
 			BOOST_LOG_TRIVIAL(info)
 				<< "Projection coefficient is " << gamma_projected_distance << "/"
 				<< searchdir_distance << " = " << projection_coefficient;
 //			BOOST_LOG_TRIVIAL(info)
 //				<< "Compare numerator to "
-//				<< J_q(newdir) * U[ orderOfApplication[l] ] / searchdir_norm;
+//				<< J_q(newdir) * U[ *iter ] / searchdir_norm;
 		}
+		const double prenorm = _newdir->Norm();
 		const double postnorm = newdir->Norm();
 		BOOST_LOG_TRIVIAL(info)
 			<< "Norm after Bregman projection changed from "
