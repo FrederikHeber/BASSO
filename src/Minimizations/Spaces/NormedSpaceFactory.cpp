@@ -37,7 +37,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 			new NormedSpace(_dimension) );
 	instance->setSpace( instance );
 	NormedSpace_ptr_t dualinstance(
-			new NormedDualSpace(instance->getDimension()) );
+			new NormedDualSpace(_dimension) );
 	dualinstance->setSpace( dualinstance );
 
 	// and link the (now two) dual spaces
@@ -62,7 +62,11 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 					_power);
 	instance->setDualityMappingConstructor(mapping_cstor);
 
-	// create duality mapping instance constructor
+	// create duality mapping instance constructor. We need this as both
+	// mappings need to be created at the same time (and inter-linked,
+	// similarly as with the spaces)
+	// TODO: We could use a DualityMappingFactory for this instead: Then it
+	// would be consistent with how spaces are constructed
 	const double qpower =
 			Helpers::ConjugateValue(instance->getDualityMapping()->getPower());
 	NormedSpace::constructDualityMapping_t dualmapping_cstor =
@@ -89,7 +93,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 			new NormedSpace(_dimension) );
 	instance->setSpace( instance );
 	NormedSpace_ptr_t dualinstance(
-			new NormedDualSpace(instance->getDimension()) );
+			new NormedDualSpace(_dimension) );
 	dualinstance->setSpace( dualinstance );
 
 	// and link the (now two) dual spaces
@@ -101,28 +105,24 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 			instance, _lambda);
 	instance->setNorm(norm);
 
-	RegularizedL1Norm *regularized_norm =
-			dynamic_cast<RegularizedL1Norm *>(instance->getNorm().get());
 	// create dual norm
 	Norm_ptr_t dualnorm =
 			NormFactory::createDualRegularizedL1Instance(
-					dualinstance, regularized_norm->getLambda());
+					dualinstance, _lambda);
 	dualinstance->setNorm(dualnorm);
 
-	// create duality mapping instance: we only have the mapping from
-	// the dual space into the source space, not the other way round as
-	// the source space is not smooth (hence not single-valued duality
+	// create duality mapping instance: we only have the mapping from the
+	// dual space back into the source space, not the other way round, as
+	// the source space is not smooth (hence no single-valued duality
 	// mapping exists).
-	Mapping_ptr_t mapping(
-				new IllegalDualityMapping
-	);
+	Mapping_ptr_t mapping( new IllegalDualityMapping );
 	instance->setDualityMapping(mapping);
 
 	// create duality mapping instance
 	Mapping_ptr_t dualmapping(
 			new SoftThresholdingMapping(
 					dualinstance,
-					regularized_norm->getLambda())
+					_lambda)
 	);
 	dualinstance->setDualityMapping(dualmapping);
 
