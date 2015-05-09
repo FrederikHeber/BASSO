@@ -112,14 +112,14 @@ void LastNSearchDirections::update(
 //			const double projected_distance = tmp.second;
 			const DualityMapping &J_q = static_cast<const DualityMapping &>(
 					*newdir->getSpace()->getDualityMapping());
-			const double p = J_q.getPower();
-			const double q = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
+			const double q = J_q.getPower();
+			const double p = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
 			const double gamma_projected_distance =
 					J_q(newdir) * U[ *iter ] / searchdir_norm;
 			const double searchdir_distance = searchdir_norm;
 			const double projection_coefficient = ::pow(
-					gamma_projected_distance/searchdir_distance,
-					q/p);
+					gamma_projected_distance,
+					p/q)/searchdir_distance;
 //			const double projection_coefficient =
 //					projected_distance/searchdir_distance;
 			*newdir -= projection_coefficient * U[ *iter ];
