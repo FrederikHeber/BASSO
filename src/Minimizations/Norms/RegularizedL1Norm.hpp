@@ -16,7 +16,7 @@
 #include "Minimizations/Norms/Norm.hpp"
 
 /** This class implements a regularized l1 norm of the form
- * \f$ \lambda ||.||_1 + \tfrac 1 2 ||.||^2_2 \f$.
+ * \f$ \sqrt{ \tfrac 1 2 ||.||^2_1 + \tfrac \lambda 2 ||.||^2_2 } \f$.
  *
  */
 class RegularizedL1Norm : public L1Norm
@@ -62,9 +62,9 @@ protected:
 	{
 		assert( getSpace() == _x->getSpace() );
 		double value = 0.;
-		value += lambda * L1Norm::internal_operator(_x);
-		value += .5 * ::pow(l2norm(_x),2);
-		return value;
+		value += ::pow(L1Norm::internal_operator(_x), 2);
+		value += lambda * ::pow(l2norm(_x),2);
+		return sqrt(value);
 	}
 
 private:

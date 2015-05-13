@@ -17,9 +17,10 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 /** This class implements the dual of the regularized l1 norm of the form
- * \f$ \lambda ||.||_1 + \tfrac 1 2 ||.||^2_2 \f$ which is
- * \f$ || S_{\lambda} (.) ||_2 \f$ .
+ * \f$ \sqrt{ \tfrac 1 2 ||.||^2_1 + \tfrac \lambda 2 ||.||^2_2 } \f$ which is
+ * \f$ || \sqrt{ c_{\lambda}^2(.) + \tfrac 1 {\lambda} || S_{\lambda} (.) ||^2_2 } \f$ .
  *
+ * see [Schoepfer, 2012].
  */
 class DualRegularizedL1Norm : public Norm
 {
@@ -67,8 +68,10 @@ protected:
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( getSpace() == _x->getSpace() );
-		const double value = l2norm(softthresholder(_x));
-		return value;
+		double value = 0.;
+		value += ::pow(softthresholder.getRelativeShrinkage(_x), 2);
+		value += ::pow(l2norm(softthresholder(_x)), 2)/getLambda();
+		return sqrt(value);
 	}
 
 private:
