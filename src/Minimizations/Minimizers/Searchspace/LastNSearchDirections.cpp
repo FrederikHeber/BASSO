@@ -16,22 +16,11 @@
 
 #include "Log/Logging.hpp"
 
+#include "Math/Helpers.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
-
-struct unique_number
-{
-	unique_number() : number(0)
-	{}
-
-	unsigned int operator()()
-	{ return number++; }
-
-private:
-	unsigned int number;
-};
 
 // static entities
 LastNSearchDirections::UpdateAlgorithmType
@@ -159,7 +148,7 @@ LastNSearchDirections::replenishIndexset(
 	std::generate(
 			templist.begin(),
 			templist.end(),
-			unique_number());
+			Helpers::unique_number());
 	_indexset.clear();
 	_indexset.insert(templist.begin(), templist.end());
 	assert( current_indexset.size() == getDimension());

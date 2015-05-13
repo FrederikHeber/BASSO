@@ -17,6 +17,23 @@
  *
  */
 namespace Helpers {
+
+	/** Created instance creates unique monotone increasing numbers.
+	 *
+	 */
+	struct unique_number
+	{
+		unique_number() : number(0)
+		{}
+
+		unsigned int operator()()
+		{ return number++; }
+
+	private:
+		unsigned int number;
+	};
+
+
 	/** Implements a circular shift of the vector's components by \a shift.
 	 *
 	 * Note that the sign of \a shift decides on the direction.

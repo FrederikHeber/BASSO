@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include "Math/Helpers.hpp"
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 
 #include <boost/bind.hpp>
@@ -40,20 +41,6 @@ FunctionalMinimizer<S,T>::FunctionalMinimizer(
 					_1));
 }
 
-struct unique_number
-{
-	unique_number() : number(0)
-	{}
-
-	unsigned int operator()()
-	{ return number++; }
-
-private:
-	unsigned int number;
-};
-
-
-
 template <class S, class T>
 enum Minimization::GradientStatus
 FunctionalMinimizer<S,T>::checkWolfeConditions(
@@ -76,7 +63,7 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 	double interpolatedgradient = 0.;
 	double realgradient = 0.;
 	Wolfe_indexset_t indices(currentiterate.size());
-	std::generate( indices.begin(), indices.end(), unique_number());
+	std::generate( indices.begin(), indices.end(), Helpers::unique_number());
 	for (Wolfe_indexset_t::const_iterator iter = _Wolfe_indexset.begin();
 			(iter != _Wolfe_indexset.end()) && conditions_fulfilled;
 			++iter) {
