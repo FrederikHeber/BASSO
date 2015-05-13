@@ -52,21 +52,74 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	Eigen::VectorXd xtemp(10);
 	xtemp << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
 	{
+		const double lambda = 1e+3;
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
+		// Note that we have the duality mapping (the relative shrinkage)
+		// only in the dual space, not in the original back as this
+		// space is not smooth and hence its duality mapping not single-
+		// valued.
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.00385832970297;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
+		Eigen::VectorXd expected(10);
+		expected <<
+0.000200833,-0.000795655,5.21837e-05,0.000360806,3.53207e-05,-0.000268749,-0.00084777,0.000716728,-5.42157e-05,-0.000526071;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
+	}
+	{
+		const double lambda = 1e+1;
+		const NormedSpace_ptr_t SpaceX =
+				NormedSpaceFactory::createRegularizedL1Instance(
+						xtemp.innerSize(), lambda, power);
+		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.2211829375;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
+		Eigen::VectorXd expected(10);
+		expected <<
+0,-0.057833,0,0.0143481,0,-0.00514241,-0.0630445,0.0499403,0,-0.0308746;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
+		SpaceElement_ptr_t expected_vector =
+				ElementCreator::create(compare->getSpace(), expected);
+		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
+	}
+	{
 		const double lambda = .9;
 		const NormedSpace_ptr_t SpaceX =
 				NormedSpaceFactory::createRegularizedL1Instance(
 						xtemp.innerSize(), lambda, power);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-		// Note that we have the duality mapping (the soft thresholding)
-		// only in the dual space, not in the original back as this
-		// space is not smooth and hence its duality mapping not single-
-		// valued.
-		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.6081351282051;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 		Eigen::VectorXd expected(10);
-		expected << 0.,0.,0.,0.,0.,0.,0.,0.,0.,0.;
-		const SpaceElement_ptr_t compare = (*S)(x);
-//			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare << ".\n";
+		expected <<
+0,-0.2126420797721,0,0,0,0,-0.2705476353276,0.1249454131054,0,0.;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
 		SpaceElement_ptr_t expected_vector =
 				ElementCreator::create(compare->getSpace(), expected);
 		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
@@ -77,14 +130,19 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 				NormedSpaceFactory::createRegularizedL1Instance(
 						xtemp.innerSize(), lambda, power);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.6975667647059;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 		Eigen::VectorXd expected(10);
 		expected <<
-0.00000,-0.99878, 0.00000, 0.00000, 0.00000, 0.00000,-1.12907, 0.80146,
-0.00000,-0.32482;
-		const SpaceElement_ptr_t compare = (*S)(x);
-//			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare << ".\n";
+0,-0.254866,0,0,0,0,-0.385153,0.0575481,0,0.;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
 		SpaceElement_ptr_t expected_vector =
 				ElementCreator::create(compare->getSpace(), expected);
 		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
@@ -95,14 +153,19 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 				NormedSpaceFactory::createRegularizedL1Instance(
 						xtemp.innerSize(), lambda, power);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.7862576190476;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 		Eigen::VectorXd expected(10);
 		expected <<
-1.04691,-6.99513, 0.00000, 2.64664, 0.00000,-1.72607,-7.51628, 6.20586,
-0.00000,-4.29929;
-		const SpaceElement_ptr_t compare = (*S)(x);
-//			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare << ".\n";
+0,-0.1325538095238,0,0,0,0,-0.6537038095238,0,0,0.;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
 		SpaceElement_ptr_t expected_vector =
 				ElementCreator::create(compare->getSpace(), expected);
 		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
@@ -113,14 +176,19 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 				NormedSpaceFactory::createRegularizedL1Instance(
 						xtemp.innerSize(), lambda, power);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+			(*SpaceX->getDualSpace()->getDualityMapping());
+		const double coefficient = 0.8507772227772;
+		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 		Eigen::VectorXd expected(10);
 		expected <<
-203.691,-798.513,55.042, 363.664,38.179,-271.607,-850.628, 719.586,
--57.074,-528.929;
-		const SpaceElement_ptr_t compare = (*S)(x);
-//			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare << ".\n";
+0,0,0,0,0,0,-0.8507772227772,0,0,0.;
+		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
 		SpaceElement_ptr_t expected_vector =
 				ElementCreator::create(compare->getSpace(), expected);
 		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
@@ -131,11 +199,17 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 //				NormedSpaceFactory::createRegularizedL1Instance(
 //						xtemp.innerSize(), lambda, power);
 //		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-//		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+//		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
+//			(*SpaceX->getDualSpace()->getDualityMapping());
+//		const double coefficient = 0.6081351282051;
+//		const double compare_coefficient = S.getRelativeShrinkage(x);
+//		std::cout << std::setprecision(13) << "Expecting shrinkage coefficient " << coefficient
+//				<< " and got " << compare_coefficient << ".\n";
+//		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 //		Eigen::VectorXd expected(xtemp);
-//		const SpaceElement_ptr_t compare = (*S)(x);
-//			std::cout << "Expecting " << expected.transpose()
-//					<< " and got " << compare << ".\n";
+//		const SpaceElement_ptr_t compare = S(x);
+//		std::cout << "Expecting " << expected.transpose()
+//				<< " and got " << compare << ".\n";
 //		SpaceElement_ptr_t expected_vector =
 //				ElementCreator::create(compare->getSpace(), expected);
 //		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );

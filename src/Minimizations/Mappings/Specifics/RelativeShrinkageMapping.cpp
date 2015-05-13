@@ -44,11 +44,12 @@ RelativeShrinkageMapping::operator()(
 	const boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
+	const double coefficient = getRelativeShrinkage(_x);
 	SpaceElement_ptr_t result = getTargetSpace()->createElement();
 	for (unsigned int i=0;i<result->getSpace()->getDimension();++i)
-		(*result)[i] = fabs((*_x)[i]) < lambda ?
+		(*result)[i] = fabs((*_x)[i]) < coefficient ?
 				0. :
-				(fabs((*_x)[i])-lambda)*Helpers::sign((*_x)[i]);
+				(fabs((*_x)[i])-coefficient)*Helpers::sign((*_x)[i]);
 	*result *= 1./lambda;
 
 	// finish timing
