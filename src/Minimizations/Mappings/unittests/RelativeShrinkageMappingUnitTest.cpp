@@ -79,7 +79,9 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
-		expected << 0.,-0.399513,0.,0.,0.,0.,-0.451628,0.320586,0.,-0.129929;
+		expected <<
+0.00000,-0.99878, 0.00000, 0.00000, 0.00000, 0.00000,-1.12907, 0.80146,
+0.00000,-0.32482;
 		const SpaceElement_ptr_t compare = (*S)(x);
 //			std::cout << "Expecting " << expected.transpose()
 //					<< " and got " << compare << ".\n";
@@ -95,7 +97,9 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
-		expected << 0.104691,-0.699513,0.,0.264664,0.,-0.172607,-0.751628,0.620586,0.,-0.429929;
+		expected <<
+1.04691,-6.99513, 0.00000, 2.64664, 0.00000,-1.72607,-7.51628, 6.20586,
+0.00000,-4.29929;
 		const SpaceElement_ptr_t compare = (*S)(x);
 //			std::cout << "Expecting " << expected.transpose()
 //					<< " and got " << compare << ".\n";
@@ -111,7 +115,9 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
 		Eigen::VectorXd expected(10);
-		expected << 0.203691,-0.798513,0.055042,0.363664,0.038179,-0.271607,-0.850628,0.719586,-0.057074,-0.528929;
+		expected <<
+203.691,-798.513,55.042, 363.664,38.179,-271.607,-850.628, 719.586,
+-57.074,-528.929;
 		const SpaceElement_ptr_t compare = (*S)(x);
 //			std::cout << "Expecting " << expected.transpose()
 //					<< " and got " << compare << ".\n";
@@ -119,19 +125,19 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 				ElementCreator::create(compare->getSpace(), expected);
 		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
 	}
-	{
-		const double lambda = .0;
-		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
-		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
-		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
-		Eigen::VectorXd expected(xtemp);
-		const SpaceElement_ptr_t compare = (*S)(x);
+//	{
+//		const double lambda = .0;
+//		const NormedSpace_ptr_t SpaceX =
+//				NormedSpaceFactory::createRegularizedL1Instance(
+//						xtemp.innerSize(), lambda, power);
+//		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
+//		const Mapping_ptr_t S = SpaceX->getDualSpace()->getDualityMapping();
+//		Eigen::VectorXd expected(xtemp);
+//		const SpaceElement_ptr_t compare = (*S)(x);
 //			std::cout << "Expecting " << expected.transpose()
 //					<< " and got " << compare << ".\n";
-		SpaceElement_ptr_t expected_vector =
-				ElementCreator::create(compare->getSpace(), expected);
-		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
-	}
+//		SpaceElement_ptr_t expected_vector =
+//				ElementCreator::create(compare->getSpace(), expected);
+//		CPPUNIT_ASSERT( expected_vector->isApprox(compare, tolerance)  );
+//	}
 }

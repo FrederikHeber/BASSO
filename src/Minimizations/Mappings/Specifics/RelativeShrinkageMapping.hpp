@@ -87,6 +87,14 @@ public:
 	const boost::chrono::nanoseconds getTiming() const
 	{ return timing; }
 
+	/** Calculates the relative shrinkage coefficient \f$ c_{\lambda} (x) \f$
+	 * depending on the given \a x.
+	 *
+	 * @param _x element to calculate shrinkage for
+	 * @return relative shrinkage coefficient
+	 */
+	const double getRelativeShrinkage(const SpaceElement_ptr_t &_x) const;
+
 private:
 	//!> soft thresholding parameter
 	const double lambda;
