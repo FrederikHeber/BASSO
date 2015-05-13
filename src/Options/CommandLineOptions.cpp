@@ -15,6 +15,7 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
+#include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
 namespace po = boost::program_options;
 
@@ -41,7 +42,7 @@ CommandLineOptions::CommandLineOptions() :
 	searchspace_type(
 			SearchspaceFactory::getName(
 					SearchspaceFactory::LastNDirections)),
-	stepwidth_type(1),
+	stepwidth_type(DetermineStepWidthFactory::MinimizingResidual),
 	tau(1.1),
 	updatetype(LastNSearchDirections::RoundRobin),
 	dualitytype(defaulttype),
