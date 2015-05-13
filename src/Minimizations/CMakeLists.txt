@@ -24,7 +24,7 @@ add_library (Minimizations
 	Mappings/Specifics/L1DualityMapping.cpp
 	Mappings/Specifics/LpDualityMapping.cpp
 	Mappings/Specifics/LInfinityDualityMapping.cpp
-	Mappings/Specifics/SoftThresholdingMapping.cpp
+	Mappings/Specifics/RelativeShrinkageMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/MinimizerFactory.cpp
@@ -83,7 +83,7 @@ install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Specifics/L1DualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/LInfinityDualityMapping.hpp DESTINATION include)
-install (FILES Mappings/Specifics/SoftThresholdingMapping.hpp DESTINATION include)
+install (FILES Mappings/Specifics/RelativeShrinkageMapping.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)

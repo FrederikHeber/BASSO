@@ -1,5 +1,5 @@
 /*
- * Specifics/SoftThresholdingMapping.hpp
+ * Specifics/RelativeShrinkageMapping.hpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
@@ -15,26 +15,30 @@
 #include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
 #include "Minimizations/types.hpp"
 
-class SoftThresholdingMappingUnitTest;
+class RelativeShrinkageMappingUnitTest;
 
-class SoftThresholdingMapping :
+/** This class implements a Relative Shrinkage operator according to
+ * [Schoepfer 2012] which is required for the dual norm and duality
+ * mapping to the (squared) regularized l1 norm.
+ */
+class RelativeShrinkageMapping :
 	public L1DualityMapping
 {
 	//!> grant unit test access to private parts
-	friend class SoftThresholdingMappingUnitTest;
+	friend class RelativeShrinkageMappingUnitTest;
 public:
-	/** Default constructor of class SoftThresholdingMapping.
+	/** Default constructor of class RelativeShrinkageMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space
 	 */
-	SoftThresholdingMapping(const NormedSpace_weakptr_t &_NormedSpaceRef);
+	RelativeShrinkageMapping(const NormedSpace_weakptr_t &_NormedSpaceRef);
 
-	/** Default constructor of class SoftThresholdingMapping.
+	/** Default constructor of class RelativeShrinkageMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space
 	 * @param _lambda soft thresholding parameter
 	 */
-	SoftThresholdingMapping(
+	RelativeShrinkageMapping(
 			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _lambda);
 

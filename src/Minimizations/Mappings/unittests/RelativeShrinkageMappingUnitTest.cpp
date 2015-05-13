@@ -1,5 +1,5 @@
 /*
- * SoftThresholdingMappingUnitTest.cpp
+ * RelativeShrinkageMappingUnitTest.cpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
@@ -7,30 +7,30 @@
 
 #include "BassoConfig.h"
 
-#include "SoftThresholdingMappingUnitTest.hpp"
+#include "RelativeShrinkageMappingUnitTest.hpp"
 
 #include <Eigen/Dense>
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( SoftThresholdingMappingUnitTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( RelativeShrinkageMappingUnitTest );
 
 // static entities
-double SoftThresholdingMappingUnitTest::tolerance = 1e-4;
+double RelativeShrinkageMappingUnitTest::tolerance = 1e-4;
 
 
-void SoftThresholdingMappingUnitTest::setUp()
+void RelativeShrinkageMappingUnitTest::setUp()
 {
 }
 
 
-void SoftThresholdingMappingUnitTest::tearDown()
+void RelativeShrinkageMappingUnitTest::tearDown()
 {
 }
 
@@ -39,14 +39,14 @@ void SoftThresholdingMappingUnitTest::tearDown()
  * x=ones(2,10)-2.*rand(2,10)
  * gval=zeros(2,10)
  * for i=1:10
- * 	gval(:,i)=SoftThresholdingMapping(x, p, power, 1e-6)
+ * 	gval(:,i)=RelativeShrinkageMapping(x, p, power, 1e-6)
  * endfor
  * gval
  *
  *
  */
 
-void SoftThresholdingMappingUnitTest::oneNorm()
+void RelativeShrinkageMappingUnitTest::oneNorm()
 {
 	const double power = 2.;
 	Eigen::VectorXd xtemp(10);

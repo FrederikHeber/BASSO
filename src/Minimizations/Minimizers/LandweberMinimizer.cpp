@@ -28,7 +28,7 @@
 #include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
@@ -249,13 +249,13 @@ void LandweberMinimizer::setRegularizationParameter(
 		BOOST_LOG_TRIVIAL(trace)
 				<< "Lambda of NormX is now "
 				<< regularizednorm.getLambda();
-		const SoftThresholdingMapping &mapping =
-				dynamic_cast<const SoftThresholdingMapping &>(
+		const RelativeShrinkageMapping &mapping =
+				dynamic_cast<const RelativeShrinkageMapping &>(
 						*_solution->getSpace()->getDualSpace()->getDualityMapping()
 						);
-		const_cast<SoftThresholdingMapping &>(mapping).setLambda(lambda);
+		const_cast<RelativeShrinkageMapping &>(mapping).setLambda(lambda);
 		BOOST_LOG_TRIVIAL(trace)
-				<< "Lambda of SoftThresholdingMapping in X^* is now "
+				<< "Lambda of RelativeShrinkageMapping in X^* is now "
 				<< mapping.getLambda();
 	} else {
 		BOOST_LOG_TRIVIAL(error)

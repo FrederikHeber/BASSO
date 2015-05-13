@@ -1,11 +1,11 @@
 /*
- * SoftThresholdingMapping.cpp
+ * RelativeShrinkageMapping.cpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
  */
 
-#include "SoftThresholdingMapping.hpp"
+#include "RelativeShrinkageMapping.hpp"
 
 #include "Math/Helpers.hpp"
 
@@ -13,7 +13,7 @@
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
-SoftThresholdingMapping::SoftThresholdingMapping(
+RelativeShrinkageMapping::RelativeShrinkageMapping(
 		const NormedSpace_weakptr_t &_NormedSpaceRef) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
 	lambda(0.1),
@@ -21,7 +21,7 @@ SoftThresholdingMapping::SoftThresholdingMapping(
 	timing(boost::chrono::nanoseconds(0))
 {}
 
-SoftThresholdingMapping::SoftThresholdingMapping(
+RelativeShrinkageMapping::RelativeShrinkageMapping(
 		const NormedSpace_weakptr_t &_NormedSpaceRef,
 		const double _lambda) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
@@ -31,7 +31,7 @@ SoftThresholdingMapping::SoftThresholdingMapping(
 {}
 
 const SpaceElement_ptr_t
-SoftThresholdingMapping::operator()(
+RelativeShrinkageMapping::operator()(
 		const SpaceElement_ptr_t &_x) const
 {
 	// start timing
@@ -53,7 +53,7 @@ SoftThresholdingMapping::operator()(
 	return result;
 }
 
-const Mapping_ptr_t SoftThresholdingMapping::getAdjointMapping() const
+const Mapping_ptr_t RelativeShrinkageMapping::getAdjointMapping() const
 {
 	Mapping_ptr_t instance(
 			new IllegalDualityMapping

@@ -11,7 +11,7 @@
 #include "BassoConfig.h"
 
 #include <cassert>
-#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -26,7 +26,7 @@ class DualRegularizedL1Norm : public Norm
 public:
 	/** Constructor for class Norm.
 	 *
-	 * \note The internal SoftThresholdingMapping brings the given \a _x
+	 * \note The internal RelativeShrinkageMapping brings the given \a _x
 	 * into its dual space. Hence, we set the internal L2-norm
 	 * onto this space as well.
 	 *
@@ -73,7 +73,7 @@ protected:
 
 private:
 	//!> internal soft thresholding operator
-	mutable SoftThresholdingMapping softthresholder;
+	mutable RelativeShrinkageMapping softthresholder;
 
 	//!> internal l2 norm
 	const LpNorm l2norm;

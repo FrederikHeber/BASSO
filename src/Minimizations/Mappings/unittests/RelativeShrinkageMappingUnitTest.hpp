@@ -1,5 +1,5 @@
 /*
- * SoftThresholdingMappingUnitTest.hpp
+ * RelativeShrinkageMappingUnitTest.hpp
  *
  *  Created on: Oct 13, 2014
  *      Author: heber
@@ -10,9 +10,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class SoftThresholdingMappingUnitTest : public CppUnit::TestFixture
+class RelativeShrinkageMappingUnitTest : public CppUnit::TestFixture
 {
-  CPPUNIT_TEST_SUITE( SoftThresholdingMappingUnitTest );
+  CPPUNIT_TEST_SUITE( RelativeShrinkageMappingUnitTest );
   CPPUNIT_TEST( oneNorm );
   CPPUNIT_TEST_SUITE_END();
 

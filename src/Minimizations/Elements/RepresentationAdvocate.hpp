@@ -19,7 +19,7 @@ class LpDualityMapping;
 struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
-class SoftThresholdingMapping;
+class RelativeShrinkageMapping;
 struct SpaceElementWriter;
 
 /** The sole purpose of this class is to regulate the access to the
@@ -36,7 +36,7 @@ private:
 	friend struct LinearDependencyChecker;
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
-	friend class SoftThresholdingMapping;
+	friend class RelativeShrinkageMapping;
 	friend struct SpaceElementWriter;
 	template <class vector_type> friend struct VectorSetter;
 	template <class T> friend void setResultingVector(

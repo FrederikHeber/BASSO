@@ -52,15 +52,15 @@ target_link_libraries (LInfinityDualityMappingUnitTest
 add_test (LInfinityDualityMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LInfinityDualityMappingUnitTest)
 
-########################## SoftThresholdingMappingUnitTest #######################
-add_executable (SoftThresholdingMappingUnitTest 
+########################## RelativeShrinkageMappingUnitTest #######################
+add_executable (RelativeShrinkageMappingUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
-	SoftThresholdingMappingUnitTest.cpp) 
-target_link_libraries (SoftThresholdingMappingUnitTest 
+	RelativeShrinkageMappingUnitTest.cpp) 
+target_link_libraries (RelativeShrinkageMappingUnitTest 
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
-add_test (SoftThresholdingMappingUnitTest 
-	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/SoftThresholdingMappingUnitTest)
+add_test (RelativeShrinkageMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/RelativeShrinkageMappingUnitTest)

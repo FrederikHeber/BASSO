@@ -16,7 +16,7 @@
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
-#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Norms/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -120,7 +120,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 
 	// create duality mapping instance
 	Mapping_ptr_t dualmapping(
-			new SoftThresholdingMapping(
+			new RelativeShrinkageMapping(
 					dualinstance,
 					_lambda)
 	);
