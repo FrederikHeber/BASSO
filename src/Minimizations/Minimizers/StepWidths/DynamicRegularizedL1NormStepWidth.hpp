@@ -13,6 +13,9 @@
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/types.hpp"
 
+/** This implements the "dynamic" stepsize according to
+ * [Lorenz et al., '13, §3.1]
+ */
 struct DynamicRegularizedL1NormStepWidth :
 		public DetermineStepWidth
 {

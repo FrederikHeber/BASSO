@@ -12,6 +12,9 @@
 
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 
+/** This implements the "exact" stepsize according to
+ * [Lorenz et al., '13, §3.1]
+ */
 struct ExactRegularizedL1NormStepWidth :
 		public DetermineStepWidth
 {

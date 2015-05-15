@@ -14,6 +14,9 @@
 #include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/types.hpp"
 
+/** This implements a default step size where new residuum is minimized
+ * via a Brent algorithm (does not require derivative).
+ */
 struct ResidualMinimizingStepwidth : public DetermineStepWidth
 {
 	ResidualMinimizingStepwidth(

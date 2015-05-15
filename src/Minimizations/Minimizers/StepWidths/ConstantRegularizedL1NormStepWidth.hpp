@@ -12,7 +12,9 @@
 
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 
-
+/** This implements the "constant" stepsize according to
+ * [Lorenz et al., '13, §3.1]
+ */
 struct ConstantRegularizedL1NormStepWidth :
 		public DetermineStepWidth
 {

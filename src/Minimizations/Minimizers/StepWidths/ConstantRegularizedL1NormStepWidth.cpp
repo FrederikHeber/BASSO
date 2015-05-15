@@ -20,5 +20,3 @@ ConstantRegularizedL1NormStepWidth::ConstantRegularizedL1NormStepWidth(
 						dynamic_cast<const LinearMapping &>(*_problem->A).Norm(),
 						2))
 {}
-
-
