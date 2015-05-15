@@ -7,6 +7,8 @@
 
 #include "RelativeShrinkageMapping.hpp"
 
+#include <map>
+
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
@@ -70,18 +72,23 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 	if (_x->isZero(BASSOTOLERANCE))
 		return 0.;
 
-	SpaceElement_ptr_t tempAbsvector = _x->getSpace()->createElement();
-	*tempAbsvector = _x->getAbsVector();
 	size_t active_set_size = 0;
 	double l1norm_sum = 0.;
 	double coefficient = 0.;
-	std::vector<int> active_set;
+	typedef std::vector<size_t> active_set_t;
+	active_set_t active_set;
 
+	// create a map of largest coefficients
+	typedef std::multimap<double, size_t> largest_coeffs_map_t;
+	largest_coeffs_map_t largest_coeffs_map;
+	for (size_t i=0;i<_x->getSpace()->getDimension();++i)
+		largest_coeffs_map.insert( std::make_pair(fabs((*_x)[i]), i) );
 	// loop over element's components and check against current coefficient
 	do {
-		// extract max component
-		const std::pair<double, int> maxCoeff =
-				tempAbsvector->getMaxCoefficientAndIndex();
+		// extract largest coefficient from map
+		const largest_coeffs_map_t::reverse_iterator iter = largest_coeffs_map.rbegin();
+		const std::pair<double,size_t> maxCoeff = *iter;
+		largest_coeffs_map.erase(--(iter.base()));
 		// compare with coefficient
 //		BOOST_LOG_TRIVIAL(info)
 //			<< "Is current max " << maxCoeff.first
@@ -94,46 +101,44 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 		l1norm_sum += maxCoeff.first;
 		++active_set_size;
 		active_set.push_back(maxCoeff.second);
-		// remove this component from max component search by zeroing
-		(*tempAbsvector)[maxCoeff.second] = 0.;
 		// and recalculate coefficient
 		coefficient = l1norm_sum/((double)active_set_size + lambda);
-	} while (active_set_size < tempAbsvector->getSpace()->getDimension());
+	} while (active_set_size < _x->getSpace()->getDimension());
 
 
-	// sensibility checks
-	// all component in set exceed coefficient
-	std::sort(active_set.begin(), active_set.end());
-//	{
-//		std::stringstream output;
-//		std::copy(
-//				active_set.begin(), active_set.end(),
-//				std::ostream_iterator<int>(output, ";"));
-//		BOOST_LOG_TRIVIAL(info)
-//				<< "Final active_set is " << output.str();
+//	// sensibility checks
+//	// all component in set exceed coefficient
+//	std::sort(active_set.begin(), active_set.end());
+////	{
+////		std::stringstream output;
+////		std::copy(
+////				active_set.begin(), active_set.end(),
+////				std::ostream_iterator<int>(output, ";"));
+////		BOOST_LOG_TRIVIAL(info)
+////				<< "Final active_set is " << output.str();
+////	}
+//	for (active_set_t::const_iterator iter = active_set.begin();
+//			iter != active_set.end(); ++iter) {
+////		BOOST_LOG_TRIVIAL(info)
+////				<< "Is |_x[" << *iter << "]| = "
+////				<<  fabs((*_x)[*iter]) << " >= " << coefficient << "?";
+//		assert( fabs((*_x)[*iter]) + BASSOTOLERANCE >= coefficient );
 //	}
-	for (std::vector<int>::const_iterator iter = active_set.begin();
-			iter != active_set.end(); ++iter) {
-//		BOOST_LOG_TRIVIAL(info)
-//				<< "Is |_x[" << *iter << "]| = "
-//				<<  fabs((*_x)[*iter]) << " >= " << coefficient << "?";
-		assert( fabs((*_x)[*iter]) + BASSOTOLERANCE >= coefficient );
-	}
-	// all other components don't
-	std::vector<int> complement_set(_x->getSpace()->getDimension(), 0);
-	std::generate(complement_set.begin(), complement_set.end(), Helpers::unique_number());
-	std::vector<int>::iterator eraseiter =
-			std::set_difference(
-				complement_set.begin(), complement_set.end(),
-				active_set.begin(), active_set.end(),
-				complement_set.begin());
-	for (std::vector<int>::const_iterator iter = complement_set.begin();
-			iter != eraseiter; ++iter) {
-//		BOOST_LOG_TRIVIAL(info)
-//				<< "Is |_x[" << *iter << "]| = "
-//				<<  fabs((*_x)[*iter]) << " < " << coefficient << "?";
-		assert( fabs((*_x)[*iter]) < coefficient + BASSOTOLERANCE);
-	}
+//	// all other components don't
+//	active_set_t complement_set(_x->getSpace()->getDimension(), 0);
+//	std::generate(complement_set.begin(), complement_set.end(), Helpers::unique_number());
+//	active_set_t::iterator eraseiter =
+//			std::set_difference(
+//				complement_set.begin(), complement_set.end(),
+//				active_set.begin(), active_set.end(),
+//				complement_set.begin());
+//	for (active_set_t::const_iterator iter = complement_set.begin();
+//			iter != eraseiter; ++iter) {
+////		BOOST_LOG_TRIVIAL(info)
+////				<< "Is |_x[" << *iter << "]| = "
+////				<<  fabs((*_x)[*iter]) << " < " << coefficient << "?";
+//		assert( fabs((*_x)[*iter]) < coefficient + BASSOTOLERANCE);
+//	}
 
 	return coefficient;
 }
