@@ -15,12 +15,19 @@
 
 /** This implements the "dynamic" stepsize according to
  * [Lorenz et al., '13, §3.1]
+ *
+ * \warning This is so far not implemented in a clever way as actually
+ * residual and the search direction have already been calculate but in
+ * here we calculate them again as they are not given due to abstraction
+ * of the code.
+ *
  */
 struct DynamicRegularizedL1NormStepWidth :
 		public DetermineStepWidth
 {
 	DynamicRegularizedL1NormStepWidth(
-			const InverseProblem_ptr_t &_problem);
+			const InverseProblem_ptr_t &_problem,
+			const Mapping_ptr_t &_J_r);
 
 	const double operator()(
 			const SpaceElement_ptr_t &_dualx,
@@ -34,7 +41,12 @@ struct DynamicRegularizedL1NormStepWidth :
 
 private:
 	const InverseProblem_ptr_t problem;
+	const Mapping_ptr_t J_r;
 	const Mapping_ptr_t A_adjoint;
+
+	// create L2 norm for measuring error
+	const Norm_ptr_t l2norm_Y;
+	const Norm_ptr_t l2norm_DualX;
 };
 
 

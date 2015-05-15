@@ -20,7 +20,8 @@ DetermineStepWidthFactory::createInstance(
 		const InverseProblem_ptr_t &_problem,
 		const enum stepwidth_enumeration _stepwidth_type,
 		const double _C,
-		const ResidualFunctional::calculateResidual_t &_residualizer)
+		const ResidualFunctional::calculateResidual_t &_residualizer,
+		const Mapping_ptr_t &_J_q)
 {
 	DetermineStepWidth_ptr_t instance;
 	switch (_stepwidth_type) {
@@ -42,7 +43,7 @@ DetermineStepWidthFactory::createInstance(
 		break;
 	case DynamicRegularizedL1Norm:
 	instance = DetermineStepWidth_ptr_t(
-			new DynamicRegularizedL1NormStepWidth(_problem)
+			new DynamicRegularizedL1NormStepWidth(_problem, _J_q)
 			);
 		break;
 	}

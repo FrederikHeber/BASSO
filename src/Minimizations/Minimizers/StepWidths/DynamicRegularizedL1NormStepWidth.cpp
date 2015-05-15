@@ -19,9 +19,15 @@
 #include "Minimizations/Norms/NormFactory.hpp"
 
 DynamicRegularizedL1NormStepWidth::DynamicRegularizedL1NormStepWidth(
-		const InverseProblem_ptr_t &_problem) :
+		const InverseProblem_ptr_t &_problem,
+		const Mapping_ptr_t &_J_r) :
 	problem(_problem),
-	A_adjoint(_problem->A->getAdjointMapping())
+	J_r(_J_r),
+	A_adjoint(_problem->A->getAdjointMapping()),
+	l2norm_Y(NormFactory::createLpInstance(
+			problem->A->getTargetSpace(), 2.)),
+	l2norm_DualX(NormFactory::createLpInstance(
+			problem->x->getSpace()->getDualSpace(), 2.))
 {}
 
 const double DynamicRegularizedL1NormStepWidth::operator()(
@@ -34,16 +40,11 @@ const double DynamicRegularizedL1NormStepWidth::operator()(
 		const double _alpha
 		) const
 {
-	// create L2 norm for measuring error
-	const Norm_ptr_t l2norm = NormFactory::createLpInstance(
-			problem->A->getTargetSpace(), 2.);
-
-	const SpaceElement_ptr_t upper = problem->y->getSpace()->createElement();
 	const LinearMapping &A = static_cast<const LinearMapping &>(*problem->A);
-	*upper = A * _solution - problem->y;
-	const SpaceElement_ptr_t lower = problem->y->getSpace()->createElement();
-	*lower = A * upper;
-	const double norm_value = (*l2norm)(upper)/(*l2norm)(lower);
+	const LinearMapping &A_t = static_cast<const LinearMapping &>(*A_adjoint);
+	const SpaceElement_ptr_t upper = A * _solution - problem->y;
+	const SpaceElement_ptr_t lower = A_t * (*J_r)(upper);
+	const double norm_value = (*l2norm_Y)(upper)/(*l2norm_DualX)(lower);
 	return norm_value*norm_value;
 }
 

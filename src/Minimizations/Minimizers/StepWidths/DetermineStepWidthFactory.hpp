@@ -32,7 +32,8 @@ struct DetermineStepWidthFactory
 			const InverseProblem_ptr_t &_problem,
 			const enum stepwidth_enumeration _stepwidth_type,
 			const double _C,
-			const ResidualFunctional::calculateResidual_t &_residualizer);
+			const ResidualFunctional::calculateResidual_t &_residualizer,
+			const Mapping_ptr_t &_J_q);
 };
 
 

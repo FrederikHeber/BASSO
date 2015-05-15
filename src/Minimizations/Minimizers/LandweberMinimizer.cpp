@@ -141,7 +141,8 @@ LandweberMinimizer::operator()(
 					_problem,
 					stepwidth_type,
 					C,
-					residualizer);
+					residualizer,
+					_problem->y->getSpace()->getDualityMapping());
 
 	/// -# loop over stopping criterion
 	while (!StopCriterion) {
