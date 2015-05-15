@@ -413,9 +413,9 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 	}
 	if (vm.count("regularization-parameter")) {
 		if (((vm.count("stepwidth-algorithm")
-				&& (type != MinimizerFactory::landweber)))
+				&& (algorithm_name != MinimizerFactory::getNameForType(MinimizerFactory::landweber))))
 				|| ((!vm.count("stepwidth-algorithm")
-						&& (type == MinimizerFactory::landweber)))) {
+						&& (algorithm_name == MinimizerFactory::getNameForType(MinimizerFactory::landweber))))) {
 			BOOST_LOG_TRIVIAL(error)
 					<< "Either stepwidth algorithm chosen but not Landweber "
 					<< "or the other way round";
