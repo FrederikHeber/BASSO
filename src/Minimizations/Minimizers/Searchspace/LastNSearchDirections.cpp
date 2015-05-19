@@ -18,7 +18,14 @@
 
 #include "Math/Helpers.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Functions/MetricProjectionFunctional.hpp"
+#include "Minimizations/Functions/HyperplaneProjection.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
+#include "Minimizations/Functions/Minimizers/Minimizer.hpp"
+#include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/Mappings/DualityMapping.hpp"
+#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -36,6 +43,66 @@ LastNSearchDirections::LastNSearchDirections(
 	lastIndices(_N, 0),
 	orthogonal_directions(_orthogonal_directions)
 {}
+
+const unsigned int calculateStepWidth(
+		const SpaceElement_ptr_t& dual_solution,
+		std::vector<double> & tmin,
+		const std::vector<SpaceElement_ptr_t> &_searchspace,
+		const std::vector<double> &_alphas
+		)
+{
+	// some variables available in SequentialSubspaceMinimizer::calculateStepwidth()
+	double TolY = 1e-6;
+	const Norm &DualNormX = *dual_solution->getSpace()->getNorm();
+	const Mapping & J_q = *dual_solution->getSpace()->getDualityMapping();
+	const size_t MaxInnerIterations = 100;
+
+	// consistency checks
+	const size_t Ndirs = _searchspace.size();
+	assert( Ndirs == tmin.size() );
+
+	// tmin=fminunc(@(t) MetricProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
+	MetricProjectionFunctional metric(DualNormX,
+			dynamic_cast<const PowerTypeDualityMapping&>(J_q),
+			J_q.getPower(), _searchspace);
+	const HyperplaneProjection<MetricProjectionFunctional> functional(
+			metric, dual_solution);
+
+	// due to templation we need to instantiate both, as user
+	// decides during runtime which we need
+	Minimizer<gsl_vector> minimizer_gsl(Ndirs);
+//	Minimizer<NLopt_vector> minimizer_nlopt(Ndirs);
+//	if (MinLib == gnuscientificlibrary) {
+		minimizer_gsl.setMaxIterations(MaxInnerIterations);
+//	} else if (MinLib == nonlinearoptimization) {
+//		minimizer_nlopt.setMaxIterations(MaxInnerIterations);
+//	}
+
+	unsigned int inner_iterations = 0;
+	FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
+			functional, minimizer_gsl, tmin);
+//	FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
+//			functional, minimizer_nlopt, tmin);
+//	switch (MinLib) {
+//	case gnuscientificlibrary:
+		inner_iterations = fmin_gsl(Ndirs, TolY, tmin);
+//		break;
+//	case nonlinearoptimization:
+//		inner_iterations = fmin_nlopt(Ndirs, TolY, tmin);
+//		break;
+//	default:
+//		throw MinimizationIllegalValue_exception()
+//				<< MinimizationIllegalValue_name("MinLib");
+//		break;
+//	}
+	std::stringstream output_stepwidth;
+	std::copy(tmin.begin(), tmin.end(),
+			std::ostream_iterator<double>(output_stepwidth, " "));
+	BOOST_LOG_TRIVIAL(debug)<< "tmin " << output_stepwidth.str()
+	<< " found in " << inner_iterations << " iterations.";
+
+	return inner_iterations;
+}
 
 void LastNSearchDirections::update(
 		const SpaceElement_ptr_t &_newdir,
@@ -90,35 +157,48 @@ void LastNSearchDirections::update(
 		indices_to_orthogonalize.push_back(*orderOfApplication.begin());
 		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
 				iter != indices_to_orthogonalize.end(); ++iter) {
-			const double searchdir_norm =  U[ *iter ]->Norm();
-			if (searchdir_norm < std::numeric_limits<double>::epsilon())
-				continue;
-//			const std::pair<double, double> tmp =
-//					projector(
-//							U[ *iter ],
-//							newdir,
-//							1e-8);
-//			const double projected_distance = tmp.second;
-			const DualityMapping &J_q = static_cast<const DualityMapping &>(
-					*newdir->getSpace()->getDualityMapping());
-			const double q = J_q.getPower();
-			const double p = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
-			const double gamma_projected_distance =
-					J_q(newdir) * U[ *iter ] / searchdir_norm;
-			const double searchdir_distance = searchdir_norm;
-			const double projection_coefficient = ::pow(
-					gamma_projected_distance,
-					p/q)/searchdir_distance;
-//			const double projection_coefficient =
-//					projected_distance/searchdir_distance;
-			*newdir -= projection_coefficient * U[ *iter ];
-			alpha -= projection_coefficient * alphas[ *iter ];
+			const std::vector<SpaceElement_ptr_t> searchspace(1, U[ *iter ]);
+			const std::vector<double> alphas(1, 0.);
+			std::vector<double> tmin(1, 0.);
+			calculateStepWidth(
+					newdir,
+					tmin,
+					searchspace,
+					alphas
+					);
+			const double projection_coefficient = tmin[0];
 			BOOST_LOG_TRIVIAL(info)
-				<< "Projection coefficient is " << gamma_projected_distance << "/"
-				<< searchdir_distance << " = " << projection_coefficient;
+				<< "Projection coefficient is " << projection_coefficient;
+
+//			const double searchdir_norm =  U[ *iter ]->Norm();
+//			if (searchdir_norm < std::numeric_limits<double>::epsilon())
+//				continue;
+////			const std::pair<double, double> tmp =
+////					projector(
+////							U[ *iter ],
+////							newdir,
+////							1e-8);
+////			const double projected_distance = tmp.second;
+//			const DualityMapping &J_q = static_cast<const DualityMapping &>(
+//					*newdir->getSpace()->getDualityMapping());
+//			const double q = J_q.getPower();
+//			const double p = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
+//			const double gamma_projected_distance =
+//					J_q(newdir) * U[ *iter ] / searchdir_norm;
+//			const double searchdir_distance = searchdir_norm;
+//			const double projection_coefficient = ::pow(
+//					gamma_projected_distance,
+//					p/q)/searchdir_distance;
+////			const double projection_coefficient =
+////					projected_distance/searchdir_distance;
 //			BOOST_LOG_TRIVIAL(info)
-//				<< "Compare numerator to "
-//				<< J_q(newdir) * U[ *iter ] / searchdir_norm;
+//				<< "Projection coefficient is " << gamma_projected_distance << "/"
+//				<< searchdir_distance << " = " << projection_coefficient;
+////			BOOST_LOG_TRIVIAL(info)
+////				<< "Compare numerator to "
+////				<< J_q(newdir) * U[ *iter ] / searchdir_norm;
+				*newdir -= projection_coefficient * U[ *iter ];
+				alpha -= projection_coefficient * alphas[ *iter ];
 		}
 		const double prenorm = _newdir->Norm();
 		const double postnorm = newdir->Norm();
