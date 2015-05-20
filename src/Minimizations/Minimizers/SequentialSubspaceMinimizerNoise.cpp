@@ -25,7 +25,6 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
-#include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"

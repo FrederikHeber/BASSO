@@ -229,7 +229,7 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	BregmanProjectionFunctional bregman(refs.DualNormX,
 			dynamic_cast<const PowerTypeDualityMapping&>(refs.J_q),
 			refs.J_q.getPower());
-	const HyperplaneProjection functional(bregman, dual_solution,
+	const HyperplaneProjection<BregmanProjectionFunctional> functional(bregman, dual_solution,
 			_searchspace, _alphas);
 
 	// due to templation we need to instantiate both, as user

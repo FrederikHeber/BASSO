@@ -8,7 +8,6 @@ add_library (Minimizations
 	Elements/SpaceElement.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
-	Functions/HyperplaneProjection.cpp
 	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/Minimizers/Minimizer_nlopt.cpp
 	Functions/ResidualFunctional.cpp
