@@ -7,25 +7,13 @@
 
 #include "BassoConfig.h"
 
-#include <boost/log/trivial.hpp>
-#include <iostream>
-#include <iterator>
-#include <sstream>
-
 #include "HyperplaneProjection.hpp"
+
+#include "Log/Logging.hpp"
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 
 typedef typename MinimizationFunctional< std::vector<double> >::array_type array_type;
-
-template<class T>
-std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
-{
-	std::copy(
-			values.begin(), values.end(),
-			std::ostream_iterator<T>(ost, " "));
-	return ost;
-}
 
 HyperplaneProjection::HyperplaneProjection(
 	BregmanProjectionFunctional &_bregman,

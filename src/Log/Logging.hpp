@@ -17,11 +17,23 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
 
+#include <iosfwd>
+#include <iterator>
+
 namespace logging = boost::log;
 namespace src = boost::log::sources;
 namespace expr = boost::log::expressions;
 namespace keywords = boost::log::keywords;
 
 void startLogging();
+
+template<class T>
+std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
+{
+	std::copy(
+			values.begin(), values.end(),
+			std::ostream_iterator<T>(ost, " "));
+	return ost;
+}
 
 #endif /* LOGGING_HPP_ */
