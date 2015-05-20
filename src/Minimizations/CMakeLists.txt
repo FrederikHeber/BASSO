@@ -8,6 +8,7 @@ add_library (Minimizations
 	Elements/SpaceElement.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
+	Functions/MetricProjectionFunctional.cpp 
 	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/Minimizers/Minimizer_nlopt.cpp
 	Functions/ResidualFunctional.cpp
@@ -56,6 +57,7 @@ install (FILES Elements/VectorSetter.hpp DESTINATION include)
 install (FILES Functions/BregmanDistance.hpp DESTINATION include)
 install (FILES Functions/BregmanProjectionFunctional.hpp DESTINATION include)
 install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
+install (FILES Functions/MetricProjectionFunctional.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer_impl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/MinimizationFunctional.hpp DESTINATION include)

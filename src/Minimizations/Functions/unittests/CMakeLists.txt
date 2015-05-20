@@ -27,6 +27,19 @@ target_link_libraries (BregmanProjectionFunctionalUnitTest
 add_test (BregmanProjectionFunctionalUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/BregmanProjectionFunctionalUnitTest)
 
+########################## MetricProjectionFunctionalUnitTest #######################
+add_executable (MetricProjectionFunctionalUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	MetricProjectionFunctionalUnitTest.cpp) 
+target_link_libraries (MetricProjectionFunctionalUnitTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
+
+add_test (MetricProjectionFunctionalUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Functions/unittests/MetricProjectionFunctionalUnitTest)
+
 ########################## SmoothnessModulusUnitTest #######################
 add_executable (SmoothnessModulusUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
