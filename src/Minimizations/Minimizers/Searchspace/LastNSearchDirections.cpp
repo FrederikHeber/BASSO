@@ -44,11 +44,10 @@ LastNSearchDirections::LastNSearchDirections(
 	orthogonal_directions(_orthogonal_directions)
 {}
 
-const unsigned int calculateStepWidth(
+const unsigned int calculateMetricProjection(
 		const SpaceElement_ptr_t& dual_solution,
-		std::vector<double> & tmin,
 		const std::vector<SpaceElement_ptr_t> &_searchspace,
-		const std::vector<double> &_alphas
+		std::vector<double> & tmin
 		)
 {
 	// some variables available in SequentialSubspaceMinimizer::calculateStepwidth()
@@ -61,7 +60,6 @@ const unsigned int calculateStepWidth(
 	const size_t Ndirs = _searchspace.size();
 	assert( Ndirs == tmin.size() );
 
-	// tmin=fminunc(@(t) MetricProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 	MetricProjectionFunctional metric(DualNormX,
 			dynamic_cast<const PowerTypeDualityMapping&>(J_q),
 			J_q.getPower(), _searchspace);
@@ -103,6 +101,45 @@ const unsigned int calculateStepWidth(
 
 	return inner_iterations;
 }
+
+const unsigned int calculateBregmanProjection(
+		const SpaceElement_ptr_t &_newdir,
+		const SpaceElement_ptr_t &_olddir,
+		std::vector<double> & tmin
+		)
+{
+	const double searchdir_norm = _olddir->Norm();
+	if (searchdir_norm < std::numeric_limits<double>::epsilon()) {
+		tmin[0] = 0.;
+		return 0;
+	}
+//			const std::pair<double, double> tmp =
+//					projector(
+//							_olddir,
+//							_newdir,
+//							1e-8);
+//			const double projected_distance = tmp.second;
+	const DualityMapping &J_q = static_cast<const DualityMapping &>(
+			*_newdir->getSpace()->getDualityMapping());
+	const double q = J_q.getPower();
+	const double p = _newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
+	const double gamma_projected_distance =
+			J_q(_newdir) * _olddir / searchdir_norm;
+	const double searchdir_distance = searchdir_norm;
+	tmin[0] = ::pow(
+			gamma_projected_distance,
+			p/q)/searchdir_distance;
+//			const double projection_coefficient =
+//					projected_distance/searchdir_distance;
+	BOOST_LOG_TRIVIAL(info)
+		<< "Projection coefficient is " << gamma_projected_distance << "/"
+		<< searchdir_distance << " = " << tmin[0];
+//			BOOST_LOG_TRIVIAL(info)
+//				<< "Compare numerator to "
+//				<< J_q(newdir) * _olddir / searchdir_norm;
+	return 1;
+}
+
 
 void LastNSearchDirections::update(
 		const SpaceElement_ptr_t &_newdir,
@@ -157,48 +194,36 @@ void LastNSearchDirections::update(
 		indices_to_orthogonalize.push_back(*orderOfApplication.begin());
 		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
 				iter != indices_to_orthogonalize.end(); ++iter) {
-			const std::vector<SpaceElement_ptr_t> searchspace(1, U[ *iter ]);
-			const std::vector<double> alphas(1, 0.);
 			std::vector<double> tmin(1, 0.);
-			calculateStepWidth(
-					newdir,
-					tmin,
-					searchspace,
-					alphas
-					);
+			enum {
+				metric,
+				bregman
+			} ProjectionType = metric;
+			switch (ProjectionType) {
+			case metric:
+				{
+					const std::vector<SpaceElement_ptr_t> searchspace(1, U[ *iter ]);
+					calculateMetricProjection(
+							newdir,
+							searchspace,
+							tmin
+							);
+				}
+				break;
+			case bregman:
+				calculateBregmanProjection(
+						newdir,
+						U[ *iter ],
+						tmin
+						);
+				break;
+			}
 			const double projection_coefficient = tmin[0];
 			BOOST_LOG_TRIVIAL(info)
 				<< "Projection coefficient is " << projection_coefficient;
 
-//			const double searchdir_norm =  U[ *iter ]->Norm();
-//			if (searchdir_norm < std::numeric_limits<double>::epsilon())
-//				continue;
-////			const std::pair<double, double> tmp =
-////					projector(
-////							U[ *iter ],
-////							newdir,
-////							1e-8);
-////			const double projected_distance = tmp.second;
-//			const DualityMapping &J_q = static_cast<const DualityMapping &>(
-//					*newdir->getSpace()->getDualityMapping());
-//			const double q = J_q.getPower();
-//			const double p = newdir->getSpace()->getDualSpace()->getDualityMapping()->getPower();
-//			const double gamma_projected_distance =
-//					J_q(newdir) * U[ *iter ] / searchdir_norm;
-//			const double searchdir_distance = searchdir_norm;
-//			const double projection_coefficient = ::pow(
-//					gamma_projected_distance,
-//					p/q)/searchdir_distance;
-////			const double projection_coefficient =
-////					projected_distance/searchdir_distance;
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Projection coefficient is " << gamma_projected_distance << "/"
-//				<< searchdir_distance << " = " << projection_coefficient;
-////			BOOST_LOG_TRIVIAL(info)
-////				<< "Compare numerator to "
-////				<< J_q(newdir) * U[ *iter ] / searchdir_norm;
-				*newdir -= projection_coefficient * U[ *iter ];
-				alpha -= projection_coefficient * alphas[ *iter ];
+			*newdir -= projection_coefficient * U[ *iter ];
+			alpha -= projection_coefficient * alphas[ *iter ];
 		}
 		const double prenorm = _newdir->Norm();
 		const double postnorm = newdir->Norm();
