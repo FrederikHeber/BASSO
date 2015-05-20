@@ -5,8 +5,8 @@
  *      Author: heber
  */
 
-#ifndef BregmanProjectionFunctionalUNITTEST_HPP_
-#define BregmanProjectionFunctionalUNITTEST_HPP_
+#ifndef BREGMANPROJECTIONFUNCTIONALUNITTEST_HPP_
+#define BREGMANPROJECTIONFUNCTIONALUNITTEST_HPP_
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -34,4 +34,4 @@ private:
 };
 
 
-#endif /* BregmanProjectionFunctionalUNITTEST_HPP_ */
+#endif /* BREGMANPROJECTIONFUNCTIONALUNITTEST_HPP_ */
