@@ -38,34 +38,23 @@ struct HyperplaneProjection :
 
 	const F &functional;
 	const SpaceElement_ptr_t &x;
-	const std::vector<SpaceElement_ptr_t> &U;
-	const std::vector<double> &alpha;
 
 	/** Constructor to initialize refs.
 	 *
 	 */
 	HyperplaneProjection(
 		const F &_functional,
-		const SpaceElement_ptr_t &_x,
-		const std::vector<SpaceElement_ptr_t> &_U,
-		const std::vector<double> &_alpha
+		const SpaceElement_ptr_t &_x
 		) :
 			functional(_functional),
-			x(_x),
-			U(_U),
-			alpha(_alpha)
+			x(_x)
 	{}
 
 	double function(
 			const std::vector<double> &_value
 			) const
 	{
-		const double returnvalue =
-				functional(
-						_value,
-						x,
-						U,
-						alpha);
+		const double returnvalue = functional(_value, x);
 		BOOST_LOG_TRIVIAL(trace)
 			<< "func() evaluates to " << returnvalue;
 		return returnvalue;
@@ -75,12 +64,7 @@ struct HyperplaneProjection :
 			const std::vector<double> &_value
 			) const
 		{
-			const std::vector<double> grad =
-					functional.gradient(
-							_value,
-							x,
-							U,
-							alpha);
+			const std::vector<double> grad = functional.gradient(_value, x);
 			std::stringstream outputstream;
 			outputstream << grad;
 			BOOST_LOG_TRIVIAL(trace)

@@ -228,9 +228,9 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
 	BregmanProjectionFunctional bregman(refs.DualNormX,
 			dynamic_cast<const PowerTypeDualityMapping&>(refs.J_q),
-			refs.J_q.getPower());
-	const HyperplaneProjection<BregmanProjectionFunctional> functional(bregman, dual_solution,
-			_searchspace, _alphas);
+			refs.J_q.getPower(), _searchspace, _alphas);
+	const HyperplaneProjection<BregmanProjectionFunctional> functional(
+			bregman, dual_solution);
 
 	// due to templation we need to instantiate both, as user
 	// decides during runtime which we need

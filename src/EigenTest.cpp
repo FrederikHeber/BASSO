@@ -93,16 +93,6 @@ int main()
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
 		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
-		BregmanProjectionFunctional bregman_1(
-				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower());
-		std::vector<double> t;
-		t += 4,3;
-		Eigen::VectorXd xtemp(2);
-		xtemp << 4,3;
-		SpaceElement_ptr_t x =
-				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
 		std::vector<SpaceElement_ptr_t> U;
@@ -114,8 +104,18 @@ int main()
 		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
-		const double fval = bregman_1(t,x,U,alpha);
-		const std::vector<double> gval = bregman_1.gradient(t,x,U,alpha);
+		BregmanProjectionFunctional bregman_1(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),U,alpha);
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
+		const double fval = bregman_1(t,x);
+		const std::vector<double> gval = bregman_1.gradient(t,x);
 		std::stringstream gval_stream;
 		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
 		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
@@ -129,16 +129,6 @@ int main()
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
 		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
-		BregmanProjectionFunctional bregman_2(
-				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower());
-		std::vector<double> t;
-		t += 4,3;
-		Eigen::VectorXd xtemp(2);
-		xtemp << 4,3;
-		SpaceElement_ptr_t x =
-				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
 		std::vector<SpaceElement_ptr_t> U;
@@ -150,8 +140,18 @@ int main()
 		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
-		const double fval = bregman_2(t,x,U,alpha);
-		const std::vector<double> gval = bregman_2.gradient(t,x,U,alpha);
+		BregmanProjectionFunctional bregman_2(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),U,alpha);
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
+		const double fval = bregman_2(t,x);
+		const std::vector<double> gval = bregman_2.gradient(t,x);
 		std::stringstream gval_stream;
 		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
 		std::cout << "BregmanProjectionFunctional bregman_2 of v is "
@@ -165,16 +165,6 @@ int main()
 				NormedSpaceFactory::createLpInstance(
 						v.innerSize(), p, power);
 		const Mapping_ptr_t &J_infty = SpaceX->getDualSpace()->getDualityMapping();
-		BregmanProjectionFunctional bregman_infty(
-				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
-				J_infty->getPower());
-		std::vector<double> t;
-		t += 4,3;
-		Eigen::VectorXd xtemp(2);
-		xtemp << 4,3;
-		SpaceElement_ptr_t x =
-				ElementCreator::create(SpaceX, xtemp);
 		Eigen::MatrixXd Utemp(2,2);
 		Utemp << 1,0,0,1;
 		std::vector<SpaceElement_ptr_t> U;
@@ -186,8 +176,18 @@ int main()
 		assert( U.size() == (size_t)2 );
 		std::vector<double> alpha;
 		alpha += 1,0;
-		const double fval = bregman_infty(t,x,U,alpha);
-		const std::vector<double> gval = bregman_infty.gradient(t,x,U,alpha);
+		BregmanProjectionFunctional bregman_infty(
+				*SpaceX->getDualSpace()->getNorm(),
+				dynamic_cast<const PowerTypeDualityMapping &>(*J_infty),
+				J_infty->getPower(),U,alpha);
+		std::vector<double> t;
+		t += 4,3;
+		Eigen::VectorXd xtemp(2);
+		xtemp << 4,3;
+		SpaceElement_ptr_t x =
+				ElementCreator::create(SpaceX, xtemp);
+		const double fval = bregman_infty(t,x);
+		const std::vector<double> gval = bregman_infty.gradient(t,x);
 		std::stringstream gval_stream;
 		std::copy(gval.begin(), gval.end(), std::ostream_iterator<double>(gval_stream, " "));
 		std::cout << "BregmanProjectionFunctional bregman_2 of v is "

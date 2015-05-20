@@ -28,47 +28,48 @@ public:
 	 * @param _dualnorm norm object of dual space
 	 * @param _J_q duality mapping from dual space to space
 	 * @param _dualpower power of this duality mapping
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
 	 */
 	BregmanProjectionFunctional(
 			const Norm &_dualnorm,
 			const PowerTypeDualityMapping &_J_q,
-			const double _dualpower);
+			const double _dualpower,
+			const std::vector<SpaceElement_ptr_t> &_U,
+			const std::vector<double> &_alpha);
 
 	/** Constructor for BregmanProjectionFunctional.
 	 *
 	 * @param _problem inverse problem with refs to norm and duality mapping
+	 * \param _x current dual of solution
+	 * \param _U search space spanned by column vectors
+	 * \param _alpha offsets of affine subspace
 	 */
 	BregmanProjectionFunctional(
-			const InverseProblem_ptr_t &_problem);
+			const InverseProblem_ptr_t &_problem,
+			const std::vector<SpaceElement_ptr_t> &_U,
+			const std::vector<double> &_alpha);
 
 	~BregmanProjectionFunctional() {}
 
 	/** Implements BregmanProjectionFunctional functional.
 	 *
 	 * \param _t coefficients to column vectors of search space
-	 * \param _x current dual of solution
-	 * \param _U search space spanned by column vectors
-	 * \param _alpha offsets of affine subspace
+	 * \param _dualx current dual of solution
 	 */
 	double operator()(
 			const std::vector<double> &_t,
-			const SpaceElement_ptr_t &_dualx,
-			const std::vector<SpaceElement_ptr_t> &_U,
-			const std::vector<double> &_alpha
+			const SpaceElement_ptr_t &dualx
 			) const;
 
 	/** Implements BregmanProjectionFunctional functional.
 	 *
 	 * \param _t coefficients to column vectors of search space
-	 * \param _x current dual of solution
-	 * \param _U search space spanned by column vectors
-	 * \param _alpha offsets of affine subspace
+	 * \param _dualx current dual of solution
 	 */
 	std::vector<double> gradient(
 			const std::vector<double> &_t,
-			const SpaceElement_ptr_t &_dualx,
-			const std::vector<SpaceElement_ptr_t> &_U,
-			const std::vector<double> &_alpha
+			const SpaceElement_ptr_t &_dualx
 			) const;
 
 private:
@@ -78,6 +79,11 @@ private:
 	const Norm &dualnorm;
 	//!> LpDualityMapping object
 	const PowerTypeDualityMapping &J_q;
+
+	//!> search space used for coefficients
+	const std::vector<SpaceElement_ptr_t> &U;
+	//!> offset to hyperplanes
+	const std::vector<double> &alpha;
 };
 
 
