@@ -32,7 +32,7 @@ MinimizerFactory::createInstance(
 		Database &_database,
 		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 		const unsigned int _outputsteps,
-		const bool _orthogonal_directions
+		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 		)
 {
 	// create the instance depending on the type
@@ -57,7 +57,7 @@ MinimizerFactory::createInstance(
 					_maxinneriter,
 					_database,
 					_outputsteps,
-					_orthogonal_directions
+					_orthogonalization_type
 					);
 			break;
 	case sequentialsubspace_noise:
@@ -68,7 +68,7 @@ MinimizerFactory::createInstance(
 					_maxinneriter,
 					_database,
 					_outputsteps,
-					_orthogonal_directions
+					_orthogonalization_type
 					);
 			break;
 	default:

@@ -47,7 +47,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 		const unsigned int _maxinneriter,
 		Database &_database,
 		const unsigned int _outputsteps,
-		const bool _orthogonal_directions
+		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 		) :
 	GeneralMinimizer(
 			_inverseproblem,
@@ -62,7 +62,7 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	constant_positivity(1e-6),
 	constant_interpolation(0.6),
 	DoCalculateAngles(false),
-	DoOrthogonalizeDirections(_orthogonal_directions)
+	OrthogonalizationType(_orthogonalization_type)
 {}
 
 void SequentialSubspaceMinimizer::setN(
@@ -388,7 +388,7 @@ SequentialSubspaceMinimizer::operator()(
 				residual,
 				residuum,
 				N,
-				DoOrthogonalizeDirections);
+				OrthogonalizationType);
 	}
 
 	/// -# calculate some values prior to loop

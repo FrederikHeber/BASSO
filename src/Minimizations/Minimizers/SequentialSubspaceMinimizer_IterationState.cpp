@@ -33,7 +33,7 @@ void SequentialSubspaceMinimizer::IterationState::set(
 		const SpaceElement_ptr_t &_residual,
 		const double _residuum,
 		const unsigned int _N,
-		const bool _orthogonal_directions
+		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 		)
 {
 	/// -# initialize return structure
@@ -49,7 +49,7 @@ void SequentialSubspaceMinimizer::IterationState::set(
 	searchspace = SearchspaceFactory::create(
 					_x0->getSpace()->getDualSpace(),
 					_N,
-					_orthogonal_directions);
+					_orthogonalization_type);
 	isInitialized = true;
 }
 

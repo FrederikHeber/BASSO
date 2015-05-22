@@ -117,6 +117,7 @@ protected:
 
 private:
 	bool checkSensibility_delta() const;
+	bool checkSensibility_OrthogonalDirections() const;
 	bool checkSensibility_regularizationparameter() const;
 	bool checkSensibility_tau() const;
 	bool checkSensibility_tuple_parameters() const;
@@ -179,7 +180,7 @@ public:
 	double normx;
 	double normy;
 	unsigned int N;
-	bool orthogonal_directions;
+	LastNSearchDirections::OrthogonalizationType orthogonalization_type;
 	unsigned int outputsteps;
 	double powerx;
 	double powery;

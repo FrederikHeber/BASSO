@@ -14,6 +14,7 @@
 #include <string>
 
 #include "Minimizations/types.hpp"
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
 class Database;
@@ -63,7 +64,8 @@ public:
 			Database &_database,
 			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 			const unsigned int _outputsteps=0,
-			const bool _orthogonal_directions=false
+			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
+				= LastNSearchDirections::NoOrthogonalization
 			);
 
 	/** Helper function to check whether the given \a _name designates a

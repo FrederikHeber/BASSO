@@ -24,18 +24,26 @@ class SequentialSubspaceMinimizer;
 class LastNSearchDirections : public Searchspace
 {
 public:
+	//!> enumeration of all available orthogonalization types
+	enum OrthogonalizationType {
+		NoOrthogonalization=0,
+		MetricOrthogonalization=1,
+		BregmanOrthogonalization=2,
+		MAX_Orthogonalization
+	};
+
 	/** Constructor of class LastNSearchDirections.
 	 *
 	 * Sets update function to simple advanceIndex().
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
 	 * @param _N number of search directions in the subspace (i.e. search space)
-	 * @param _orthogonal_directions orthogonalize new search direction?
+	 * @param _orthogonalization_type orthogonalize new search direction?
 	 */
 	LastNSearchDirections(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
 			const unsigned int _N,
-			const bool _orthogonal_directions);
+			const OrthogonalizationType _orthogonalization_type);
 
 	/** This function performs the actual update of the search space.
 	 *
@@ -74,6 +82,14 @@ public:
 		MostOrthogonal=2,
 		MAX_UpdateAlgorithmType
 	};
+
+	/** Returns a name for the given OrthogonalizationType.
+	 *
+	 * @param type chosen type
+	 * @return string containing name of type
+	 */
+	static std::string getOrthogonalizationTypeName(
+			const OrthogonalizationType type);
 
 private:
 	//!> grant SequentialSubspaceMinimizer access to updateIndex and enforceRandomMapping
@@ -147,8 +163,8 @@ protected:
 	//!> current set of indices remaining for enforcing random mapping
 	mutable indexset_t current_indexset;
 
-	//!> whether to orthogonalize new search directions w.r.t old ones
-	const bool orthogonal_directions;
+	//!> whether and how to orthogonalize new search directions w.r.t old ones
+	const OrthogonalizationType orthogonalization_type;
 };
 
 

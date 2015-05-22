@@ -28,7 +28,7 @@ public:
 			const unsigned int _maxinneriter,
 			Database &_database,
 			const unsigned int _outputsteps,
-			const bool _orthogonal_directions
+			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 			);
 
 	~SequentialSubspaceMinimizerNoise() {}

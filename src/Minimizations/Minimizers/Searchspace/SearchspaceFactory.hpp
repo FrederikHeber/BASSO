@@ -13,6 +13,7 @@
 #include <boost/bimap.hpp>
 
 #include "Minimizations/Minimizers/Searchspace/Searchspace.hpp"
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 
 /** This class produces the desired search space type.
  *
@@ -32,13 +33,13 @@ public:
 	 *
 	 * @param _SearchDirectionSpace_ptr search direction space (for checks)
 	 * @param _N number of search directions
-	 * @param _orthogonal_directions orthogonalize new search direction?
+	 * @param _orthogonalization_type orthogonalize new search direction?
 	 * @return shared_ptr containing created instance
 	 */
 	static Searchspace::ptr_t create(
 			const NormedSpace_ptr_t &_SearchDirectionSpace_ptr,
 			const unsigned int _N,
-			const bool _orthogonal_directions
+			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 			);
 
 	/** Setter for the desired type to produce.

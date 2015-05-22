@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include "Log/Logging.hpp"
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
@@ -34,7 +35,7 @@ CommandLineOptions::CommandLineOptions() :
 	normx(2.),
 	normy(2.),
 	N(2),
-	orthogonal_directions(false),
+	orthogonalization_type(LastNSearchDirections::NoOrthogonalization),
 	outputsteps(0),
 	powerx(2.),
 	powery(2.),
@@ -112,8 +113,8 @@ void CommandLineOptions::init()
 					"whether to enforce update index algorithm to be a random mapping")
 			("inexact-linesearch", po::value<bool>(),
 					"set the line search to be inexact or (quasi) exact")
-			("orthogonal-directions", po::value<bool>(),
-					"set whether to always orthogonalize search directions or not")
+			("orthogonal-directions", po::value<unsigned int>(),
+					"set the way of orthogonalizing search directions (none(0), metric(1), bregman(2))")
 			("searchspace", po::value< std::string >(),
 					"set the type of search directions used")
 			("tau", po::value<double>(),
@@ -244,10 +245,12 @@ void CommandLineOptions::parse(int argc, char **argv)
 	}
 
 	if (vm.count("orthogonal-directions")) {
-		orthogonal_directions = vm["orthogonal-directions"].as<bool>();
+		orthogonalization_type =
+				(enum LastNSearchDirections::OrthogonalizationType)
+						vm["orthogonal-directions"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Orthogonalizing search directions: "
-			<< (orthogonal_directions ? "true" : "false");
+			<< LastNSearchDirections::getOrthogonalizationTypeName(orthogonalization_type);
 	}
 
 	if (vm.count("output-steps")) {
@@ -402,6 +405,19 @@ bool CommandLineOptions::checkSensibility_delta() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_OrthogonalDirections() const
+{
+	if (vm.count("orthogonal-directions")) {
+		if (!((orthogonalization_type >= LastNSearchDirections::NoOrthogonalization)
+			&& (orthogonalization_type < LastNSearchDirections::MAX_Orthogonalization))) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Illegal orthogonalization type specified.";
+			return false;
+		}
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_regularizationparameter() const
 {
 	if (((normx == 1.) && !vm.count("regularization-parameter"))
@@ -512,6 +528,7 @@ bool CommandLineOptions::checkSensibility() const
 {
 	bool status = true;
 	status &= checkSensibility_delta();
+	status &= checkSensibility_OrthogonalDirections();
 	status &= checkSensibility_regularizationparameter();
 	status &= checkSensibility_tau();
 	status &= checkSensibility_tuple_parameters();
@@ -578,7 +595,7 @@ void CommandLineOptions::store(std::ostream &_output)
 	writeValue<bool>(_output, vm,  "calculateAngles");
 	writeValue<bool>(_output, vm,  "enforceRandomMapping");
 	writeValue<bool>(_output, vm,  "inexact-linesearch");
-	writeValue<bool>(_output, vm,  "orthogonal-directions");
+	writeValue<unsigned int>(_output, vm,  "orthogonal-directions");
 	writeValue<std::string>(_output, vm,  "searchspace");
 	writeValue<double>(_output, vm,  "tau");
 	writeValue<unsigned int>(_output, vm,  "update-algorithm");
