@@ -240,6 +240,11 @@ public:
 	//!> name for each minimization library
 	static MinLib_names_t MinLib_names;
 
+private:
+
+	//!> contains the Bregman distance at the last iterate for monotonicity check
+	mutable double OldBregmanDistance;
+
 protected:
 
 	/** reference to an external database where we store infomation

@@ -53,6 +53,7 @@ GeneralMinimizer::GeneralMinimizer(
 	TolFun(1e-12),
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
+	OldBregmanDistance(0.),
 	database(_database)
 {
 	// set tolerances values
@@ -145,7 +146,6 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		const SpaceElement_ptr_t &_truesolution,
 		const SpaceElement_ptr_t &_dual_solution) const
 {
-	static double old_distance = 0.;
 	double distance = 0.;
 	if (!_truesolution->isZero()) {
 		distance = (*_Delta_p)(
@@ -156,8 +156,8 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Bregman distance is " << distance;
 		// check that distance truly decreases
-		assert( (old_distance == 0.) || ((old_distance - distance) > - BASSOTOLERANCE) );
-		old_distance = distance;
+		assert( (OldBregmanDistance == 0.) || ((OldBregmanDistance - distance) > - BASSOTOLERANCE) );
+		OldBregmanDistance = distance;
 	}
 	return distance;
 }
