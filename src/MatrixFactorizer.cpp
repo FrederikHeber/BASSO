@@ -53,6 +53,9 @@ bool solveProblem(
 	}
 
 #ifdef TRUESOLUTION
+	// SVD only gives true solution for l2 norm
+	assert( inverseproblem->y->getSpace()->getNorm()->getPvalue() == 2. );
+
 	// empty or true solution from diagonalization
 	Eigen::MatrixXd copymatrix = _matrix;
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd =
