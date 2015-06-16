@@ -253,6 +253,18 @@ inline bool checkResidualCondition(
 	return _residual < _delta;
 }
 
+inline bool checkRelativeResidualCondition(
+		const double _oldresidual,
+		const double _residual,
+		const double _delta)
+{
+	if (fabs(_residual) > BASSOTOLERANCE)
+		return fabs(_oldresidual-_residual)/_residual < _delta;
+	else
+		return fabs(_oldresidual-_residual) < _delta;
+}
+
+
 inline bool checkIterationCondition(
 		const unsigned int _iterations,
 		const unsigned int _max_iterations)
@@ -450,13 +462,17 @@ int main(int argc, char **argv)
 
 	/// iterate over the two factors
 	unsigned int loop_nr = 0;
+	double old_residual = 0.;
 	double residual = calculateResidual(data, spectral_matrix, pixel_matrix);
 	BOOST_LOG_TRIVIAL(info)
 		<< "#" << loop_nr << " 1/2, residual is " << residual;
 	loop_tuple.replace("residual", residual);
 	bool stop_condition =
-			checkResidualCondition(residual, opts.residual_threshold)
+			checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
+			|| checkResidualCondition(residual, opts.residual_threshold)
 			|| checkIterationCondition(loop_nr, opts.max_loops);
+	old_residual = residual;
+
 	// submit loop tuple
 	loop_table.addTuple(loop_tuple);
 
@@ -624,8 +640,10 @@ int main(int argc, char **argv)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
 			loop_tuple.replace("residual", residual);
 			stop_condition =
-						checkResidualCondition(residual, opts.residual_threshold)
-						|| checkIterationCondition(loop_nr, opts.max_loops);
+					checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
+					|| checkResidualCondition(residual, opts.residual_threshold)
+					|| checkIterationCondition(loop_nr, opts.max_loops);
+			old_residual = residual;
 		}
 
 		// submit loop tuple
