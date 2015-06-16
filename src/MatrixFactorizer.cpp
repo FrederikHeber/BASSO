@@ -150,6 +150,9 @@ bool projectOntoImage(
 			new InverseProblem(As,Ys,Xs,dualmappedrhs) );
 
 	// prepare minimizer
+	const std::string algorithm_name = _opts.algorithm_name;
+	const_cast<MatrixFactorizerOptions &>(_opts).algorithm_name =
+			MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolutionFactory::createMinimizer(
 					_opts, inverseproblem, _database, _opts.inner_iterations);
@@ -194,6 +197,7 @@ bool projectOntoImage(
 			std::cerr << "Illegal value for "
 					<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
 					<< std::endl;
+			const_cast<MatrixFactorizerOptions &>(_opts).algorithm_name = algorithm_name;
 			return false;
 		}
 		*result.m_solution += dualrhs;
@@ -203,6 +207,7 @@ bool projectOntoImage(
 					(result.m_solution);
 		setResultingVector(projected_solution, _resultingvalue, false);
 	}
+	const_cast<MatrixFactorizerOptions &>(_opts).algorithm_name = algorithm_name;
 
 	return true;
 }
