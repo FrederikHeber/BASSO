@@ -27,4 +27,18 @@ add_test (BassoSimple_NonExistantMatrix
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
 set_tests_properties (BassoSimple_NonExistantMatrix
 	PROPERTIES WILL_FAIL true)
+
+# tuple params working
+add_test (BassoSimple_TupleParameters 
+	${PROJECT_BINARY_DIR}/src/Basso
+		--normx 2 
+		--normy 2 
+		--powery 2 
+		--delta 0.01 
+		--iteration-file simple.db
+		--tuple-parameters "seed" "426"
+		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/matrix.m 
+		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
+set_tests_properties (BassoSimple_TupleParameters
+	PROPERTIES PASS_REGULAR_EXPRESSION "tuple parameters.*seed,426,")
 	
