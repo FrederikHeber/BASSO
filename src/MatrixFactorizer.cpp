@@ -7,6 +7,7 @@
 
 #include "Options/MatrixFactorizerOptions.hpp"
 #include "Database/Database.hpp"
+#include "Database/Database_mock.hpp"
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
 #include "MatrixIO/MatrixIO.hpp"
@@ -25,15 +26,6 @@
 #include "SolutionFactory/SolutionFactory.hpp"
 
 #define TRUESOLUTION 1
-
-void clearSmallTables(Database_ptr_t &_database)
-{
-	// remove tables
-	_database->clearTable("parameters");
-	_database->clearTable("data_per_iteration");
-	_database->clearTable("data_overall");
-	_database->clearTable("data_angles");
-}
 
 template <class T>
 bool solveProblem(
@@ -95,9 +87,6 @@ bool solveProblem(
 		dualx0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();
 		dualx0->setZero();
 	}
-
-	// remove some tables beforehand
-	clearSmallTables(_database);
 
 	// and minimize
 	try{
@@ -190,9 +179,6 @@ bool projectOntoImage(
 
 	// and minimize
 	{
-		// remove some tables beforehand
-		clearSmallTables(_database);
-
 		GeneralMinimizer::ReturnValues result;
 		try{
 			result = (*minimizer)(
@@ -285,6 +271,90 @@ inline double calculateResidual(
 	return difference_matrix.norm();
 }
 
+size_t prepareParametersTable(
+		Database &_database,
+		const size_t _innerSize,
+		const size_t _outerSize,
+		const MatrixFactorizerOptions &_opts
+		)
+{
+	Table& parameter_table = _database.addTable("parameters");
+	Table::Tuple_t& parameter_tuple = parameter_table.getTuple();
+	parameter_tuple.insert( std::make_pair("k", (int)_innerSize), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("n", (int)_outerSize), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("p", _opts.normx), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("r", _opts.normy), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("sparse_dim", (int)_opts.sparse_dim), Table::Parameter);
+	for (std::vector<std::string>::const_iterator iter = _opts.tuple_parameters.begin();
+			iter != _opts.tuple_parameters.end(); iter+=2) {
+		BOOST_LOG_TRIVIAL(debug)
+				<< " Adding additional parameter ("
+				<< *iter << "," << *(iter+1) << ") to loop tuple.";
+		parameter_tuple.insert( std::make_pair(*iter, *(iter+1)), Table::Parameter);
+	}
+	// we need to add it, otherwise we cannot use checks for presence
+	// as they rely on complete table info
+	parameter_table.addTuple(parameter_tuple);
+
+	size_t rowid = 0;
+	if (_database.isDatabaseFileGiven()) {
+		// check for presence
+		if (!_database.isTuplePresentInTable(parameter_table, parameter_tuple)) {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "Parameter tuple not present, adding to table.";
+			_database.writeTable(parameter_table);
+		}
+		// and return
+		rowid = _database.getIdOfTuplePresentInTable(
+					parameter_table, parameter_tuple);
+		// clear table such that present tuple is not stored again
+		_database.clearTable(parameter_table.getName());
+		BOOST_LOG_TRIVIAL(info)
+			<< "Obtaining parameter_key " << rowid;
+	} else {
+		// else set rowid to arbitrary value as there is no file anyway
+		rowid = 1;
+	}
+	return rowid;
+}
+
+bool createViews(Database &_database)
+{
+	// write tables beforehand
+	_database.writeAllTables();
+
+	bool status = true;
+	{
+		// check whether tables are present and contain elements
+		const Table &data_loop_table = _database.getTableConst("data_loop");
+		const Table &data_loop_overall_table =
+				_database.getTableConst("data_loop_overall");
+		status &= !data_loop_table.empty();
+		status &= !data_loop_overall_table.empty();
+		// we don't  check for parameter table's non-emptiness as is
+		// possibly might be if the used parameter tuple is already in
+		// the database, see setParameterKey()
+	}
+	if (!status)
+		BOOST_LOG_TRIVIAL(error)
+			<< "(Some of the) Required Tables are empty, not creating views.";
+	if (status) {
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS loop AS SELECT * FROM parameters p INNER JOIN data_loop d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		status &= _database.executeSQLStatement(sql.str());
+	}
+	if (status) {
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS loop_overall AS SELECT * FROM parameters p INNER JOIN data_loop_overall d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		status &= _database.executeSQLStatement(sql.str());
+	}
+	return status;
+}
+
 int main(int argc, char **argv)
 {
 	/// starting timing
@@ -343,26 +413,26 @@ int main(int argc, char **argv)
 	// create Database
 	Database_ptr_t database =
 			SolutionFactory::createDatabase(opts);
-	Table& loop_table = database->addTable("loop");
-	Table& loop_overall_table = database->addTable("loop_overall");
+	// install parameter set and get its key
+	const size_t parameter_key = prepareParametersTable(
+			*database,
+			data.innerSize(),
+			data.outerSize(),
+			opts);
+
+	Table& loop_table = database->addTable("data_loop");
 	Table::Tuple_t& loop_tuple = loop_table.getTuple();
-	loop_tuple.insert( std::make_pair("k", (int)data.innerSize()), Table::Parameter);
-	loop_tuple.insert( std::make_pair("n", (int)data.outerSize()), Table::Parameter);
-	loop_tuple.insert( std::make_pair("p", opts.normx), Table::Parameter);
-	loop_tuple.insert( std::make_pair("r", opts.normy), Table::Parameter);
-	loop_tuple.insert( std::make_pair("sparse_dim", (int)opts.sparse_dim), Table::Parameter);
-	for (std::vector<std::string>::const_iterator iter = opts.tuple_parameters.begin();
-			iter != opts.tuple_parameters.end(); iter+=2) {
-		BOOST_LOG_TRIVIAL(debug)
-				<< " Adding additional parameter ("
-				<< *iter << "," << *(iter+1) << ") to loop tuple.";
-		loop_tuple.insert( std::make_pair(*iter, *(iter+1)), Table::Parameter);
-	}
-	Table::Tuple_t& overall_tuple = loop_overall_table.getTuple();
+	loop_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+
+	Table& loop_overall_table = database->addTable("data_loop_overall");
+	Table::Tuple_t& overall_tuple = loop_overall_table.getTuple();
+	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+
+	Database_ptr_t mock_db(new Database_mock);
 
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
@@ -422,7 +492,7 @@ int main(int argc, char **argv)
 				{
 					// project y onto image of K
 					if (!projectOntoImage(
-							database,
+							mock_db,
 							opts,
 							spectral_matrix,
 							data.col(pixel_dim),
@@ -445,7 +515,7 @@ int main(int argc, char **argv)
 			GeneralMinimizer::ReturnValues result;
 			Eigen::VectorXd pixel_matrix_col(pixel_matrix.col(pixel_dim));
 			if (!solveProblem(
-					database,
+					mock_db,
 					opts,
 					spectral_matrix,
 					projected_data_col,
@@ -500,7 +570,7 @@ int main(int argc, char **argv)
 				{
 					// project y onto image of K
 					if (!projectOntoImage(
-							database,
+							mock_db,
 							opts,
 							pixel_matrix.transpose(),
 							data.row(spectral_dim).transpose(),
@@ -524,7 +594,7 @@ int main(int argc, char **argv)
 			GeneralMinimizer::ReturnValues result;
 			Eigen::VectorXd spectral_matrix_row(spectral_matrix.row(spectral_dim));
 			if (!solveProblem(
-					database,
+					mock_db,
 					opts,
 					pixel_matrix.transpose(),
 					projected_data_row_transpose,
@@ -572,6 +642,11 @@ int main(int argc, char **argv)
 	overall_tuple.replace("loops", (int)loop_nr);
 	overall_tuple.replace("residual", residual);
 	loop_overall_table.addTuple(overall_tuple);
+	
+	// add views after tables have been created and filled
+	if (!createViews(*database))
+		BOOST_LOG_TRIVIAL(warning)
+			<< "Could not create overall or per_iteration views.";
 
 	/// output solution
 	{
