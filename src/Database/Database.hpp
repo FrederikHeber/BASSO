@@ -79,6 +79,13 @@ public:
 	 */
 	bool removeTable(const std::string &_name);
 
+	/** Removes contents of a table with name \a _name from this database.
+	 *
+	 * @param _name name of new table
+	 * @return true - table found and contents removed, false - else
+	 */
+	bool clearTable(const std::string &_name);
+
 	/** Getter for a table by its name \a _name.
 	 *
 	 * @param _name name of table

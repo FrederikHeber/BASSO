@@ -38,9 +38,7 @@ void Table::Tuple_t::replace(
 		const Database_types::typevariant_t &_value)
 {
 	std::pair<iterator, bool> inserter =
-			std::map<
-					std::string,
-					Database_types::typevariant_t >::insert(
+			TokenTypeMap_t::insert(
 							std::make_pair(_key, _value) );
 	assert( !inserter.second );
 	inserter.first->second = _value;
@@ -52,9 +50,7 @@ void Table::Tuple_t::insert(const std::pair<std::string,
 {
 	{
 		std::pair<iterator, bool> inserter =
-				std::map<
-						std::string,
-						Database_types::typevariant_t >::insert(
+				TokenTypeMap_t::insert(
 								_pair );
 		assert( inserter.second );
 	}
@@ -70,4 +66,10 @@ bool Table::Tuple_t::isParameter(const std::string &_name) const
 	TypeMap_t::const_iterator iter = TypeMap.find(_name);
 	assert( iter != TypeMap.end() );
 	return (iter->second == Parameter);
+}
+
+void Table::Tuple_t::clear()
+{
+	TokenTypeMap_t::clear();
+	TypeMap.clear();
 }

@@ -51,12 +51,15 @@ public:
 		MAX_ColumnType
 	};
 
+	//!> typedef for token of tuple and associated type
+	typedef std::map<
+			std::string,
+			Database_types::typevariant_t > TokenTypeMap_t;
+
 	/** The Tuple_t contains the data as a map of key/value pairs.
 	 */
 	struct Tuple_t :
-		public std::map<
-					std::string,
-					Database_types::typevariant_t >
+		public TokenTypeMap_t
 	{
 		bool operator<(const Tuple_t &_a) const;
 
@@ -85,6 +88,11 @@ public:
 				const enum ColumnType _type);
 
 		bool isParameter(const std::string &_name) const;
+
+		/** Clears the internal map and the TypeMap.
+		 *
+		 */
+		void clear();
 
 	private:
 		void insert(

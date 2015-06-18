@@ -432,6 +432,15 @@ bool Database::removeTable(const std::string &_name)
 	return status;
 }
 
+bool Database::clearTable(const std::string &_name)
+{
+	tables_t::iterator iter = tables.find(_name);
+	const bool status = iter != tables.end();
+	if (status)
+		iter->second->clear();
+	return status;
+}
+
 Table& Database::getTable(const std::string &_name)
 {
 	tables_t::iterator iter = tables.find(_name);
