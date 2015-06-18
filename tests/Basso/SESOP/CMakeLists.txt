@@ -12,3 +12,6 @@ add_subdirectory (OtherSearchDirections)
 
 # tests for inexact line search
 add_subdirectory (InexactLineSearch)
+
+# tests for orthogonal directions
+add_subdirectory (OrthogonalDirections)
