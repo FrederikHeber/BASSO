@@ -60,7 +60,7 @@ public:
 	typedef boost::shared_ptr<Database> Database_ptr_t;
 
 	Database();
-	~Database();
+	virtual ~Database();
 
 	void setDatabaseFile( const std::string &_filename)
 	{ filename = _filename; DatabaseFileGiven = true; }
@@ -70,14 +70,14 @@ public:
 	 * @param _name name of new table
 	 * @return ref to the table, present one if it already existed
 	 */
-	Table& addTable(const std::string &_name);
+	virtual Table& addTable(const std::string &_name);
 
 	/** Removes a table with name \a _name from this database.
 	 *
 	 * @param _name name of new table
 	 * @return true - table found and removed, false - else
 	 */
-	bool removeTable(const std::string &_name);
+	virtual bool removeTable(const std::string &_name);
 
 	/** Removes contents of a table with name \a _name from this database.
 	 *
@@ -91,20 +91,20 @@ public:
 	 * @param _name name of table
 	 * @return ref to the table
 	 */
-	Table& getTable(const std::string &_name);
+	virtual Table& getTable(const std::string &_name);
 
 	/** Getter for a table by its name \a _name.
 	 *
 	 * @param _name name of table
 	 * @return const ref to the table
 	 */
-	const Table& getTableConst(const std::string &_name) const;
+	virtual const Table& getTableConst(const std::string &_name) const;
 
 	/** Returns the number of tables present in the database.
 	 *
 	 * @return number of tables
 	 */
-	const size_t size() const
+	virtual const size_t size() const
 	{ return tables.size(); }
 
 	/** Setter for whether tuples are replaced (with respect to their parameter
@@ -125,7 +125,7 @@ public:
 	 * @param _tuple tuple to look for
 	 * @return true - tuple present, false - not present
 	 */
-	bool isTuplePresentInTable(
+	virtual bool isTuplePresentInTable(
 			const Table &_table,
 			const Table::Tuple_t &_tuple) const;
 
@@ -136,7 +136,7 @@ public:
 	 * @param _tuple tuple to look for
 	 * @return rowid or (size_t)-1 of not present
 	 */
-	size_t getIdOfTuplePresentInTable(
+	virtual size_t getIdOfTuplePresentInTable(
 			const Table &_table,
 			const Table::Tuple_t &_tuple) const;
 
@@ -145,14 +145,14 @@ public:
 	 * @param _table table to write to sqlite file
 	 * @return true - everything ok, false - else
 	 */
-	bool writeTable(const Table &_table) const;
+	virtual bool writeTable(const Table &_table) const;
 
 	/** Execute a given string SQL command \a _command.
 	 *
 	 * \param _command SQL statement to execute
 	 * \return true - everything ok, false - command failed
 	 */
-	bool executeSQLStatement(const std::string &_command) const;
+	virtual bool executeSQLStatement(const std::string &_command) const;
 
 	/** Writes all tables in the database as an sqlite file.
 	 *
@@ -161,7 +161,7 @@ public:
 	 *
 	 * @return true - succesfully written, false - something went wrong
 	 */
-	bool writeAllTables() const;
+	virtual bool writeAllTables() const;
 
 	/** Getter for whether a database file was given.
 	 *

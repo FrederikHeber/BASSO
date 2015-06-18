@@ -27,7 +27,7 @@ class Database;
  */
 class Table
 {
-private:
+protected:
 	//!> grant Database access to private functions
 	friend class Database;
 
@@ -77,7 +77,7 @@ public:
 		 * @param _key name of pair (column name)
 		 * @param _value value of pair
 		 */
-		void replace(
+		virtual void replace(
 				const std::string &_key,
 				const Database_types::typevariant_t &_value);
 
@@ -88,13 +88,13 @@ public:
 		 * @param _pair pair of (name,value)
 		 * @param _type type of this pair
 		 */
-		void insert(
+		virtual void insert(
 				const std::pair<
 						std::string,
 						Database_types::typevariant_t> &_pair,
 				const enum ColumnType _type);
 
-		bool isParameter(const std::string &_name) const;
+		virtual bool isParameter(const std::string &_name) const;
 
 		/** Clears the internal map and the TypeMap.
 		 *
@@ -123,39 +123,39 @@ public:
 	 *
 	 * @param _tuple tuple to add
 	 */
-	void addTuple(const Tuple_t &_tuple);
+	virtual void addTuple(const Tuple_t &_tuple);
 
 	/** Returns the number of tuples present in the table.
 	 *
 	 * @return number of tuples
 	 */
-	const size_t size() const
+	virtual const size_t size() const
 	{ return internal_table.size(); }
 
 	/** Getter for the name of this Table.
 	 *
 	 * @return name of the table
 	 */
-	const std::string & getName() const
+	virtual const std::string & getName() const
 	{ return tablename; }
 
 	/** Getter whether table has not been changed since last update.
 	 *
 	 * @return true - table is unchanged, false - else
 	 */
-	const bool isUptodate() const
+	virtual const bool isUptodate() const
 	{ return uptodate; }
 
 	/** Removes all tuples contained in a table.
 	 *
 	 */
-	void clear();
+	virtual void clear();
 
 	/** Returns whether table is empty.
 	 *
 	 * @return true - no tuples present, false - else
 	 */
-	bool empty() const
+	virtual bool empty() const
 	{ return internal_table.empty(); }
 
 private:
