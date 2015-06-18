@@ -125,9 +125,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = addInfoToPerIterationTable(refs);
-	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = addInfoToOverallTable(refs);
 
 	/// -# check stopping criterion

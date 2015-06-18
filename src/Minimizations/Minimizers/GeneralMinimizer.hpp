@@ -272,6 +272,11 @@ protected:
 	 */
 	Database &database;
 
+	//!> table with per iteration step information
+	Table& per_iteration_table;
+	//!> table with overall iteration information
+	Table& overall_table;
+
 	static Table::Tuple_t preparePerIterationTuple(
 			const double _val_NormX,
 			const double _val_NormY,

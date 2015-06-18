@@ -104,14 +104,12 @@ LandweberMinimizer::operator()(
 	}
 
 	/// build data tuple for iteration and overall information
-	Table& per_iteration_table = database.addTable("per_iteration");
 	Table::Tuple_t per_iteration_tuple = preparePerIterationTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			1,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table& overall_table = database.addTable("overall");
 	Table::Tuple_t overall_tuple = prepareOverallTuple(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),

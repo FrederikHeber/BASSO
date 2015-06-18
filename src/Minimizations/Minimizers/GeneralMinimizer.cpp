@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "Database/Database.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
@@ -56,7 +57,9 @@ GeneralMinimizer::GeneralMinimizer(
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
-	database(_database)
+	database(_database),
+	per_iteration_table(database.addTable("per_iteration")),
+	overall_table(database.addTable("overall"))
 {
 	// set tolerances values
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
@@ -68,7 +71,6 @@ GeneralMinimizer::GeneralMinimizer(
 		MinLib_names +=
 			std::make_pair( "gsl", gnuscientificlibrary),
 			std::make_pair( "nlopt", nonlinearoptimization);
-
 }
 
 void GeneralMinimizer::SearchDirection::update(
