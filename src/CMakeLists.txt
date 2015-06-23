@@ -28,7 +28,11 @@ target_link_libraries ( MatrixFactorizer
 	${CMAKE_THREAD_LIBS_INIT} 
 	${Boost_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
-	${LIBRT_LIBRARIES}) 
+	${LIBRT_LIBRARIES})
+# MatrixFactorizer is parallelized with OpenMP
+set_target_properties(MatrixFactorizer PROPERTIES
+	COMPILE_FLAGS "${OpenMP_CXX_FLAGS}"
+	LINK_FLAGS "${OpenMP_CXX_FLAGS}") 
 
 add_executable (MatrixFactorizerConfigurator MatrixFactorizerConfigurator.cpp)
 target_link_libraries ( MatrixFactorizerConfigurator 

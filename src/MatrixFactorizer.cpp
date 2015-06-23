@@ -112,12 +112,15 @@ bool solveProblem(
 
 bool projectOntoImage(
 		Database_ptr_t &_database,
-		const MatrixFactorizerOptions &_opts,
+		MatrixFactorizerOptions _opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs,
 		Eigen::VectorXd &_resultingvalue
 		)
 {
+	// use smaller delta for the projection
+	_opts.delta = 1e-8;
+
 	// require dual values
 	const double dualnormx =
 			Helpers::ConjugateValue(_opts.normy);
@@ -382,7 +385,6 @@ enum SolvingDirection
 };
 
 bool solve(
-		Database_ptr_t &_mock_db,
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
@@ -390,7 +392,12 @@ bool solve(
 		const unsigned int _loop_nr
 		)
 {
+	std::vector<bool> returnbools(true, _rhs.cols());
+#ifdef OPENMP_FOUND
+#pragma omp parallel for
+#endif
 	for (unsigned int dim = 0; dim < _rhs.cols(); ++dim) {
+		Database_ptr_t mock_db(new Database_mock);
 		Eigen::VectorXd projected_rhs_col(_rhs.col(dim));
 		BOOST_LOG_TRIVIAL(debug)
 			<< "------------------------ n=" << dim << " ------------------";
@@ -401,12 +408,12 @@ bool solve(
 		{
 			// project y onto image of K
 			if (!projectOntoImage(
-					_mock_db,
+					mock_db,
 					_opts,
 					_matrix,
 					_rhs.col(dim),
 					projected_rhs_col))
-				return false;
+				returnbools[dim] = false;
 		}
 		BOOST_LOG_TRIVIAL(info)
 				<< "Projected y_" << dim << " is "
@@ -418,23 +425,26 @@ bool solve(
 				<< "........................ n=" << dim << " ..................";
 
 		// solve inverse problem for projected right-hand side
-		GeneralMinimizer::ReturnValues result;
 		Eigen::VectorXd solution_col(_solution.col(dim));
 		if (!solveProblem(
-				_mock_db,
+				mock_db,
 				_opts,
 				_matrix,
 				projected_rhs_col,
 				_solution.col(dim),
 				solution_col,
 				_loop_nr >= 3))
-			return false;
+			returnbools[dim] = false;
 		_solution.col(dim) = solution_col;
 		BOOST_LOG_TRIVIAL(info)
 			<< "Resulting vector is " << solution_col.transpose();
 	}
 
-	return true;
+	if (std::find(returnbools.begin(), returnbools.end(), false) !=
+			returnbools.end())
+		return false;
+	else
+		return true;
 }
 
 int main(int argc, char **argv)
@@ -514,8 +524,6 @@ int main(int argc, char **argv)
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 
-	Database_ptr_t mock_db(new Database_mock);
-
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
 	spectral_matrix.setRandom();
@@ -565,7 +573,7 @@ int main(int argc, char **argv)
 		}
 
 		stop_condition &=
-				solve(mock_db, opts,
+				solve(opts,
 						spectral_matrix,
 						data,
 						pixel_matrix,
@@ -602,7 +610,7 @@ int main(int argc, char **argv)
 		// must transpose in place, as spectral_matrix.transpose() is const
 		spectral_matrix.transposeInPlace();
 		stop_condition &=
-				solve(mock_db, opts,
+				solve(opts,
 						pixel_matrix.transpose(),
 						data.transpose(),
 						spectral_matrix,

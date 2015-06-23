@@ -20,3 +20,6 @@
 
 // use SVD to calculate real operator norm
 #cmakedefine FULLMATRIXNORM
+
+// OpenMP is used
+#cmakedefine OPENMP_FOUND
