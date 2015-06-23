@@ -62,7 +62,7 @@ bool solveProblem(
 			copymatrix.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
 	const Eigen::VectorXd truesolution_vector =
 			svd.solve(_rhs);
-	BOOST_LOG_TRIVIAL(info)
+	BOOST_LOG_TRIVIAL(trace)
 			<< "True solution is " << truesolution_vector.transpose()
 			<< " with norm "
 			<< (_matrix*truesolution_vector - _rhs).norm()/_rhs.norm();
@@ -402,7 +402,7 @@ bool solve(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "------------------------ n=" << dim << " ------------------";
 		// project right-hand side onto range of matrix
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(trace)
 				<< "Initial y_" << dim << " is "
 				<< projected_rhs_col.transpose();
 		{
@@ -415,10 +415,10 @@ bool solve(
 					projected_rhs_col))
 				returnbools[dim] = false;
 		}
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(trace)
 				<< "Projected y_" << dim << " is "
 				<< projected_rhs_col.transpose();
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(trace)
 				<< "Difference y_" << dim << "-y'_" << dim << " is "
 				<< (_rhs.col(dim)-projected_rhs_col).transpose();
 		BOOST_LOG_TRIVIAL(debug)
@@ -436,7 +436,7 @@ bool solve(
 				_loop_nr >= 3))
 			returnbools[dim] = false;
 		_solution.col(dim) = solution_col;
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(trace)
 			<< "Resulting vector is " << solution_col.transpose();
 	}
 
@@ -713,16 +713,16 @@ int main(int argc, char **argv)
 		}
 
 	}
-	BOOST_LOG_TRIVIAL(info)
+	BOOST_LOG_TRIVIAL(debug)
 		<< "Resulting first factor transposed is\n" << spectral_matrix.transpose();
-	BOOST_LOG_TRIVIAL(info)
+	BOOST_LOG_TRIVIAL(debug)
 		<< "Resulting second factor is\n" << pixel_matrix;
 
 	const Eigen::MatrixXd product_matrix = spectral_matrix * pixel_matrix;
 	if ((data.innerSize() <= 10) && (data.outerSize() <= 10)) {
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Data matrix was\n" << data;
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Product matrix is\n" << product_matrix;
 		BOOST_LOG_TRIVIAL(info)
 			<< "Difference matrix is\n" << data - product_matrix;
