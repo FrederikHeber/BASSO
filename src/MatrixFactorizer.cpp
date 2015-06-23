@@ -375,6 +375,68 @@ bool createViews(Database &_database)
 	return status;
 }
 
+enum SolvingDirection
+{
+	rowwise,
+	columnwise
+};
+
+bool solve(
+		Database_ptr_t &_mock_db,
+		const MatrixFactorizerOptions &_opts,
+		const Eigen::MatrixXd &_matrix,
+		const Eigen::MatrixXd &_rhs,
+		Eigen::MatrixXd &_solution,
+		const unsigned int _loop_nr
+		)
+{
+	for (unsigned int dim = 0; dim < _rhs.cols(); ++dim) {
+		Eigen::VectorXd projected_rhs_col(_rhs.col(dim));
+		BOOST_LOG_TRIVIAL(debug)
+			<< "------------------------ n=" << dim << " ------------------";
+		// project right-hand side onto range of matrix
+		BOOST_LOG_TRIVIAL(info)
+				<< "Initial y_" << dim << " is "
+				<< projected_rhs_col.transpose();
+		{
+			// project y onto image of K
+			if (!projectOntoImage(
+					_mock_db,
+					_opts,
+					_matrix,
+					_rhs.col(dim),
+					projected_rhs_col))
+				return false;
+		}
+		BOOST_LOG_TRIVIAL(info)
+				<< "Projected y_" << dim << " is "
+				<< projected_rhs_col.transpose();
+		BOOST_LOG_TRIVIAL(info)
+				<< "Difference y_" << dim << "-y'_" << dim << " is "
+				<< (_rhs.col(dim)-projected_rhs_col).transpose();
+		BOOST_LOG_TRIVIAL(debug)
+				<< "........................ n=" << dim << " ..................";
+
+		// solve inverse problem for projected right-hand side
+		GeneralMinimizer::ReturnValues result;
+		Eigen::VectorXd solution_col(_solution.col(dim));
+		if (!solveProblem(
+				_mock_db,
+				_opts,
+				_matrix,
+				projected_rhs_col,
+				_solution.col(dim),
+				solution_col,
+				_loop_nr >= 3))
+			return false;
+		_solution.col(dim) = solution_col;
+		BOOST_LOG_TRIVIAL(info)
+			<< "Resulting vector is " << solution_col.transpose();
+	}
+
+	return true;
+}
+
 int main(int argc, char **argv)
 {
 	/// starting timing
@@ -502,55 +564,13 @@ int main(int argc, char **argv)
 					<< "Current spectral matrix is\n" << spectral_matrix;
 		}
 
-		/// loop over pixel dimensions
-		for (unsigned int pixel_dim = 0; pixel_dim < data.cols();
-				++pixel_dim) {
-			Eigen::VectorXd projected_data_col(data.col(pixel_dim));
-			if (1) { // (loop_nr == 1) {
-				BOOST_LOG_TRIVIAL(debug)
-					<< "------------------------ n=" << pixel_dim << " ------------------";
-				// project right-hand side onto range of matrix
-				BOOST_LOG_TRIVIAL(info)
-						<< "Initial y_" << pixel_dim << " is "
-						<< data.col(pixel_dim).transpose();
-				{
-					// project y onto image of K
-					if (!projectOntoImage(
-							mock_db,
-							opts,
-							spectral_matrix,
-							data.col(pixel_dim),
-							projected_data_col))
-						return 255;
-				}
-				BOOST_LOG_TRIVIAL(info)
-						<< "Projected y_" << pixel_dim << " is "
-						<< projected_data_col.transpose();
-				BOOST_LOG_TRIVIAL(info)
-						<< "Difference y_" << pixel_dim << "-y'_" << pixel_dim << " is "
-						<< (data.col(pixel_dim)-projected_data_col).transpose();
-				BOOST_LOG_TRIVIAL(debug)
-						<< "........................ n=" << pixel_dim << " ..................";
-			} else {
-				projected_data_col = data.col(pixel_dim);
-			}
+		stop_condition &=
+				solve(mock_db, opts,
+						spectral_matrix,
+						data,
+						pixel_matrix,
+						loop_nr);
 
-			// solve inverse problem for projected right-hand side
-			GeneralMinimizer::ReturnValues result;
-			Eigen::VectorXd pixel_matrix_col(pixel_matrix.col(pixel_dim));
-			if (!solveProblem(
-					mock_db,
-					opts,
-					spectral_matrix,
-					projected_data_col,
-					pixel_matrix.col(pixel_dim),
-					pixel_matrix_col,
-					loop_nr >= 3))
-				return 255;
-			pixel_matrix.col(pixel_dim) = pixel_matrix_col;
-			BOOST_LOG_TRIVIAL(info)
-				<< "Resulting vector is " << pixel_matrix.col(pixel_dim).transpose();
-		}
 		if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
 					<< "Resulting pixel matrix is\n" << pixel_matrix;
@@ -579,57 +599,16 @@ int main(int argc, char **argv)
 					<< "Current pixel matrix is\n" << pixel_matrix;
 		}
 
-		/// loop over channel dimensions
-		for (unsigned int spectral_dim = 0; spectral_dim < data.rows();
-				++spectral_dim) {
-			BOOST_LOG_TRIVIAL(debug)
-				<< "------------------------ k=" << spectral_dim << " ------------------";
-			// project right-hand side onto range of matrix
-			Eigen::VectorXd projected_data_row_transpose(
-					data.row(spectral_dim).transpose());
-			if (1) {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Initial y^t_" << spectral_dim << " is "
-						<< data.row(spectral_dim);
-				{
-					// project y onto image of K
-					if (!projectOntoImage(
-							mock_db,
-							opts,
-							pixel_matrix.transpose(),
-							data.row(spectral_dim).transpose(),
-							projected_data_row_transpose))
-						return 255;
-				}
-				BOOST_LOG_TRIVIAL(info)
-						<< "Projected y^t_" << spectral_dim << " is "
-						<< projected_data_row_transpose.transpose();
-				BOOST_LOG_TRIVIAL(info)
-						<< "Difference y^t_" << spectral_dim << "-y^'t_" << spectral_dim << " is "
-						<< (data.row(spectral_dim).transpose()-projected_data_row_transpose).transpose();
-			} else {
-				projected_data_row_transpose = data.row(spectral_dim).transpose();
-			}
+		// must transpose in place, as spectral_matrix.transpose() is const
+		spectral_matrix.transposeInPlace();
+		stop_condition &=
+				solve(mock_db, opts,
+						pixel_matrix.transpose(),
+						data.transpose(),
+						spectral_matrix,
+						loop_nr);
+		spectral_matrix.transposeInPlace();
 
-			BOOST_LOG_TRIVIAL(debug)
-					<< "........................ k=" << spectral_dim << " ..................";
-
-			// solve inverse problem for projected right-hand side
-			GeneralMinimizer::ReturnValues result;
-			Eigen::VectorXd spectral_matrix_row(spectral_matrix.row(spectral_dim));
-			if (!solveProblem(
-					mock_db,
-					opts,
-					pixel_matrix.transpose(),
-					projected_data_row_transpose,
-					spectral_matrix.row(spectral_dim).transpose(),
-					spectral_matrix_row,
-					loop_nr >= 3))
-				return 255;
-			spectral_matrix.row(spectral_dim) = spectral_matrix_row;
-			BOOST_LOG_TRIVIAL(info)
-				<< "Resulting vector is " << spectral_matrix.row(spectral_dim).transpose();
-		}
 		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
 					<< "Resulting spectral matrix is\n" << spectral_matrix;
