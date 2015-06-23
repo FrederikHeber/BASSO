@@ -119,13 +119,13 @@ bool MatrixFactorizerOptions::internal_help_conditions() const
 
 bool MatrixFactorizerOptions::internal_checkSensibility() const
 {
-	// We have to check N+1 directions for linear independency. This should
+	// We have to check N+1 directions for linear independence. This should
 	// be possible at least judging from the the dimensionality of the
 	// space, hence this requirement. Otherwise, one of the offsets to
-	// hyperplane becoms zero and the direction will just go for the
+	// hyperplane becomes zero and the direction will just go for the
 	// minimum norm (i.e. 0). This causes the iteration to jump between
 	// N+1 different values, none of them the correct solution
-	if ((N > 1) && (N >= sparse_dim)) {
+	if ((N > 1) && (N > sparse_dim)) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of search directions must not be greater than the sparse dimension.";
 		return false;
