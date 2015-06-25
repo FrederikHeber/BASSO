@@ -443,82 +443,206 @@ bool solve(
 	return true;
 }
 
+int parseOptions(
+		int _argc,
+		char ** _argv,
+		MatrixFactorizerOptions &_opts)
+{
+	_opts.init();
+
+	// parse options
+	_opts.parse(_argc, _argv);
+
+	if (_opts.showHelpConditions(_argv[0]))
+		return 1;
+
+	// set verbosity level
+	_opts.setVerbosity();
+
+	if (!_opts.checkSensibility())
+		return 255;
+	_opts.setSecondaryValues();
+
+	return 0;
+}
+
+int parseDataFile(
+		const std::string &_filename,
+		Eigen::MatrixXd &_data)
+{
+	using namespace MatrixIO;
+
+	{
+		std::ifstream ist(_filename.c_str());
+		if (ist.good())
+			try {
+				ist >> _data;
+			} catch (MatrixIOStreamEnded_exception &e) {
+				std::cerr << "Failed to fully parse data matrix from " << _filename << std::endl;
+				return 255;
+			}
+		else {
+			std::cerr << "Failed to open " << _filename << std::endl;
+			return 255;
+		}
+
+	}
+
+	// print parsed matrix and vector if small or high verbosity requested
+	if ((_data.innerSize() > 10) || (_data.outerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+			<< "We solve for Y=K*X with Y =\n"
+			<< _data << "." << std::endl;
+	} else {
+		BOOST_LOG_TRIVIAL(info)
+					<< "We solve for Y=K*X with Y =\n"
+					<< _data << "." << std::endl;
+	}
+
+	return 0;
+}
+
+/** This stores the connect to a database and required tables
+ *
+ */
+struct IterationInformation
+{
+	/** Constructor for class IterationInformation.
+	 *
+	 * Initializes database, tables, and tuples.
+	 *
+	 * @param _opts factorization options
+	 * @param _innersize inner size of matrix to factorize
+	 * @param _outersize outer size of matrix to factorize
+	 */
+	IterationInformation(
+			const MatrixFactorizerOptions &_opts,
+			const unsigned int _innersize,
+			const unsigned int _outersize) :
+				database(SolutionFactory::createDatabase(_opts)),
+				loop_table(database->addTable("data_loop")),
+				loop_overall_table(database->addTable("data_loop_overall")),
+				loop_tuple(loop_table.getTuple()),
+				overall_tuple(loop_overall_table.getTuple())
+	{
+		// install parameter set and get its key
+		const size_t parameter_key = prepareParametersTable(
+				*database,
+				_innersize,
+				_outersize,
+				_opts);
+
+		loop_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
+		loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
+		loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+
+		overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
+		overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
+		overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	}
+
+	/** Destructor for class IterationInformation.
+	 *
+	 * This creates views after (some) data has been written to.
+	 *
+	 */
+	~IterationInformation()
+	{
+		// add views after tables have been created and filled
+		if (!createViews(*database))
+			BOOST_LOG_TRIVIAL(warning)
+				<< "Could not create overall or per_iteration views.";
+	}
+
+	//!> enumeration of all tables contained in this struct
+	enum TableType {
+		LoopTable,
+		OverallTable
+	};
+
+	/** Replaces a value of key \a _keyname in the tuple of the respective
+	 * matrix \a _table.
+	 *
+	 * \param _type type of table to add to.
+	 * \param _keyname name of key whose value to replace
+	 * \param _value value to replace
+	 */
+	template <typename T>
+	void replace(
+			const enum TableType _table,
+			const std::string &_keyname,
+			const T _value
+			)
+	{
+		switch(_table) {
+		case LoopTable:
+			loop_tuple.replace(_keyname, _value);
+			break;
+		case OverallTable:
+			overall_tuple.replace(_keyname, _value);
+			break;
+		default:
+			BOOST_LOG_TRIVIAL(error)
+				<< "Unknown table in IterationInformation::replace()";
+		}
+	}
+
+	/** Adds the currently present data tuple as it is for the respective
+	 * matrix \a _table to the table.
+	 *
+	 * \param _type type of table to add to.
+	 */
+	void addTuple(
+			const enum TableType _table
+			)
+	{
+		switch(_table) {
+		case LoopTable:
+			loop_table.addTuple(loop_tuple);
+			break;
+		case OverallTable:
+			loop_overall_table.addTuple(overall_tuple);
+			break;
+		default:
+			BOOST_LOG_TRIVIAL(error)
+				<< "Unknown table in IterationInformation::addTuple()";
+		}
+	}
+
+private:
+	//!> database connection
+	Database_ptr_t database;
+	//!> table with per loop information
+	Table& loop_table;
+	//!> table with overall minimization information
+	Table& loop_overall_table;
+	//!> data tuple for loop_table
+	Table::Tuple_t& loop_tuple;
+	//!> data tuple for loop_overall_table
+	Table::Tuple_t& overall_tuple;
+};
+
 int MatrixFactorization(int argc, char **argv)
 {
+	int returnstatus = 0;
 	/// starting timing
 	boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
 	/// some required parameters
 	MatrixFactorizerOptions opts;
-	opts.init();
-
-	// parse options
-	opts.parse(argc, argv);
-
-	if (opts.showHelpConditions(argv[0]))
-		return 1;
-
-	// set verbosity level
-	opts.setVerbosity();
-
-	if (!opts.checkSensibility())
-		return 255;
-	opts.setSecondaryValues();
+	returnstatus = parseOptions(argc, argv, opts);
+	if (returnstatus != 0)
+		return returnstatus;
 
 	/// parse the matrices
 	Eigen::MatrixXd data;
-	{
-		using namespace MatrixIO;
+	returnstatus = parseDataFile(opts.data_file.string(), data);
+	if (returnstatus != 0)
+		return returnstatus;
 
-		{
-			std::ifstream ist(opts.data_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> data;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse data matrix from " << opts.data_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				std::cerr << "Failed to open " << opts.data_file.string() << std::endl;
-				return 255;
-			}
-
-		}
-	}
-	// print parsed matrix and vector if small or high verbosity requested
-	if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Y=K*X with Y =\n"
-			<< data << "." << std::endl;
-	} else {
-		BOOST_LOG_TRIVIAL(info)
-					<< "We solve for Y=K*X with Y =\n"
-					<< data << "." << std::endl;
-	}
-
-	// create Database
-	Database_ptr_t database =
-			SolutionFactory::createDatabase(opts);
-	// install parameter set and get its key
-	const size_t parameter_key = prepareParametersTable(
-			*database,
-			data.innerSize(),
-			data.outerSize(),
-			opts);
-
-	Table& loop_table = database->addTable("data_loop");
-	Table::Tuple_t& loop_tuple = loop_table.getTuple();
-	loop_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
-	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
-	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
-
-	Table& loop_overall_table = database->addTable("data_loop_overall");
-	Table::Tuple_t& overall_tuple = loop_overall_table.getTuple();
-	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
-	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
-	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	/// create Database
+	IterationInformation info(opts, data.innerSize(), data.outerSize());
 
 	/// construct solution starting points
 	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
@@ -540,7 +664,7 @@ int MatrixFactorization(int argc, char **argv)
 	double residual = calculateResidual(data, spectral_matrix, pixel_matrix);
 	BOOST_LOG_TRIVIAL(info)
 		<< "#" << loop_nr << " 1/2, residual is " << residual;
-	loop_tuple.replace("residual", residual);
+	info.replace(IterationInformation::LoopTable, "residual", residual);
 	bool stop_condition =
 			checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
 			|| checkResidualCondition(residual, opts.residual_threshold)
@@ -548,12 +672,12 @@ int MatrixFactorization(int argc, char **argv)
 	old_residual = residual;
 
 	// submit loop tuple
-	loop_table.addTuple(loop_tuple);
+	info.addTuple(IterationInformation::LoopTable);
 
 	while (!stop_condition) {
 		// update loop count
 		++loop_nr;
-		loop_tuple.replace("loop_nr", (int)loop_nr);
+		info.replace(IterationInformation::LoopTable, "loop_nr", (int)loop_nr);
 
 		BOOST_LOG_TRIVIAL(debug)
 			<< "======================== #" << loop_nr << "/1 ==================";
@@ -629,7 +753,7 @@ int MatrixFactorization(int argc, char **argv)
 			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
-			loop_tuple.replace("residual", residual);
+			info.replace(IterationInformation::LoopTable, "residual", residual);
 			stop_condition =
 					checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
 					|| checkResidualCondition(residual, opts.residual_threshold)
@@ -638,7 +762,7 @@ int MatrixFactorization(int argc, char **argv)
 		}
 
 		// submit loop tuple
-		loop_table.addTuple(loop_tuple);
+		info.addTuple(IterationInformation::LoopTable);
 	}
 	if (loop_nr > opts.max_loops)
 		BOOST_LOG_TRIVIAL(error)
@@ -648,15 +772,10 @@ int MatrixFactorization(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info)
 			<< "Loop iteration performed " << loop_nr
 			<< " times.";
-	overall_tuple.replace("loops", (int)loop_nr);
-	overall_tuple.replace("residual", residual);
-	loop_overall_table.addTuple(overall_tuple);
+	info.replace(IterationInformation::OverallTable, "loops", (int)loop_nr);
+	info.replace(IterationInformation::OverallTable, "residual", residual);
+	info.addTuple(IterationInformation::OverallTable);
 	
-	// add views after tables have been created and filled
-	if (!createViews(*database))
-		BOOST_LOG_TRIVIAL(warning)
-			<< "Could not create overall or per_iteration views.";
-
 	/// output solution
 	{
 		using namespace MatrixIO;
