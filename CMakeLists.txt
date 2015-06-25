@@ -31,9 +31,12 @@ include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
 check_function_exists (log HAVE_LOG)
 check_function_exists (exp HAVE_EXP)
 
-# find cppunit for unit tests
+# find MPI
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-FIND_PACKAGE(OpenMP REQUIRED)
+FIND_PACKAGE(MPI REQUIRED)
+if (MPI_FOUND)
+	include_directories( "${MPI_CXX_INCLUDE_PATH}")
+endif (MPI_FOUND)
 
 ####################### CHECK LIBRARIES  #################################
 
@@ -85,9 +88,11 @@ find_package ( Boost 1.54 COMPONENTS
 	log_setup 
 	log 
 	filesystem
-	thread
-	program_options 
+	mpi
+	program_options
+	serialization 
 	system 
+	thread
 	REQUIRED )
 include_directories( ${Boost_INCLUDE_DIR} )
 

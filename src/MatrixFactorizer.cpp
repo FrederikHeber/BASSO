@@ -5,6 +5,10 @@
 #include <fstream>
 #include <string>
 
+#ifdef MPI_FOUND
+#include <mpi.h>
+#endif
+
 #include "Options/MatrixFactorizerOptions.hpp"
 #include "Database/Database.hpp"
 #include "Database/Database_mock.hpp"
@@ -392,10 +396,6 @@ bool solve(
 		const unsigned int _loop_nr
 		)
 {
-	std::vector<bool> returnbools(true, _rhs.cols());
-#ifdef OPENMP_FOUND
-#pragma omp parallel for
-#endif
 	for (unsigned int dim = 0; dim < _rhs.cols(); ++dim) {
 		Database_ptr_t mock_db(new Database_mock);
 		Eigen::VectorXd projected_rhs_col(_rhs.col(dim));
@@ -413,7 +413,7 @@ bool solve(
 					_matrix,
 					_rhs.col(dim),
 					projected_rhs_col))
-				returnbools[dim] = false;
+				return false;
 		}
 		BOOST_LOG_TRIVIAL(trace)
 				<< "Projected y_" << dim << " is "
@@ -434,20 +434,16 @@ bool solve(
 				_solution.col(dim),
 				solution_col,
 				_loop_nr >= 3))
-			returnbools[dim] = false;
+			return false;
 		_solution.col(dim) = solution_col;
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Resulting vector is " << solution_col.transpose();
 	}
 
-	if (std::find(returnbools.begin(), returnbools.end(), false) !=
-			returnbools.end())
-		return false;
-	else
-		return true;
+	return true;
 }
 
-int main(int argc, char **argv)
+int MatrixFactorization(int argc, char **argv)
 {
 	/// starting timing
 	boost::chrono::high_resolution_clock::time_point timing_start =
@@ -736,6 +732,30 @@ int main(int argc, char **argv)
 			<< boost::chrono::duration<double>(timing_end - timing_start)
 			<< ".";
 
-	/// exit
 	return 0;
+}
+
+int main(int argc, char **argv)
+{
+	/// start MPI
+	int my_rank = 0;
+
+#ifdef MPI_FOUND
+	int numprocs;
+	MPI_Init (&argc, &argv);
+	MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+	MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+#endif
+
+	int returnstatus = 0;
+	if (my_rank == 0)
+		returnstatus = MatrixFactorization(argc, argv);
+
+#ifdef MPI_FOUND
+	// End MPI
+	MPI_Finalize ();
+#endif
+
+	/// exit
+	return returnstatus;
 }
