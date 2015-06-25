@@ -6,7 +6,18 @@
 #include <string>
 
 #ifdef MPI_FOUND
-#include <mpi.h>
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/collectives.hpp>
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/nonblocking.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+namespace mpi = boost::mpi;
+
+#include <deque>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 #endif
 
 #include "Options/MatrixFactorizerOptions.hpp"
@@ -30,6 +41,117 @@
 #include "SolutionFactory/SolutionFactory.hpp"
 
 #define TRUESOLUTION 1
+
+#ifdef MPI_FOUND
+/** Answer from
+ * http://stackoverflow.com/questions/12851126/serializing-eigens-matrix-using-boost-serialization
+ */
+namespace boost
+{
+    template<class Archive, typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
+    inline void serialize(
+        Archive & ar,
+        Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> & t,
+        const unsigned int file_version
+    )
+    {
+        size_t rows = t.rows();
+		size_t cols = t.cols();
+        ar & rows;
+        ar & cols;
+        if( rows * cols != t.size() )
+        	t.resize( rows, cols );
+
+        ar & boost::serialization::make_array(t.data(), t.size());
+    }
+}
+
+
+struct GlobalData
+{
+	GlobalData(
+			const MatrixFactorizerOptions &_opts,
+			const Eigen::MatrixXd &_matrix) :
+		opts(_opts),
+		matrix(_matrix)
+	{}
+	GlobalData()
+	{}
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & const_cast<MatrixFactorizerOptions &>(opts);
+		ar & matrix;
+	}
+
+	const MatrixFactorizerOptions opts;
+	Eigen::MatrixXd matrix;
+};
+
+struct WorkPackage
+{
+	WorkPackage(
+			const Eigen::VectorXd &_rhs,
+			const Eigen::VectorXd &_solution_startvalue,
+			const int _col
+			) :
+		rhs(_rhs),
+		solution_startvalue(_solution_startvalue),
+		col(_col)
+	{}
+	WorkPackage(
+			const int _col) :
+		col(_col)
+	{}
+	WorkPackage() :
+		col(-1)
+	{}
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & rhs;
+		ar & solution_startvalue;
+		ar & col;
+	}
+
+	Eigen::VectorXd rhs;
+	Eigen::VectorXd solution_startvalue;
+	int col;
+};
+
+struct WorkResult
+{
+	WorkResult(
+			const Eigen::VectorXd &_solution,
+			const bool _solve_ok,
+			const int _col
+			) :
+		solution(_solution),
+		solve_ok(_solve_ok),
+		col(_col)
+	{}
+	WorkResult() :
+		solve_ok(true),
+		col(-1)
+	{}
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & solution;
+		ar & solve_ok;
+		ar & col;
+	}
+
+	Eigen::VectorXd solution;
+	bool solve_ok;
+	int col;
+};
+#endif
 
 template <class T>
 bool solveProblem(
@@ -638,11 +760,282 @@ void constructStartingMatrices(
 	_pixel_matrix.setZero();
 }
 
+#ifdef MPI_FOUND
+
+enum MPITags {
+	InitialId,
+	ColumnWise,
+	MAX_MPITags
+};
+
+void sendTerminate(
+		mpi::communicator &world)
+{
+	// send full terminate signal
+	// send round global information
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - broadcasting full terminate.";
+	bool full_terminate = true;
+	mpi::broadcast(world, full_terminate, 0);
+}
+
+bool handleResult(
+		const mpi::status &_result,
+		const std::vector<WorkResult> &_results,
+		Eigen::MatrixXd &_solution
+		)
+
+{
+	bool solve_ok = true;
+	if (_result.error() != 0) {
+		// look at stop_condition and store solution
+		const int id = _result.source();
+		solve_ok &= _results[id].solve_ok;
+		_solution.col(_results[id].col) = _results[id].solution;
+		if ((_solution.innerSize() > 10) || (_solution.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Got solution for col #" << _results[id].col
+					<< "\n" << _results[id].solution.transpose();
+		} else {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "Got solution for col #" << _results[id].col
+					<< "\n" << _results[id].solution.transpose();
+		}
+	} else
+		solve_ok = false;
+
+	return solve_ok;
+}
+
+bool solveMaster(
+		mpi::communicator &world,
+		const MatrixFactorizerOptions &_opts,
+		const Eigen::MatrixXd &_matrix,
+		const Eigen::MatrixXd &_rhs,
+		Eigen::MatrixXd &_solution,
+		const unsigned int _loop_nr
+		)
+{
+	// send round that we don't terminate yet
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - broadcasting no terminate.";
+	bool full_terminate = false;
+	mpi::broadcast(world, full_terminate, 0);
+
+	// gather all available workers
+	std::deque<int> AvailableWorkers;
+	for (int i=1;i<world.size();++i) {
+		int id = -1;
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#0 - waiting for id " << i << ".";
+		world.recv(i, InitialId, id);
+		assert( id != -1 );
+		AvailableWorkers.push_back(id);
+	}
+
+	// send round global information
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - broadcasting global data.";
+	GlobalData global_data(_opts, _matrix);
+	mpi::broadcast(world, global_data, 0);
+	unsigned int loop_nr = _loop_nr;
+	mpi::broadcast(world, loop_nr, 0);
+
+	// allocate variables for non-blocking communication
+	std::vector<WorkPackage> packages(world.size());
+	std::vector<WorkResult> results(world.size());
+	std::deque<mpi::request> uncompleted_requests;
+
+	// go through all columns of rhs
+	bool continue_condition = true;
+	for (int col = 0;
+			(continue_condition) && (col < _rhs.cols());
+			++col) {
+		// send current column of rhs as work package
+		const size_t freeworker = AvailableWorkers.front();
+		AvailableWorkers.pop_front();
+		packages[freeworker] =
+				WorkPackage(_rhs.col(col), _solution.col(col), col);
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#0 - sending work package " << col
+				<< " to " << freeworker << ".";
+		world.isend(freeworker, ColumnWise, packages[freeworker]);
+
+		// receive solution in a non-blocking manner
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#0 - launching receiving work package " << col
+				<< " from " << freeworker << ".";
+		mpi::request request_object =
+				world.irecv(freeworker, ColumnWise, results[freeworker]);
+		uncompleted_requests.push_back(request_object);
+
+		// wait for free workers if non available
+		if ((AvailableWorkers.empty()) && (!uncompleted_requests.empty())) {
+			// wait for any result
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#0 - waiting for any work result.";
+			std::pair<
+				mpi::status,
+				std::deque<mpi::request>::iterator > result =
+					mpi::wait_any(
+							uncompleted_requests.begin(),
+							uncompleted_requests.end());
+			uncompleted_requests.erase(result.second);
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#0 - received work result from "
+					<< result.first.source() << ".";
+			// place worker back into available deque
+			AvailableWorkers.push_back(result.first.source());
+			// store solution
+			continue_condition &=
+					handleResult(result.first, results, _solution);
+		}
+	}
+	// wait for all remaining results and handle incoming results
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - waiting for all remaining work results.";
+	{
+		std::vector<mpi::status> completed_requests;
+		mpi::wait_all(
+				uncompleted_requests.begin(),
+				uncompleted_requests.end(),
+				std::back_inserter(completed_requests));
+		uncompleted_requests.clear();
+		for (std::vector<mpi::status>::const_iterator iter = completed_requests.begin();
+				iter != completed_requests.end(); ++iter) {
+			// store solution
+			continue_condition &=
+					handleResult(*iter, results, _solution);
+		}
+	}
+
+	// send terminate signal by empty work package
+	for (int i=1;i<world.size();++i) {
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#0 - sending termination signal to " << i << ".";
+		world.send(i, ColumnWise, WorkPackage());
+	}
+
+	return continue_condition;
+}
+
+/** Worker function for arbitrary "slave" process to work on inverse
+ * problems for solving matrix factorization problem.
+ *
+ * Workers operate in two nested loops:
+ * -# the inner loop is for handling the columns of a single expression
+ *    \f$ Y_i = K*X_i \f$ or $\f$ Y^t_i = X^t * K^t_i \f$, respectively.
+ * -# the outer loop is for the alternating between the two matrix factors
+ *    K and X. It resets the inner loop with respect to the data that is
+ *    "global" therein.
+ *
+ * @param _world mpi communicator to receive work packages and send results
+ */
+void worker(mpi::communicator &world)
+{
+	bool full_terminate = false;
+	while (!full_terminate) {
+		// check whether we have to terminate
+		mpi::broadcast(world, full_terminate, 0);
+		if (full_terminate)
+			break;
+
+		// send id
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#" << world.rank() << " - initiating by sending id.";
+		world.send(0,InitialId,world.rank());
+
+		// get global information
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#" << world.rank() << " - getting global data.";
+		GlobalData global_data;
+		mpi::broadcast(world, global_data, 0);
+		unsigned int loop_nr = 0;
+		mpi::broadcast(world, loop_nr, 0);
+		const Eigen::MatrixXd &matrix = global_data.matrix;
+		const MatrixFactorizerOptions &opts = global_data.opts;
+
+		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+					<< "#" << world.rank() << " - got global data\n"
+					<< matrix;
+		} else {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << world.rank() << " - got global data\n"
+					<< matrix;
+		}
+
+		// we stop working only when we get the termination signal
+		// from the master
+		bool terminate = false;
+		while ((!terminate) && (!full_terminate)) {
+			/// wait for receiving data
+			WorkPackage package;
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << world.rank() << " - receiving next work package.";
+			world.recv(0, ColumnWise, package);
+			const int col = package.col;
+			terminate |= (col == -1);
+			if (!terminate) {
+				const Eigen::VectorXd &rhs = package.rhs;
+				const Eigen::VectorXd &solution_startvalue =
+						package.solution_startvalue;
+
+				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "#" << world.rank() << " got problem rhs, col "
+							<< col << "\n" << rhs.transpose();
+				} else {
+					BOOST_LOG_TRIVIAL(debug)
+							<< "#" << world.rank() << " got problem rhs, col "
+							<< col << "\n" << rhs.transpose();
+				}
+
+				/// work on data
+				BOOST_LOG_TRIVIAL(debug)
+						<< "#" << world.rank() << " - working.";
+				Eigen::VectorXd solution;
+				const bool solve_ok =
+						solve(opts,
+								matrix,
+								rhs,
+								solution_startvalue,
+								solution,
+								col,
+								loop_nr);
+
+				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "#" << world.rank() << " sending solution, col "
+							<< col << "\n" << solution.transpose();
+				} else {
+					BOOST_LOG_TRIVIAL(debug)
+							<< "#" << world.rank() << " sending solution, col "
+							<< col << "\n" << solution.transpose();
+				}
+
+				/// return result
+				BOOST_LOG_TRIVIAL(debug)
+						<< "#" << world.rank() << " - sending solution.";
+				WorkResult result(solution, solve_ok, col);
+				world.send(0, ColumnWise, result);
+			} else {
+				BOOST_LOG_TRIVIAL(debug)
+						<< "#" << world.rank() << " - terminating.";
+			}
+		}
+	}
+}
+
+#endif
+
 int MatrixFactorization(
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_data,
-		IterationInformation &_info,
-		const int numprocs
+		IterationInformation &_info
+#ifdef MPI_FOUND
+		, mpi::communicator &world
+#endif
 		)
 {
 	/// construct solution starting points
@@ -684,11 +1077,13 @@ int MatrixFactorization(
 					<< "Current spectral matrix is\n" << spectral_matrix;
 		}
 
-		if (numprocs == 1) {
+#ifdef MPI_FOUND
+		if (world.size() == 1) {
+#endif
 			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
 				Eigen::VectorXd solution;
 				stop_condition &=
-						solve(_opts,
+						!solve(_opts,
 								spectral_matrix,
 								_data.col(dim),
 								pixel_matrix.col(dim),
@@ -697,9 +1092,18 @@ int MatrixFactorization(
 								loop_nr);
 				pixel_matrix.col(dim) = solution;
 			}
+#ifdef MPI_FOUND
 		} else {
-			// need to distribute data and work
+			stop_condition &=
+					!solveMaster(
+							world,
+							_opts,
+							spectral_matrix,
+							_data,
+							pixel_matrix,
+							loop_nr);
 		}
+#endif
 
 		if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
@@ -731,7 +1135,9 @@ int MatrixFactorization(
 
 		// must transpose in place, as spectral_matrix.transpose() is const
 		spectral_matrix.transposeInPlace();
-		if (numprocs == 1) {
+#ifdef MPI_FOUND
+		if (world.size() == 1) {
+# endif
 			for (unsigned int dim = 0; dim < _data.rows(); ++dim) {
 				Eigen::VectorXd solution;
 				stop_condition &=
@@ -744,9 +1150,18 @@ int MatrixFactorization(
 								loop_nr);
 				spectral_matrix.col(dim) = solution;
 			}
+#ifdef MPI_FOUND
 		} else {
-			// need to distribute data and work
+			stop_condition &=
+					solveMaster(
+							world,
+							_opts,
+							pixel_matrix.transpose(),
+							_data.transpose(),
+							spectral_matrix,
+							loop_nr);
 		}
+#endif
 		spectral_matrix.transposeInPlace();
 
 		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
@@ -788,6 +1203,10 @@ int MatrixFactorization(
 	_info.replace(IterationInformation::OverallTable, "residual", residual);
 	_info.addTuple(IterationInformation::OverallTable);
 	
+#ifdef MPI_FOUND
+	sendTerminate(world);
+#endif
+
 	/// output solution
 	{
 		using namespace MatrixIO;
@@ -838,7 +1257,6 @@ int MatrixFactorization(
 		} else {
 			std::cout << "No solution product file name given." << std::endl;
 		}
-
 	}
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Resulting first factor transposed is\n" << spectral_matrix.transpose();
@@ -860,52 +1278,51 @@ int MatrixFactorization(
 	return 0;
 }
 
-void worker()
-{
-	// we stop working only when we get the termination signal
-	// from the master
-	bool terminate = false;
-	while (!terminate) {
-
-	}
-}
-
 int main(int argc, char **argv)
 {
 	/// start MPI
-	int my_rank = 0;
-
-	int numprocs = 1;
 #ifdef MPI_FOUND
-	MPI_Init (&argc, &argv);
-	MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-	MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+	  mpi::environment env(argc, argv);
+	  mpi::communicator world;
 #endif
 
 	int returnstatus = 0;
-	if (my_rank == 0) {
-		int returnstatus = 0;
+#ifdef MPI_FOUND
+	if (world.rank() == 0) {
+#endif
 		/// starting timing
 		boost::chrono::high_resolution_clock::time_point timing_start =
 				boost::chrono::high_resolution_clock::now();
 
 		/// some required parameters
 		MatrixFactorizerOptions opts;
-		returnstatus = parseOptions(argc, argv, opts);
-		if (returnstatus != 0)
-			return returnstatus;
+		if (returnstatus == 0)
+			returnstatus = parseOptions(argc, argv, opts);
 
 		/// parse the matrices
 		Eigen::MatrixXd data;
-		returnstatus = parseDataFile(opts.data_file.string(), data);
-		if (returnstatus != 0)
-			return returnstatus;
+		if (returnstatus == 0)
+			returnstatus = parseDataFile(opts.data_file.string(), data);
 
 		/// create Database
 		IterationInformation info(opts, data.innerSize(), data.outerSize());
 
 		/// perform factorization
-		MatrixFactorization(opts, data, info, numprocs);
+		if (returnstatus != 0) {
+#ifdef MPI_FOUND
+			sendTerminate(world);
+#endif
+		} else
+			returnstatus = MatrixFactorization(opts, data, info
+#ifdef MPI_FOUND
+				, world
+#endif
+				);
+
+#ifdef MPI_FOUND
+		// exchange return status
+		mpi::broadcast(world, returnstatus, 0);
+#endif
 
 		/// finish timing
 		boost::chrono::high_resolution_clock::time_point timing_end =
@@ -913,11 +1330,15 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info) << "The operation took "
 				<< boost::chrono::duration<double>(timing_end - timing_start)
 				<< ".";
+#ifdef MPI_FOUND
 	} else {
 		// enter in solve() loop
-		worker();
+		worker(world);
+
+		// exchange return status
+		mpi::broadcast(world, returnstatus, 0);
 	}
-#ifdef MPI_FOUND
+
 	// End MPI
 	MPI_Finalize ();
 #endif
