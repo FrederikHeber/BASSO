@@ -388,57 +388,56 @@ enum SolvingDirection
 	columnwise
 };
 
-bool solve(
+ bool solve(
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
-		const Eigen::MatrixXd &_rhs,
-		Eigen::MatrixXd &_solution,
+		const Eigen::VectorXd &_rhs,
+		const Eigen::VectorXd &_solution_start,
+		Eigen::VectorXd &_solution,
+		const unsigned int _dim,
 		const unsigned int _loop_nr
 		)
 {
-	for (unsigned int dim = 0; dim < _rhs.cols(); ++dim) {
-		Database_ptr_t mock_db(new Database_mock);
-		Eigen::VectorXd projected_rhs_col(_rhs.col(dim));
-		BOOST_LOG_TRIVIAL(debug)
-			<< "------------------------ n=" << dim << " ------------------";
-		// project right-hand side onto range of matrix
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Initial y_" << dim << " is "
-				<< projected_rhs_col.transpose();
-		{
-			// project y onto image of K
-			if (!projectOntoImage(
-					mock_db,
-					_opts,
-					_matrix,
-					_rhs.col(dim),
-					projected_rhs_col))
-				return false;
-		}
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Projected y_" << dim << " is "
-				<< projected_rhs_col.transpose();
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Difference y_" << dim << "-y'_" << dim << " is "
-				<< (_rhs.col(dim)-projected_rhs_col).transpose();
-		BOOST_LOG_TRIVIAL(debug)
-				<< "........................ n=" << dim << " ..................";
-
-		// solve inverse problem for projected right-hand side
-		Eigen::VectorXd solution_col(_solution.col(dim));
-		if (!solveProblem(
+	Database_ptr_t mock_db(new Database_mock);
+	Eigen::VectorXd projected_rhs(_rhs);
+	BOOST_LOG_TRIVIAL(debug)
+		<< "------------------------ n=" << _dim << " ------------------";
+	// project right-hand side onto range of matrix
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Initial y_" << _dim << " is "
+			<< projected_rhs.transpose();
+	{
+		// project y onto image of K
+		if (!projectOntoImage(
 				mock_db,
 				_opts,
 				_matrix,
-				projected_rhs_col,
-				_solution.col(dim),
-				solution_col,
-				_loop_nr >= 3))
+				_rhs,
+				projected_rhs))
 			return false;
-		_solution.col(dim) = solution_col;
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Resulting vector is " << solution_col.transpose();
 	}
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Projected y_" << _dim << " is "
+			<< projected_rhs.transpose();
+	BOOST_LOG_TRIVIAL(trace)
+			<< "Difference y_" << _dim << "-y'_" << _dim << " is "
+			<< (_rhs-projected_rhs).transpose();
+	BOOST_LOG_TRIVIAL(debug)
+			<< "........................ n=" << _dim << " ..................";
+
+	// solve inverse problem for projected right-hand side
+	_solution = _solution_start;
+	if (!solveProblem(
+			mock_db,
+			_opts,
+			_matrix,
+			projected_rhs,
+			_solution_start,
+			_solution,
+			_loop_nr >= 3))
+		return false;
+	BOOST_LOG_TRIVIAL(trace)
+		<< "Resulting vector is " << _solution.transpose();
 
 	return true;
 }
@@ -642,7 +641,8 @@ void constructStartingMatrices(
 int MatrixFactorization(
 		const MatrixFactorizerOptions &_opts,
 		const Eigen::MatrixXd &_data,
-		IterationInformation &_info
+		IterationInformation &_info,
+		const int numprocs
 		)
 {
 	/// construct solution starting points
@@ -684,12 +684,22 @@ int MatrixFactorization(
 					<< "Current spectral matrix is\n" << spectral_matrix;
 		}
 
-		stop_condition &=
-				solve(_opts,
-						spectral_matrix,
-						_data,
-						pixel_matrix,
-						loop_nr);
+		if (numprocs == 1) {
+			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
+				Eigen::VectorXd solution;
+				stop_condition &=
+						solve(_opts,
+								spectral_matrix,
+								_data.col(dim),
+								pixel_matrix.col(dim),
+								solution,
+								dim,
+								loop_nr);
+				pixel_matrix.col(dim) = solution;
+			}
+		} else {
+			// need to distribute data and work
+		}
 
 		if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
@@ -721,12 +731,22 @@ int MatrixFactorization(
 
 		// must transpose in place, as spectral_matrix.transpose() is const
 		spectral_matrix.transposeInPlace();
-		stop_condition &=
-				solve(_opts,
-						pixel_matrix.transpose(),
-						_data.transpose(),
-						spectral_matrix,
-						loop_nr);
+		if (numprocs == 1) {
+			for (unsigned int dim = 0; dim < _data.rows(); ++dim) {
+				Eigen::VectorXd solution;
+				stop_condition &=
+						solve(_opts,
+								pixel_matrix.transpose(),
+								_data.row(dim).transpose(),
+								spectral_matrix.col(dim),
+								solution,
+								dim,
+								loop_nr);
+				spectral_matrix.col(dim) = solution;
+			}
+		} else {
+			// need to distribute data and work
+		}
 		spectral_matrix.transposeInPlace();
 
 		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
@@ -840,13 +860,23 @@ int MatrixFactorization(
 	return 0;
 }
 
+void worker()
+{
+	// we stop working only when we get the termination signal
+	// from the master
+	bool terminate = false;
+	while (!terminate) {
+
+	}
+}
+
 int main(int argc, char **argv)
 {
 	/// start MPI
 	int my_rank = 0;
 
+	int numprocs = 1;
 #ifdef MPI_FOUND
-	int numprocs;
 	MPI_Init (&argc, &argv);
 	MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
 	MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
@@ -875,7 +905,7 @@ int main(int argc, char **argv)
 		IterationInformation info(opts, data.innerSize(), data.outerSize());
 
 		/// perform factorization
-		MatrixFactorization(opts, data, info);
+		MatrixFactorization(opts, data, info, numprocs);
 
 		/// finish timing
 		boost::chrono::high_resolution_clock::time_point timing_end =
@@ -883,6 +913,9 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info) << "The operation took "
 				<< boost::chrono::duration<double>(timing_end - timing_start)
 				<< ".";
+	} else {
+		// enter in solve() loop
+		worker();
 	}
 #ifdef MPI_FOUND
 	// End MPI
