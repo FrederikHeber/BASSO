@@ -14,6 +14,9 @@
 
 #include "Options/CommandLineOptions.hpp"
 
+#include <boost/serialization/access.hpp>
+#include "filesystem_path_serialization.hpp"
+
 class MatrixFactorizerOptions : public CommandLineOptions
 {
 public:
@@ -59,6 +62,103 @@ public:
 	boost::filesystem::path solution_factor_two_file;
 	boost::filesystem::path solution_product_file;
 	unsigned int sparse_dim;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void save(Archive & ar, const unsigned int version) const
+	{
+		// MatrixFactorizerOptions
+		ar & data_file;
+		ar & inner_iterations;
+		ar & max_loops;
+		ar & residual_threshold;
+		ar & solution_factor_one_file;
+		ar & solution_factor_two_file;
+		ar & solution_product_file;
+		ar & sparse_dim;
+
+		// CommandLineOptions
+		ar & algorithm_name;
+		ar & C;
+		ar & calculateAngles;
+		ar & config_filename;
+		ar & database_replace;
+		ar & delta;
+		ar & enforceRandomMapping;
+		ar & inexactLinesearch;
+		ar & iteration_file;
+		ar & maxinneriter;
+		ar & minlib;
+		ar & normx;
+		ar & normy;
+		ar & N;
+		ar & orthogonalization_type;
+		ar & outputsteps;
+		ar & powerx;
+		ar & powery;
+		ar & regularization_parameter;
+		ar & searchspace_type;
+		ar & stepwidth_type;
+		ar & tau;
+		ar & tuple_parameters;
+		ar & updatetype;
+		ar & verbose;
+		ar & wolfe_constants;
+		ar & dualitytype;
+		ar & type;
+	}
+
+	template<class Archive>
+	void load(Archive & ar, const unsigned int version)
+	{
+		// MatrixFactorizerOptions
+		ar & data_file;
+		ar & inner_iterations;
+		ar & max_loops;
+		ar & residual_threshold;
+		ar & solution_factor_one_file;
+		ar & solution_factor_two_file;
+		ar & solution_product_file;
+		ar & sparse_dim;
+
+		// CommandLineOptions
+		ar & algorithm_name;
+		ar & C;
+		ar & calculateAngles;
+		ar & config_filename;
+		ar & database_replace;
+		ar & delta;
+		ar & enforceRandomMapping;
+		ar & inexactLinesearch;
+		ar & iteration_file;
+		ar & maxinneriter;
+		ar & minlib;
+		ar & normx;
+		ar & normy;
+		ar & N;
+		ar & orthogonalization_type;
+		ar & outputsteps;
+		ar & powerx;
+		ar & powery;
+		ar & regularization_parameter;
+		ar & searchspace_type;
+		ar & stepwidth_type;
+		ar & tau;
+		ar & tuple_parameters;
+		ar & updatetype;
+		ar & verbose;
+		ar & wolfe_constants;
+		ar & dualitytype;
+		ar & type;
+
+		// set verbosity after loading
+		setVerbosity();
+	}
+
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
+
+
 
 #endif /* MATRIXFACTORIZEROPTIONS_HPP_ */

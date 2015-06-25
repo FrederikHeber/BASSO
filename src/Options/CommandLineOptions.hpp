@@ -180,7 +180,7 @@ public:
 	double normx;
 	double normy;
 	unsigned int N;
-	LastNSearchDirections::OrthogonalizationType orthogonalization_type;
+	enum LastNSearchDirections::OrthogonalizationType orthogonalization_type;
 	unsigned int outputsteps;
 	double powerx;
 	double powery;
@@ -194,7 +194,7 @@ public:
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options
-	DualityContainerType dualitytype;
+	enum DualityContainerType dualitytype;
 	enum MinimizerFactory::InstanceType type;
 };
 
