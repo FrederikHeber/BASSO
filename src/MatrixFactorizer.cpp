@@ -622,62 +622,54 @@ private:
 	Table::Tuple_t& overall_tuple;
 };
 
-int MatrixFactorization(int argc, char **argv)
+void constructStartingMatrices(
+		Eigen::MatrixXd &_spectral_matrix,
+		Eigen::MatrixXd &_pixel_matrix
+		)
 {
-	int returnstatus = 0;
-	/// starting timing
-	boost::chrono::high_resolution_clock::time_point timing_start =
-			boost::chrono::high_resolution_clock::now();
-
-	/// some required parameters
-	MatrixFactorizerOptions opts;
-	returnstatus = parseOptions(argc, argv, opts);
-	if (returnstatus != 0)
-		return returnstatus;
-
-	/// parse the matrices
-	Eigen::MatrixXd data;
-	returnstatus = parseDataFile(opts.data_file.string(), data);
-	if (returnstatus != 0)
-		return returnstatus;
-
-	/// create Database
-	IterationInformation info(opts, data.innerSize(), data.outerSize());
-
-	/// construct solution starting points
-	Eigen::MatrixXd spectral_matrix(data.rows(), opts.sparse_dim);
-	spectral_matrix.setRandom();
-	renormalizeMatrixByTrace(spectral_matrix);
-	if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+	_spectral_matrix.setRandom();
+	renormalizeMatrixByTrace(_spectral_matrix);
+	if ((_spectral_matrix.innerSize() > 10) || (_spectral_matrix.outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)
-				<< "Initial spectral matrix is\n" << spectral_matrix;
+				<< "Initial spectral matrix is\n" << _spectral_matrix;
 	} else {
 		BOOST_LOG_TRIVIAL(info)
-				<< "Initial spectral matrix is\n" << spectral_matrix;
+				<< "Initial spectral matrix is\n" << _spectral_matrix;
 	}
-	Eigen::MatrixXd pixel_matrix(opts.sparse_dim, data.cols());
-	pixel_matrix.setZero();
+	_pixel_matrix.setZero();
+}
+
+int MatrixFactorization(
+		const MatrixFactorizerOptions &_opts,
+		const Eigen::MatrixXd &_data,
+		IterationInformation &_info
+		)
+{
+	/// construct solution starting points
+	Eigen::MatrixXd spectral_matrix(_data.rows(), _opts.sparse_dim);
+	Eigen::MatrixXd pixel_matrix(_opts.sparse_dim, _data.cols());
+	constructStartingMatrices(spectral_matrix, pixel_matrix);
 
 	/// iterate over the two factors
 	unsigned int loop_nr = 0;
 	double old_residual = 0.;
-	double residual = calculateResidual(data, spectral_matrix, pixel_matrix);
+	double residual = calculateResidual(_data, spectral_matrix, pixel_matrix);
 	BOOST_LOG_TRIVIAL(info)
 		<< "#" << loop_nr << " 1/2, residual is " << residual;
-	info.replace(IterationInformation::LoopTable, "residual", residual);
+	_info.replace(IterationInformation::LoopTable, "residual", residual);
 	bool stop_condition =
-			checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
-			|| checkResidualCondition(residual, opts.residual_threshold)
-			|| checkIterationCondition(loop_nr, opts.max_loops);
+			checkRelativeResidualCondition(old_residual, residual, _opts.residual_threshold)
+			|| checkResidualCondition(residual, _opts.residual_threshold)
+			|| checkIterationCondition(loop_nr, _opts.max_loops);
 	old_residual = residual;
 
 	// submit loop tuple
-	info.addTuple(IterationInformation::LoopTable);
+	_info.addTuple(IterationInformation::LoopTable);
 
 	while (!stop_condition) {
 		// update loop count
 		++loop_nr;
-		info.replace(IterationInformation::LoopTable, "loop_nr", (int)loop_nr);
+		_info.replace(IterationInformation::LoopTable, "loop_nr", (int)loop_nr);
 
 		BOOST_LOG_TRIVIAL(debug)
 			<< "======================== #" << loop_nr << "/1 ==================";
@@ -693,9 +685,9 @@ int MatrixFactorization(int argc, char **argv)
 		}
 
 		stop_condition &=
-				solve(opts,
+				solve(_opts,
 						spectral_matrix,
-						data,
+						_data,
 						pixel_matrix,
 						loop_nr);
 
@@ -709,7 +701,7 @@ int MatrixFactorization(int argc, char **argv)
 
 		// check criterion
 		{
-			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
+			residual = calculateResidual(_data, spectral_matrix, pixel_matrix);
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 1/2, residual is " << residual;
 		}
@@ -730,9 +722,9 @@ int MatrixFactorization(int argc, char **argv)
 		// must transpose in place, as spectral_matrix.transpose() is const
 		spectral_matrix.transposeInPlace();
 		stop_condition &=
-				solve(opts,
+				solve(_opts,
 						pixel_matrix.transpose(),
-						data.transpose(),
+						_data.transpose(),
 						spectral_matrix,
 						loop_nr);
 		spectral_matrix.transposeInPlace();
@@ -750,37 +742,37 @@ int MatrixFactorization(int argc, char **argv)
 
 		// check criterion
 		{
-			residual = calculateResidual(data, spectral_matrix, pixel_matrix);
+			residual = calculateResidual(_data, spectral_matrix, pixel_matrix);
 			BOOST_LOG_TRIVIAL(info)
 				<< "#" << loop_nr << " 2/2, residual is " << residual;
-			info.replace(IterationInformation::LoopTable, "residual", residual);
+			_info.replace(IterationInformation::LoopTable, "residual", residual);
 			stop_condition =
-					checkRelativeResidualCondition(old_residual, residual, opts.residual_threshold)
-					|| checkResidualCondition(residual, opts.residual_threshold)
-					|| checkIterationCondition(loop_nr, opts.max_loops);
+					checkRelativeResidualCondition(old_residual, residual, _opts.residual_threshold)
+					|| checkResidualCondition(residual, _opts.residual_threshold)
+					|| checkIterationCondition(loop_nr, _opts.max_loops);
 			old_residual = residual;
 		}
 
 		// submit loop tuple
-		info.addTuple(IterationInformation::LoopTable);
+		_info.addTuple(IterationInformation::LoopTable);
 	}
-	if (loop_nr > opts.max_loops)
+	if (loop_nr > _opts.max_loops)
 		BOOST_LOG_TRIVIAL(error)
-			<< "Maximum number of loops " << opts.max_loops
+			<< "Maximum number of loops " << _opts.max_loops
 			<< " exceeded, stopping iteration.";
 	else
 		BOOST_LOG_TRIVIAL(info)
 			<< "Loop iteration performed " << loop_nr
 			<< " times.";
-	info.replace(IterationInformation::OverallTable, "loops", (int)loop_nr);
-	info.replace(IterationInformation::OverallTable, "residual", residual);
-	info.addTuple(IterationInformation::OverallTable);
+	_info.replace(IterationInformation::OverallTable, "loops", (int)loop_nr);
+	_info.replace(IterationInformation::OverallTable, "residual", residual);
+	_info.addTuple(IterationInformation::OverallTable);
 	
 	/// output solution
 	{
 		using namespace MatrixIO;
-		if (!opts.solution_factor_one_file.string().empty()) {
-			std::ofstream ost(opts.solution_factor_one_file.string().c_str());
+		if (!_opts.solution_factor_one_file.string().empty()) {
+			std::ofstream ost(_opts.solution_factor_one_file.string().c_str());
 			if (ost.good())
 				try {
 					ost << spectral_matrix;
@@ -788,15 +780,15 @@ int MatrixFactorization(int argc, char **argv)
 					std::cerr << "Failed to fully write first solution factor to file.\n";
 				}
 			else {
-				std::cerr << "Failed to open " << opts.solution_factor_one_file.string() << std::endl;
+				std::cerr << "Failed to open " << _opts.solution_factor_one_file.string() << std::endl;
 				return 255;
 			}
 		} else {
 			std::cout << "No first solution factor file name given." << std::endl;
 		}
 
-		if (!opts.solution_factor_two_file.string().empty()) {
-			std::ofstream ost(opts.solution_factor_two_file.string().c_str());
+		if (!_opts.solution_factor_two_file.string().empty()) {
+			std::ofstream ost(_opts.solution_factor_two_file.string().c_str());
 			if (ost.good())
 				try {
 					ost << pixel_matrix;
@@ -804,15 +796,15 @@ int MatrixFactorization(int argc, char **argv)
 					std::cerr << "Failed to fully write second solution factor to file.\n";
 				}
 			else {
-				std::cerr << "Failed to open " << opts.solution_factor_two_file.string() << std::endl;
+				std::cerr << "Failed to open " << _opts.solution_factor_two_file.string() << std::endl;
 				return 255;
 			}
 		} else {
 			std::cout << "No second solution factor file name given." << std::endl;
 		}
 
-		if (!opts.solution_product_file.string().empty()) {
-			std::ofstream ost(opts.solution_product_file.string().c_str());
+		if (!_opts.solution_product_file.string().empty()) {
+			std::ofstream ost(_opts.solution_product_file.string().c_str());
 			if (ost.good())
 				try {
 					ost << spectral_matrix * pixel_matrix;
@@ -820,7 +812,7 @@ int MatrixFactorization(int argc, char **argv)
 					std::cerr << "Failed to fully write solution product to file.\n";
 				}
 			else {
-				std::cerr << "Failed to open " << opts.solution_product_file.string() << std::endl;
+				std::cerr << "Failed to open " << _opts.solution_product_file.string() << std::endl;
 				return 255;
 			}
 		} else {
@@ -834,22 +826,16 @@ int MatrixFactorization(int argc, char **argv)
 		<< "Resulting second factor is\n" << pixel_matrix;
 
 	const Eigen::MatrixXd product_matrix = spectral_matrix * pixel_matrix;
-	if ((data.innerSize() <= 10) && (data.outerSize() <= 10)) {
+	if ((_data.innerSize() <= 10) && (_data.outerSize() <= 10)) {
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Data matrix was\n" << data;
+			<< "Data matrix was\n" << _data;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Product matrix is\n" << product_matrix;
 		BOOST_LOG_TRIVIAL(info)
-			<< "Difference matrix is\n" << data - product_matrix;
+			<< "Difference matrix is\n" << _data - product_matrix;
 	}
 	BOOST_LOG_TRIVIAL(info)
-		<< "Norm of difference is " << (data - product_matrix).norm();
-
-	boost::chrono::high_resolution_clock::time_point timing_end =
-			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
+		<< "Norm of difference is " << (_data - product_matrix).norm();
 
 	return 0;
 }
@@ -867,9 +853,37 @@ int main(int argc, char **argv)
 #endif
 
 	int returnstatus = 0;
-	if (my_rank == 0)
-		returnstatus = MatrixFactorization(argc, argv);
+	if (my_rank == 0) {
+		int returnstatus = 0;
+		/// starting timing
+		boost::chrono::high_resolution_clock::time_point timing_start =
+				boost::chrono::high_resolution_clock::now();
 
+		/// some required parameters
+		MatrixFactorizerOptions opts;
+		returnstatus = parseOptions(argc, argv, opts);
+		if (returnstatus != 0)
+			return returnstatus;
+
+		/// parse the matrices
+		Eigen::MatrixXd data;
+		returnstatus = parseDataFile(opts.data_file.string(), data);
+		if (returnstatus != 0)
+			return returnstatus;
+
+		/// create Database
+		IterationInformation info(opts, data.innerSize(), data.outerSize());
+
+		/// perform factorization
+		MatrixFactorization(opts, data, info);
+
+		/// finish timing
+		boost::chrono::high_resolution_clock::time_point timing_end =
+				boost::chrono::high_resolution_clock::now();
+		BOOST_LOG_TRIVIAL(info) << "The operation took "
+				<< boost::chrono::duration<double>(timing_end - timing_start)
+				<< ".";
+	}
 #ifdef MPI_FOUND
 	// End MPI
 	MPI_Finalize ();
