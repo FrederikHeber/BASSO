@@ -8,6 +8,7 @@ target_link_libraries ( Basso
 	${Boost_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
+install (TARGETS Basso DESTINATION bin)
 
 add_executable (BassoConfigurator BassoConfigurator.cpp)
 target_link_libraries ( BassoConfigurator 
@@ -18,6 +19,7 @@ target_link_libraries ( BassoConfigurator
 	${Boost_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
+install (TARGETS BassoConfigurator DESTINATION bin)
 
 # add the executable for matrix factorization
 add_executable (MatrixFactorizer MatrixFactorizer.cpp)
@@ -31,6 +33,7 @@ target_link_libraries ( MatrixFactorizer
 	${LIBRT_LIBRARIES}
 	${MPI_LIBRARIES})
 # MatrixFactorizer is parallelized with MPI
+install (TARGETS MatrixFactorizer DESTINATION bin)
 
 add_executable (MatrixFactorizerConfigurator MatrixFactorizerConfigurator.cpp)
 target_link_libraries ( MatrixFactorizerConfigurator 
@@ -41,6 +44,4 @@ target_link_libraries ( MatrixFactorizerConfigurator
 	${Boost_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
-
-# add the install targets
-install (TARGETS Basso DESTINATION bin)
+install (TARGETS MatrixFactorizerConfigurator DESTINATION bin)
