@@ -16,17 +16,19 @@
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/nonblocking.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
 namespace mpi = boost::mpi;
+#endif
 
 #include <deque>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
-#endif
 
 #include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
+#include "MatrixFactorizerBase/Work/WorkPackage.hpp"
+#include "MatrixFactorizerBase/Work/WorkResult.hpp"
 
 #include "Database/Database.hpp"
 #include "Database/Database_mock.hpp"
@@ -49,95 +51,7 @@ namespace mpi = boost::mpi;
 
 #define TRUESOLUTION 1
 
-#ifdef MPI_FOUND
 #include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
-
-
-struct GlobalData
-{
-	GlobalData(
-			const MatrixFactorizerOptions &_opts,
-			const Eigen::MatrixXd &_matrix) :
-		opts(_opts),
-		matrix(_matrix)
-	{}
-	GlobalData()
-	{}
-
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & const_cast<MatrixFactorizerOptions &>(opts);
-		ar & matrix;
-	}
-
-	const MatrixFactorizerOptions opts;
-	Eigen::MatrixXd matrix;
-};
-
-struct WorkPackage
-{
-	WorkPackage(
-			const Eigen::VectorXd &_rhs,
-			const Eigen::VectorXd &_solution_startvalue,
-			const int _col
-			) :
-		rhs(_rhs),
-		solution_startvalue(_solution_startvalue),
-		col(_col)
-	{}
-	WorkPackage(
-			const int _col) :
-		col(_col)
-	{}
-	WorkPackage() :
-		col(-1)
-	{}
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & rhs;
-		ar & solution_startvalue;
-		ar & col;
-	}
-
-	Eigen::VectorXd rhs;
-	Eigen::VectorXd solution_startvalue;
-	int col;
-};
-
-struct WorkResult
-{
-	WorkResult(
-			const Eigen::VectorXd &_solution,
-			const bool _solve_ok,
-			const int _col
-			) :
-		solution(_solution),
-		solve_ok(_solve_ok),
-		col(_col)
-	{}
-	WorkResult() :
-		solve_ok(true),
-		col(-1)
-	{}
-
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & solution;
-		ar & solve_ok;
-		ar & col;
-	}
-
-	Eigen::VectorXd solution;
-	bool solve_ok;
-	int col;
-};
-#endif
 
 template <class T>
 bool solveProblem(
@@ -837,9 +751,8 @@ bool solveMaster(
 
 	// send round global information
 	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting global data.";
-	GlobalData global_data(_opts, _matrix);
-	mpi::broadcast(world, global_data, 0);
+			<< "#0 - broadcasting matrix.";
+	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);
 	unsigned int loop_nr = _loop_nr;
 	mpi::broadcast(world, loop_nr, 0);
 
@@ -935,6 +848,12 @@ bool solveMaster(
  */
 void worker(mpi::communicator &world)
 {
+	// get global information
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#" << world.rank() << " - getting options.";
+	MatrixFactorizerOptions opts;
+	mpi::broadcast(world, opts, 0);
+
 	bool full_terminate = false;
 	while (!full_terminate) {
 		// check whether we have to terminate
@@ -949,13 +868,11 @@ void worker(mpi::communicator &world)
 
 		// get global information
 		BOOST_LOG_TRIVIAL(debug)
-				<< "#" << world.rank() << " - getting global data.";
-		GlobalData global_data;
-		mpi::broadcast(world, global_data, 0);
+				<< "#" << world.rank() << " - getting matrix.";
+		Eigen::MatrixXd matrix;
+		mpi::broadcast(world, matrix, 0);
 		unsigned int loop_nr = 0;
 		mpi::broadcast(world, loop_nr, 0);
-		const Eigen::MatrixXd &matrix = global_data.matrix;
-		const MatrixFactorizerOptions &opts = global_data.opts;
 
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
@@ -1303,6 +1220,13 @@ int main(int argc, char **argv)
 		MatrixFactorizerOptions opts;
 		if (returnstatus == 0)
 			returnstatus = parseOptions(argc, argv, opts);
+
+#ifdef MPI_FOUND
+		// send round options
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#0 - broadcasting options.";
+		mpi::broadcast(world, opts, 0);
+#endif
 
 		/// parse the matrices
 		Eigen::MatrixXd data;

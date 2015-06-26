@@ -10,8 +10,9 @@ target_link_libraries ( MatrixFactorizer
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}
 	${MPI_LIBRARIES})
-# MatrixFactorizer is parallelized with MPI
 install (TARGETS MatrixFactorizer DESTINATION bin)
+install (FILES MatrixFactorizerBase/Work/WorkPackage.hpp DESTINATION include)
+install (FILES MatrixFactorizerBase/Work/WorkResult.hpp DESTINATION include)
 
 add_executable (MatrixFactorizerConfigurator 
 	MatrixFactorizerBase/MatrixFactorizerConfigurator.cpp)
