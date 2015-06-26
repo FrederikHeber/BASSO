@@ -358,7 +358,7 @@ void renormalizeMatrixByTrace(
 //		<< MinimizerIllegalNumber_variablename("matrix");
 }
 
-void renormalizeMatrixProduct(
+void equalizeMatrixProduct(
 		Eigen::MatrixXd &_matrixone,
 		Eigen::MatrixXd &_matrixtwo)
 {
@@ -370,6 +370,22 @@ void renormalizeMatrixProduct(
 			factor = 1./factor;
 		_matrixone *= factor;
 		_matrixtwo *= 1./factor;
+	}
+	//	if (_matrix.hasNaN())
+	//		throw MinimizerIllegalNumber_exception()
+	//		<< MinimizerIllegalNumber_variablename("matrix");
+}
+
+void renormalizeMatrixProduct(
+		Eigen::MatrixXd &_matrixone,
+		Eigen::MatrixXd &_matrixtwo)
+{
+	for (unsigned int dim = 0; dim <_matrixone.outerSize();++dim ) {
+		const double factor = _matrixone.col(dim).lpNorm<Eigen::Infinity>();
+		if (fabs(factor) > BASSOTOLERANCE) {
+			_matrixone.col(dim) *= 1./factor;
+			_matrixtwo.row(dim) *= factor;
+		}
 	}
 //	if (_matrix.hasNaN())
 //		throw MinimizerIllegalNumber_exception()
@@ -1170,6 +1186,9 @@ int MatrixFactorization(
 #endif
 		spectral_matrix.transposeInPlace();
 
+		// remove ambiguity
+		equalizeMatrixProduct(spectral_matrix, pixel_matrix);
+
 		if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
 					<< "Resulting spectral matrix is\n" << spectral_matrix;
@@ -1177,9 +1196,6 @@ int MatrixFactorization(
 			BOOST_LOG_TRIVIAL(info)
 					<< "Resulting spectral matrix is\n" << spectral_matrix;
 		}
-
-		// remove ambiguity
-		renormalizeMatrixProduct(spectral_matrix, pixel_matrix);
 
 		// check criterion
 		{
@@ -1212,6 +1228,9 @@ int MatrixFactorization(
 #ifdef MPI_FOUND
 	sendTerminate(world);
 #endif
+
+	// renormalize both factors
+	renormalizeMatrixProduct(spectral_matrix, pixel_matrix);
 
 	/// output solution
 	{
