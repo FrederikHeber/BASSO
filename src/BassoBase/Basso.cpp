@@ -11,8 +11,9 @@
 
 #include <boost/assign.hpp>
 #include <boost/mpl/for_each.hpp>
+#include <BassoBase/Options/BassoOptions.hpp>
+#include <BassoBase/printCounts.hpp>
 
-#include "Options/BassoOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
@@ -30,25 +31,6 @@
 #include "SolutionFactory/SolutionFactory.hpp"
 
 using namespace boost::assign;
-
-struct printCounts
-{
-	printCounts(const std::vector<NormedSpace_ptr_t> &_spaces) :
-		spaces(_spaces)
-	{}
-
-	template <class _type>
-	void operator()(_type &) {
-		int sum = 0;
-		for (std::vector<NormedSpace_ptr_t>::const_iterator iter = spaces.begin();
-				iter != spaces.end(); ++iter)
-			sum += VectorSpaceOperations::getCountTiming<_type>((*iter)->getOpCounts().instance).first;
-		std::cout << "\t" << VectorSpaceOperations::TypeToString<_type>()() << ": " << sum << std::endl;
-	}
-private:
-	const std::vector<NormedSpace_ptr_t> &spaces;
-};
-
 
 int main (int argc, char *argv[])
 {

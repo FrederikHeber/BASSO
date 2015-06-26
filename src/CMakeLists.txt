@@ -1,26 +1,3 @@
-# add the executable
-add_executable (Basso Basso.cpp)
-target_link_libraries ( Basso 
-	${EXTRA_LIBS} 
-	${NLOPT_LIBRARIES}
-	${GSL_LIBRARY} 
-	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
-	${POCO_SQL_LIBRARIES}
-	${LIBRT_LIBRARIES}) 
-install (TARGETS Basso DESTINATION bin)
-
-add_executable (BassoConfigurator BassoConfigurator.cpp)
-target_link_libraries ( BassoConfigurator 
-	${EXTRA_LIBS} 
-	${NLOPT_LIBRARIES}
-	${GSL_LIBRARY} 
-	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
-	${POCO_SQL_LIBRARIES}
-	${LIBRT_LIBRARIES}) 
-install (TARGETS BassoConfigurator DESTINATION bin)
-
 # add the executable for matrix factorization
 add_executable (MatrixFactorizer MatrixFactorizer.cpp)
 target_link_libraries ( MatrixFactorizer 

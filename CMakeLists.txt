@@ -166,6 +166,11 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 # add src folder
 add_subdirectory (src)
 
+#### EXECUTABLES ####
+
+# add src folders of executables
+add_subdirectory (src/BassoBase)
+
 #### TESTS AND UNITTESTS ####
 
 # add test folder

@@ -3,11 +3,9 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Options 
-	BassoOptions.cpp
 	CommandLineOptions.cpp
 	MatrixFactorizerOptions.cpp
 	)
 
-install (FILES BassoOptions.hpp DESTINATION include)
 install (FILES CommandLineOptions.hpp DESTINATION include)
 install (FILES MatrixFactorizerOptions.hpp DESTINATION include)

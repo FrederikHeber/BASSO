@@ -1,6 +1,6 @@
 # test 1: updateToMostParallel
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 1
@@ -28,7 +28,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_check
 
 # test 2: updateToMostOrthogonal
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 2
@@ -56,7 +56,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_check
 
 # test 3: updateToMostParallel_randomMapping
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 1
@@ -84,7 +84,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMappin
 
 # test 4: updateToMostOrthogonal_randomMapping
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 2

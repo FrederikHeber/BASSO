@@ -7,9 +7,8 @@
 
 #include "BassoConfig.h"
 
-#include "BassoOptions.hpp"
-
 #include <boost/filesystem.hpp>
+#include <BassoBase/Options/BassoOptions.hpp>
 #include <iostream>
 
 #include "Log/Logging.hpp"

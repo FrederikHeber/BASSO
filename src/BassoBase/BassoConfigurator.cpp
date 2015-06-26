@@ -10,9 +10,9 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
+#include <BassoBase/Options/BassoOptions.hpp>
 #include <fstream>
 
-#include "Options/BassoOptions.hpp"
 #include "Log/Logging.hpp"
 
 int main (int argc, char *argv[])

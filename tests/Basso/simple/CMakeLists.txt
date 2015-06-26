@@ -1,6 +1,6 @@
 # does simple test call work?
 add_test (BassoSimple 
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--normx 2 
 		--normy 2 
 		--powery 2 
@@ -18,7 +18,7 @@ set_tests_properties (BassoSimple
 
 # does simple test call fail when matrix does not exist?
 add_test (BassoSimple_NonExistantMatrix 
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--normx 2 
 		--normy 2 
 		--powery 2 
@@ -30,7 +30,7 @@ set_tests_properties (BassoSimple_NonExistantMatrix
 
 # tuple params working
 add_test (BassoSimple_TupleParameters 
-	${PROJECT_BINARY_DIR}/src/Basso
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso
 		--normx 2 
 		--normy 2 
 		--powery 2 

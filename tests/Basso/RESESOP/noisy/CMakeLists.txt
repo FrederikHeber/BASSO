@@ -1,6 +1,6 @@
 # test 1a: n=100, p=1.1, r=2
 add_test (Basso_RESESOP_RandomMatrix_p1_1_r2_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 1.1
@@ -28,7 +28,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2_regularized_check
 
 # test 2a: n=100, p=1.1, r=11
 add_test (Basso_RESESOP_RandomMatrix_p1_1_r11_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 1.1
@@ -56,7 +56,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11_regularized_check
 
 # test 3a: n=100, p=1.1, r=inf
 add_test (Basso_RESESOP_RandomMatrix_p1_1_rinf_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 1.1
@@ -84,7 +84,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf_regularized_check
 	
 # test 4a: n=100, p=2, r=2
 add_test (Basso_RESESOP_RandomMatrix_p2_r2_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 2 
@@ -112,7 +112,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2_regularized_check
 
 # test 5a: n=100, p=2, r=11
 add_test (Basso_RESESOP_RandomMatrix_p2_r11_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 2 
@@ -140,7 +140,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11_regularized_check
 
 # test 6a: n=100, p=2, r=inf
 add_test (Basso_RESESOP_RandomMatrix_p2_rinf_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 2 
@@ -168,7 +168,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf_regularized_check
 
 # test 7a: n=100, p=6, r=2
 add_test (Basso_RESESOP_RandomMatrix_p6_r2_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 6
@@ -196,7 +196,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r2_regularized_check
 
 # test 8a: n=100, p=6, r=11
 add_test (Basso_RESESOP_RandomMatrix_p6_r11_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 6
@@ -224,7 +224,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r11_regularized_check
 
 # test 9a: n=100, p=6, r=inf
 add_test (Basso_RESESOP_RandomMatrix_p6_rinf_regularized
-	${PROJECT_BINARY_DIR}/src/Basso 
+	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
 		--normx 6
