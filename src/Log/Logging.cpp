@@ -28,3 +28,14 @@ void startLogging()
 	logging::add_common_attributes();
 }
 
+void stopLogging()
+{
+    boost::shared_ptr< logging::core > core = logging::core::get();
+
+    // Remove the sink from the core, so that no records are passed to it
+    core->remove_all_sinks();
+
+    // flush output
+    core->flush();
+}
+

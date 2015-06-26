@@ -26,6 +26,7 @@ namespace expr = boost::log::expressions;
 namespace keywords = boost::log::keywords;
 
 void startLogging();
+void stopLogging();
 
 template<class T>
 std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
