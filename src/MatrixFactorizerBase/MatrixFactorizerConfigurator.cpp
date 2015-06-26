@@ -12,7 +12,8 @@
 #include <boost/program_options.hpp>
 #include <fstream>
 
-#include "Options/MatrixFactorizerOptions.hpp"
+#include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
+
 #include "Log/Logging.hpp"
 
 int main (int argc, char *argv[])

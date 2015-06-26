@@ -135,6 +135,11 @@ include_directories ("${PROJECT_SOURCE_DIR}/Options")
 add_subdirectory (src/Options)
 set (EXTRA_LIBS ${EXTRA_LIBS} Options)
 
+# add the MatrixFactorizerOptions library
+include_directories ("${PROJECT_SOURCE_DIR}/MatrixFactorizerBase/Options")
+add_subdirectory (src/MatrixFactorizerBase/Options)
+set (EXTRA_LIBS ${EXTRA_LIBS} MatrixFactorizerOptions)
+
 # add the MatrixIO library
 include_directories ("${PROJECT_SOURCE_DIR}/MatrixIO")
 add_subdirectory (src/MatrixIO)

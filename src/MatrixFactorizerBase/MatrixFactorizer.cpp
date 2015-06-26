@@ -26,7 +26,8 @@ namespace mpi = boost::mpi;
 #include <boost/serialization/vector.hpp>
 #endif
 
-#include "Options/MatrixFactorizerOptions.hpp"
+#include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
+
 #include "Database/Database.hpp"
 #include "Database/Database_mock.hpp"
 #include "Log/Logging.hpp"
