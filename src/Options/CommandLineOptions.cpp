@@ -46,6 +46,7 @@ CommandLineOptions::CommandLineOptions() :
 	stepwidth_type(DetermineStepWidthFactory::MinimizingResidual),
 	tau(1.1),
 	updatetype(LastNSearchDirections::RoundRobin),
+	verbose(0),
 	dualitytype(defaulttype),
 	type(MinimizerFactory::MAX_InstanceType)
 {}
@@ -329,6 +330,12 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Searchspace Index update algorithm set to " << updatetype;
 	}
 
+	if (vm.count("verbose")) {
+		verbose = vm["verbose"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Verbose set to " << verbose;
+	}
+
 	if (vm.count("wolfe-constants")) {
 		wolfe_constants = vm["wolfe-constants"].as< std::vector<double> >();
 		BOOST_LOG_TRIVIAL(debug)
@@ -365,12 +372,7 @@ void CommandLineOptions::showHelpinErrorCase() const
 
 void CommandLineOptions::setVerbosity() const
 {
-	unsigned int verbose = 0;
-	if (vm.count("verbose")) {
-		verbose = vm["verbose"].as<unsigned int>();
-		if (verbose > 0)
-			std::cout << "Verbose set to " << verbose << std::endl;
-	}
+	stopLogging();
 	switch (verbose) {
 	default:
 	case 0:
