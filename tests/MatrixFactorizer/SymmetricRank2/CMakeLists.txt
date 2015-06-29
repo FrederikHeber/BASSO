@@ -1,6 +1,6 @@
 # does simple test call work?
 add_test (MatrixFactorizer_SymmetricRank2
-	${PROJECT_BINARY_DIR}/src/MatrixFactorizer 
+	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizer 
 		--normx 2 
 		--normy 2 
 		--powery 2 

@@ -22,6 +22,13 @@ class LInfinityDualityMapping;
 class RelativeShrinkageMapping;
 struct SpaceElementWriter;
 
+namespace detail {
+	template <class T> void setResultingVector(
+			const SpaceElement_ptr_t &_element,
+			T &_vector,
+			bool _nonnegative);
+};
+
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
  *
@@ -39,14 +46,13 @@ private:
 	friend class RelativeShrinkageMapping;
 	friend struct SpaceElementWriter;
 	template <class vector_type> friend struct VectorSetter;
-	template <class T> friend void setResultingVector(
-			const SpaceElement_ptr_t &_element,
-			T &_vector,
-			bool _nonnegative);
-
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }
+	template <class T> friend void detail::setResultingVector(
+			const SpaceElement_ptr_t &_element,
+			T &_vector,
+			bool _nonnegative);
 
 	static void set(
 			const SpaceElement_ptr_t & _element,
