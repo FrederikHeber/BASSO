@@ -50,28 +50,7 @@ namespace mpi = boost::mpi;
 #define TRUESOLUTION 1
 
 #ifdef MPI_FOUND
-/** Answer from
- * http://stackoverflow.com/questions/12851126/serializing-eigens-matrix-using-boost-serialization
- */
-namespace boost
-{
-    template<class Archive, typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-    inline void serialize(
-        Archive & ar,
-        Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> & t,
-        const unsigned int file_version
-    )
-    {
-        size_t rows = t.rows();
-		size_t cols = t.cols();
-        ar & rows;
-        ar & cols;
-        if( rows * cols != t.size() )
-        	t.resize( rows, cols );
-
-        ar & boost::serialization::make_array(t.data(), t.size());
-    }
-}
+#include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
 
 
 struct GlobalData

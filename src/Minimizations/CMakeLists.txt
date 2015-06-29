@@ -47,6 +47,7 @@ add_library (Minimizations
 
 install (TARGETS Minimizations DESTINATION bin)
 
+install (FILES Elements/Eigen_matrix_serialization.hpp DESTINATION include)
 install (FILES Elements/ElementCreator.hpp DESTINATION include)
 install (FILES Elements/LinearDependencyChecker.hpp DESTINATION include)
 install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
