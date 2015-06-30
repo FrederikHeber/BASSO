@@ -60,15 +60,19 @@ namespace Helpers {
 	/** This functor calculates the conjugate value q to a given p as
 	 * \f$ q = p/(p-1.) \f$ such that \f$ 1/p + 1/q = 1 \f$.
 	 *
-	 * In case of infinity we always return 1.
+	 * In case of infinity we always return 1 and the other way round.
 	 *
 	 * @param _p p value
 	 * @return \f$ q = p/(p-1.) \f$ value
 	 */
 	inline double ConjugateValue(const double _p)
 	{
-		return (_p != std::numeric_limits<double>::infinity() ?
-			_p/(_p-1.) : 1.);
+		if (_p == 1.)
+			return std::numeric_limits<double>::infinity();
+		else if (_p == std::numeric_limits<double>::infinity())
+			return  1.;
+		else
+			return _p/(_p-1.);
 	}
 };
 
