@@ -128,6 +128,12 @@ public:
 			const SpaceElement &_other,
 			const double _tolerance) const;
 
+	/** Returns whether each component is non-negative.
+	 *
+	 * @return true - vector is non-negative, false - else
+	 */
+	const bool isNonnegative() const;
+
 	/** Returns the vector with each component +1/0/-1.
 	 *
 	 * @return sign vector of this element

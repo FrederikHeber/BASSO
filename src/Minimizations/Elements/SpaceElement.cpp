@@ -69,6 +69,14 @@ const bool SpaceElement::isApprox(
 	return vector.isApprox(_other.vector, _tolerance);
 }
 
+const bool SpaceElement::isNonnegative() const
+{
+	unsigned int rowMax;
+	unsigned int colMax;
+	const double value = vector.minCoeff(&rowMax, &colMax);
+	return (value >= 0);
+}
+
 const SpaceElement_ptr_t SpaceElement::getSignVector() const
 {
 	SpaceElement_ptr_t signvector(getSpace()->createElement());
