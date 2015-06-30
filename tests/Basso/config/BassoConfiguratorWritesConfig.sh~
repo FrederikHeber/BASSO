@@ -1,8 +1,0 @@
-#!/bin/sh
-
-${BASSO}
-		--config test.conf
-		--normx 10
-		--verbose 2
-grep -q "normx = 2" test.conf
-exit $?

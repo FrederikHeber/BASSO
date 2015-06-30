@@ -24,10 +24,14 @@ DynamicRegularizedL1NormStepWidth::DynamicRegularizedL1NormStepWidth(
 	problem(_problem),
 	J_r(_J_r),
 	A_adjoint(_problem->A->getAdjointMapping()),
-	l2norm_Y(NormFactory::createLpInstance(
-			problem->A->getTargetSpace(), 2.)),
-	l2norm_DualX(NormFactory::createLpInstance(
-			problem->x->getSpace()->getDualSpace(), 2.))
+	l2norm_Y(NormFactory::getInstance().create(
+			"lp",
+			problem->A->getTargetSpace(),
+			NormFactory::args_t(1, boost::any(2.)))),
+	l2norm_DualX(NormFactory::getInstance().create(
+			"dual_lp",
+			problem->x->getSpace()->getDualSpace(),
+			NormFactory::args_t(1, boost::any(2.))))
 {}
 
 const double DynamicRegularizedL1NormStepWidth::operator()(

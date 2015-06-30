@@ -3,8 +3,10 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r2
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 1.1
-		--normy 2
+		--type-space-x "lp" 
+		--px 1.1
+		--type-space-y "lp" 
+		--py 2
 		--powerx 2
 		--powery 2
 		--tau 1.1
@@ -31,8 +33,10 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_r11
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 1.1
-		--normy 11
+		--type-space-x "lp" 
+		--px 1.1
+		--type-space-y "lp" 
+		--py 11
 		--powerx 2
 		--powery 11
 		--tau 1.1
@@ -59,8 +63,10 @@ add_test (Basso_RESESOP_RandomMatrix_p1_1_rinf
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 1.1
-		--normy 0 
+		--type-space-x "lp" 
+		--px 1.1
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--tau 1.1
@@ -87,8 +93,10 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r2
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 2 
-		--normy 2
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2
 		--powerx 2
 		--powery 2
 		--tau 1.1
@@ -115,8 +123,10 @@ add_test (Basso_RESESOP_RandomMatrix_p2_r11
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 2 
-		--normy 11
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 11
 		--powerx 2
 		--powery 11
 		--tau 1.1
@@ -143,8 +153,10 @@ add_test (Basso_RESESOP_RandomMatrix_p2_rinf
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--tau 1.1
@@ -172,8 +184,10 @@ add_test (Basso_RESESOP_RandomMatrix_p6_r2
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 6
-		--normy 2
+		--type-space-x "lp" 
+		--px 6
+		--type-space-y "lp" 
+		--py 2
 		--powerx 6
 		--powery 2
 		--tau 1.1
@@ -200,8 +214,10 @@ add_test (Basso_RESESOP_RandomMatrix_p6_r11
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 6
-		--normy 11
+		--type-space-x "lp" 
+		--px 6
+		--type-space-y "lp" 
+		--py 11
 		--powerx 6
 		--powery 11
 		--tau 1.1
@@ -228,8 +244,10 @@ add_test (Basso_RESESOP_RandomMatrix_p6_rinf
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm RESESOP
 		--number-directions 2
-		--normx 6
-		--normy 0 
+		--type-space-x "lp" 
+		--px 6
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 6
 		--powery 2
 		--tau 1.1

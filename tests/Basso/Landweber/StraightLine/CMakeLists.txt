@@ -2,8 +2,12 @@
 add_test (Basso_Landweber_StraightLine1
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm Landweber
-		--normx 2 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 2 
+		--powerx 2
+		--type-space-y "lp" 
+		--py 2 
+		--powery 2
 		--delta 0.0001 
 		--C 1 
 		--maxiter 50 
@@ -26,8 +30,12 @@ set_tests_properties (Basso_Landweber_StraightLine1_check
 add_test (Basso_Landweber_StraightLine2
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm Landweber
-		--normx 4 
-		--normy 20 
+		--type-space-x "lp" 
+		--px 4 
+		--powerx 4
+		--type-space-y "lp" 
+		--py 20 
+		--powery 20
 		--delta 0.01 
 		--C 6 
 		--maxiter 50 
@@ -50,8 +58,12 @@ set_tests_properties (Basso_Landweber_StraightLine2_check
 add_test (Basso_Landweber_StraightLine3
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm Landweber
-		--normx 1.5 
-		--normy 10 
+		--type-space-x "lp" 
+		--px 1.5 
+		--powerx 1.5
+		--type-space-y "lp" 
+		--py 10 
+		--powery 10
 		--delta 0.0001 
 		--C 2 
 		--maxiter 50 

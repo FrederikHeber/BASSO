@@ -5,8 +5,10 @@ add_test (Basso_SESOP_RandomMatrix_Angles
 		--number-directions 4
 		--calculateAngles 1
 		--verbose 1
-		--normx 1.5
-		--normy 0 
+		--type-space-x "lp" 
+		--px 1.5
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 

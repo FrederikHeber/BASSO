@@ -87,7 +87,7 @@ bool InverseProblemSolver::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
 	SpaceElement_ptr_t dualx0;
-	if (opts.dualitytype == CommandLineOptions::defaulttype) {
+	if (opts.type_spacex == "lp") {
 		dualx0 = (*inverseproblem->x->getSpace()->getDualityMapping())(x0);
 	} else {
 		dualx0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();

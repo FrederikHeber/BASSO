@@ -5,8 +5,10 @@ add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel
 		--number-directions 2
 		--update-algorithm 1
 		--enforceRandomMapping 0
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -33,8 +35,10 @@ add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal
 		--number-directions 2
 		--update-algorithm 2
 		--enforceRandomMapping 0
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -61,8 +65,10 @@ add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping
 		--number-directions 2
 		--update-algorithm 1
 		--enforceRandomMapping 1
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -89,8 +95,10 @@ add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping
 		--number-directions 2
 		--update-algorithm 2
 		--enforceRandomMapping 1
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 

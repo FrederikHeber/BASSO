@@ -6,7 +6,8 @@ set_tests_properties (BassoConfiguratorFails
 # does the application run
 add_test (BassoConfiguratorFails2 
 	${PROJECT_BINARY_DIR}/src/BassoBase/BassoConfigurator
-		--normx 2)
+		--type-space-x "lp" 
+		--px 2)
 set_tests_properties (BassoConfiguratorFails2
 	PROPERTIES WILL_FAIL true)	# return code 255
 
@@ -14,7 +15,8 @@ set_tests_properties (BassoConfiguratorFails2
 add_test (BassoConfiguratorWritesConfig 
 	${PROJECT_BINARY_DIR}/src/BassoBase/BassoConfigurator
 	--config test.conf
-	--normx 10
+	--type-space-x "lp" 
+	--px 10
 	--verbose 2)
 set_tests_properties (BassoConfiguratorWritesConfig
 	PROPERTIES PASS_REGULAR_EXPRESSION "Writing configuration file test.conf")

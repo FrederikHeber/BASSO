@@ -1,8 +1,10 @@
 # test 1: Matrix factorization with rank 1 
 add_test (MatrixFactorizer_SymmetricRank1 
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizer 
-		--normx 2 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2 
 		--powery 2 
 		--delta 0.01 
 		--number-directions 1
@@ -32,8 +34,10 @@ set_tests_properties (MatrixFactorizer_SymmetricRank1_check_second
 # test 2: Matrix factorization with rank 1 but more than one search direction
 add_test (MatrixFactorizer_SymmetricRank1_fail 
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizer 
-		--normx 2 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2 
 		--powery 2 
 		--delta 0.01 
 		--number-directions 2

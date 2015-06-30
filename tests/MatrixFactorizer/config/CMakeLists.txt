@@ -6,7 +6,8 @@ set_tests_properties (MatrixFactorizerConfiguratorFails
 # does the application run
 add_test (MatrixFactorizerConfiguratorFails2 
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizerConfigurator
-		--normx 2)
+		--type-space-x "lp" 
+		--px 2)
 set_tests_properties (MatrixFactorizerConfiguratorFails2
 	PROPERTIES WILL_FAIL true)	# return code 255
 
@@ -14,7 +15,8 @@ set_tests_properties (MatrixFactorizerConfiguratorFails2
 add_test (MatrixFactorizerConfiguratorWritesConfig 
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizerConfigurator
 	--config test.conf
-	--normx 10
+	--type-space-x "lp" 
+	--px 10
 	--verbose 2)
 set_tests_properties (MatrixFactorizerConfiguratorWritesConfig
 	PROPERTIES PASS_REGULAR_EXPRESSION "Writing configuration file test.conf")

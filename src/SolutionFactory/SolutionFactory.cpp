@@ -29,26 +29,23 @@ InverseProblem_ptr_t SolutionFactory::createInverseProblem(
 {
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem;
-	switch (_opts.dualitytype) {
-	case CommandLineOptions::regularizedl1norm:
+	// starts with "lp.."
+	if (_opts.type_spacex.find("lp") == 0) {
+		inverseproblem = InverseProblemFactory::createLpInstance(
+				_opts.px,
+				_opts.powerx,
+				_opts.py,
+				_opts.powery,
+				_matrix,
+				_rhs);
+	} else if (_opts.type_spacex == "regularized_l1") {
 		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
 				_opts.regularization_parameter,
 				_opts.powerx,
-				_opts.normy,
+				_opts.py,
 				_opts.powery,
 				_matrix,
 				_rhs);
-		break;
-	case CommandLineOptions::defaulttype:
-	default:
-		inverseproblem = InverseProblemFactory::createLpInstance(
-				_opts.normx,
-				_opts.powerx,
-				_opts.normy,
-				_opts.powery,
-				_matrix,
-				_rhs);
-		break;
 	}
 
 	return inverseproblem;

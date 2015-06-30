@@ -58,8 +58,10 @@ GeneralMinimizer::GeneralMinimizer(
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
-	l2norm(NormFactory::createLpInstance(
-			_inverseproblem->x->getSpace(), 2.)),
+	l2norm(NormFactory::getInstance().create(
+			"lp",
+			_inverseproblem->x->getSpace(),
+			NormFactory::args_t(1, boost::any(2.)))),
 	parameter_key(0),
 	database(_database),
 	parameters_table(database.addTable("parameters")),

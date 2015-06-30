@@ -163,7 +163,7 @@ int main (int argc, char *argv[])
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
 	SpaceElement_ptr_t dualx0 =
-			(opts.dualitytype == CommandLineOptions::defaulttype) ?
+			(opts.type_spacex == "lp") ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
 			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 

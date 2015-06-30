@@ -5,8 +5,10 @@ add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections
 		--number-directions 2
 		--searchspace "Nemirovsky"
 		--update-algorithm 0
-		--normx 2
-		--normy 0
+		--type-space-x "lp" 
+		--px 2
+		--type-space-y "lp" 
+		--py 0
 		--powerx 2
 		--powery 2
 		--delta 0.01
@@ -33,8 +35,10 @@ add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections_fail
 		--number-directions 4
 		--searchspace "Nemirovsky"
 		--update-algorithm 0
-		--normx 2
-		--normy 0
+		--type-space-x "lp" 
+		--px 2
+		--type-space-y "lp" 
+		--py 0
 		--powerx 2
 		--powery 2
 		--delta 0.01

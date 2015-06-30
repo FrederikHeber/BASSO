@@ -70,13 +70,6 @@ public:
 	 */
 	void setSecondaryValues();
 
-	//!> enumeration of all known dualities (Don't forget to add string literal to TypeNames)
-	enum DualityContainerType {
-		defaulttype=0,          //!< defaulttype
-		regularizedl1norm=1,    //!< regularizedl1norm
-		MAX_DualityContainerType//!< MAX_DualityContainerType
-	};
-
 	/** Stores all variables as "key = value" pairs per line under the given
 	 * stream \a _output.
 	 *
@@ -123,6 +116,8 @@ private:
 	bool checkSensibility_tuple_parameters() const;
 	bool checkSensibility_algorithm() const;
 	bool checkSensibility_minlib() const;
+	bool checkSensibility_norms() const;
+	bool checkSensibility_pvalues() const;
 	bool checkSensibility_searchspace() const;
 	bool checkSensibility_updatealgorithm() const;
 	bool checkSensibility_wolfeconstants() const;
@@ -177,8 +172,10 @@ public:
 	boost::filesystem::path iteration_file;
 	unsigned int maxinneriter;
 	std::string minlib;
-	double normx;
-	double normy;
+	std::string type_spacex;
+	std::string type_spacey;
+	double px;
+	double py;
 	unsigned int N;
 	enum LastNSearchDirections::OrthogonalizationType orthogonalization_type;
 	unsigned int outputsteps;
@@ -194,7 +191,6 @@ public:
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options
-	enum DualityContainerType dualitytype;
 	enum MinimizerFactory::InstanceType type;
 };
 

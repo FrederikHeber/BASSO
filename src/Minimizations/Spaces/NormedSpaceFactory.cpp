@@ -45,13 +45,17 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	dualinstance->setDualSpace(instance);
 
 	// create norm
-	Norm_ptr_t norm = NormFactory::createLpInstance(instance, _p);
+	Norm_ptr_t norm = NormFactory::getInstance().create(
+			"lp",
+			instance,
+			NormFactory::args_t(1, boost::any(_p)));
 	instance->setNorm(norm);
 
 	// create dual norm
-	const double q =
-			Helpers::ConjugateValue(instance->getNorm()->getPvalue());
-	Norm_ptr_t dualnorm = NormFactory::createLpInstance(dualinstance, q);
+	Norm_ptr_t dualnorm = NormFactory::getInstance().create(
+			"dual_lp",
+			dualinstance,
+			NormFactory::args_t(1, boost::any(_p)));
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance function call
@@ -101,14 +105,17 @@ NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
 	dualinstance->setDualSpace(instance);
 
 	// create norm instances and hand over to spaces
-	Norm_ptr_t norm = NormFactory::createRegularizedL1Instance(
-			instance, _lambda);
+	Norm_ptr_t norm = NormFactory::getInstance().create(
+			"regularized_l1",
+			instance,
+			NormFactory::args_t(1, boost::any(_lambda)));
 	instance->setNorm(norm);
 
 	// create dual norm
-	Norm_ptr_t dualnorm =
-			NormFactory::createDualRegularizedL1Instance(
-					dualinstance, _lambda);
+	Norm_ptr_t dualnorm = NormFactory::getInstance().create(
+			"dual_regularized_l1",
+			instance,
+			NormFactory::args_t(1, boost::any(_lambda)));
 	dualinstance->setNorm(dualnorm);
 
 	// create duality mapping instance: we only have the mapping from the

@@ -46,9 +46,9 @@ bool RangeProjector::operator()(
 {
 	// require dual values
 	const double dualnormx =
-			Helpers::ConjugateValue(opts.normy);
+			Helpers::ConjugateValue(opts.px);
 	const double dualnormy =
-			Helpers::ConjugateValue(opts.normx);
+			Helpers::ConjugateValue(opts.py);
 	const double dualpowerx =
 			Helpers::ConjugateValue(opts.powerx);
 	const double dualpowery =
@@ -99,7 +99,7 @@ bool RangeProjector::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at dualy0 = " << dualy0;
 	SpaceElement_ptr_t y0;
-	if (opts.dualitytype == CommandLineOptions::defaulttype) {
+	if (opts.type_spacex == "lp") {
 		y0 = (*inverseproblem->x->getSpace()->getDualityMapping())(dualy0);
 	} else {
 		y0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();

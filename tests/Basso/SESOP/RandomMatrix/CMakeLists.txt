@@ -4,8 +4,10 @@ add_test (Basso_SESOP_RandomMatrix_p2_r2
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 2 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -31,8 +33,10 @@ add_test (Basso_SESOP_RandomMatrix_p2_r11
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 2 
-		--normy 11
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 11
 		--powerx 2
 		--powery 11
 		--delta 0.01 
@@ -58,8 +62,10 @@ add_test (Basso_SESOP_RandomMatrix_p2_rinf
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -85,8 +91,10 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_r2
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 1.1 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 1.1 
+		--type-space-y "lp" 
+		--py 2 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -112,8 +120,10 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_r11
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 1.1
-		--normy 11
+		--type-space-x "lp" 
+		--px 1.1
+		--type-space-y "lp" 
+		--py 11
 		--powerx 2
 		--powery 11
 		--delta 0.01 
@@ -139,8 +149,10 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_rinf
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 1.1
-		--normy 0 
+		--type-space-x "lp" 
+		--px 1.1
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
@@ -166,8 +178,10 @@ add_test (Basso_SESOP_RandomMatrix_p6_r2
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 6 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 6 
+		--type-space-y "lp" 
+		--py 2 
 		--powerx 6
 		--powery 2
 		--delta 0.01 
@@ -193,8 +207,10 @@ add_test (Basso_SESOP_RandomMatrix_p6_r11
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 6 
-		--normy 11
+		--type-space-x "lp" 
+		--px 6 
+		--type-space-y "lp" 
+		--py 11
 		--powerx 6
 		--powery 11
 		--delta 0.01 
@@ -220,8 +236,10 @@ add_test (Basso_SESOP_RandomMatrix_p6_rinf
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
-		--normx 6 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 6 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 6
 		--powery 2
 		--delta 0.01 

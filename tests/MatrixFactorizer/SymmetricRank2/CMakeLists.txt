@@ -1,8 +1,10 @@
 # does simple test call work?
 add_test (MatrixFactorizer_SymmetricRank2
 	${PROJECT_BINARY_DIR}/src/MatrixFactorizerBase/MatrixFactorizer 
-		--normx 2 
-		--normy 2 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2 
 		--powery 2 
 		--delta 0.01 
 		--number-directions 1

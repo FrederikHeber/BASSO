@@ -90,8 +90,10 @@ private:
 		ar & iteration_file;
 		ar & maxinneriter;
 		ar & minlib;
-		ar & normx;
-		ar & normy;
+		ar & type_spacex;
+		ar & type_spacey;
+		ar & px;
+		ar & py;
 		ar & N;
 		ar & orthogonalization_type;
 		ar & outputsteps;
@@ -105,7 +107,6 @@ private:
 		ar & updatetype;
 		ar & verbose;
 		ar & wolfe_constants;
-		ar & dualitytype;
 		ar & type;
 	}
 
@@ -134,8 +135,10 @@ private:
 		ar & iteration_file;
 		ar & maxinneriter;
 		ar & minlib;
-		ar & normx;
-		ar & normy;
+		ar & type_spacex;
+		ar & type_spacey;
+		ar & px;
+		ar & py;
 		ar & N;
 		ar & orthogonalization_type;
 		ar & outputsteps;
@@ -149,7 +152,6 @@ private:
 		ar & updatetype;
 		ar & verbose;
 		ar & wolfe_constants;
-		ar & dualitytype;
 		ar & type;
 
 		// set verbosity after loading

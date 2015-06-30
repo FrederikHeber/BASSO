@@ -107,8 +107,8 @@ size_t IterationInformation::prepareParametersTable(
 	Table::Tuple_t& parameter_tuple = parameter_table.getTuple();
 	parameter_tuple.insert( std::make_pair("k", (int)_innerSize), Table::Parameter);
 	parameter_tuple.insert( std::make_pair("n", (int)_outerSize), Table::Parameter);
-	parameter_tuple.insert( std::make_pair("p", _opts.normx), Table::Parameter);
-	parameter_tuple.insert( std::make_pair("r", _opts.normy), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("p", _opts.px), Table::Parameter);
+	parameter_tuple.insert( std::make_pair("r", _opts.py), Table::Parameter);
 	parameter_tuple.insert( std::make_pair("sparse_dim", (int)_opts.sparse_dim), Table::Parameter);
 	for (std::vector<std::string>::const_iterator iter = _opts.tuple_parameters.begin();
 			iter != _opts.tuple_parameters.end(); iter+=2) {

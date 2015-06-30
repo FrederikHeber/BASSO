@@ -6,8 +6,10 @@ add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe
 		--update-algorithm 0
 		--inexact-linesearch 1
 		--wolfe-constants 1e-2 0.6
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 

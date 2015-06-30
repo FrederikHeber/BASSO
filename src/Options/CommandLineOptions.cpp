@@ -17,6 +17,7 @@
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
+#include "Minimizations/Norms/NormFactory.hpp"
 
 namespace po = boost::program_options;
 
@@ -32,8 +33,10 @@ CommandLineOptions::CommandLineOptions() :
 	inexactLinesearch(false),
 	maxinneriter(0),
 	minlib("gsl"),
-	normx(2.),
-	normy(2.),
+	type_spacex("lp"),
+	type_spacey("lp"),
+	px(2.),
+	py(2.),
 	N(2),
 	orthogonalization_type(LastNSearchDirections::NoOrthogonalization),
 	outputsteps(0),
@@ -47,7 +50,6 @@ CommandLineOptions::CommandLineOptions() :
 	tau(1.1),
 	updatetype(LastNSearchDirections::RoundRobin),
 	verbose(0),
-	dualitytype(defaulttype),
 	type(MinimizerFactory::MAX_InstanceType)
 {}
 
@@ -75,9 +77,13 @@ void CommandLineOptions::init()
 					"set the maximum amount of inner iterations")
 			;
 	desc_banachspace.add_options()
-			("normx", po::value<double>(),
+			("type-space-x", po::value<std::string>(),
+					"sets the type of the norm for the source space X")
+			("type-space-y", po::value<std::string>(),
+					"sets the type of the norm for the destination space Y")
+			("px", po::value<double>(),
 					"set the norm of the space X, (1 <= p < inf, 0 means infinity norm)")
-			("normy", po::value<double>(),
+			("py", po::value<double>(),
 					"set the norm of the space Y, (1 <= r < inf, 0 means infinity norm)")
 			("powerx", po::value<double>(),
 					"set the power type of the duality mapping's weight of the space X")
@@ -223,20 +229,32 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Using minimization library " << minlib;
 	}
 
-	if (vm.count("normx")) {
-		normx = vm["normx"].as<double>();
+	if (vm.count("type-space-x")) {
+		type_spacex = vm["type-space-x"].as<std::string>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of X was set to " << normx;
-		if (normx == 0.) // translate infinity
-			normx = std::numeric_limits<double>::infinity();
+			<< "Type of space X was set to " << type_spacex;
 	}
 
-	if (vm.count("normy")) {
-		normy = vm["normy"].as<double>();
+	if (vm.count("type-space-y")) {
+		type_spacey = vm["type-space-y"].as<std::string>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm of Y was set to " << normy;
-		if (normy == 0.) // translate infinity
-			normy = std::numeric_limits<double>::infinity();
+			<< "Type of space Y was set to " << type_spacey;
+	}
+
+	if (vm.count("px")) {
+		px = vm["px"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "P value of lp norm of X was set to " << px;
+		if (px == 0.) // translate infinity
+			px = std::numeric_limits<double>::infinity();
+	}
+
+	if (vm.count("py")) {
+		py = vm["py"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "P value of lp norm of Y was set to " << py;
+		if (py == 0.) // translate infinity
+			py = std::numeric_limits<double>::infinity();
 	}
 
 	if (vm.count("number-directions")) {
@@ -264,20 +282,20 @@ void CommandLineOptions::parse(int argc, char **argv)
 		powerx = vm["powerx"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in X was set to " << powerx;
-	} else if (vm.count("normx")) {
+	} else if (vm.count("px")) {
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Using normx as powerx." << "\n.";
-		powerx = normx;
+			<< "Using px as powerx." << "\n.";
+		powerx = px;
 	}
 
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in Y was set to " << powery;
-	} else if (vm.count("normy")) {
+	} else if (vm.count("py")) {
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Using normy as powery." << "\n.";
-		powery = normy;
+			<< "Using py as powery." << "\n.";
+		powery = py;
 	}
 
 	if (vm.count("regularization-parameter")) {
@@ -422,8 +440,12 @@ bool CommandLineOptions::checkSensibility_OrthogonalDirections() const
 
 bool CommandLineOptions::checkSensibility_regularizationparameter() const
 {
-	if (((normx == 1.) && !vm.count("regularization-parameter"))
-		|| ((normx != 1.) && vm.count("regularization-parameter"))) {
+	if (((type_spacex == "regularized_l1")
+			&& (px == 1.)
+			&& !vm.count("regularization-parameter"))
+		|| ((type_spacex == "regularized_l1")
+				&& (px != 1.)
+				&& vm.count("regularization-parameter"))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Either regularization parameter set but not l1 norm "
 				<< "specified or the other way round.";
@@ -490,6 +512,32 @@ bool CommandLineOptions::checkSensibility_minlib() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_norms() const
+{
+	if ((!NormFactory::getInstance().isValidType(type_spacex))
+			|| (!NormFactory::getInstance().isValidType(type_spacey))) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "Type of space of X or Y has invalid type.";
+		return false;
+	}
+	return true;
+}
+
+bool CommandLineOptions::checkSensibility_pvalues() const
+{
+	if ((type_spacex.substr(0,2) != "lp") && (vm.count("px") != 0)) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "No lp type desired but px value given";
+		return false;
+	}
+	if ((type_spacey.substr(0,2) != "lp") && (vm.count("py") != 0)) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "No lp type desired but py value given";
+		return false;
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_searchspace() const
 {
 	if (!SearchspaceFactory::isValidName(searchspace_type)) {
@@ -536,6 +584,8 @@ bool CommandLineOptions::checkSensibility() const
 	status &= checkSensibility_tuple_parameters();
 	status &= checkSensibility_algorithm();
 	status &= checkSensibility_minlib();
+	status &= checkSensibility_norms();
+	status &= checkSensibility_pvalues();
 	status &= checkSensibility_searchspace();
 	status &= checkSensibility_updatealgorithm();
 	status &= checkSensibility_wolfeconstants();
@@ -549,12 +599,6 @@ bool CommandLineOptions::checkSensibility() const
 
 void CommandLineOptions::setSecondaryValues()
 {
-	// set dualitytype
-	if (regularization_parameter > 0.)
-		dualitytype = regularizedl1norm;
-	else
-		dualitytype = defaulttype;
-
 	type = MinimizerFactory::getTypeForName(algorithm_name);
 
 	// set good maximum of inner iterations
@@ -575,8 +619,10 @@ void CommandLineOptions::store(std::ostream &_output)
 	writeValue<unsigned int>(_output, vm,  "verbose");
 
 	_output << "# [Banach Space]" << std::endl;
-	writeValue<double>(_output, vm,  "normx");
-	writeValue<double>(_output, vm,  "normy");
+	writeValue<std::string>(_output, vm,  "type-space-x");
+	writeValue<std::string>(_output, vm,  "type-space-y");
+	writeValue<double>(_output, vm,  "px");
+	writeValue<double>(_output, vm,  "py");
 	writeValue<double>(_output, vm,  "powerx");
 	writeValue<double>(_output, vm,  "powery");
 	writeValue<double>(_output, vm,  "regularization-parameter");

@@ -2,8 +2,10 @@
 add_test (Basso_Landweber_RandomMatrix
 	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
 		--algorithm Landweber
-		--normx 2 
-		--normy 0 
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 0 
 		--powerx 2
 		--powery 2
 		--delta 0.01 
