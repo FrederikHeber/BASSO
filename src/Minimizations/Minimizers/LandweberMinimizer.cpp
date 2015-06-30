@@ -33,7 +33,7 @@
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
-#include "Minimizations/Norms/RegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,

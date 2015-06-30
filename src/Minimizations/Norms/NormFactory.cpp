@@ -12,13 +12,13 @@
 
 #include <limits>
 
-#include "Minimizations/Norms/DualRegularizedL1Norm.hpp"
 #include "Minimizations/Norms/IllegalNorm.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
-#include "Minimizations/Norms/RegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/DualRegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 Norm_ptr_t NormFactory::createLpInstance(

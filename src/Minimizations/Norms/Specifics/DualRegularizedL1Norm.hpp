@@ -32,7 +32,7 @@ public:
 	 * onto this space as well.
 	 *
 	 * @param _ref reference to the space this norm is associated with
-	 * @param _ref reference to the space this norm is associated with
+	 * @param _lambda regularization parameter
 	 */
 	DualRegularizedL1Norm(
 			const NormedSpace_weakptr_t& _ref,

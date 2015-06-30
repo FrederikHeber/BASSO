@@ -106,7 +106,8 @@ install (FILES Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.hpp DESTI
 install (FILES Minimizers/StepWidths/LandweberFixedStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/ResidualMinimizingStepwidth.hpp DESTINATION include)
 
-install (FILES Norms/DualRegularizedL1Norm.hpp DESTINATION include)
+install (FILES Norms/Specifics/DualRegularizedL1Norm.hpp DESTINATION include)
+install (FILES Norms/Specifics/RegularizedL1Norm.hpp DESTINATION include)
 install (FILES Norms/IllegalNorm.hpp DESTINATION include)
 install (FILES Norms/L1Norm.hpp DESTINATION include)
 install (FILES Norms/LInfinityNorm.hpp DESTINATION include)
@@ -114,7 +115,6 @@ install (FILES Norms/LpNorm.hpp DESTINATION include)
 install (FILES Norms/Norm.hpp DESTINATION include)
 install (FILES Norms/NormExceptions.hpp DESTINATION include)
 install (FILES Norms/NormFactory.hpp DESTINATION include)
-install (FILES Norms/RegularizedL1Norm.hpp DESTINATION include)
 
 install (FILES Spaces/NormedDualSpace.hpp DESTINATION include)
 install (FILES Spaces/NormedSpaceFactory.hpp DESTINATION include)

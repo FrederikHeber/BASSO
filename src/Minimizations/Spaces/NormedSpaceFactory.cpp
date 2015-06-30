@@ -18,7 +18,7 @@
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
-#include "Minimizations/Norms/RegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedDualSpace.hpp"
 

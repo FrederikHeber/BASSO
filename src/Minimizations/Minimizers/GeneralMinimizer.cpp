@@ -29,7 +29,7 @@
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
-#include "Minimizations/Norms/RegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
