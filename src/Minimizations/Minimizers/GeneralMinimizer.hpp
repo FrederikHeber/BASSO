@@ -280,6 +280,9 @@ private:
 	//!> contains the Bregman distance at the last iterate for monotonicity check
 	mutable double OldBregmanDistance;
 
+	//!> private l2 norm for calculating the error to the true solution
+	const Norm_ptr_t l2norm;
+
 protected:
 
 	//!> additional parameter, value pairs that are added to each submitted tuple

@@ -58,6 +58,8 @@ GeneralMinimizer::GeneralMinimizer(
 	outputsteps(_outputsteps),
 	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
+	l2norm(NormFactory::createLpInstance(
+			_inverseproblem->x->getSpace(), 2.)),
 	parameter_key(0),
 	database(_database),
 	parameters_table(database.addTable("parameters")),
@@ -214,8 +216,6 @@ const double GeneralMinimizer::calculateError(
 			new_error = NormX(_solution-_truesolution);
 		} else {
 			// create L2 norm for measuring error
-			const Norm_ptr_t l2norm = NormFactory::createLpInstance(
-					_solution->getSpace(), 2.);
 			new_error = (*l2norm)(_solution-_truesolution);
 		}
 		BOOST_LOG_TRIVIAL(debug)
