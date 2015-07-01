@@ -11,7 +11,7 @@
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 IllegalDualityMapping::IllegalDualityMapping() :
-	LpDualityMapping(NormedSpaceFactory::DummySpace, 2.)
+	LpDualityMapping(NormedSpaceFactory::getDummySpace(), 2.)
 {}
 
 const NormedSpace_ptr_t IllegalDualityMapping::getSourceSpace() const

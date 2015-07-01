@@ -22,10 +22,15 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedDualSpace.hpp"
 
-// static instance
-const NormedSpace_ptr_t NormedSpaceFactory::DummySpace =
-		NormedSpaceFactory::createLpInstance(
-				0, 2., 2.);
+const NormedSpace_ptr_t NormedSpaceFactory::getDummySpace()
+{
+	static const NormedSpace_ptr_t DummySpace;
+	if (DummySpace.get() == NULL) {
+		const_cast<NormedSpace_ptr_t &>(DummySpace) =
+				NormedSpaceFactory::createLpInstance(0, 2., 2.);
+	}
+	return DummySpace;
+}
 
 NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 		const unsigned int _dimension,

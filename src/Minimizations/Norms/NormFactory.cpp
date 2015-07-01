@@ -124,7 +124,7 @@ static Norm_ptr_t createLpNorm(
 Norm_ptr_t NormFactory::createLpInstance(
 		const double _p) const
 {
-	return createLpNorm(NormedSpaceFactory::DummySpace, _p);
+	return createLpNorm(NormedSpaceFactory::getDummySpace(), _p);
 }
 
 Norm_ptr_t NormFactory::createLpInstance(

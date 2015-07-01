@@ -12,6 +12,9 @@
 
 #include "Minimizations/types.hpp"
 
+class IllegalDualityMapping;
+class NormFactory;
+
 /** This is a factory for spaces, creating all necessary member instances
  * and returning the NormedSpace instance.
  *
@@ -42,11 +45,19 @@ struct NormedSpaceFactory
 			const double _lambda,
 			const double _power);
 
-	/** This is a placeholder instance to let entities such as
-	 * DualityMappings receive a NormedSpace_ptr_t and to be
+private:
+	//!> grant IllegalDualityMapping access to DummySpace
+	friend class IllegalDualityMapping;
+	//!> grant NormFactory access to DummySpace
+	friend class NormFactory;
+
+	/** This returns the ref to a placeholder instance to let entities
+	 * such as DualityMappings receive a NormedSpace_ptr_t and to be
 	 * able to call getDualSpace() properly.
+	 *
+	 * @return ref to placeholder instance
 	 */
-	static const NormedSpace_ptr_t DummySpace;
+	static const NormedSpace_ptr_t getDummySpace();
 };
 
 
