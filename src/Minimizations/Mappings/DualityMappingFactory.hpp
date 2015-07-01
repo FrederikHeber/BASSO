@@ -22,6 +22,9 @@
 
 struct DualityMappingFactory
 {
+	//!> grant DualityMappingFactoryUnitTest unit test access to getMap()
+	friend class DualityMappingFactoryUnitTest;
+
 public:
 	//!> typedef for the vector of arbitrary arguments.
 	typedef std::vector<boost::any> args_t;

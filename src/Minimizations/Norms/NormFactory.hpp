@@ -35,6 +35,8 @@ class NormFactory
 	friend class LInfinityNormUnitTest;
 	//!> grant LpNorm unit test access to "Space-less" creator function
 	friend class LpNormUnitTest;
+	//!> grant DualityMappingFactoryUnitTest unit test access to getMap()
+	friend class DualityMappingFactoryUnitTest;
 
 public:
 	//!> typedef for the vector of arbitrary arguments.

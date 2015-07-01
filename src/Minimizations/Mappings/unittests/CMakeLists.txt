@@ -1,5 +1,18 @@
 ### TESTS ###
 
+########################## DualityMappingFactoryUnitTest #######################
+add_executable (DualityMappingFactoryUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	DualityMappingFactoryUnitTest.cpp) 
+target_link_libraries (DualityMappingFactoryUnitTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
+
+add_test (DualityMappingFactoryUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/DualityMappingFactoryUnitTest)
+
 ########################## IllegalDualityMappingUnitTest #######################
 add_executable (IllegalDualityMappingUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
