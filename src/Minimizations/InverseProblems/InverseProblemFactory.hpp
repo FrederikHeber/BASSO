@@ -10,6 +10,11 @@
 
 #include "BassoConfig.h"
 
+#include <string>
+#include <vector>
+
+#include <boost/any.hpp>
+
 #include <Eigen/Dense>
 
 #include "Minimizations/types.hpp"
@@ -22,41 +27,25 @@
  */
 struct InverseProblemFactory
 {
+	//!> typedef for the vector of arbitrary arguments.
+	typedef std::vector<boost::any> args_t;
+
 	/** Creates an inverse problem in Lp spaces.
 	 *
-	 * @param _p p value of the space X
-	 * @param _powerx power for the duality mapping X -> dualX
-	 * @param _r p value of the space Y
-	 * @param _powery power for the duality mapping Y -> dualY
+	 * @param  _type_SpaceX type of space for X
+	 * @param _args_SpaceX arguments required to create X
+	 * @param _type_SpaceY type of space for Y
+	 * @param _args_SpaceY arguments required to create Y
 	 * @param _matrix matrix as the finite-dimensional representation of
 	 * 		  the linear mapping X -> Y
 	 * @param _rhs finite-dimensional representation of right-hand side.
-	 * @return
+	 * @return created instance
 	 */
-	static InverseProblem_ptr_t createLpInstance(
-			const double _p,
-			const double _powerx,
-			const double _r,
-			const double _powery,
-			const Eigen::MatrixXd &_matrix,
-			const Eigen::VectorXd &_rhs);
-
-	/** Creates an inverse problem in regalurized L1 space.
-	 *
-	 * @param _lambda regularization parameter
-	 * @param _powerx power for the duality mapping X -> dualX
-	 * @param _r p value of the space Y
-	 * @param _powery power for the duality mapping Y -> dualY
-	 * @param _matrix matrix as the finite-dimensional representation of
-	 * 		  the linear mapping X -> Y
-	 * @param _rhs finite-dimensional representation of right-hand side.
-	 * @return
-	 */
-	static InverseProblem_ptr_t createRegularizedL1Instance(
-			const double _lambda,
-			const double _powerx,
-			const double _r,
-			const double _powery,
+	static InverseProblem_ptr_t create(
+			const std::string &_type_SpaceX,
+			const args_t &_args_SpaceX,
+			const std::string &_type_SpaceY,
+			const args_t &_args_SpaceY,
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::VectorXd &_rhs);
 };

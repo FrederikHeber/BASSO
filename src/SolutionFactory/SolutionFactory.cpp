@@ -10,6 +10,8 @@
 
 #include "SolutionFactory.hpp"
 
+#include <boost/assign.hpp>
+
 #include "Options/CommandLineOptions.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
@@ -22,31 +24,39 @@
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
+using namespace boost::assign;
+
 InverseProblem_ptr_t SolutionFactory::createInverseProblem(
 		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs)
 {
-	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem;
+	InverseProblemFactory::args_t args_SpaceX;
+	InverseProblemFactory::args_t args_SpaceY;
 	// starts with "lp.."
 	if (_opts.type_spacex.find("lp") == 0) {
-		inverseproblem = InverseProblemFactory::createLpInstance(
-				_opts.px,
-				_opts.powerx,
-				_opts.py,
-				_opts.powery,
-				_matrix,
-				_rhs);
+		args_SpaceX +=
+				boost::any(_opts.px),
+				boost::any(_opts.powerx);
 	} else if (_opts.type_spacex == "regularized_l1") {
-		inverseproblem = InverseProblemFactory::createRegularizedL1Instance(
-				_opts.regularization_parameter,
-				_opts.powerx,
-				_opts.py,
-				_opts.powery,
-				_matrix,
-				_rhs);
+		args_SpaceX +=
+				boost::any(_opts.regularization_parameter),
+				boost::any(_opts.powerx);
 	}
+	// starts with "lp.."
+	if (_opts.type_spacey.find("lp") == 0) {
+		args_SpaceY +=
+				boost::any(_opts.py),
+				boost::any(_opts.powery);
+	}
+	inverseproblem = InverseProblemFactory::create(
+			_opts.type_spacex,
+			args_SpaceX,
+			_opts.type_spacey,
+			args_SpaceY,
+			_matrix,
+			_rhs);
 
 	return inverseproblem;
 }
