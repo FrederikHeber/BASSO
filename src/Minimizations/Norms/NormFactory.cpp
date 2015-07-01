@@ -31,9 +31,9 @@ const NormFactory::TokenCreatorMap_t& NormFactory::getMap(
 	static TokenCreatorMap_t TokenCreatorMap;
 	if (TokenCreatorMap.empty()) {
 		// construct TokenCreatorMap_t on constructing singleton instance
-		TokenCreatorMap["illegal"] =
-				boost::bind(&NormFactory::createIllegalInstance,
-						boost::cref(_instance), _1, _2);
+//		TokenCreatorMap["illegal"] =
+//				boost::bind(&NormFactory::createIllegalInstance,
+//						boost::cref(_instance), _1, _2);
 		TokenCreatorMap["lp"] =
 				boost::bind(&NormFactory::createLpInstance,
 						boost::cref(_instance), _1, _2);

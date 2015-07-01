@@ -59,14 +59,11 @@ public:
 	 *
 	 * @param _dimension dimension of this space
 	 * @param _norm norm object of the space
-	 * @param _constructDualityMapping stored function call for constructing
-	 * 		\a dualitymapping on demand
 	 */
 	NormedDualSpace(
 			const unsigned int _dimension,
-			const Norm_ptr_t &_norm,
-			const constructDualityMapping_t &_constructDualityMapping) :
-		NormedSpace(_dimension,_norm,_constructDualityMapping)
+			const Norm_ptr_t &_norm) :
+		NormedSpace(_dimension,_norm)
 	{}
 
 

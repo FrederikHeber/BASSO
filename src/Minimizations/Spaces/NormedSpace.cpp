@@ -10,6 +10,7 @@
 
 #include "NormedSpace.hpp"
 
+#include <cassert>
 #include <boost/bind.hpp>
 #include <Eigen/Dense>
 
@@ -24,11 +25,9 @@ NormedSpace::NormedSpace(
 
 NormedSpace::NormedSpace(
 		const unsigned int _dimension,
-		const Norm_ptr_t &_norm,
-		const constructDualityMapping_t &_constructDualityMapping
+		const Norm_ptr_t &_norm
 		) :
 	norm(_norm),
-	constructDualityMapping(_constructDualityMapping),
 	dimension(_dimension)
 {}
 
@@ -44,9 +43,6 @@ SpaceElement_ptr_t NormedSpace::createElement() const
 
 const Mapping_ptr_t& NormedSpace::getDualityMapping() const
 {
-	if (dualitymapping == NULL) {
-		const Mapping_ptr_t _dualitymapping = constructDualityMapping();
-		const_cast<NormedSpace *>(this)->setDualityMapping(_dualitymapping);
-	}
+	assert (dualitymapping != NULL);
 	return dualitymapping;
 }
