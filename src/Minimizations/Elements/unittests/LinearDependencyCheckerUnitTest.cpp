@@ -45,8 +45,10 @@ void LinearDependencyCheckerUnitTest::singleVector()
 {
 	const unsigned int dim = 5;
 	const double p=2.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 
 	// single zero vector
 	{
@@ -72,8 +74,10 @@ void LinearDependencyCheckerUnitTest::twoVectors()
 {
 	const unsigned int dim = 5;
 	const double p=2.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 
 	// two zero vectors
 	{
@@ -169,8 +173,10 @@ void LinearDependencyCheckerUnitTest::threeVectors()
 	{
 		const unsigned int dim = 2;
 		const double p=2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(p);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(dim, p, p);
+				NormedSpaceFactory::create(dim, "lp", args);
 
 		Eigen::VectorXd xaxis(dim);
 		xaxis.setZero();
@@ -192,8 +198,10 @@ void LinearDependencyCheckerUnitTest::threeVectors()
 
 	const unsigned int dim = 5;
 	const double p=2.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 
 	// three non-zero complex independent non-orthogonal vectors
 	{

@@ -9,6 +9,8 @@
 
 #include "LInfinityDualityMappingUnitTest.hpp"
 
+#include <boost/assign.hpp>
+
 #include <Eigen/Dense>
 #include <limits>
 
@@ -21,6 +23,8 @@
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LInfinityDualityMappingUnitTest );
+
+using namespace boost::assign;
 
 // static entities
 double LInfinityDualityMappingUnitTest::tolerance = 1e-4;
@@ -55,9 +59,11 @@ void LInfinityDualityMappingUnitTest::inftyNorm()
 			0.608996,0.567817,0.261505,-0.294843,-0.387682,-0.513624,-0.728372,-0.676635,-0.503763,-0.611381;
 	{
 		const double power = 1.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		Eigen::MatrixXd expected(2,10);
 		expected << 0,-1,0,1,-0,-0,-1,1,-0,-0,
@@ -75,9 +81,11 @@ void LInfinityDualityMappingUnitTest::inftyNorm()
 	}
 	{
 		const double power = 1.1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		Eigen::MatrixXd expected(2,10);
 		expected << 0.00000,-0.97787,0.00000,0.90404,-0.00000,-0.00000,-0.98407,0.96776,-0.00000,-0.00000,
@@ -95,9 +103,11 @@ void LInfinityDualityMappingUnitTest::inftyNorm()
 	}
 	{
 		const double power = 2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		Eigen::MatrixXd expected(2,10);
 		expected << 0.00000,-0.79951,0.00000,0.36466,-0.00000,-0.00000,-0.85163,0.72059,-0.00000,-0.00000,
@@ -116,9 +126,11 @@ void LInfinityDualityMappingUnitTest::inftyNorm()
 	}
 	{
 		const double power = 10.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		Eigen::MatrixXd expected(2,10);
 		expected << 0.00000,-0.13348,0.00000,0.00011,-0.00000,-0.00000,-0.23564,0.05238,-0.00000,-0.00000,
@@ -142,9 +154,11 @@ void LInfinityDualityMappingUnitTest::setTolerance()
 {
 	const double p = std::numeric_limits<double>::infinity();
 	const double power = 2.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(power);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(
-					10, p, power);
+			NormedSpaceFactory::create(
+					10, "lp", args);
 	const PowerTypeDualityMapping &J_infty =
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getSpace()->getDualityMapping());

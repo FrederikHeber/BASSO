@@ -7,6 +7,7 @@
 
 #include "VectorProjectionUnitTest.hpp"
 
+#include <boost/assign.hpp>
 #include <boost/bind.hpp>
 #include <Eigen/Dense>
 #include <iostream>
@@ -21,6 +22,8 @@
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( VectorProjectionUnitTest );
+
+using namespace boost::assign;
 
 // static instances
 const double VectorProjectionUnitTest::tolerance = 1e-8;
@@ -44,8 +47,10 @@ void VectorProjectionUnitTest::oneoneNorm()
 {
 	const unsigned int dim = 5;
 	const double p=1.1;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 	const PowerTypeDualityMapping &Jp =
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
@@ -245,8 +250,10 @@ void VectorProjectionUnitTest::onefiveNorm()
 {
 	const unsigned int dim = 5;
 	const double p=1.5;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 	const PowerTypeDualityMapping &Jp =
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
@@ -446,8 +453,10 @@ void VectorProjectionUnitTest::twoNorm()
 {
 	const unsigned int dim = 5;
 	const double p=2.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 	const PowerTypeDualityMapping &Jp =
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());
@@ -677,8 +686,10 @@ void VectorProjectionUnitTest::sixNorm()
 {
 	const unsigned int dim = 5;
 	const double p=6.;
+	NormedSpaceFactory::args_t args;
+	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
-			NormedSpaceFactory::createLpInstance(dim, p, p);
+			NormedSpaceFactory::create(dim, "lp", args);
 	const PowerTypeDualityMapping &Jp =
 			dynamic_cast<const PowerTypeDualityMapping &>(
 					*SpaceX->getDualityMapping());

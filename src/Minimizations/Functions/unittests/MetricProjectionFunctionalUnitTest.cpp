@@ -81,9 +81,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	Xtemp << -0.379750,-0.943336,-0.883381,0.807463,-0.697762,-0.066113,0.894920,-0.081799,0.728086,0.113930,-0.690921,0.420590,0.819499,-0.726720,0.284505,0.338650,-0.116910,0.517283,0.074392,0.520657;
 //	{
 //		const double power = Helpers::ConjugateValue(1.1);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
@@ -112,9 +114,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(2.);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
@@ -143,9 +147,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(10.);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
@@ -187,9 +193,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	Xtemp << 0.768586,-0.225475,0.470209,0.483057,-0.324979,-0.554573,0.030939,-0.352048,-0.103521,0.305334,-0.902129,-0.610977,0.396205,0.854957,0.562012,-0.658914,0.964865,-0.873672,0.717819,0.118345;
 //	{
 //		const double power = Helpers::ConjugateValue(1.01);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
@@ -218,9 +226,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(1.1);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
@@ -249,9 +259,11 @@ static std::vector< std::vector<double> > getVectorOfVectors(
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(2.);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
@@ -321,9 +333,11 @@ void MetricProjectionFunctionalUnitTest::twoNorm()
 
 	{
 		const double power = Helpers::ConjugateValue(2.);
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						Xtemp.innerSize(), p, power);
+				NormedSpaceFactory::create(
+						Xtemp.innerSize(), "lp", args);
 		std::vector<SpaceElement_ptr_t> U =
 				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
@@ -374,9 +388,11 @@ void MetricProjectionFunctionalUnitTest::twoNorm()
 //	Xtemp << 0.768586,-0.225475,0.470209,0.483057,-0.324979,-0.554573,0.030939,-0.352048,-0.103521,0.305334,-0.902129,-0.610977,0.396205,0.854957,0.562012,-0.658914,0.964865,-0.873672,0.717819,0.118345;
 //	{
 //		const double power = Helpers::ConjugateValue(1.1);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();
@@ -405,9 +421,11 @@ void MetricProjectionFunctionalUnitTest::twoNorm()
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(2.);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();
@@ -436,9 +454,11 @@ void MetricProjectionFunctionalUnitTest::twoNorm()
 //	}
 //	{
 //		const double power = Helpers::ConjugateValue(10.);
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(p), boost::any(power);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createLpInstance(
-//						Xtemp.innerSize(), p, power);
+//				NormedSpaceFactory::create(
+//						Xtemp.innerSize(), "lp", args);
 //		std::vector<SpaceElement_ptr_t> U =
 //				getVectorOfSpaceElements(SpaceX->getDualSpace(), Utemp);
 //		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();

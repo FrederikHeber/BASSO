@@ -10,6 +10,11 @@
 
 #include "BassoConfig.h"
 
+#include <vector>
+
+#include <string>
+#include <boost/any.hpp>
+
 #include "Minimizations/types.hpp"
 
 class IllegalDualityMapping;
@@ -21,29 +26,20 @@ class NormFactory;
  */
 struct NormedSpaceFactory
 {
-	/** Factory functor that creates the LpSpace instance.
-	 *
-	 * @param _dimension dimension of the space
-	 * @param _p p value of the norm of the space
-	 * @param _power power type of duality mapping's weight function
-	 * @return NormedSpace instance according to parameters
-	 */
-	static NormedSpace_ptr_t createLpInstance(
-			const unsigned int _dimension,
-			const double _p,
-			const double _power);
+	//!> typedef for the vector of arbitrary arguments.
+	typedef std::vector<boost::any> args_t;
 
-	/** Factory functor that creates the regularized L1 instance.
+	/** Factory functor that creates the desired instance.
 	 *
 	 * @param _dimension dimension of the space
-	 * @param _lambda regularization parameter
-	 * @param _power power type of duality mapping's weight function
+	 * @param _type desired type of space (and dual space)
+	 * @param _args arguments required for instantiation
 	 * @return NormedSpace instance according to parameters
 	 */
-	static NormedSpace_ptr_t createRegularizedL1Instance(
+	static NormedSpace_ptr_t create(
 			const unsigned int _dimension,
-			const double _lambda,
-			const double _power);
+			const std::string &_type,
+			const args_t &_args);
 
 private:
 	//!> grant IllegalDualityMapping access to DummySpace

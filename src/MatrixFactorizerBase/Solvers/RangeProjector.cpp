@@ -8,6 +8,8 @@
 
 #include "BassoConfig.h"
 
+#include <boost/assign.hpp>
+
 #include "RangeProjector.hpp"
 
 #include "Log/Logging.hpp"
@@ -23,6 +25,8 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "SolutionFactory/SolutionFactory.hpp"
+
+using namespace boost::assign;
 
 RangeProjector::RangeProjector(
 		Database_ptr_t &_database,
@@ -44,31 +48,32 @@ bool RangeProjector::operator()(
 		const bool _nonnegative
 		)
 {
-	// require dual values
-	const double dualnormx =
-			Helpers::ConjugateValue(opts.px);
-	const double dualnormy =
-			Helpers::ConjugateValue(opts.py);
-	const double dualpowerx =
-			Helpers::ConjugateValue(opts.powerx);
-	const double dualpowery =
-			Helpers::ConjugateValue(opts.powery);
-
 	// prepare right-hand side
-	NormedSpace_ptr_t Ys =
-			NormedSpaceFactory::createLpInstance(
-					_matrix.innerSize(), dualnormy, dualpowery);
-	NormedSpace_ptr_t Xs =
-			NormedSpaceFactory::createLpInstance(
-					_matrix.outerSize(), dualnormx, dualpowerx);
+	NormedSpace_ptr_t Y;
+	NormedSpace_ptr_t Ys;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(opts.py), boost::any(opts.powery);
+		Y = NormedSpaceFactory::create(
+				_matrix.innerSize(), opts.type_spacey, args);
+		Ys = Y->getDualSpace();
+	}
+	NormedSpace_ptr_t X;
+	NormedSpace_ptr_t Xs;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(opts.px), boost::any(opts.powerx);
+		X = NormedSpaceFactory::create(
+				_matrix.outerSize(), opts.type_spacex, args);
+		Xs = X->getDualSpace();
+	}
 	// and the LinearMapping
 	Mapping_ptr_t As =
 			LinearMappingFactory::createInstance(Ys,Xs,_matrix.transpose());
-	const NormedSpace &Y = *Ys->getDualSpace();
 
 	SpaceElement_ptr_t rhs = ElementCreator::create(Y, _rhs);
 	SpaceElement_ptr_t dualrhs =
-			(*Y.getDualityMapping())((-1.)*rhs);
+			(*Y->getDualityMapping())((-1.)*rhs);
 	SpaceElement_ptr_t dualmappedrhs = (-1.)*((*As)(dualrhs));
 
 	// prepare inverse problem: Y^\ast \rightarrow X^\ast

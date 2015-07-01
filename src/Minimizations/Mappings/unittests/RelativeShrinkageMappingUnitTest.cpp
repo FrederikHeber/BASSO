@@ -9,6 +9,8 @@
 
 #include "RelativeShrinkageMappingUnitTest.hpp"
 
+#include <boost/assign.hpp>
+
 #include <Eigen/Dense>
 
 #include "Minimizations/Elements/ElementCreator.hpp"
@@ -20,6 +22,8 @@
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( RelativeShrinkageMappingUnitTest );
+
+using namespace boost::assign;
 
 // static entities
 double RelativeShrinkageMappingUnitTest::tolerance = 1e-4;
@@ -48,14 +52,16 @@ void RelativeShrinkageMappingUnitTest::tearDown()
 
 void RelativeShrinkageMappingUnitTest::oneNorm()
 {
-	const double power = 2.;
+//	const double power = 2.;
 	Eigen::VectorXd xtemp(10);
 	xtemp << 0.204691,-0.799513,0.056042,0.364664,0.039179,-0.272607,-0.851628,0.720586,-0.058074,-0.529929;
 	{
 		const double lambda = 1e+3;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		// Note that we have the duality mapping (the relative shrinkage)
 		// only in the dual space, not in the original back as this
@@ -65,8 +71,8 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 			(*SpaceX->getDualSpace()->getDualityMapping());
 		const double coefficient = 0.00385832970297;
 		const double compare_coefficient = S.getRelativeShrinkage(x);
-//		std::cout << "Expecting shrinkage coefficient " << coefficient
-//				<< " and got " << compare_coefficient << ".\n";
+		std::cout << "Expecting shrinkage coefficient " << coefficient
+				<< " and got " << compare_coefficient << ".\n";
 		CPPUNIT_ASSERT( fabs(coefficient - compare_coefficient) < BASSOTOLERANCE  );
 		Eigen::VectorXd expected(10);
 		expected <<
@@ -80,9 +86,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = 1e+1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 			(*SpaceX->getDualSpace()->getDualityMapping());
@@ -103,9 +111,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .9;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 			(*SpaceX->getDualSpace()->getDualityMapping());
@@ -126,9 +136,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .4;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 			(*SpaceX->getDualSpace()->getDualityMapping());
@@ -149,9 +161,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 			(*SpaceX->getDualSpace()->getDualityMapping());
@@ -172,9 +186,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 	{
 		const double lambda = .001;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(lambda), boost::any(lambda);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createRegularizedL1Instance(
-						xtemp.innerSize(), lambda, power);
+				NormedSpaceFactory::create(
+						xtemp.innerSize(), "regularized_l1", args);
 		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 			(*SpaceX->getDualSpace()->getDualityMapping());
@@ -195,9 +211,11 @@ void RelativeShrinkageMappingUnitTest::oneNorm()
 	}
 //	{
 //		const double lambda = .0;
+//		NormedSpaceFactory::args_t args;
+//		args += boost::any(lambda), boost::any(lambda);
 //		const NormedSpace_ptr_t SpaceX =
-//				NormedSpaceFactory::createRegularizedL1Instance(
-//						xtemp.innerSize(), lambda, power);
+//				NormedSpaceFactory::create(
+//						xtemp.innerSize(), "regularized_l1", args);
 //		SpaceElement_ptr_t x = ElementCreator::create(SpaceX,xtemp);
 //		const RelativeShrinkageMapping &S = static_cast<RelativeShrinkageMapping&>
 //			(*SpaceX->getDualSpace()->getDualityMapping());

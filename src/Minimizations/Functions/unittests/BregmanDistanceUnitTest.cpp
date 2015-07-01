@@ -7,6 +7,7 @@
 
 #include "BregmanDistanceUnitTest.hpp"
 
+#include <boost/assign.hpp>
 #include <boost/bind.hpp>
 #include <Eigen/Dense>
 #include <limits>
@@ -23,6 +24,7 @@
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( BregmanDistanceUnitTest );
 
+using namespace boost::assign;
 
 void BregmanDistanceUnitTest::setUp()
 {
@@ -70,9 +72,10 @@ void BregmanDistanceUnitTest::oneoneNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 1.01;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -89,9 +92,10 @@ void BregmanDistanceUnitTest::oneoneNorm()
 	}
 	{
 		const double power = 1.1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -108,9 +112,10 @@ void BregmanDistanceUnitTest::oneoneNorm()
 	}
 	{
 		const double power = 2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -138,9 +143,10 @@ void BregmanDistanceUnitTest::onefiveNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 1.1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -157,9 +163,10 @@ void BregmanDistanceUnitTest::onefiveNorm()
 	}
 	{
 		const double power = 1.5;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -176,9 +183,10 @@ void BregmanDistanceUnitTest::onefiveNorm()
 	}
 	{
 		const double power = 2;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -206,9 +214,10 @@ void BregmanDistanceUnitTest::twoNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 1.5;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -225,9 +234,10 @@ void BregmanDistanceUnitTest::twoNorm()
 	}
 	{
 		const double power = 2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -244,9 +254,10 @@ void BregmanDistanceUnitTest::twoNorm()
 	}
 	{
 		const double power = 4.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -274,9 +285,10 @@ void BregmanDistanceUnitTest::threeNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 1.5;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -293,9 +305,10 @@ void BregmanDistanceUnitTest::threeNorm()
 	}
 	{
 		const double power = 3.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -312,9 +325,10 @@ void BregmanDistanceUnitTest::threeNorm()
 	}
 	{
 		const double power = 10.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -342,9 +356,10 @@ void BregmanDistanceUnitTest::sixNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -361,9 +376,10 @@ void BregmanDistanceUnitTest::sixNorm()
 	}
 	{
 		const double power = 6.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -380,9 +396,10 @@ void BregmanDistanceUnitTest::sixNorm()
 	}
 	{
 		const double power = 10.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_p = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -411,9 +428,10 @@ void BregmanDistanceUnitTest::inftyNorm()
 			-0.315758,-0.139483,-0.522375,0.069016,-0.743665,0.111088,0.451357,0.239402,0.841339,0.548371;
 	{
 		const double power = 1.1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -430,9 +448,10 @@ void BregmanDistanceUnitTest::inftyNorm()
 	}
 	{
 		const double power = 2.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),
@@ -449,9 +468,10 @@ void BregmanDistanceUnitTest::inftyNorm()
 	}
 	{
 		const double power = 10.;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(power);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, power);
+				NormedSpaceFactory::create(X.innerSize(), "lp", args);
 		const Mapping &J_infty = *SpaceX->getSpace()->getDualityMapping();
 		const BregmanDistance d_p(
 				*SpaceX->getSpace()->getNorm(),

@@ -10,33 +10,37 @@
 
 #include "NormedSpaceFactory.hpp"
 
+#include <boost/assign.hpp>
 #include <boost/bind.hpp>
-#include <Minimizations/Mappings/DualityMappingFactory.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "Math/Helpers.hpp"
-#include "Minimizations/Mappings/IllegalDualityMapping.hpp"
-#include "Minimizations/Mappings/Mapping.hpp"
-#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
+#include <Minimizations/Mappings/DualityMappingFactory.hpp>
 #include "Minimizations/Norms/NormFactory.hpp"
-#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedDualSpace.hpp"
+
+using namespace boost::assign;
 
 const NormedSpace_ptr_t NormedSpaceFactory::getDummySpace()
 {
 	static const NormedSpace_ptr_t DummySpace;
 	if (DummySpace.get() == NULL) {
+		NormedSpaceFactory::args_t args;
+		args += boost::any(2.), boost::any(2.);
 		const_cast<NormedSpace_ptr_t &>(DummySpace) =
-				NormedSpaceFactory::createLpInstance(0, 2., 2.);
+				NormedSpaceFactory::create(
+						0, "lp", args);
 	}
 	return DummySpace;
 }
 
-NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
+NormedSpace_ptr_t NormedSpaceFactory::create(
 		const unsigned int _dimension,
-		const double _p,
-		const double _power)
+		const std::string &_type,
+		const args_t &_args)
 {
+	const std::string dualtype = "dual_"+_type;
 	// create empty space
 	NormedSpace_ptr_t instance(
 			new NormedSpace(_dimension) );
@@ -52,18 +56,18 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	// create norm
 	{
 		Norm_ptr_t norm = NormFactory::getInstance().create(
-				"lp",
+				_type,
 				instance,
-				NormFactory::args_t(1, boost::any(_p)));
+				NormFactory::args_t(1, _args[0]));
 		instance->setNorm(norm);
 	}
 
 	// create dual norm
 	{
 		Norm_ptr_t dualnorm = NormFactory::getInstance().create(
-				"dual_lp",
+				dualtype,
 				dualinstance,
-				NormFactory::args_t(1, boost::any(_p)));
+				NormFactory::args_t(1, _args[0]));
 		dualinstance->setNorm(dualnorm);
 	}
 
@@ -71,9 +75,9 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	{
 		Mapping_ptr_t mapping =
 				DualityMappingFactory::getInstance().create(
-						"lp",
+						_type,
 						NormedSpace_weakptr_t(instance),
-						DualityMappingFactory::args_t(1, boost::any(_power)));
+						DualityMappingFactory::args_t(1, _args[1]));
 		instance->setDualityMapping(mapping);
 	}
 
@@ -81,70 +85,9 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	{
 		Mapping_ptr_t dualmapping =
 				DualityMappingFactory::getInstance().create(
-						"dual_lp",
+						dualtype,
 						NormedSpace_weakptr_t(dualinstance),
-						DualityMappingFactory::args_t(1, boost::any(_power)));
-		dualinstance->setDualityMapping(dualmapping);
-	}
-
-	return instance;
-}
-
-NormedSpace_ptr_t NormedSpaceFactory::createRegularizedL1Instance(
-		const unsigned int _dimension,
-		const double _lambda,
-		const double _power)
-{
-	// create two empty spaces
-	NormedSpace_ptr_t instance(
-			new NormedSpace(_dimension) );
-	instance->setSpace( instance );
-	NormedSpace_ptr_t dualinstance(
-			new NormedDualSpace(_dimension) );
-	dualinstance->setSpace( dualinstance );
-
-	// and link the (now two) dual spaces
-	instance->setDualSpace(dualinstance);
-	dualinstance->setDualSpace(instance);
-
-	// create norm instances and hand over to spaces
-	{
-		Norm_ptr_t norm = NormFactory::getInstance().create(
-				"regularized_l1",
-				instance,
-				NormFactory::args_t(1, boost::any(_lambda)));
-		instance->setNorm(norm);
-	}
-
-	// create dual norm
-	{
-		Norm_ptr_t dualnorm = NormFactory::getInstance().create(
-				"dual_regularized_l1",
-				instance,
-				NormFactory::args_t(1, boost::any(_lambda)));
-		dualinstance->setNorm(dualnorm);
-	}
-
-	// create duality mapping instance: we only have the mapping from the
-	// dual space back into the source space, not the other way round, as
-	// the source space is not smooth (hence no single-valued duality
-	// mapping exists).
-	{
-		Mapping_ptr_t mapping =
-				DualityMappingFactory::getInstance().create(
-						"regularized_l1",
-						NormedSpace_weakptr_t(instance),
-						DualityMappingFactory::args_t(1, boost::any(_lambda)));
-		instance->setDualityMapping(mapping);
-	}
-
-	{
-		// create duality mapping instance
-		Mapping_ptr_t dualmapping =
-				DualityMappingFactory::getInstance().create(
-						"dual_regularized_l1",
-						NormedSpace_weakptr_t(instance),
-						DualityMappingFactory::args_t(1, boost::any(_lambda)));
+						DualityMappingFactory::args_t(1, _args[1]));
 		dualinstance->setDualityMapping(dualmapping);
 	}
 

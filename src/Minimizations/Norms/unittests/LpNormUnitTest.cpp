@@ -7,6 +7,8 @@
 
 #include "LpNormUnitTest.hpp"
 
+#include <boost/assign.hpp>
+
 #include <Eigen/Dense>
 
 #include "Minimizations/Elements/ElementCreator.hpp"
@@ -19,6 +21,7 @@
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( LpNormUnitTest );
 
+using namespace boost::assign;
 
 void LpNormUnitTest::setUp()
 {
@@ -45,9 +48,11 @@ void LpNormUnitTest::otherNorm()
 			0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
 	{
 		const double p = 1.1;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.54787,1.54111,0.94243,0.60454,0.23918,1.00005,0.92045,1.62903,0.51839,0.72887;
@@ -61,9 +66,11 @@ void LpNormUnitTest::otherNorm()
 	}
 	{
 		const double p = 1.5;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52787,1.30455,0.84915,0.52703,0.20456,0.93607,0.89030,1.38333,0.44386,0.64248;
@@ -77,9 +84,11 @@ void LpNormUnitTest::otherNorm()
 	}
 	{
 		const double p = 5.64763763;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52088,0.94207,0.78015,0.44718,0.15949,0.90374,0.88042,1.02691,0.34837,0.56325;
@@ -100,9 +109,11 @@ void LpNormUnitTest::twoNorm()
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
 				0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52231,1.16423,0.80682,0.48610,0.18481,0.91295,0.88232,1.23931,0.40154,0.59899;
@@ -121,9 +132,11 @@ void LpNormUnitTest::twoNorm()
 			0.5836364,0.7425789,0.1059589,0.3170492,0.6488256,-0.6131489,0.3917273,-0.4766553,0.4321104,-0.2287513,
 			0.0010107,0.8335353,0.7493321,0.1686532,-0.9022343,-0.1451915,-0.2955828,-0.8714578,-0.6201104,-0.4218609,
 			0.9747178,-0.9666331,0.2735608,0.1137258,0.1620735,-0.4401804,-0.0051763,-0.6895868,-0.2982194,0.9003390;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.37920,1.76281,1.44992,0.46312,1.53036,1.04393,0.83235,1.67412,0.81953,1.18368;
@@ -147,9 +160,11 @@ void LpNormUnitTest::twoNorm()
 			-5.3199e-01,-1.8225e-01,-3.3247e-01,8.7822e-01,-3.9038e-01,7.2615e-01,-8.6705e-01,2.9549e-02,1.8063e-02,-4.1061e-01,
 			-5.1152e-01,-8.3150e-01,2.7693e-01,-9.7872e-01,9.7519e-01,-1.7073e-01,7.9553e-01,-4.0667e-01,-9.7718e-01,8.2855e-01,
 			1.4308e-01,8.0489e-02,-5.3567e-01,-3.6793e-02,7.2730e-01,1.9200e-01,-4.9364e-01,6.0502e-01,2.9298e-01,-5.2860e-01;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.8976,2.1367,1.5462,1.5680,1.9220,1.4261,1.7324,1.3633,2.1328,1.9007;
@@ -170,9 +185,11 @@ void LpNormUnitTest::threeNorm()
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
 				0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52095,1.04077,0.78483,0.45807,0.16893,0.90462,0.88050,1.11608,0.36782,0.57181;
@@ -191,9 +208,11 @@ void LpNormUnitTest::threeNorm()
 			0.5836364,0.7425789,0.1059589,0.3170492,0.6488256,-0.6131489,0.3917273,-0.4766553,0.4321104,-0.2287513,
 			0.0010107,0.8335353,0.7493321,0.1686532,-0.9022343,-0.1451915,-0.2955828,-0.8714578,-0.6201104,-0.4218609,
 			0.9747178,-0.9666331,0.2735608,0.1137258,0.1620735,-0.4401804,-0.0051763,-0.6895868,-0.2982194,0.9003390;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.15693,1.38059,1.19075,0.38624,1.24021,0.87234,0.68551,1.31649,0.70255,1.00754;
@@ -217,9 +236,11 @@ void LpNormUnitTest::threeNorm()
 			-5.3199e-01,-1.8225e-01,-3.3247e-01,8.7822e-01,-3.9038e-01,7.2615e-01,-8.6705e-01,2.9549e-02,1.8063e-02,-4.1061e-01,
 			-5.1152e-01,-8.3150e-01,2.7693e-01,-9.7872e-01,9.7519e-01,-1.7073e-01,7.9553e-01,-4.0667e-01,-9.7718e-01,8.2855e-01,
 			1.4308e-01,8.0489e-02,-5.3567e-01,-3.6793e-02,7.2730e-01,1.9200e-01,-4.9364e-01,6.0502e-01,2.9298e-01,-5.2860e-01;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.4083,1.5656,1.1609,1.2653,1.4480,1.1109,1.2758,1.0529,1.5636,1.3869;
@@ -240,9 +261,11 @@ void LpNormUnitTest::fourNorm()
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
 				0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52088,0.98566,0.78102,0.45029,0.16300,0.90384,0.88042,1.06415,0.35549,0.56537;
@@ -261,9 +284,11 @@ void LpNormUnitTest::fourNorm()
 			0.5836364,0.7425789,0.1059589,0.3170492,0.6488256,-0.6131489,0.3917273,-0.4766553,0.4321104,-0.2287513,
 			0.0010107,0.8335353,0.7493321,0.1686532,-0.9022343,-0.1451915,-0.2955828,-0.8714578,-0.6201104,-0.4218609,
 			0.9747178,-0.9666331,0.2735608,0.1137258,0.1620735,-0.4401804,-0.0051763,-0.6895868,-0.2982194,0.9003390;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.07302,1.22887,1.08603,0.35743,1.12795,0.80535,0.63236,1.17996,0.66087,0.94930;
@@ -287,9 +312,11 @@ void LpNormUnitTest::fourNorm()
 			-5.3199e-01,-1.8225e-01,-3.3247e-01,8.7822e-01,-3.9038e-01,7.2615e-01,-8.6705e-01,2.9549e-02,1.8063e-02,-4.1061e-01,
 			-5.1152e-01,-8.3150e-01,2.7693e-01,-9.7872e-01,9.7519e-01,-1.7073e-01,7.9553e-01,-4.0667e-01,-9.7718e-01,8.2855e-01,
 			1.4308e-01,8.0489e-02,-5.3567e-01,-3.6793e-02,7.2730e-01,1.9200e-01,-4.9364e-01,6.0502e-01,2.9298e-01,-5.2860e-01;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.23144,1.35409,1.03648,1.15041,1.27653,0.99849,1.11154,0.93939,1.35471,1.20136;
@@ -310,9 +337,11 @@ void LpNormUnitTest::elevenNorm()
 		Eigen::MatrixXd X(2,10);
 		X << 0.038619,-0.888852,0.206035,-0.192165,0.157826,-0.129335,-0.057939,-0.735626,-0.205108,-0.562922,
 				0.520878,0.751919,-0.780070,-0.446509,0.096160,-0.903741,0.880418,-0.997373,0.345203,0.204716;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.52088,0.90084,0.78007,0.44651,0.15789,0.90374,0.88042,1.00051,0.34531,0.56292;
@@ -331,9 +360,11 @@ void LpNormUnitTest::elevenNorm()
 			0.5836364,0.7425789,0.1059589,0.3170492,0.6488256,-0.6131489,0.3917273,-0.4766553,0.4321104,-0.2287513,
 			0.0010107,0.8335353,0.7493321,0.1686532,-0.9022343,-0.1451915,-0.2955828,-0.8714578,-0.6201104,-0.4218609,
 			0.9747178,-0.9666331,0.2735608,0.1137258,0.1620735,-0.4401804,-0.0051763,-0.6895868,-0.2982194,0.9003390;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 0.97934,1.00896,0.92778,0.32149,0.97366,0.71448,0.58498,1.00956,0.62118,0.90113;
@@ -357,9 +388,11 @@ void LpNormUnitTest::elevenNorm()
 			-5.3199e-01,-1.8225e-01,-3.3247e-01,8.7822e-01,-3.9038e-01,7.2615e-01,-8.6705e-01,2.9549e-02,1.8063e-02,-4.1061e-01,
 			-5.1152e-01,-8.3150e-01,2.7693e-01,-9.7872e-01,9.7519e-01,-1.7073e-01,7.9553e-01,-4.0667e-01,-9.7718e-01,8.2855e-01,
 			1.4308e-01,8.0489e-02,-5.3567e-01,-3.6793e-02,7.2730e-01,1.9200e-01,-4.9364e-01,6.0502e-01,2.9298e-01,-5.2860e-01;
+		NormedSpaceFactory::args_t args;
+		args += boost::any(p), boost::any(2.);
 		const NormedSpace_ptr_t SpaceX =
-				NormedSpaceFactory::createLpInstance(
-						X.innerSize(), p, 2.);
+				NormedSpaceFactory::create(
+						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
 		expected << 1.01326,1.05338,0.92628,1.00312,1.04300,0.85687,0.90262,0.79006,1.07209,0.98618;

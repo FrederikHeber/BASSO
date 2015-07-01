@@ -10,11 +10,15 @@
 
 #include "InverseProblemFactory.hpp"
 
+#include <boost/assign.hpp>
+
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+
+using namespace boost::assign;
 
 InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 		const double _p,
@@ -25,12 +29,20 @@ InverseProblem_ptr_t InverseProblemFactory::createLpInstance(
 		const Eigen::VectorXd &_rhs)
 {
 	// first, create the spaces
-	NormedSpace_ptr_t X =
-			NormedSpaceFactory::createLpInstance(
-					_matrix.outerSize(), _p, _powerx);
-	NormedSpace_ptr_t Y =
-			NormedSpaceFactory::createLpInstance(
-					_matrix.innerSize(), _r, _powery);
+	NormedSpace_ptr_t X;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(_p), boost::any(_powerx);
+		X = NormedSpaceFactory::create(
+						_matrix.outerSize(), "lp", args);
+	}
+	NormedSpace_ptr_t Y;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(_r), boost::any(_powery);
+		Y = NormedSpaceFactory::create(
+						_matrix.innerSize(), "lp", args);
+	}
 
 	// then create the SpaceElement
 	SpaceElement_ptr_t y = ElementCreator::create(Y, _rhs);
@@ -53,12 +65,20 @@ InverseProblem_ptr_t InverseProblemFactory::createRegularizedL1Instance(
 		const Eigen::VectorXd &_rhs)
 {
 	// first, create the spaces
-	NormedSpace_ptr_t X =
-			NormedSpaceFactory::createRegularizedL1Instance(
-					_matrix.outerSize(), _lambda, _powerx);
-	NormedSpace_ptr_t Y =
-			NormedSpaceFactory::createLpInstance(
-					_matrix.innerSize(), _r, _powery);
+	NormedSpace_ptr_t X;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(_lambda), boost::any(_powerx);
+		X = NormedSpaceFactory::create(
+						_matrix.outerSize(), "regularized_l1", args);
+	}
+	NormedSpace_ptr_t Y;
+	{
+		NormedSpaceFactory::args_t args;
+		args += boost::any(_r), boost::any(_powery);
+		Y = NormedSpaceFactory::create(
+						_matrix.innerSize(), "lp", args);
+	}
 
 	// then create the SpaceElement
 	SpaceElement_ptr_t y = ElementCreator::create(Y, _rhs);
