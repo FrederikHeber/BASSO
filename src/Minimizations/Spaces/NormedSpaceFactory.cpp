@@ -11,11 +11,11 @@
 #include "NormedSpaceFactory.hpp"
 
 #include <boost/bind.hpp>
+#include <Minimizations/Mappings/DualityMappingFactory.hpp>
 
 #include "Math/Helpers.hpp"
 #include "Minimizations/Mappings/IllegalDualityMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
@@ -61,7 +61,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 	// create duality mapping instance function call
 	NormedSpace::constructDualityMapping_t mapping_cstor =
 			boost::bind(
-					&PowerTypeDualityMappingFactory::createInstance,
+					&DualityMappingFactory::createInstance,
 					NormedSpace_weakptr_t(instance),
 					_power);
 	instance->setDualityMappingConstructor(mapping_cstor);
@@ -75,7 +75,7 @@ NormedSpace_ptr_t NormedSpaceFactory::createLpInstance(
 			Helpers::ConjugateValue(instance->getDualityMapping()->getPower());
 	NormedSpace::constructDualityMapping_t dualmapping_cstor =
 			boost::bind(
-					&PowerTypeDualityMappingFactory::createInstance,
+					&DualityMappingFactory::createInstance,
 					/* only weakptr instance because is stored in this
 					 * bound function and prevents shared_ptr from
 					 * deallocating.

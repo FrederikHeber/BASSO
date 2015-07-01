@@ -17,6 +17,7 @@
 #include <boost/log/trivial.hpp>
 #include <cassert>
 #include <fenv.h>
+#include <Minimizations/Mappings/DualityMappingFactory.hpp>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -30,7 +31,6 @@
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMappingFactory.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 //#define BREGMANDISTANCEERRORTHRESHOLD 1

@@ -1,14 +1,13 @@
 /*
- * PowerTypeDualityMappingFactory.cpp
+ * DualityMappingFactory.cpp
  *
  *  Created on: Oct 24, 2014
  *      Author: heber
  */
 
 
+#include <Minimizations/Mappings/DualityMappingFactory.hpp>
 #include "BassoConfig.h"
-
-#include "PowerTypeDualityMappingFactory.hpp"
 
 #include <limits>
 
@@ -18,7 +17,7 @@
 #include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 
 const Mapping_ptr_t
-PowerTypeDualityMappingFactory::createInstance(
+DualityMappingFactory::createInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
 		const double _power)
 {

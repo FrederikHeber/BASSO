@@ -17,10 +17,10 @@ add_library (Minimizations
 	Functions/VectorProjection_BregmanDistanceToLine.cpp
 	InverseProblems/InverseProblem.cpp
 	InverseProblems/InverseProblemFactory.cpp
+	Mappings/DualityMappingFactory.cpp
 	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
 	Mappings/LinearMappingFactory.cpp
-	Mappings/PowerTypeDualityMappingFactory.cpp
 	Mappings/Specifics/L1DualityMapping.cpp
 	Mappings/Specifics/LpDualityMapping.cpp
 	Mappings/Specifics/LInfinityDualityMapping.cpp
@@ -76,12 +76,12 @@ install (FILES InverseProblems/InverseProblem.hpp DESTINATION include)
 install (FILES InverseProblems/InverseProblemFactory.hpp DESTINATION include)
 install (FILES InverseProblems/QuickAccessReferences.hpp DESTINATION include)
 
+install (FILES Mappings/DualityMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
-install (FILES Mappings/PowerTypeDualityMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Specifics/L1DualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/LInfinityDualityMapping.hpp DESTINATION include)

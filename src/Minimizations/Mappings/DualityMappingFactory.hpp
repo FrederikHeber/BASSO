@@ -1,18 +1,18 @@
 /*
- * PowerTypeDualityMappingFactory.hpp
+ * DualityMappingFactory.hpp
  *
  *  Created on: Oct 24, 2014
  *      Author: heber
  */
 
-#ifndef POWERTYPEDUALITYMAPPINGFACTORY_HPP_
-#define POWERTYPEDUALITYMAPPINGFACTORY_HPP_
+#ifndef DUALITYMAPPINGFACTORY_HPP_
+#define DUALITYMAPPINGFACTORY_HPP_
 
 #include "BassoConfig.h"
 
 #include "Minimizations/types.hpp"
 
-struct PowerTypeDualityMappingFactory
+struct DualityMappingFactory
 {
 	/** Factory function creating a power type duality mapping, i.e. for
 	 *  a Lp norm.
@@ -28,4 +28,4 @@ struct PowerTypeDualityMappingFactory
 
 
 
-#endif /* POWERTYPEDUALITYMAPPINGFACTORY_HPP_ */
+#endif /* DUALITYMAPPINGFACTORY_HPP_ */
