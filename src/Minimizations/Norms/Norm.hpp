@@ -64,6 +64,13 @@ public:
 	virtual const NormedSpace_ptr_t getSpace() const
 	{ return NormedSpace_ptr_t(NormedSpaceRef); }
 
+	/** States whether the Banach space equipped with this norm is smooth
+	 * or whether the norm itself is a smooth function, respectively.
+	 *
+	 * @return true - smooth, false - else
+	 */
+	virtual bool isSmooth() const = 0;
+
 protected:
 	//!> internal reference to the space this norm belongs to
 	const NormedSpace_weakptr_t NormedSpaceRef;

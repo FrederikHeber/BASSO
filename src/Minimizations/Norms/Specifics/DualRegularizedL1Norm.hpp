@@ -58,6 +58,9 @@ public:
 	const double getLambda() const
 	{ return softthresholder.getLambda(); }
 
+	bool isSmooth() const
+	{ return true; }
+
 protected:
 
 	/** Evaluates the norm for a given \a _x.

@@ -119,8 +119,9 @@ int main (int argc, char *argv[])
 	if (x0->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
+	// only for smooth spaces we may use the duality mapping
 	SpaceElement_ptr_t dualx0 =
-			(opts.type_spacex == "lp") ?
+			(inverseproblem->x->getSpace()->getNorm()->isSmooth()) ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
 			inverseproblem->x->getSpace()->getDualSpace()->createElement();
 

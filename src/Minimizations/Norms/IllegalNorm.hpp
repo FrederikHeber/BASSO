@@ -42,6 +42,9 @@ public:
 				<< NormIllegalValue_name("IllegalNorm");
 	}
 
+	bool isSmooth() const
+	{ return false; }
+
 protected:
 
 	const double internal_operator(const SpaceElement_ptr_t &_x) const

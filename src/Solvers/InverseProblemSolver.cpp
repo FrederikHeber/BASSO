@@ -104,7 +104,8 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
 	SpaceElement_ptr_t dualx0;
-	if (opts.type_spacex == "lp") {
+	// only for smooth spaces we may use the duality mapping
+	if (_inverseproblem->x->getSpace()->getNorm()->isSmooth()) {
 		dualx0 = (*_inverseproblem->x->getSpace()->getDualityMapping())(x0);
 	} else {
 		dualx0 = _inverseproblem->x->getSpace()->getDualSpace()->createElement();

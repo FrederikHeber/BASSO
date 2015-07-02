@@ -110,7 +110,8 @@ bool RangeProjector::operator()(
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at dualy0 = " << dualy0;
 	SpaceElement_ptr_t y0;
-	if (opts.type_spacex == "lp") {
+	// only for smooth spaces we may use the duality mapping
+	if (inverseproblem->x->getSpace()->getNorm()->isSmooth()) {
 		y0 = (*inverseproblem->x->getSpace()->getDualityMapping())(dualy0);
 	} else {
 		y0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();

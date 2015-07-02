@@ -39,6 +39,14 @@ public:
 	virtual const double getPvalue() const
 	{ return std::numeric_limits<double>::infinity(); }
 
+	/** We return smooth although the l_infty norm is not smooth but a
+	 * suitable selection exists.
+	 *
+	 * @return true
+	 */
+	bool isSmooth() const
+	{ return true; }
+
 protected:
 
 	/** Evaluates the norm for a given \a _element.

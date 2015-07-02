@@ -45,6 +45,9 @@ public:
 	virtual const double getPvalue() const
 	{ return p; }
 
+	bool isSmooth() const
+	{ return true; }
+
 protected:
 
 	/** Evaluates the norm for a given \a _element.

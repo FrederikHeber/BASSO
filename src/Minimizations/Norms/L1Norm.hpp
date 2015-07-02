@@ -40,6 +40,14 @@ public:
 	virtual const double getPvalue() const
 	{ return 1.; }
 
+	/** We return smooth although the l_1 norm is not smooth but a
+	 * suitable selection exists.
+	 *
+	 * @return true
+	 */
+	bool isSmooth() const
+	{ return true; }
+
 protected:
 
 	const double internal_operator(const SpaceElement_ptr_t &_x) const

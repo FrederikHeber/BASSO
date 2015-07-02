@@ -51,6 +51,9 @@ public:
 	const double getLambda() const
 	{ return lambda; }
 
+	bool isSmooth() const
+	{ return false; }
+
 protected:
 
 	/** Evaluates the norm for a given \a _element.
