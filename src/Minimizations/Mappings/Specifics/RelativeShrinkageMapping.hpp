@@ -95,7 +95,7 @@ public:
 	 */
 	const double getRelativeShrinkage(const SpaceElement_ptr_t &_x) const;
 
-private:
+protected:
 	//!> soft thresholding parameter
 	const double lambda;
 

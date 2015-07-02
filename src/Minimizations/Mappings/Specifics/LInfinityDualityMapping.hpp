@@ -66,7 +66,7 @@ public:
 	const boost::chrono::nanoseconds getTiming() const
 	{ return timing; }
 
-private:
+protected:
 	//!> number of times the operator was called
 	mutable unsigned int count;
 
