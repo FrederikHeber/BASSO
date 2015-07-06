@@ -3,8 +3,12 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (ComputerTomographyBase
+	DiscretizedRadon/DiscretizedRadonMatrix.cpp
+	DiscretizedRadon/point_t.cpp
 	Options/ComputerTomographyOptions.cpp)
 
+install (FILES DiscretizedRadon/DiscretizedRadonMatrix.hpp DESTINATION include)
+install (FILES DiscretizedRadon/point_t.hpp DESTINATION include)
 install (FILES Options/ComputerTomographyOptions.hpp DESTINATION include)
 
 # add the executable
