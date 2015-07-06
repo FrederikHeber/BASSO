@@ -169,6 +169,9 @@ add_subdirectory (src/BassoBase)
 # add src folders of executables
 add_subdirectory (src/MatrixFactorizerBase)
 
+# add src folders of executables
+add_subdirectory (src/ComputerTomographyBase)
+
 #### TESTS AND UNITTESTS ####
 
 # add test folder
