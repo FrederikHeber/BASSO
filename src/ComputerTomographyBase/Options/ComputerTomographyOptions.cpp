@@ -16,8 +16,10 @@
 namespace po = boost::program_options;
 
 ComputerTomographyOptions::ComputerTomographyOptions() :
-		maxiter(50),
-		maxwalltime(0.)
+		num_pixel_x(0),
+		num_pixel_y(0),
+		num_angles(0),
+		num_offsets(0)
 {}
 
 void ComputerTomographyOptions::internal_init()
@@ -27,12 +29,14 @@ void ComputerTomographyOptions::internal_init()
 	desc_basso.add_options()
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
-	        ("matrix", po::value< boost::filesystem::path >(),
-	        		"set the forward operator matrix file")
-			("maxiter", po::value<unsigned int>(),
-					"set the maximum amount of iterations")
-			("max-walltime", po::value<double>(),
-					"set the maximum time the algorithm may use")
+	        ("num-pixels-x", po::value< unsigned int >(),
+	        		"set the desired number of pixels in x direction")
+			("num-pixels-y", po::value< unsigned int >(),
+					"set the desired number of pixels in y direction")
+			("num-angles", po::value< unsigned int >(),
+					"set the desired number of angle discretization steps")
+			("num-offsets", po::value< unsigned int >(),
+					"set the desired number of lateral offsets of detector")
 	        ("rhs", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side")
 			("solution", po::value< boost::filesystem::path >(),
@@ -52,22 +56,28 @@ void ComputerTomographyOptions::internal_parse()
 			<< "Parsing true solution vector from " << comparison_file;
 	}
 
-	if (vm.count("matrix")) {
-		matrix_file = vm["matrix"].as<boost::filesystem::path>();
+	if (vm.count("num-pixels-x")) {
+		num_pixel_x = vm["num-pixels-x"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << matrix_file;
+			<< "Number of x pixels was set to " << num_pixel_x;
 	}
 
-	if (vm.count("maxiter")) {
-		maxiter = vm["maxiter"].as<unsigned int>();
+	if (vm.count("num-pixels-y")) {
+		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations was set to " << maxiter;
+			<< "Number of y pixels was set to " << num_pixel_y;
 	}
 
-	if (vm.count("max-walltime")) {
-		maxwalltime = vm["max-walltime"].as<double>();
+	if (vm.count("num-angles")) {
+		num_angles = vm["num-angles"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum Walltime was set to " << maxwalltime;
+			<< "Number of angle steps was set to " << num_angles;
+	}
+
+	if (vm.count("num-offsets")) {
+		num_offsets = vm["num-offsets"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Number of offsets steps was set to " << num_offsets;
 	}
 
 	if (vm.count("rhs")) {
@@ -91,13 +101,6 @@ void ComputerTomographyOptions::internal_parse()
 
 bool ComputerTomographyOptions::internal_help_conditions() const
 {
-	if ((!vm.count("matrix")) || (!boost::filesystem::exists(matrix_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Matrix file not set or not present.";
-		return true;
-
-	}
-
 	if (!vm.count("normx")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Norm of space X normx not set";
@@ -107,6 +110,30 @@ bool ComputerTomographyOptions::internal_help_conditions() const
 	if (!vm.count("normy")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Norm of space Y normy not set";
+		return true;
+	}
+
+	if (!vm.count("num-pixels-x")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Number of pixels in x direction not set";
+		return true;
+	}
+
+	if (!vm.count("num-pixels-y")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Number of pixels in y direction not set";
+		return true;
+	}
+
+	if (!vm.count("num-angles")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Number of angle discretization steps not set";
+		return true;
+	}
+
+	if (!vm.count("num-offsets")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Number of lateral offsets not set";
 		return true;
 	}
 
@@ -122,13 +149,6 @@ bool ComputerTomographyOptions::internal_help_conditions() const
 
 bool ComputerTomographyOptions::internal_checkSensibility() const
 {
-
-	if ((vm.count("maxiter")) && (vm.count("max-walltime"))) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "You have specified both max-iter and max-walltime.";
-		return false;
-	}
-
 	return true;
 
 }
@@ -140,9 +160,10 @@ void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 {
 	_output << "# [ComputerTomography]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "compare-against");
-	writeValue<boost::filesystem::path>(_output, vm,  "matrix");
-	writeValue<unsigned int>(_output, vm,  "maxiter");
-	writeValue<double>(_output, vm,  "max-walltime");
+	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
+	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
+	writeValue<unsigned int>(_output, vm,  "num-angles");
+	writeValue<unsigned int>(_output, vm,  "num-offsets");
 	writeValue<boost::filesystem::path>(_output, vm,  "rhs");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-image");

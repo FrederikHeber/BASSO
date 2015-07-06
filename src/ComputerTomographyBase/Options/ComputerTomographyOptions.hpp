@@ -54,9 +54,10 @@ public:
 
 	// primary values
 	boost::filesystem::path comparison_file;
-	boost::filesystem::path matrix_file;
-	unsigned int maxiter;
-	double maxwalltime;
+	unsigned int num_pixel_x;
+	unsigned int num_pixel_y;
+	unsigned int num_angles;
+	unsigned int num_offsets;
 	boost::filesystem::path rhs_file;
 	boost::filesystem::path solution_file;
 	boost::filesystem::path solution_image_file;

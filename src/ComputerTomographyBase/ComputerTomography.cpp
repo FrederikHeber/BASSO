@@ -18,7 +18,9 @@
 
 #include <boost/assign.hpp>
 #include <boost/mpl/for_each.hpp>
-#include <ComputerTomographyBase/Options/ComputerTomographyOptions.hpp>
+
+#include "ComputerTomographyBase/Options/ComputerTomographyOptions.hpp"
+#include "ComputerTomographyBase/DiscretizedRadon/DiscretizedRadonMatrix.hpp"
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
@@ -60,28 +62,14 @@ int main (int argc, char *argv[])
 		return 255;
 	opts.setSecondaryValues();
 
-	// parse matrix and vector files into instances
-	Eigen::MatrixXd matrix;
+	// parse vector files into instances
 	Eigen::VectorXd rhs;
 	Eigen::VectorXd solution;
+	const double num_pixels = opts.num_pixel_x * opts.num_pixel_y;
+	const double num_measurements = opts.num_angles * opts.num_offsets;
 	{
 		using namespace MatrixIO;
 
-		{
-			std::ifstream ist(opts.matrix_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> matrix;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse matrix from " << opts.matrix_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				std::cerr << "Failed to open " << opts.matrix_file.string() << std::endl;
-				return 255;
-			}
-
-		}
 		{
 			std::ifstream ist(opts.rhs_file.string().c_str());
 			if (ist.good())
@@ -116,28 +104,51 @@ int main (int argc, char *argv[])
 						<< "Could not parse solution from " << opts.comparison_file.string();
 					return 255;
 				}
-				solution = Eigen::VectorXd(matrix.outerSize());
+				solution = Eigen::VectorXd(num_pixels);
 				solution.setZero();
 			}
 		}
 	}
+	// check that dimensions fit
+	if (solution.size() != num_pixels) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Solution has size " << solution.size()
+				<< " but product of desired pixel dimensions is "
+				<< num_pixels;
+		return 255;
+	}
+	if (rhs.size() != num_measurements) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Right-hand-side has size " << rhs.size()
+				<< " but number of measurements is "
+				<< num_measurements;
+		return 255;
+	}
+
+	// setup discretized radon transform matrix
+	DiscretizedRadonMatrix RadonMatrix(
+			opts.num_pixel_x,
+			opts.num_pixel_y,
+			opts.num_angles,
+			opts.num_offsets);
+
 	// print parsed matrix and vector if small or high verbosity requested
-	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+	if ((RadonMatrix.getMatrix().innerSize() > 10) || (RadonMatrix.getMatrix().outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)
 			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
+			<< RadonMatrix.getMatrix() << " and y = "
 			<< rhs.transpose() << std::endl;
 	} else {
 		BOOST_LOG_TRIVIAL(info)
 			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
+			<< RadonMatrix.getMatrix() << " and y = "
 			<< rhs.transpose() << std::endl;
 	}
 
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
 			SolutionFactory::createInverseProblem(
-					opts, matrix, rhs);
+					opts, RadonMatrix.getMatrix(), rhs);
 
 	// prepare true solution
 	SpaceElement_ptr_t truesolution =
@@ -191,7 +202,7 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+		if ((RadonMatrix.getMatrix().innerSize() > 10) || (RadonMatrix.getMatrix().outerSize() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
 					<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
