@@ -183,6 +183,7 @@ add_subdirectory (src/Minimizations/Elements/unittests)
 add_subdirectory (src/Minimizations/Functions/unittests)
 add_subdirectory (src/Minimizations/Mappings/unittests)
 add_subdirectory (src/Minimizations/Norms/unittests)
+add_subdirectory (src/ComputerTomographyBase/DiscretizedRadon/unittests)
 
 ### DOXYGEN DOCUMENTATION
 
