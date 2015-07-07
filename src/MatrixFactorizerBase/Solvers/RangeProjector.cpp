@@ -30,14 +30,14 @@ using namespace boost::assign;
 
 RangeProjector::RangeProjector(
 		Database_ptr_t &_database,
-		const MatrixFactorizerOptions &_opts
+		const CommandLineOptions &_opts
 		) :
 		database(_database),
 		opts(_opts)
 {
 	// use smaller delta for the projection and SESOP
-	const_cast<MatrixFactorizerOptions &>(opts).delta = 1e-8;
-	const_cast<MatrixFactorizerOptions &>(opts).algorithm_name =
+	const_cast<CommandLineOptions &>(opts).delta = 1e-8;
+	const_cast<CommandLineOptions &>(opts).algorithm_name =
 			MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
 }
 

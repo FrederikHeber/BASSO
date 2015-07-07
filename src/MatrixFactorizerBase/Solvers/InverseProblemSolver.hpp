@@ -14,7 +14,7 @@
 
 #include "Minimizations/types.hpp"
 
-class MatrixFactorizerOptions;
+class CommandLineOptions;
 
 /** Functor for solving inverse problems
  *
@@ -30,7 +30,7 @@ struct InverseProblemSolver
 	 */
 	InverseProblemSolver(
 			Database_ptr_t &_database,
-			const MatrixFactorizerOptions &_opts,
+			const CommandLineOptions &_opts,
 			const bool _checkTrueSolution
 			);
 
@@ -55,7 +55,7 @@ private:
 	//!> database reference for storing iteration information
 	Database_ptr_t database;
 	//!> storing options on the manner of solving
-	const MatrixFactorizerOptions &opts;
+	const CommandLineOptions &opts;
 	//!> whether to calculate true solution in l2 case from SVD
 	const bool checkTrueSolution;
 };

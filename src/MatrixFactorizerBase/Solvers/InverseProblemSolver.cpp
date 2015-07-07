@@ -14,17 +14,17 @@
 
 #include "Log/Logging.hpp"
 #include "MatrixFactorizerBase/Helpers/detail.hpp"
-#include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Options/CommandLineOptions.hpp"
 #include "SolutionFactory/SolutionFactory.hpp"
 
 InverseProblemSolver::InverseProblemSolver(
 		Database_ptr_t &_database,
-		const MatrixFactorizerOptions &_opts,
+		const CommandLineOptions &_opts,
 		const bool _checkTrueSolution
 		) :
 		database(_database),

@@ -14,7 +14,7 @@
 
 #include "Minimizations/types.hpp"
 
-class MatrixFactorizerOptions;
+class CommandLineOptions;
 
 /** Solver combines projection onto range and inverse problem solving with
  * SESOP that requires right-hand side to be in range.
@@ -26,7 +26,16 @@ struct InRangeSolver
 	 *
 	 * @param _opts options defining the manner of solving.
 	 */
-	InRangeSolver(const MatrixFactorizerOptions &_opts);
+	InRangeSolver(const CommandLineOptions &_opts);
+
+	/** Constructor for class Solver.
+	 *
+	 * @param _opts options defining the manner of solving.
+	 * @param _db database to store iteration information
+	 */
+	InRangeSolver(
+			const CommandLineOptions &_opts,
+			Database_ptr_t &_db);
 
 	/** Functor that projects onto range and solves.
 	 *
@@ -50,7 +59,7 @@ struct InRangeSolver
 
 private:
 
-	const MatrixFactorizerOptions &opts;
+	const CommandLineOptions &opts;
 	//!> mock database as projector and solver require them
 	Database_ptr_t mock_db;
 };

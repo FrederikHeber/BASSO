@@ -13,15 +13,21 @@
 #include "Log/Logging.hpp"
 
 #include "Database/Database_mock.hpp"
-#include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
 #include "MatrixFactorizerBase/Solvers/InverseProblemSolver.hpp"
 #include "MatrixFactorizerBase/Solvers/RangeProjector.hpp"
+#include "Options/CommandLineOptions.hpp"
 
-InRangeSolver::InRangeSolver(const MatrixFactorizerOptions &_opts) :
+InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :
 	opts(_opts),
 	mock_db(new Database_mock)
 {}
 
+InRangeSolver::InRangeSolver(
+		const CommandLineOptions &_opts,
+		Database_ptr_t &_db) :
+	opts(_opts),
+	mock_db(_db)
+{}
 
 bool InRangeSolver::operator()(
 		const Eigen::MatrixXd &_matrix,
@@ -66,7 +72,7 @@ bool InRangeSolver::operator()(
 	InverseProblemSolver solver(
 			mock_db,
 			opts,
-			true /* true solution calculation */);
+			false /* true solution calculation */);
 	if (!solver(
 			_matrix,
 			projected_rhs,

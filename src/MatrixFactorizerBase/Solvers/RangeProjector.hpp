@@ -14,7 +14,7 @@
 
 #include "Minimizations/types.hpp"
 
-#include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 /** This class contains all code for projecting a give vector onto the
  * range of a given matrix.
@@ -28,7 +28,7 @@ struct RangeProjector
 	 */
 	RangeProjector(
 			Database_ptr_t &_database,
-			const MatrixFactorizerOptions &_opts
+			const CommandLineOptions &_opts
 			);
 
 	/** Functor that projects given \a _rhs onto \a _matrix by solving
@@ -51,7 +51,7 @@ private:
 	//!> database reference for storing iteration information
 	Database_ptr_t database;
 	//!> storing options on the manner of solving
-	const MatrixFactorizerOptions opts;
+	const CommandLineOptions opts;
 };
 
 
