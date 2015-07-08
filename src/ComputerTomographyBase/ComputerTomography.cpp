@@ -132,6 +132,26 @@ int main (int argc, char *argv[])
 			opts.num_angles,
 			opts.num_offsets);
 
+	// store matrix to file if desired
+	{
+		using namespace MatrixIO;
+		if (!opts.radon_matrix.string().empty()) {
+			std::ofstream ost(opts.radon_matrix.string().c_str());
+			if (ost.good())
+				try {
+					ost << RadonMatrix.getMatrix();
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write radon matrix to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.radon_matrix.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No radon matrix file given." << std::endl;
+		}
+	}
+
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((RadonMatrix.getMatrix().innerSize() > 10) || (RadonMatrix.getMatrix().outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)
