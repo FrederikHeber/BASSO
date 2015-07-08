@@ -47,7 +47,7 @@ bool InverseProblemSolver::operator()(
 					opts, _matrix, _rhs);
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolutionFactory::createMinimizer(
-					opts, inverseproblem, database, opts.inner_iterations);
+					opts, inverseproblem, database, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";

@@ -115,6 +115,7 @@ private:
 	bool checkSensibility_tau() const;
 	bool checkSensibility_tuple_parameters() const;
 	bool checkSensibility_algorithm() const;
+	bool checkSensibility_max() const;
 	bool checkSensibility_minlib() const;
 	bool checkSensibility_norms() const;
 	bool checkSensibility_pvalues() const;
@@ -171,6 +172,8 @@ public:
 	bool inexactLinesearch;
 	boost::filesystem::path iteration_file;
 	unsigned int maxinneriter;
+	unsigned int maxiter;
+	double maxwalltime;
 	std::string minlib;
 	std::string type_spacex;
 	std::string type_spacey;

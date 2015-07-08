@@ -55,7 +55,6 @@ private:
 
 public:
 	boost::filesystem::path data_file;
-	unsigned int inner_iterations;
 	unsigned int max_loops;
 	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
@@ -70,7 +69,6 @@ private:
 	{
 		// MatrixFactorizerOptions
 		ar & data_file;
-		ar & inner_iterations;
 		ar & max_loops;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
@@ -89,6 +87,8 @@ private:
 		ar & inexactLinesearch;
 		ar & iteration_file;
 		ar & maxinneriter;
+		ar & maxiter;
+		ar & maxwalltime;
 		ar & minlib;
 		ar & type_spacex;
 		ar & type_spacey;
@@ -115,7 +115,6 @@ private:
 	{
 		// MatrixFactorizerOptions
 		ar & data_file;
-		ar & inner_iterations;
 		ar & max_loops;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
@@ -134,6 +133,8 @@ private:
 		ar & inexactLinesearch;
 		ar & iteration_file;
 		ar & maxinneriter;
+		ar & maxiter;
+		ar & maxwalltime;
 		ar & minlib;
 		ar & type_spacex;
 		ar & type_spacey;

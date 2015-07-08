@@ -17,7 +17,8 @@
 class BassoOptions : public CommandLineOptions
 {
 public:
-	BassoOptions();
+	BassoOptions()
+	{}
 
 private:
 	/** Add more options to \a desc.
@@ -55,8 +56,6 @@ public:
 	// primary values
 	boost::filesystem::path comparison_file;
 	boost::filesystem::path matrix_file;
-	unsigned int maxiter;
-	double maxwalltime;
 	boost::filesystem::path rhs_file;
 	boost::filesystem::path solution_file;
 	boost::filesystem::path solution_image_file;

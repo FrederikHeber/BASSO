@@ -32,6 +32,8 @@ CommandLineOptions::CommandLineOptions() :
 	enforceRandomMapping(false),
 	inexactLinesearch(false),
 	maxinneriter(0),
+	maxiter(50),
+	maxwalltime(0.),
 	minlib("gsl"),
 	type_spacex("lp"),
 	type_spacey("lp"),
@@ -75,6 +77,10 @@ void CommandLineOptions::init()
 					"set which minimization library to use (gsl,nlopt)")
 			("max-inner-iterations", po::value<unsigned int>(),
 					"set the maximum amount of inner iterations")
+			("maxiter", po::value<unsigned int>(),
+					"set the maximum amount of iterations")
+			("max-walltime", po::value<double>(),
+					"set the maximum time the algorithm may use")
 			;
 	desc_banachspace.add_options()
 			("type-space-x", po::value<std::string>(),
@@ -216,11 +222,22 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Filename of iteration-file was set to " << iteration_file;
 	}
 
+	if (vm.count("maxiter")) {
+		maxiter = vm["maxiter"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum iterations was set to " << maxiter;
+	}
 
 	if (vm.count("max-inner-iterations")) {
 		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum number of inner iterations was set to " << maxinneriter;
+	}
+
+	if (vm.count("max-walltime")) {
+		maxwalltime = vm["max-walltime"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum Walltime was set to " << maxwalltime;
 	}
 
 	if (vm.count("minimization-library")) {
@@ -512,6 +529,17 @@ bool CommandLineOptions::checkSensibility_minlib() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_max() const
+{
+	if ((vm.count("maxiter")) && (vm.count("max-walltime"))) {
+		BOOST_LOG_TRIVIAL(error)
+			<< "You have specified both max-iter and max-walltime.";
+		return false;
+	}
+
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_norms() const
 {
 	if ((!NormFactory::getInstance().isValidType(type_spacex))
@@ -583,6 +611,7 @@ bool CommandLineOptions::checkSensibility() const
 	status &= checkSensibility_tau();
 	status &= checkSensibility_tuple_parameters();
 	status &= checkSensibility_algorithm();
+	status &= checkSensibility_max();
 	status &= checkSensibility_minlib();
 	status &= checkSensibility_norms();
 	status &= checkSensibility_pvalues();
@@ -630,9 +659,11 @@ void CommandLineOptions::store(std::ostream &_output)
 	_output << "# [Algorithm]" << std::endl;
 	writeValue<std::string>(_output, vm,  "algorithm");
 	writeValue<double>(_output, vm,  "delta");
-	writeValue<boost::filesystem::path>(_output, vm,  "iteration-file");
+	writeValue<boost::filesystem::path>(_output, vm, "iteration-file");
 	writeValue<std::string>(_output, vm,  "minimization-library");
 	writeValue<unsigned int>(_output, vm,  "max-inner-iterations");
+	writeValue<unsigned int>(_output, vm,  "maxiter");
+	writeValue<unsigned int>(_output, vm,  "max-walltime");
 
 	_output << "# [Landweber]" << std::endl;
 	writeValue<double>(_output, vm,  "C");

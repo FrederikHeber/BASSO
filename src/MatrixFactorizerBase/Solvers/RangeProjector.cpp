@@ -83,7 +83,7 @@ bool RangeProjector::operator()(
 	// prepare minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolutionFactory::createMinimizer(
-					opts, inverseproblem, database, opts.inner_iterations);
+					opts, inverseproblem, database, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";
