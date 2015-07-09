@@ -20,7 +20,8 @@
 #include <boost/mpl/for_each.hpp>
 
 #include "ComputerTomographyBase/Options/ComputerTomographyOptions.hpp"
-#include "ComputerTomographyBase/DiscretizedRadon/DiscretizedRadonMatrix.hpp"
+#include "ComputerTomographyBase/DiscretizedRadon/Backprojection.hpp"
+#include "ComputerTomographyBase/DiscretizedRadon/DiscretizedRadon.hpp"
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
@@ -34,6 +35,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
 #include "SolutionFactory/SolutionFactory.hpp"
@@ -125,21 +127,63 @@ int main (int argc, char *argv[])
 		return 255;
 	}
 
-	// setup discretized radon transform matrix
-	DiscretizedRadonMatrix RadonMatrix(
-			opts.num_pixel_x,
-			opts.num_pixel_y,
-			opts.num_angles,
-			opts.num_offsets);
+	// create the inverse problem
+	InverseProblem_ptr_t inverseproblem;
+	{
+		NormedSpaceFactory::args_t args_SpaceX;
+		NormedSpaceFactory::args_t args_SpaceY;
+		if (opts.type_spacex == "lp") {
+			args_SpaceX +=
+					boost::any(opts.px),
+					boost::any(opts.powerx);
+		} else if (opts.type_spacex == "regularized_l1") {
+			args_SpaceX +=
+					boost::any(opts.regularization_parameter),
+					boost::any(opts.powerx);
+		}
+		if (opts.type_spacey == "lp") {
+			args_SpaceY +=
+					boost::any(opts.py),
+					boost::any(opts.powery);
+		}
+		NormedSpace_ptr_t X = NormedSpaceFactory::create(
+				num_pixels, opts.type_spacex, args_SpaceX);
+		NormedSpace_ptr_t Y = NormedSpaceFactory::create(
+				num_measurements, opts.type_spacey, args_SpaceY);
+
+		// then create the SpaceElement
+		SpaceElement_ptr_t y = ElementCreator::create(Y, rhs);
+
+		// and the discretized radon transform and backprojection
+		Mapping_ptr_t A(new DiscretizedRadon(
+				X,Y,
+				opts.num_pixel_x,
+				opts.num_pixel_y,
+				opts.num_angles,
+				opts.num_offsets));
+		Mapping_ptr_t A_t(new Backprojection(
+				Y->getDualSpace(),X->getDualSpace(),
+				opts.num_pixel_x,
+				opts.num_pixel_y,
+				opts.num_angles,
+				opts.num_offsets));
+		// make each the adjoint of the other
+		dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
+		dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
+
+		inverseproblem.reset(new InverseProblem(A,X,Y,y));
+	}
 
 	// store matrix to file if desired
 	{
+		DiscretizedRadon &radon =
+				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
 		using namespace MatrixIO;
 		if (!opts.radon_matrix.string().empty()) {
 			std::ofstream ost(opts.radon_matrix.string().c_str());
 			if (ost.good())
 				try {
-					ost << RadonMatrix.getMatrix();
+					ost << radon.get().getMatrix();
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write radon matrix to file.\n";
 				}
@@ -153,22 +197,21 @@ int main (int argc, char *argv[])
 	}
 
 	// print parsed matrix and vector if small or high verbosity requested
-	if ((RadonMatrix.getMatrix().innerSize() > 10) || (RadonMatrix.getMatrix().outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Ax = y with A = "
-			<< RadonMatrix.getMatrix() << " and y = "
-			<< rhs.transpose() << std::endl;
-	} else {
-		BOOST_LOG_TRIVIAL(info)
-			<< "We solve for Ax = y with A = "
-			<< RadonMatrix.getMatrix() << " and y = "
-			<< rhs.transpose() << std::endl;
+	{
+		DiscretizedRadon &radon =
+				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
+		if ((radon.get().getMatrix().innerSize() > 10) || (radon.get().getMatrix().outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+				<< "We solve for Ax = y with A = "
+				<< radon.get().getMatrix() << " and y = "
+				<< rhs.transpose() << std::endl;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+				<< "We solve for Ax = y with A = "
+				<< radon.get().getMatrix() << " and y = "
+				<< rhs.transpose() << std::endl;
+		}
 	}
-
-	// prepare inverse problem
-	InverseProblem_ptr_t inverseproblem =
-			SolutionFactory::createInverseProblem(
-					opts, RadonMatrix.getMatrix(), rhs);
 
 	// prepare true solution
 	SpaceElement_ptr_t truesolution =
@@ -222,7 +265,9 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		if ((RadonMatrix.getMatrix().innerSize() > 10) || (RadonMatrix.getMatrix().outerSize() > 10)) {
+		DiscretizedRadon &radon =
+				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
+		if ((radon.get().getMatrix().innerSize() > 10) || (radon.get().getMatrix().outerSize() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
 					<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
