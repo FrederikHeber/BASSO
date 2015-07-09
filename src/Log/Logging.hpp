@@ -19,6 +19,9 @@
 
 #include <iosfwd>
 #include <iterator>
+#include <list>
+#include <set>
+#include <vector>
 
 namespace logging = boost::log;
 namespace src = boost::log::sources;
@@ -27,6 +30,24 @@ namespace keywords = boost::log::keywords;
 
 void startLogging();
 void stopLogging();
+
+template<class T>
+std::ostream & operator<<(std::ostream &ost, const std::list<T> & values)
+{
+	std::copy(
+			values.begin(), values.end(),
+			std::ostream_iterator<T>(ost, " "));
+	return ost;
+}
+
+template<class T>
+std::ostream & operator<<(std::ostream &ost, const std::set<T> & values)
+{
+	std::copy(
+			values.begin(), values.end(),
+			std::ostream_iterator<T>(ost, " "));
+	return ost;
+}
 
 template<class T>
 std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
