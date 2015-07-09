@@ -1,12 +1,12 @@
 /*
- * Backprojection.hpp
+ * BackprojectionMatrix.hpp
  *
  *  Created on: Jul 8, 2015
  *      Author: heber
  */
 
-#ifndef COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTION_HPP_
-#define COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTION_HPP_
+#ifndef COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTIONMATRIX_HPP_
+#define COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTIONMATRIX_HPP_
 
 #include "BassoConfig.h"
 
@@ -17,13 +17,13 @@
 /** This class implements the back projection which is the adjoint operator
  * to the Radon transform.
  */
-class Backprojection
+class BackprojectionMatrix
 {
 public:
 	//!> constant for dimension of space
 	enum { dim=2 };
 
-	/** Constructor for class Backprojection.
+	/** Constructor for class BackprojectionMatrix.
 	 *
 	 * Dimension of the vector of the right-hand side of the problem is
 	 * \a _num_angles times \a _num_offsets. The dimension of the solution
@@ -34,7 +34,7 @@ public:
 	 * @param _num_beams number of beams (angles, offsets) in the measured data
 	 * @param _num_offsets number of beams (angles, offsets) in the measured data
 	 */
-	Backprojection(
+	BackprojectionMatrix(
 			const unsigned int _num_pixel_x,
 			const unsigned int _num_pixel_y,
 			const unsigned int _num_angles,
@@ -43,7 +43,7 @@ public:
 	/** Destructor for class DiscretizedRadonMatrix.
 	 *
 	 */
-	~Backprojection() {}
+	~BackprojectionMatrix() {}
 
 	/** Loads the matrix from a given \a _file.
 	 *
@@ -77,4 +77,4 @@ private:
 
 
 
-#endif /* COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTION_HPP_ */
+#endif /* COMPUTERTOMOGRAPHYBASE_DISCRETIZEDRADON_BACKPROJECTIONMATRIX_HPP_ */

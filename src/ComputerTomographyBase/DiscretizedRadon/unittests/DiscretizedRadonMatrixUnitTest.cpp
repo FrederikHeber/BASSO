@@ -13,7 +13,7 @@
 
 #include "Log/Logging.hpp"
 
-#include "ComputerTomographyBase/DiscretizedRadon/Backprojection.hpp"
+#include <ComputerTomographyBase/DiscretizedRadon/BackprojectionMatrix.hpp>
 #include "ComputerTomographyBase/DiscretizedRadon/DiscretizedRadonMatrix.hpp"
 
 // Registers the fixture into the 'registry'
@@ -35,17 +35,19 @@ void DiscretizedRadonMatrixUnitTest::tearDown()
 }
 
 const unsigned int num_angles = 4;
+const unsigned int num_offsets = 5;
+const unsigned int num_pixels = 5;
 
 void DiscretizedRadonMatrixUnitTest::adjointTest()
 {
+	Eigen::VectorXd f(num_pixels*num_pixels);
+	f.setRandom();
+	Eigen::VectorXd g(num_angles*num_offsets);
+	g.setRandom();
+	DiscretizedRadonMatrix RadonMatrix(num_pixels, num_pixels, num_angles, num_offsets);
+	BackprojectionMatrix backprojection(num_pixels, num_pixels, num_angles, num_offsets);
 	// testing for adjoint correctness
 	{
-		DiscretizedRadonMatrix RadonMatrix(5, 5, num_angles, 5);
-
-		Eigen::VectorXd f(5*5);
-		f.setRandom();
-		Eigen::VectorXd g(num_angles*5);
-		g.setRandom();
 		const Eigen::MatrixXd& R = RadonMatrix.getMatrix();
 		const Eigen::MatrixXd Rs = RadonMatrix.getMatrix().transpose();
 		const Eigen::VectorXd Rf = R*f;
@@ -62,12 +64,6 @@ void DiscretizedRadonMatrixUnitTest::adjointTest()
 	}
 
 	{
-		Backprojection backprojection(5, 5, num_angles, 5);
-
-		Eigen::VectorXd f(5*5);
-		f.setRandom();
-		Eigen::VectorXd g(num_angles*5);
-		g.setRandom();
 		const Eigen::MatrixXd& Rs = backprojection.getMatrix();
 		const Eigen::MatrixXd R = backprojection.getMatrix().transpose();
 		const Eigen::VectorXd Rf = R*f;
@@ -84,13 +80,7 @@ void DiscretizedRadonMatrixUnitTest::adjointTest()
 	}
 
 	{
-		DiscretizedRadonMatrix RadonMatrix(5, 5, num_angles, 5);
-		Backprojection backprojection(5, 5, num_angles, 5);
 
-		Eigen::VectorXd f(5*5);
-		f.setRandom();
-		Eigen::VectorXd g(num_angles*5);
-		g.setRandom();
 		const Eigen::MatrixXd& R = RadonMatrix.getMatrix();
 		const Eigen::MatrixXd Rs = backprojection.getMatrix();
 		const Eigen::VectorXd Rf = R*f;

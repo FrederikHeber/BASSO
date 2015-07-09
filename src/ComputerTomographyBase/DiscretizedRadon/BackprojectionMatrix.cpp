@@ -1,14 +1,13 @@
 /*
- * Backprojection.cpp
+ * BackprojectionMatrix.cpp
  *
  *  Created on: Jul 8, 2015
  *      Author: heber
  */
 
 
+#include <ComputerTomographyBase/DiscretizedRadon/BackprojectionMatrix.hpp>
 #include "BassoConfig.h"
-
-#include "Backprojection.hpp"
 
 #include <fstream>
 
@@ -37,7 +36,7 @@ static point_t getPixelCenter(
 	return point;
 }
 
-Backprojection::Backprojection(
+BackprojectionMatrix::BackprojectionMatrix(
 		const unsigned int _num_pixel_x,
 		const unsigned int _num_pixel_y,
 		const unsigned int _num_angles,
@@ -51,11 +50,13 @@ Backprojection::Backprojection(
 	matrix.setZero();
 
 	assert( _num_offsets % 2 == 1);
+	assert( _num_pixel_x % 2 == 1);
+	assert( _num_pixel_y % 2 == 1);
 	const int half_offsets = (_num_offsets-1) / 2;
 	const double delta = 1./(double)half_offsets;
 	const double h_x = 2./(double)num_pixel_x;
 	const double h_y = 2./(double)num_pixel_y;
-	const double prefactor = h_x; //2.*M_PI/(double)num_angles;
+	const double prefactor = 2.*M_PI/(double)num_angles;
 	for (unsigned int angle = 0; angle < _num_angles; ++angle) {
 		const double phi = angle*M_PI/_num_angles;
 		point_t omega;
@@ -65,25 +66,28 @@ Backprojection::Backprojection(
 			for (unsigned int pixel_y = 0; pixel_y < num_pixel_y; ++pixel_y) {
 				const unsigned int row_index = pixel_y + (pixel_x*num_pixel_y);
 				const point_t x = getPixelCenter(pixel_x, pixel_y, h_x, h_y);
-				if (x.squaredNorm() > 1.)
-					continue;
+//				if (x.squaredNorm() - 1. > BASSOTOLERANCE)
+//					continue;
 				const double s = omega.dot(x);
 				const double t = s/delta;
 				const int k = floor(t);
 				const double u = t - (double)k;
 				assert( (u > -BASSOTOLERANCE) && (u-1. < BASSOTOLERANCE) );
 				const unsigned int col_index =
-						angle + ((k+half_offsets)*num_angles);
+						(k+half_offsets) + (angle*num_offsets);
+				if (((k+half_offsets) < 0)
+						|| ((k+half_offsets) >= (int)num_offsets-1))
+					continue;
 				const unsigned int next_col_index =
-						col_index + num_angles;	// means k+1
-				matrix( row_index, col_index) = prefactor*(1.-u);
-				matrix( row_index, next_col_index) = prefactor*u;
+						col_index + 1;
+				matrix( row_index, col_index) += prefactor*(1.-u);
+				matrix( row_index, next_col_index) += prefactor*u;
 			}
 		}
 	}
 }
 
-int Backprojection::load(const boost::filesystem::path &_file)
+int BackprojectionMatrix::load(const boost::filesystem::path &_file)
 {
 	using namespace MatrixIO;
 
