@@ -14,6 +14,8 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 
+class Backprojection;
+class DiscretizedRadon;
 class L1DualityMapping;
 class LpDualityMapping;
 struct LinearDependencyChecker;
@@ -38,6 +40,8 @@ namespace detail {
 class RepresentationAdvocate
 {
 private:
+	friend class Backprojection;
+	friend class DiscretizedRadon;
 	friend class L1DualityMapping;
 	friend class LpDualityMapping;
 	friend struct LinearDependencyChecker;
