@@ -14,11 +14,11 @@
 #include <boost/chrono.hpp>
 
 #include "Database/Table.hpp"
-#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/types.hpp"
 
 class BregmanDistance;
 class Database;
+class Mapping;
 class QuickAccessReferences;
 
 /** This class describes the interface to a general minimizer.
@@ -223,7 +223,7 @@ protected:
 	 */
 	void printIntermediateSolution(
 			const SpaceElement_ptr_t &_solution,
-			const LinearMapping &_A,
+			const Mapping &_A,
 			unsigned int _NumberOuterIterations
 			) const;
 

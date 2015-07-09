@@ -98,7 +98,7 @@ LandweberMinimizer::operator()(
 	if ((stepwidth_type >=
 			DetermineStepWidthFactory::ConstantRegularizedL1Norm)
 			&& (dynamic_cast<const RegularizedL1Norm &>(refs.NormX).getLambda() == 0.)) {
-		mutual_coherence = refs.A.MutualCoherence();
+		mutual_coherence = dynamic_cast<const LinearMapping &>(refs.A).MutualCoherence();
 		setRegularizationParameter(mutual_coherence, _truesolution);
 		setLambdaAdaptively = true;
 	}

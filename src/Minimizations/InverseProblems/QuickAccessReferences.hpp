@@ -15,7 +15,7 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/types.hpp"
 
-class LinearMapping;
+class Mapping;
 class Mapping;
 class NormedSpace;
 class Norm;
@@ -46,8 +46,8 @@ struct QuickAccessReferences
 		J_q(*DualSpaceX.getDualityMapping()),
 		j_r(*SpaceY.getDualityMapping()),
 		y(_problem->y),
-		A(dynamic_cast<const LinearMapping &>(*_problem->A)),
-		A_t(dynamic_cast<const LinearMapping &>(*_problem->A_t))
+		A(static_cast<const Mapping &>(*_problem->A)),
+		A_t(static_cast<const Mapping &>(*_problem->A_t))
 	{}
 
 	// spaces
@@ -80,11 +80,11 @@ struct QuickAccessReferences
 	//!> Right-hand side of the inverse problem
 	const SpaceElement_ptr_t &y;
 
-	// linear mappings
-	//!> Linear mapping/operator to inverse problem
-	const LinearMapping &A;
+	// operator as mappings
+	//!> mapping/operator to inverse problem
+	const Mapping &A;
 	//!> Adjoint mapping/operator of \a A
-	const LinearMapping &A_t;
+	const Mapping &A_t;
 };
 
 

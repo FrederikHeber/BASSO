@@ -21,7 +21,7 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/SpaceElementWriter.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
@@ -266,7 +266,7 @@ int main (int argc, char *argv[])
 				try {
 					SpaceElementWriter::output(
 							ost,
-							dynamic_cast<LinearMapping &>(*inverseproblem->A.get()) * result.m_solution);
+							(*inverseproblem->A)(result.m_solution));
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write image of solution to file.\n";
 				}

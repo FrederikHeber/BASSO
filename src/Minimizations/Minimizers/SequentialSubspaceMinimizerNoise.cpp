@@ -29,7 +29,6 @@
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
-#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/Norm.hpp"

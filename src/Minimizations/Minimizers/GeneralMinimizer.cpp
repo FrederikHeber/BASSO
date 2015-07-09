@@ -95,7 +95,7 @@ void GeneralMinimizer::SearchDirection::update(
 		Jw = _refs.j_r( _residual );
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw;
-		u = _refs.A_t * Jw;
+		u = _refs.A_t(Jw);
 		if (u->getSpace()->getDimension() > 10)
 			BOOST_LOG_TRIVIAL(trace)
 					<< "newdir is " << u;
@@ -156,8 +156,8 @@ double GeneralMinimizer::calculateResidual(
 		SpaceElement_ptr_t &_residual
 		) const
 {
-	const LinearMapping &A = static_cast<const LinearMapping &>(*_problem->A);
-	*_residual = A * _problem->x;
+	const Mapping &A = static_cast<const Mapping &>(*_problem->A);
+	*_residual = A(_problem->x);
 	*_residual -= _problem->y;
 	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
@@ -243,7 +243,7 @@ void GeneralMinimizer::setMinLib(const std::string &_name)
 
 void GeneralMinimizer::printIntermediateSolution(
 		const SpaceElement_ptr_t &_solution,
-		const LinearMapping &_A,
+		const Mapping &_A,
 		unsigned int _NumberOuterIterations
 		) const
 {
@@ -274,7 +274,7 @@ void GeneralMinimizer::printIntermediateSolution(
 			std::ofstream ost(solution_file.str().c_str());
 			if (ost.good())
 				try {
-					ost << _A * _solution;
+					ost << _A(_solution);
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Could not write all data of projected intermediate solution to stream.\n";
 				}
