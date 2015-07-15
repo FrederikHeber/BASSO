@@ -1,0 +1,63 @@
+/*
+ * libbasso.dox
+ *
+ *  Created on: Jul 15, 2015
+ *      Author: heber
+ */
+
+/**
+ * \page libbasso libBASSO
+ *
+ * LibBASSO is the implementation of two algorithms for solving inverse
+ * problems \f$ Ax = y \f$ in general Banach Spaces, namely the generalized
+ * Landweber method and the Sequential Subspace Optimization (SESOP) method.
+ *
+ * \section libbasso-landweber Generalized Landweber
+ *
+ * The Generalized Landweber uses an update of the form
+ * \f$ J_p(x^{n+1}) = J_p(x^{n}) + \mu_n A^\ast j_r (A x_n - y) \f$
+ * where \f$ J_p \f$ is the duality mapping associated with the space
+ * \f$ X \f$ of power type p and \f$ j_r \f$ the single-valued selection
+ * of a duality mapping of the space \f$ Y \f$.
+ *
+ * The solution is obtained via \f$ x_n = J_p^{-1} (J_p(x_n)) \f$, where
+ * \f$ J_p^{-1} \f$ is the inverse of the duality mapping \f$ J_p \f$, e.g.
+ * in lp spaces it would be the mapping \f$ J_q \f$ with
+ * \f$ \frac 1 p + \frac 1 q = 1 \f$.
+ *
+ * The proof of convergence relies on using the Bregman distance instead
+ * of the metric distance.
+ *
+ * The Landweber method is implemented in the class LandweberMinimizer.
+ *
+ * \section libbasso-sesop Sequential Subspace Optimization (SESOP)
+ *
+ * The main idea behind SESOP is to use Bregman projections onto hyperplanes
+ * defined by the Landweber search directions \f$ A^\ast j_r (A x_n - y) \f$.
+ *
+ * These projections can be calculated via the minimization of a simple
+ * convex functional whose derivative is known analytically.
+ *
+ * The advantage is that multiple search directions can be used simultaneously
+ * and thus a fast convergence is obtained. If search directions from previous
+ * iteration steps are used, expensive matrix-vector calculations are reduced.
+ *
+ * The SESOP method is implemented in the classes SequentialSubspaceMinimizer
+ * and SequentialSubspaceMinimizerNoise for the regularized variant.
+ *
+ * \section libbasso-sesop-noisy Regularized Sequential Subspace Optimization (RESESOP)
+ *
+ * A regularized version of SESOP is also implemented. It can so far only
+ * be used with up to two search directions.
+ *
+ * \section libbasso-sesop-orthogonal Orthogonal Sequential Subspace Optimization (OrthoSESOP)
+ *
+ * SESOP can also use Bregman projections to orthogonalize search directions
+ * among one another. In l2 spaces this then reduces to the well-known
+ * Conjugate Gradient method which OrthoSESOP generalizes.
+ *
+ * The additional orthogonalization causes little overhead but sees mostly
+ * reduce iteration steps for a wide range of lp spaces.
+ *
+ * \date 2015-07-15
+ */

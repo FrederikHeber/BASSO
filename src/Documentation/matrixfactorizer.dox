@@ -1,0 +1,67 @@
+/*
+ * matrixfactorizer.dox
+ *
+ *  Created on: Jul 15, 2015
+ *      Author: heber
+ */
+
+/**
+ * \page matrixfactorizer Matrix Factorizer
+ *
+ * The problem of Matrix factorization has become very popular. Especially
+ * since an article by Lee and Seung appeared in Nature where the so-called
+ * non-negative matrix factorization had been used to decompose people's
+ * faces into well-interpretable parts.
+ *
+ * In essence, matrix factorization is the problem of finding matrix factors
+ * \f$ K \f$ and \f$ X \f$ to some given matrix \f$ Y \f$, i.e.
+ * \f$ Y = K \cdot X \f$.
+ *
+ * The problem is severely ill-posed and in general hard to solve, see the
+ * more general problem of tensor decomposition.
+ *
+ * \section matrixfactorizer-implementation Implementation
+ *
+ * The standard idea to solve the problem is to keep one of the factors
+ * fixed and only minimize the other in an alternating fashion. This is idea
+ * is known as alternating least-squares (ALS) if the l2 norm is employed
+ * to measure errors and residuals.
+ *
+ * \subsection matrixfactorizer-implementation-spaces Spaces involved
+ *
+ * Let us first look at the spaces involved:
+ *
+ * -# \f$ K: {\cal V} \rightarrow {\cal W} \f$
+ * -# \f$ X: {\cal U} \rightarrow {\cal V} \f$
+ * -# \f$ Y: {\cal U} \rightarrow {\cal W} \f$
+ *
+ * Hence, in total it seems that we have three spaces, \f$ {\cal U} \f$,
+ * \f$ {\cal V} \f$, and \f$ {\cal W} \f$. However, it is known [Pisier,
+ * "Factorization of Linear Operators and Geometry of Banach Spaces",
+ * Corollary 3.7] that every operator from some space Lp to some other
+ * space Lq always factors through an Hilbert space , i.e. we always use
+ * the l2 for the space \f$ {\cal V} \f$.
+ *
+ * Summarizing, only two spaces have to be given, namely the ones of \f$ Y \f$.
+ *
+ * \subsection matrixfactorizer-implementation-fixedfactor Keeping a factor fixed
+ *
+ * If we keep the first factor \f$ K \f$ fixed, we obtain the following
+ * equation, \f$ Y_i = K x_i \f$, and similarly for the second equation.
+ *
+ * We see that only the rows or columns, respectively, of \f$ Y \f$ are
+ * used. And we obtain inverse problems for the unknown column i of the
+ * factor \f$ X \f$.
+ *
+ * \subsection matrixfactorizer-implementation-parallelization Parallelization
+ *
+ * The ansatz is trivial to parallelize as all of the small inverse problems
+ * are independent, i.e. as many processes as columns of \f$ Y \f$ or
+ * rows, respectively, can be used.
+ *
+ * This is implemented with OpenMPI in a Master/Slave ansatz, where the
+ * Master sends out and accumulates the data and the slaves do nothing else
+ * but solve inverse problems.
+ *
+ * \date 2015-07-15
+ */

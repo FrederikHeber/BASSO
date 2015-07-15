@@ -1,0 +1,36 @@
+/*
+ * basso.dox
+ *
+ *  Created on: Jul 15, 2015
+ *      Author: heber
+ */
+
+/**
+ * \page basso BASSO
+ *
+ * BASSO is our test code for the implementation of the generalized Landweber
+ * and Sequential Subspace Optimization (SESOP) methods for solving inverse
+ * problems of the form
+ * \f$ A x = y \f$
+ * where \f$ A \f$ is a given matrix and \f$ y \f$ is the given right-hand side.
+ * The idea is to invert the matrix and obtain a solution vector \f$ x \f$ but
+ * because of the properties of \f$ A \f$ a direct inversion is not feasible,
+ * the so-called ill-posedness of the problem. On a more abstract level,
+ * \f$ A \f$ is an operator from a Banach space \f$ X \f$ to another Banach
+ * space \f$ Y \f$.
+ *
+ * In the implementation an arbitrary matrix and vector can be loaded and
+ * the problem solved with any of the implemented algorithms and any lp space
+ * for \f$ X \f$ and \f$ Y \f$ as desired. All of these problem properties
+ * can be specified on the command-line and/or stored into a configuration
+ * file prior to solving and parsed from there.
+ *
+ * The test implementation especially counts all matrix and vector operations
+ * and lists their numbers after the solution has been found.
+ *
+ * Note that timings are also obtained on a per-operation level, however
+ * the employed \a Eigen library performs all of these operations in a lazy
+ * fashion and hence possibly outside the timed scope.
+ *
+ * \date 2015-07-15
+ */

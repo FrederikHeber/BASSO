@@ -181,6 +181,11 @@ add_subdirectory (src/Minimizations/Functions/unittests)
 add_subdirectory (src/Minimizations/Mappings/unittests)
 add_subdirectory (src/Minimizations/Norms/unittests)
 
+### DOXYGEN DOCUMENTATION
+
+add_subdirectory (src/Documentation)
+
+
 ##################### PACKING INSTRUCTIONS ###############################
 
 # build a CPack driven installer package

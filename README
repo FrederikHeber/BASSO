@@ -36,6 +36,14 @@ To allow for debugging, you might futher add "-DBoost_DEBUG=ON".
 
 In general, to compile in debugging information add "-DCMAKE_BUILD_TYPE=Debug", to compile without use "-DCMAKE_BUILD_TYPE=Release".
 
+Documentation
+-------------
+
+To generate the doxygen documenation, you use
+
+make doc
+
+and the generated html pages can the be found under src/Documentation/doc/html.
 
 Timing Measurements
 -------------------

@@ -1,0 +1,30 @@
+/*
+ * mainpage.dox
+ *
+ *  Created on: Jul 15, 2015
+ *      Author: heber
+ */
+
+/**
+ * \page copyright Copyright notice
+ *
+ * BASSO - inverse problem solver in general Banach spaces
+ * Copyright (C) 2014-2015 Frederik Heber. All rights reserved.
+ */
+
+ /**
+  * \mainpage BASSO - inverse problem solver in general Banach spaces
+  *
+  * This is the main page of the doxygen documentation of the BASSO
+  * library.
+  *
+  * \section contents Contents
+  *
+  * This manual is divided into the following sections:
+  * \li \ref libbasso Details on the BASSO library
+  * \li \ref basso Inverse Problem solver based on libBASSO
+  * \li \ref matrixfactorizer Matrix Factorizer based on libBASSO
+  *
+  *
+  * \date 2015-07-15
+  */
