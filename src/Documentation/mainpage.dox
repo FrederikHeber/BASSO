@@ -24,6 +24,7 @@
   * \li \ref libbasso Details on the BASSO library
   * \li \ref basso Inverse Problem solver based on libBASSO
   * \li \ref matrixfactorizer Matrix Factorizer based on libBASSO
+  * \li \ref computertomography Computer Tomography based on libBASSO
   *
   *
   * \date 2015-07-15

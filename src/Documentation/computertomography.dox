@@ -1,0 +1,49 @@
+/*
+ * computertomography.dox
+ *
+ *  Created on: Jul 15, 2015
+ *      Author: heber
+ */
+
+/**
+ * \page computertomography Computer Tomography
+ *
+ * \section computertomography-general General concept
+ *
+ * Computer Tomography refers to the problem of obtaining the density
+ * distribution inside a two- or three-dimensional domain by having a
+ * set of line measurements, i.e. a ray that penetrates the domain and
+ * whose intensity is measured on the opposite side and that has been
+ * decreased proportional to the density of the passed-through material.
+ *
+ * Associated to this problem is the Radon transformation for some function
+ * \f$ f(x,y) \f$.
+ * \f$ (Rf) (\alpha, s) = \int^{\infty}_{-\infty} f(z\cos\alpha + s \sin\alpha, -z \sin\alpha + s \cos\alpha) dz \f$
+ *	Here, we look at the two-dimensional case that is also treated in the
+ *	implementation.
+ *
+ * The adjoint to this Radon transformation is the backprojection.
+ * \f$ (R^\ast g) (x,y) = \frac 1 {2\pi} \int_{0}^{2\pi} g(\alpha, n(\alpha) \cdot (x,y)) d\alpha \f$,
+ * where \f$ n(\alpha) = (\cos\alpha, \sin\alpha) \f$.
+ *
+ * We have implemented discretizations of either operator in the classes
+ * DiscretizedRadonTransform and BackprojectionMatrix. It is more stable
+ * to use the discretized backprojection than simply the transposed of
+ * the discretized Radon transform.
+ *
+ * \section computertomography-solution Solving for the density
+ *
+ * The solution for the unknown density distribution is then simply an
+ * inverse problem with the given Radon transform and its adjoint. We
+ * may use SESOP to solve for the density given the so-called sinogram,
+ * i.e. the measurement vectors.
+ *
+ * \section computertomography-warning Warnings
+ *
+ * The tricky part is that both measurements and density distributions
+ * are actually matrices. Before processing within the libBASSO they
+ * need to be vectorized.
+ *
+ *
+ * \date 2015-07-15
+ */
