@@ -8,4 +8,6 @@ add_library (Options
 	)
 
 install (FILES CommandLineOptions.hpp DESTINATION include)
+install (FILES filesystem_path_serialization.hpp DESTINATION include)
 install (FILES Options.hpp DESTINATION include)
+

@@ -11,11 +11,11 @@
 #include "BassoConfig.h"
 
 #include <boost/filesystem/path.hpp>
-
-#include "Options/CommandLineOptions.hpp"
-
 #include <boost/serialization/access.hpp>
-#include "filesystem_path_serialization.hpp"
+#include <boost/serialization/base_object.hpp>
+
+#include "Options/filesystem_path_serialization.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 class MatrixFactorizerOptions : public CommandLineOptions
 {
@@ -62,6 +62,9 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const unsigned int version) const
 	{
+		// CommandLineOptions
+		ar & boost::serialization::base_object<const CommandLineOptions>(*this);
+
 		// MatrixFactorizerOptions
 		ar & data_file;
 		ar & max_loops;
@@ -70,44 +73,14 @@ private:
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
 		ar & sparse_dim;
-
-		// CommandLineOptions
-		ar & algorithm_name;
-		ar & C;
-		ar & calculateAngles;
-		ar & config_filename;
-		ar & database_replace;
-		ar & delta;
-		ar & enforceRandomMapping;
-		ar & inexactLinesearch;
-		ar & iteration_file;
-		ar & maxinneriter;
-		ar & maxiter;
-		ar & maxwalltime;
-		ar & minlib;
-		ar & type_spacex;
-		ar & type_spacey;
-		ar & px;
-		ar & py;
-		ar & N;
-		ar & orthogonalization_type;
-		ar & outputsteps;
-		ar & powerx;
-		ar & powery;
-		ar & regularization_parameter;
-		ar & searchspace_type;
-		ar & stepwidth_type;
-		ar & tau;
-		ar & tuple_parameters;
-		ar & updatetype;
-		ar & verbose;
-		ar & wolfe_constants;
-		ar & type;
 	}
 
 	template<class Archive>
 	void load(Archive & ar, const unsigned int version)
 	{
+		// CommandLineOptions
+		ar & boost::serialization::base_object<CommandLineOptions>(*this);
+
 		// MatrixFactorizerOptions
 		ar & data_file;
 		ar & max_loops;
@@ -116,39 +89,6 @@ private:
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
 		ar & sparse_dim;
-
-		// CommandLineOptions
-		ar & algorithm_name;
-		ar & C;
-		ar & calculateAngles;
-		ar & config_filename;
-		ar & database_replace;
-		ar & delta;
-		ar & enforceRandomMapping;
-		ar & inexactLinesearch;
-		ar & iteration_file;
-		ar & maxinneriter;
-		ar & maxiter;
-		ar & maxwalltime;
-		ar & minlib;
-		ar & type_spacex;
-		ar & type_spacey;
-		ar & px;
-		ar & py;
-		ar & N;
-		ar & orthogonalization_type;
-		ar & outputsteps;
-		ar & powerx;
-		ar & powery;
-		ar & regularization_parameter;
-		ar & searchspace_type;
-		ar & stepwidth_type;
-		ar & tau;
-		ar & tuple_parameters;
-		ar & updatetype;
-		ar & verbose;
-		ar & wolfe_constants;
-		ar & type;
 
 		// set verbosity after loading
 		setVerbosity();

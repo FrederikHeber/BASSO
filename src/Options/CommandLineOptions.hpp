@@ -10,15 +10,21 @@
 
 #include "BassoConfig.h"
 
-#include <boost/filesystem/path.hpp>
 #include <iosfwd>
 #include <string>
 #include <vector>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/program_options.hpp>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Options/Options.hpp"
+#include "Options/filesystem_path_serialization.hpp"
 
 /** This class contains the default command-line options that all of algorithms need.
  * It may be specialized to add specific commands for a specific executable.
@@ -138,6 +144,85 @@ public:
 	std::string stopping_criteria;
 	StoppingArguments stopping_args;
 	enum MinimizerFactory::InstanceType type;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void save(Archive & ar, const unsigned int version) const
+	{
+		ar & algorithm_name;
+		ar & C;
+		ar & calculateAngles;
+		ar & config_filename;
+		ar & database_replace;
+		ar & delta;
+		ar & enforceRandomMapping;
+		ar & inexactLinesearch;
+		ar & iteration_file;
+		ar & maxinneriter;
+		ar & maxiter;
+		ar & maxwalltime;
+		ar & minlib;
+		ar & type_spacex;
+		ar & type_spacey;
+		ar & px;
+		ar & py;
+		ar & N;
+		ar & orthogonalization_type;
+		ar & outputsteps;
+		ar & powerx;
+		ar & powery;
+		ar & regularization_parameter;
+		ar & searchspace_type;
+		ar & stepwidth_type;
+		ar & tau;
+		ar & tuple_parameters;
+		ar & updatetype;
+		ar & verbose;
+		ar & wolfe_constants;
+		ar & type;
+	}
+
+	template<class Archive>
+	void load(Archive & ar, const unsigned int version)
+	{
+		ar & algorithm_name;
+		ar & C;
+		ar & calculateAngles;
+		ar & config_filename;
+		ar & database_replace;
+		ar & delta;
+		ar & enforceRandomMapping;
+		ar & inexactLinesearch;
+		ar & iteration_file;
+		ar & maxinneriter;
+		ar & maxiter;
+		ar & maxwalltime;
+		ar & minlib;
+		ar & type_spacex;
+		ar & type_spacey;
+		ar & px;
+		ar & py;
+		ar & N;
+		ar & orthogonalization_type;
+		ar & outputsteps;
+		ar & powerx;
+		ar & powery;
+		ar & regularization_parameter;
+		ar & searchspace_type;
+		ar & stepwidth_type;
+		ar & tau;
+		ar & tuple_parameters;
+		ar & updatetype;
+		ar & verbose;
+		ar & wolfe_constants;
+		ar & type;
+
+		// set verbosity after loading
+		setVerbosity();
+	}
+
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 
