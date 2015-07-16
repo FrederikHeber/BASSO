@@ -32,12 +32,26 @@ MatrixFactorization::MatrixFactorization(
 		,boost::mpi::communicator &_world
 #endif
 		) :
+		pixel_opts(_opts),
+		spectral_opts(_opts),
 		opts(_opts),
 		info(_info)
 #ifdef MPI_FOUND
 		, world(_world)
 #endif
-{}
+{
+	// an operator between two lp spaces always factors through a
+	// Hilbert space. Hence, we use an l_2 space between the two
+	// matrix factors
+	const_cast<CommandLineOptions &>(pixel_opts).type_spacey =
+			"lp";
+	const_cast<CommandLineOptions &>(pixel_opts).py = 2.;
+	const_cast<CommandLineOptions &>(pixel_opts).powery = 2.;
+	const_cast<CommandLineOptions &>(spectral_opts).type_spacex =
+			"lp";
+	const_cast<CommandLineOptions &>(spectral_opts).px = 2.;
+	const_cast<CommandLineOptions &>(spectral_opts).powerx = 2.;
+}
 
 void MatrixFactorization::operator()(
 		const Eigen::MatrixXd &_data,
@@ -57,7 +71,10 @@ void MatrixFactorization::operator()(
 		/// construct solution starting points
 		spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
 		pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
-		detail::constructStartingMatrices(spectral_matrix, pixel_matrix, false);
+		detail::constructStartingMatrices(
+				spectral_matrix,
+				pixel_matrix,
+				opts.type_spacex.find("nonnegative") != std::string::npos);
 
 		/// iterate over the two factors
 		double residual =
@@ -99,7 +116,7 @@ void MatrixFactorization::operator()(
 			if (world.size() == 1)
 #endif
 			{
-				InRangeSolver solver(opts);
+				InRangeSolver solver(spectral_opts);
 				for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
 					Eigen::VectorXd solution;
 					stop_condition &=
@@ -116,6 +133,7 @@ void MatrixFactorization::operator()(
 			else {
 				stop_condition &=
 						!master.solve(
+								spectral_opts,
 								spectral_matrix,
 								_data,
 								pixel_matrix,
@@ -158,7 +176,7 @@ void MatrixFactorization::operator()(
 			if (world.size() == 1)
 # endif
 			{
-				InRangeSolver solver(opts);
+				InRangeSolver solver(pixel_opts);
 				for (unsigned int dim = 0; dim < _data.rows(); ++dim) {
 					Eigen::VectorXd solution;
 					stop_condition &=
@@ -175,6 +193,7 @@ void MatrixFactorization::operator()(
 			else {
 				stop_condition &=
 						!master.solve(
+								pixel_opts,
 								pixel_matrix.transpose(),
 								_data.transpose(),
 								spectral_matrix,

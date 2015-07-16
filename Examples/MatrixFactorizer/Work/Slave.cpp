@@ -20,11 +20,11 @@ namespace mpi = boost::mpi;
 
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
-#include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
 #include "MatrixFactorizer/Work/WorkPackage.hpp"
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 #include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 Slave::Slave(boost::mpi::communicator &_world) :
 		world(_world)
@@ -35,7 +35,7 @@ void Slave::operator()()
 	// get global information
 	BOOST_LOG_TRIVIAL(debug)
 			<< "#" << world.rank() << " - getting options.";
-	MatrixFactorizerOptions opts;
+	CommandLineOptions opts;
 	mpi::broadcast(world, opts, 0);
 	InRangeSolver solver(opts);
 

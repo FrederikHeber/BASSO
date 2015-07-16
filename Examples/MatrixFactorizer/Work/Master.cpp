@@ -24,6 +24,7 @@ namespace mpi = boost::mpi;
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "MatrixFactorizer/Work/WorkPackage.hpp"
 #include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 using namespace detail;
 
@@ -32,6 +33,7 @@ Master::Master(mpi::communicator &_world) :
 {}
 
 bool Master::solve(
+		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
 		Eigen::MatrixXd &_solution,

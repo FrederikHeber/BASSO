@@ -19,6 +19,8 @@
 
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 
+class CommandLineOptions;
+
 /** This class contains all code related to the master in the master/slave
  * parallelization implementation
  */
@@ -37,6 +39,7 @@ public:
 	 *  We go through all columns of \a _rhs or \a _solution, respectively,
 	 *  and solve the inverse problem with \a _matrix.
 	 *
+	 * @param _opts options to steer how inverse problem is solved
 	 * @param _matrix inverse problem matrix
 	 * @param _rhs right-hand side matrix
 	 * @param _solution on return solution matrix
@@ -45,6 +48,7 @@ public:
 	 * @return true - success
 	 */
 	bool solve(
+			const CommandLineOptions &_opts,
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::MatrixXd &_rhs,
 			Eigen::MatrixXd &_solution,

@@ -16,7 +16,9 @@
 #include <boost/mpi/communicator.hpp>
 #endif
 
-class MatrixFactorizerOptions;
+#include "Options/CommandLineOptions.hpp"
+#include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
+
 class IterationInformation;
 
 /** Functor that performs a Matrix Factorization.
@@ -53,8 +55,12 @@ struct MatrixFactorization
 	//!> second matrix factor
 	Eigen::MatrixXd pixel_matrix;
 private:
-	//!> options for solving inverse problems
-	const MatrixFactorizerOptions &opts;
+	//!> options for solving inverse problems of the pixel matrix
+	const CommandLineOptions pixel_opts;
+	//!> options for solving inverse problems of the spectral matrix
+	const CommandLineOptions spectral_opts;
+	//!> options for solving matrix factorization
+	const MatrixFactorizerOptions opts;
 	//!> database connection
 	IterationInformation &info;
 #ifdef MPI_FOUND
