@@ -106,13 +106,6 @@ int main(int argc, char **argv)
 		if (returnstatus == 0)
 			returnstatus = detail::parseOptions(argc, argv, opts);
 
-#ifdef MPI_FOUND
-		// send round options
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#0 - broadcasting options.";
-		mpi::broadcast(world, opts, 0);
-#endif
-
 		/// parse the matrices
 		Eigen::MatrixXd data;
 		if (returnstatus == 0)

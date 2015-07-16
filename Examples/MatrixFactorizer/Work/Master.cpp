@@ -59,6 +59,9 @@ bool Master::solve(
 
 	// send round global information
 	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - broadcasting options.";
+	mpi::broadcast(world, const_cast<CommandLineOptions &>(_opts), 0);
+	BOOST_LOG_TRIVIAL(debug)
 			<< "#0 - broadcasting matrix.";
 	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);
 	mpi::broadcast(world, const_cast<unsigned int &>(_loop_nr), 0);

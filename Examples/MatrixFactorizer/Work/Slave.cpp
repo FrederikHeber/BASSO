@@ -32,13 +32,6 @@ Slave::Slave(boost::mpi::communicator &_world) :
 
 void Slave::operator()()
 {
-	// get global information
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#" << world.rank() << " - getting options.";
-	CommandLineOptions opts;
-	mpi::broadcast(world, opts, 0);
-	InRangeSolver solver(opts);
-
 	bool full_terminate = false;
 	while (!full_terminate) {
 		// check whether we have to terminate
@@ -52,6 +45,12 @@ void Slave::operator()()
 		world.send(0, detail::InitialId, world.rank());
 
 		// get global information
+		BOOST_LOG_TRIVIAL(debug)
+				<< "#" << world.rank() << " - getting options.";
+		CommandLineOptions opts;
+		mpi::broadcast(world, opts, 0);
+		InRangeSolver solver(opts);
+
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting matrix.";
 		Eigen::MatrixXd matrix;
@@ -89,10 +88,16 @@ void Slave::operator()()
 					BOOST_LOG_TRIVIAL(trace)
 							<< "#" << world.rank() << " got problem rhs, col "
 							<< col << "\n" << rhs.transpose();
+					BOOST_LOG_TRIVIAL(trace)
+							<< "#" << world.rank() << " got startvalue, col "
+							<< col << "\n" << solution_startvalue.transpose();
 				} else {
 					BOOST_LOG_TRIVIAL(debug)
 							<< "#" << world.rank() << " got problem rhs, col "
 							<< col << "\n" << rhs.transpose();
+					BOOST_LOG_TRIVIAL(debug)
+							<< "#" << world.rank() << " got startvalue, col "
+							<< col << "\n" << solution_startvalue.transpose();
 				}
 
 				/// work on data
