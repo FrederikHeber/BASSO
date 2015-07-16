@@ -25,6 +25,65 @@ namespace mpi = boost::mpi;
 #include "MatrixFactorizer/Solvers/MatrixFactorization.hpp"
 #include "MatrixFactorizer/Work/Master.hpp"
 #include "MatrixFactorizer/Work/Slave.hpp"
+#include "MatrixIO/MatrixIO.hpp"
+#include "MatrixIO/MatrixIOExceptions.hpp"
+
+int outputSolution(
+		const MatrixFactorizerOptions &_opts,
+		const Eigen::MatrixXd &_data,
+		const Eigen::MatrixXd &_spectral_matrix,
+		const Eigen::MatrixXd &_pixel_matrix
+		)
+{
+	int returnstatus = 0;
+	/// output solution
+	if (!_opts.solution_factor_one_file.string().empty())
+		if (!MatrixIO::store(
+				_opts.solution_factor_one_file.string(),
+				"spectral matrix",
+				_spectral_matrix)) {
+			returnstatus = 255;
+			BOOST_LOG_TRIVIAL(error) <<
+					"Failed to write first solution factor file.";
+		}
+	if (!_opts.solution_factor_two_file.string().empty())
+		if (!MatrixIO::store(
+				_opts.solution_factor_two_file.string(),
+				"pixel matrix",
+				_pixel_matrix)) {
+			returnstatus = 255;
+			BOOST_LOG_TRIVIAL(error) <<
+					"Failed to write second solution factor file.";
+		}
+	if (!_opts.solution_product_file.string().empty())
+		if (!MatrixIO::store(
+				_opts.solution_product_file.string(),
+				"solution product",
+				_spectral_matrix * _pixel_matrix)) {
+			returnstatus = 255;
+			BOOST_LOG_TRIVIAL(error) <<
+					"Failed to write solution product file.";
+ 		}
+
+	BOOST_LOG_TRIVIAL(debug)
+		<< "Resulting first factor transposed is\n" << _spectral_matrix.transpose();
+	BOOST_LOG_TRIVIAL(debug)
+		<< "Resulting second factor is\n" << _pixel_matrix;
+
+	const Eigen::MatrixXd product_matrix = _spectral_matrix * _pixel_matrix;
+	if ((_data.innerSize() <= 10) && (_data.outerSize() <= 10)) {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Data matrix was\n" << _data;
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Product matrix is\n" << product_matrix;
+		BOOST_LOG_TRIVIAL(info)
+			<< "Difference matrix is\n" << _data - product_matrix;
+	}
+	BOOST_LOG_TRIVIAL(info)
+		<< "Norm of difference is " << (_data - product_matrix).norm();
+
+	return returnstatus;
+}
 
 int main(int argc, char **argv)
 {
@@ -74,6 +133,13 @@ int main(int argc, char **argv)
 		// exchange return status
 		mpi::broadcast(world, returnstatus, 0);
 #endif
+
+		if (returnstatus == 0)
+			returnstatus = outputSolution(
+					opts,
+					data,
+					factorizer.spectral_matrix,
+					factorizer.pixel_matrix);
 
 		/// finish timing
 		boost::chrono::high_resolution_clock::time_point timing_end =

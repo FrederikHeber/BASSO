@@ -24,8 +24,6 @@
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductEqualizer.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
-#include "MatrixIO/MatrixIO.hpp"
-#include "MatrixIO/MatrixIOExceptions.hpp"
 
 MatrixFactorization::MatrixFactorization(
 		const MatrixFactorizerOptions &_opts,
@@ -57,8 +55,8 @@ void MatrixFactorization::operator()(
 		unsigned int loop_nr = 0;
 
 		/// construct solution starting points
-		Eigen::MatrixXd spectral_matrix(_data.rows(), opts.sparse_dim);
-		Eigen::MatrixXd pixel_matrix(opts.sparse_dim, _data.cols());
+		spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
+		pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
 		detail::constructStartingMatrices(spectral_matrix, pixel_matrix, false);
 
 		/// iterate over the two factors
@@ -233,53 +231,5 @@ void MatrixFactorization::operator()(
 		MatrixProductRenormalizer renormalizer;
 		renormalizer(spectral_matrix, pixel_matrix);
 
-		/// output solution
-		if (!opts.solution_factor_one_file.string().empty()) {
-			if (!MatrixIO::store(
-					opts.solution_factor_one_file.string(),
-					"spectral matrix",
-					spectral_matrix)) {
-				_returnstatus = 255;
-				BOOST_LOG_TRIVIAL(error) <<
-						"Failed to write first solution factor file.";
-			}
-		}
-		if (!opts.solution_factor_two_file.string().empty()) {
-			if (!MatrixIO::store(
-					opts.solution_factor_two_file.string(),
-					"pixel matrix",
-					pixel_matrix)) {
-				_returnstatus = 255;
-				BOOST_LOG_TRIVIAL(error) <<
-						"Failed to write second solution factor file.";
-			}
-		}
-		if (!opts.solution_product_file.string().empty()) {
-			if (!MatrixIO::store(
-					opts.solution_product_file.string(),
-					"solution product",
-					spectral_matrix * pixel_matrix)) {
-				_returnstatus = 255;
-				BOOST_LOG_TRIVIAL(error) <<
-						"Failed to write solution product file.";
-			}
-		}
-
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Resulting first factor transposed is\n" << spectral_matrix.transpose();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Resulting second factor is\n" << pixel_matrix;
-
-		const Eigen::MatrixXd product_matrix = spectral_matrix * pixel_matrix;
-		if ((_data.innerSize() <= 10) && (_data.outerSize() <= 10)) {
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Data matrix was\n" << _data;
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Product matrix is\n" << product_matrix;
-			BOOST_LOG_TRIVIAL(info)
-				<< "Difference matrix is\n" << _data - product_matrix;
-		}
-		BOOST_LOG_TRIVIAL(info)
-			<< "Norm of difference is " << (_data - product_matrix).norm();
 	}
 }

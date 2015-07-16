@@ -48,6 +48,10 @@ struct MatrixFactorization
 			int &_returnstatus
 			);
 
+	//!> first matrix factor
+	Eigen::MatrixXd spectral_matrix;
+	//!> second matrix factor
+	Eigen::MatrixXd pixel_matrix;
 private:
 	//!> options for solving inverse problems
 	const MatrixFactorizerOptions &opts;
