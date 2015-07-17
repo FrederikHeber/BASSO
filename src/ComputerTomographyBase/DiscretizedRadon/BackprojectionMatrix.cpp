@@ -96,7 +96,7 @@ BackprojectionMatrix::BackprojectionMatrix(
 	const double delta = 1./(double)half_offsets;
 	const double h_x = 2./(double)num_pixel_x;
 	const double h_y = 2./(double)num_pixel_y;
-	const double prefactor = 2.*M_PI/(double)num_angles;
+	const double prefactor = M_PI/(double)num_angles;
 	for (unsigned int pixel_x = 0; pixel_x < num_pixel_x; ++pixel_x) {
 		for (unsigned int pixel_y = 0; pixel_y < num_pixel_y; ++pixel_y) {
 			const unsigned int row_index = pixel_y + (pixel_x*num_pixel_y);
