@@ -58,8 +58,6 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 			if (debugflag)
 				BOOST_LOG_TRIVIAL(debug) << "s(" << offset+half_offsets << ") = " << s;
 
-			const unsigned int row_index =
-					offset+half_offsets + (angle * num_offsets);
 			// get all intersections points for this line
 			intersections_t intersections =
 					calculatePixelBoundaryIntersections(phi,s);
@@ -73,7 +71,7 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 
 			// remove identical and illegal points
 			removeIdenticalAdjacentPoints(intersections);
-//			removeIllegalPoints(intersections);
+			removeIllegalPoints(intersections);
 
 			if (intersections.size() > 1) {
 				// convert to pixels
@@ -308,7 +306,11 @@ DiscretizedRadonMatrix::pixels_t DiscretizedRadonMatrix::PointsToPixels(
 		center += (*advanceiter);
 		center *= .5;
 		(*pixeliter)[0] = (unsigned int)floor((1.+center[0])/h_x);
-		(*pixeliter)[1] = (num_pixel_y-1)-(unsigned int)floor((1.+center[1])/h_y);
+		(*pixeliter)[1] = (unsigned int)floor((1.+center[1])/h_y);
+//		if ((*pixeliter)[0] >= num_pixel_x)
+//			(*pixeliter)[0] = num_pixel_x-1;
+//		if ((*pixeliter)[1] >= num_pixel_y)
+//			(*pixeliter)[1] = num_pixel_y-1;
 	}
 
 	return pixels;
