@@ -127,6 +127,8 @@ int main (int argc, char *argv[])
 		return 255;
 	}
 
+	SpaceElement_ptr_t truesolution;
+
 	// create the inverse problem
 	InverseProblem_ptr_t inverseproblem;
 	{
@@ -151,9 +153,6 @@ int main (int argc, char *argv[])
 		NormedSpace_ptr_t Y = NormedSpaceFactory::create(
 				num_measurements, opts.type_spacey, args_SpaceY);
 
-		// then create the SpaceElement
-		SpaceElement_ptr_t y = ElementCreator::create(Y, rhs);
-
 		// and the discretized radon transform and backprojection
 		Mapping_ptr_t A(new DiscretizedRadon(
 				X,Y,
@@ -170,6 +169,36 @@ int main (int argc, char *argv[])
 		// make each the adjoint of the other
 		dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
 		dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
+
+		// prepare true solution
+		truesolution = ElementCreator::create(X, solution);
+
+		// then create the SpaceElement
+		SpaceElement_ptr_t y;
+		if (solution.isZero())
+			y = ElementCreator::create(Y, rhs);
+		else {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Solution given, calculating rhs from it.";
+			y = (*A)(truesolution);
+
+			using namespace MatrixIO;
+			if (!opts.rhs_file.string().empty()) {
+				std::ofstream ost(opts.rhs_file.string().c_str());
+				if (ost.good())
+					try {
+						SpaceElementWriter::output(ost, y);
+					} catch (MatrixIOStreamEnded_exception &e) {
+						std::cerr << "Failed to fully write rhs to file.\n";
+					}
+				else {
+					std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
+					return 255;
+				}
+			} else {
+				std::cout << "No rhs file given." << std::endl;
+			}
+		}
 
 		inverseproblem.reset(new InverseProblem(A,X,Y,y));
 	}
@@ -212,12 +241,6 @@ int main (int argc, char *argv[])
 				<< rhs.transpose() << std::endl;
 		}
 	}
-
-	// prepare true solution
-	SpaceElement_ptr_t truesolution =
-			ElementCreator::create(
-					inverseproblem->x->getSpace(),
-					solution);
 
 	// create database
 	Database_ptr_t database =
