@@ -59,6 +59,9 @@ public:
 	const Eigen::MatrixXd& getMatrix() const
 	{ return matrix; }
 
+	void setMatrix(const Eigen::MatrixXd& _matrix)
+	{ matrix = _matrix; }
+
 private:
 
 private:

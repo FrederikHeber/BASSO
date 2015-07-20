@@ -81,7 +81,7 @@ public:
 	 *
 	 * @return const ref to matrix
 	 */
-	const DiscretizedRadonMatrix& get() const
+	DiscretizedRadonMatrix& get()
 	{ return radon_matrix; }
 
 private:

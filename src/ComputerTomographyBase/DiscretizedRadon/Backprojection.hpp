@@ -81,7 +81,7 @@ public:
 	 *
 	 * @return const ref to matrix
 	 */
-	const BackprojectionMatrix& get() const
+	BackprojectionMatrix& get()
 	{ return backprojection_matrix; }
 
 private:

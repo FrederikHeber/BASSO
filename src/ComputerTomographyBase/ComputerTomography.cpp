@@ -169,6 +169,9 @@ int main (int argc, char *argv[])
 		// make each the adjoint of the other
 		dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
 		dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
+		// use transpose of Backprojection as adjoint
+		dynamic_cast<DiscretizedRadon &>(*A).get().setMatrix(
+				dynamic_cast<Backprojection &>(*A_t).get().getMatrix().transpose());
 
 		// prepare true solution
 		truesolution = ElementCreator::create(X, solution);

@@ -79,6 +79,9 @@ public:
 
 	typedef std::vector< pixel_t > pixels_t;
 
+	void setMatrix(const Eigen::MatrixXd& _matrix)
+	{ matrix = _matrix; }
+
 private:
 	/** Calculates intersection points between a line and all pixel
 	 * boundaries, i.e. the discretized grid lines.
