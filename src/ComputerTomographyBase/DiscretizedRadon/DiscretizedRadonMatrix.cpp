@@ -162,19 +162,24 @@ void DiscretizedRadonMatrix::calculateLengths(
 {
 	const unsigned int row_index =
 			_offset + (_angle * num_offsets);
+	const double totallength =
+			(*_intersections.begin() - *_intersections.rbegin()).norm();
 	pixels_t::const_iterator pixeliter = _pixels.begin();
 	intersections_t::const_iterator advanceiter = _intersections.begin();
 	intersections_t::const_iterator pointiter = advanceiter++;
+	double length_sum = 0.;
 	for (; advanceiter != _intersections.end();
 			pointiter = advanceiter++, ++pixeliter) {
 		const double length = ((*pointiter) - (*advanceiter)).norm();
 		const unsigned int col_index =
 				(*pixeliter)[1] + ((*pixeliter)[0] * num_pixel_y);
 		matrix( row_index, col_index ) = length;
+		length_sum += length;
 		if (debugflag)
 			BOOST_LOG_TRIVIAL(debug) << "a_{" << row_index << ","
 				<< col_index << "} = " << length;
 	}
+	assert( fabs(length_sum - totallength) < BASSOTOLERANCE );
 	assert( pixeliter == _pixels.end() );
 }
 
