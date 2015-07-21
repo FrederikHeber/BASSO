@@ -16,6 +16,11 @@
 class DiscretizedRadonMatrixUnitTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE( DiscretizedRadonMatrixUnitTest );
+  CPPUNIT_TEST( singlePixel_few_angles_few_offsetsTest );
+  CPPUNIT_TEST( singlePixel_many_angles_few_offsetsTest );
+  CPPUNIT_TEST( singlePixel_few_angles_many_offsetsTest );
+  CPPUNIT_TEST( ninePixel_few_angles_few_offsetsTest );
+  CPPUNIT_TEST( ninePixel_few_angles_many_offsetsTest );
   CPPUNIT_TEST( adjointTest );
   CPPUNIT_TEST_SUITE_END();
 
@@ -23,6 +28,11 @@ public:
   void setUp();
   void tearDown();
 
+  void singlePixel_few_angles_few_offsetsTest();
+  void singlePixel_many_angles_few_offsetsTest();
+  void singlePixel_few_angles_many_offsetsTest();
+  void ninePixel_few_angles_few_offsetsTest();
+  void ninePixel_few_angles_many_offsetsTest();
   void adjointTest();
 };
 

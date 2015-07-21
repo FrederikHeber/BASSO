@@ -36,12 +36,21 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 	matrix.setZero();
 
 //	const double h = 2./(double)_num_offsets;
+	// all parameters must be positive
+	assert( _num_pixel_x > 0);
+	assert( _num_pixel_y > 0);
+	assert( _num_angles > 0);
+	assert( _num_offsets > 0);
 	// num_offsets must be odd
 	assert( _num_offsets % 2 == 1);
-	const int half_offsets = (_num_offsets-1) / 2;
+	const int half_offsets =
+			_num_offsets > 1 ?
+					(_num_offsets-1) / 2 : 0;
 	if (debugflag)
 		BOOST_LOG_TRIVIAL(debug) << "half_offsets = " << half_offsets;
-	const double q = 1./(double)half_offsets;
+	const double q =
+			(half_offsets != 0) ?
+					1./(double)half_offsets : 2.;
 	if (debugflag)
 		BOOST_LOG_TRIVIAL(debug) << "deltas = " << q;
 	const double deltaphi = M_PI/_num_angles;
@@ -71,7 +80,7 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 
 			// remove identical and illegal points
 			removeIdenticalAdjacentPoints(intersections);
-			removeIllegalPoints(intersections);
+//			removeIllegalPoints(intersections);
 
 			if (intersections.size() > 1) {
 				// convert to pixels
@@ -195,6 +204,7 @@ DiscretizedRadonMatrix::calculatePixelBoundaryIntersections(
 	const double h_x = 2./(double)num_pixel_x;
 	const double h_y = 2./(double)num_pixel_y;
 	if (fabs(sphi) > BASSOTOLERANCE)
+		// go one further to also calculate the end point of the last pixel
 		for (unsigned int pixel_x = 0; pixel_x <= num_pixel_x; ++pixel_x) {
 			/// calculate x coordinate of intersection with vertical line
 			const double pos_x = -1. + h_x*pixel_x;
@@ -212,6 +222,7 @@ DiscretizedRadonMatrix::calculatePixelBoundaryIntersections(
 				intersections.insert(point_x);
 		}
 	if (fabs(cphi) > BASSOTOLERANCE)
+		// go one further to also calculate the end point of the last pixel
 		for (unsigned int pixel_y = 0; pixel_y <= num_pixel_y; ++pixel_y) {
 			/// calculate y coordinate of intersection with horizontal line
 			const double pos_y = -1. + h_y*pixel_y;
@@ -245,17 +256,19 @@ DiscretizedRadonMatrix::calculatePixelBoundaryIntersections(
 void DiscretizedRadonMatrix::removeIdenticalAdjacentPoints(
 		intersections_t &_intersections) const
 {
-	intersections_t::iterator advanceiter = _intersections.begin();
-	intersections_t::iterator pointiter = advanceiter++;
-	for (; advanceiter != _intersections.end();) {
-		const double length = ((*pointiter) - (*advanceiter)).squaredNorm();
-		if (length < BASSOTOLERANCE) {
-			_intersections.erase(advanceiter);
-			advanceiter = pointiter;
-			if (++advanceiter == _intersections.end())
-				break;
-		} else {
-			pointiter = advanceiter++;
+	if (!_intersections.empty()) {
+		intersections_t::iterator advanceiter = _intersections.begin();
+		intersections_t::iterator pointiter = advanceiter++;
+		for (; advanceiter != _intersections.end();) {
+			const double length = ((*pointiter) - (*advanceiter)).squaredNorm();
+			if (length < BASSOTOLERANCE) {
+				_intersections.erase(advanceiter);
+				advanceiter = pointiter;
+				if (++advanceiter == _intersections.end())
+					break;
+			} else {
+				pointiter = advanceiter++;
+			}
 		}
 	}
 }
@@ -263,16 +276,18 @@ void DiscretizedRadonMatrix::removeIdenticalAdjacentPoints(
 void DiscretizedRadonMatrix::removeIllegalPoints(
 		intersections_t &_intersections) const
 {
-	intersections_t::iterator advanceiter = _intersections.begin();
-	intersections_t::iterator pointiter = advanceiter++;
-	for (; advanceiter != _intersections.end();
-			pointiter = advanceiter++) {
+	if (!_intersections.empty()) {
+		intersections_t::iterator advanceiter = _intersections.begin();
+		intersections_t::iterator pointiter = advanceiter++;
+		for (; advanceiter != _intersections.end();
+				pointiter = advanceiter++) {
+			if (((*pointiter)[0]+BASSOTOLERANCE >= 1.) || ((*pointiter)[1]+BASSOTOLERANCE >= 1.))
+				_intersections.erase(pointiter);
+		}
+		// also check last element
 		if (((*pointiter)[0]+BASSOTOLERANCE >= 1.) || ((*pointiter)[1]+BASSOTOLERANCE >= 1.))
 			_intersections.erase(pointiter);
 	}
-	// also check last element
-	if (((*pointiter)[0]+BASSOTOLERANCE >= 1.) || ((*pointiter)[1]+BASSOTOLERANCE >= 1.))
-		_intersections.erase(pointiter);
 }
 
 void DiscretizedRadonMatrix::correctBoundaryPixels(
@@ -285,11 +300,13 @@ void DiscretizedRadonMatrix::correctBoundaryPixels(
 	if ((fabs(sin(phi)) < BASSOTOLERANCE) && (_offset == (num_offsets-1)/2))
 		for(pixels_t::iterator pixeliter = _pixels.begin();
 			pixeliter != _pixels.end(); ++pixeliter)
+			if ((*pixeliter)[0] == num_pixel_x)
 				(*pixeliter)[0] -= 1;
 	if ((fabs(cos(phi)) < BASSOTOLERANCE) && (_offset == (num_offsets-1)/2))
 		for(pixels_t::iterator pixeliter = _pixels.begin();
 			pixeliter != _pixels.end(); ++pixeliter)
-			(*pixeliter)[1] += 1;
+			if ((*pixeliter)[1] == num_pixel_y)
+				(*pixeliter)[1] -= 1;
 }
 
 DiscretizedRadonMatrix::pixels_t DiscretizedRadonMatrix::PointsToPixels(
