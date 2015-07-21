@@ -111,13 +111,12 @@ BackprojectionMatrix::BackprojectionMatrix(
 				assert( (u > -BASSOTOLERANCE) && (u-1. < BASSOTOLERANCE) );
 				const unsigned int col_index =
 						(k+half_offsets) + (angle*num_offsets);
-				if (((k+half_offsets) < 0)
-						|| ((k+half_offsets+1) >= (int)num_offsets))
-					continue;
 				const unsigned int next_col_index =
 						col_index + 1;
-				matrix( row_index, col_index) += prefactor*(1.-u);
-				matrix( row_index, next_col_index) += prefactor*u;
+				if ((k+half_offsets) >= 0)
+					matrix( row_index, col_index) += prefactor*(1.-u);
+				if ((k+half_offsets+1) < (int)num_offsets)
+					matrix( row_index, next_col_index) += prefactor*u;
 			}
 		}
 	}
