@@ -9,62 +9,13 @@
 #include <ComputerTomographyBase/DiscretizedRadon/BackprojectionMatrix.hpp>
 #include "BassoConfig.h"
 
-#include <algorithm>
 #include <fstream>
 #include <vector>
 
+#include "ComputerTomographyBase/DiscretizedRadon/Helpers.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 
-/** Returns the center of the pixel indicated by the indices \a _i
- * and \a _j, this is times 1 over h_x/h_y.
- *
- * @param _i index for x
- * @param _j index for y
- * @param _h_x length of a pixel in x direction
- * @param _h_y length of a pixel in y direction
- * @return pixel center coordinates
- */
-static point_t getPixelCenter(
-		const unsigned int _i,
-		const unsigned int _j,
-		const double _h_x,
-		const double _h_y
-		)
-{
-	point_t point;
-	point[0] = -1.+(_i+.5)*_h_x;
-	point[1] = -1.+(_j+.5)*_h_y;
-	return point;
-}
-
-struct calculateOmega
-{
-	point_t operator()(const double _phi) const
-	{
-		point_t omega;
-		omega[0] = cos(_phi);
-		omega[1] = sin(_phi);
-		return omega;
-	}
-};
-
-struct AngleIncrementer
-{
-	AngleIncrementer(const double _delta) :
-		angle(-_delta),
-		delta(_delta)
-	{}
-	double operator()()
-	{
-		angle += delta;
-		return angle;
-	}
-
-private:
-	double angle;
-	double delta;
-};
 
 BackprojectionMatrix::BackprojectionMatrix(
 		const unsigned int _num_pixel_x,
@@ -80,19 +31,13 @@ BackprojectionMatrix::BackprojectionMatrix(
 	matrix.setZero();
 
 	// precalculate omegas
-	std::vector<double> angles(num_angles);
-	std::generate(
-			angles.begin(), angles.end(),
-			AngleIncrementer(M_PI/(double)num_angles));
-	std::vector< point_t > omegas(num_angles);
-	std::transform(
-			angles.begin(), angles.end(),
-			omegas.begin(),
-			calculateOmega());
+	std::vector< point_t > omegas = detail::calculateOmegas(num_angles);
 
 	// go through every pixel
 	assert( _num_offsets % 2 == 1);
-	const int half_offsets = (_num_offsets-1) / 2;
+	const int half_offsets =
+			_num_offsets > 1 ?
+					(_num_offsets-1) / 2 : 0;
 	const double delta = 1./(double)half_offsets;
 	const double h_x = 2./(double)num_pixel_x;
 	const double h_y = 2./(double)num_pixel_y;
@@ -100,7 +45,8 @@ BackprojectionMatrix::BackprojectionMatrix(
 	for (unsigned int pixel_x = 0; pixel_x < num_pixel_x; ++pixel_x) {
 		for (unsigned int pixel_y = 0; pixel_y < num_pixel_y; ++pixel_y) {
 			const unsigned int row_index = pixel_y + (pixel_x*num_pixel_y);
-			const point_t x = getPixelCenter(pixel_x, pixel_y, h_x, h_y);
+			const point_t x =
+					detail::getPixelCenter(pixel_x, pixel_y, h_x, h_y);
 //			if (x.squaredNorm() - 1. > BASSOTOLERANCE)
 //				continue;
 			for (unsigned int angle = 0; angle < _num_angles; ++angle) {
