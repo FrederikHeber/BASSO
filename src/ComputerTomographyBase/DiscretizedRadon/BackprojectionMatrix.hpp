@@ -12,6 +12,8 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <Eigen/SparseCore>
+
 #include "ComputerTomographyBase/DiscretizedRadon/point_t.hpp"
 
 /** This class implements the back projection which is the adjoint operator
@@ -56,10 +58,10 @@ public:
 	 *
 	 * @return const ref to matrix object
 	 */
-	const Eigen::MatrixXd& getMatrix() const
+	const Eigen::SparseMatrix<double, Eigen::RowMajor>& getMatrix() const
 	{ return matrix; }
 
-	void setMatrix(const Eigen::MatrixXd& _matrix)
+	void setMatrix(const Eigen::SparseMatrix<double, Eigen::RowMajor>& _matrix)
 	{ matrix = _matrix; }
 
 private:
@@ -75,7 +77,7 @@ private:
 	const unsigned int num_offsets;
 
 	//!> matrix containing discretized backprojection
-	Eigen::MatrixXd matrix;
+	Eigen::SparseMatrix<double, Eigen::RowMajor> matrix;
 };
 
 

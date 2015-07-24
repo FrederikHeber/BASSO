@@ -60,9 +60,9 @@ BackprojectionMatrix::BackprojectionMatrix(
 				const unsigned int next_col_index =
 						col_index + 1;
 				if ((k+half_offsets) >= 0)
-					matrix( row_index, col_index) += prefactor*(1.-u);
+					matrix.coeffRef( row_index, col_index) += prefactor*(1.-u);
 				if ((k+half_offsets+1) < (int)num_offsets)
-					matrix( row_index, next_col_index) += prefactor*u;
+					matrix.coeffRef( row_index, next_col_index) += prefactor*u;
 			}
 		}
 	}

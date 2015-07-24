@@ -182,7 +182,7 @@ void DiscretizedRadonMatrix::calculateLengths(
 		const double length = ((*pointiter) - (*advanceiter)).norm();
 		const unsigned int col_index =
 				(*pixeliter)[1] + ((*pixeliter)[0] * num_pixel_y);
-		matrix( row_index, col_index ) = length;
+		matrix.coeffRef( row_index, col_index ) = length;
 		length_sum += length;
 		if (debugflag)
 			BOOST_LOG_TRIVIAL(debug) << "a_{" << row_index << ","

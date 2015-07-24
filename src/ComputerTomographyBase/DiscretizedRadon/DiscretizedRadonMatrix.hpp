@@ -17,7 +17,7 @@
 #include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 
 #include "ComputerTomographyBase/DiscretizedRadon/point_t.hpp"
 
@@ -67,7 +67,7 @@ public:
 	 *
 	 * @return const ref to matrix object
 	 */
-	const Eigen::MatrixXd& getMatrix() const
+	const Eigen::SparseMatrix<double, Eigen::RowMajor>& getMatrix() const
 	{ return matrix; }
 
 	//!> typedef for a vector of intersection points
@@ -79,7 +79,7 @@ public:
 
 	typedef std::vector< pixel_t > pixels_t;
 
-	void setMatrix(const Eigen::MatrixXd& _matrix)
+	void setMatrix(const Eigen::SparseMatrix<double, Eigen::RowMajor>& _matrix)
 	{ matrix = _matrix; }
 
 private:
@@ -155,7 +155,7 @@ private:
 	const unsigned int num_offsets;
 
 	//!> matrix containing discretized radon transform
-	Eigen::MatrixXd matrix;
+	Eigen::SparseMatrix<double, Eigen::RowMajor> matrix;
 
 	bool debugflag;
 };
