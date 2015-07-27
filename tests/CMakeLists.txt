@@ -4,6 +4,7 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
                   Basso 
                   MatrixFactorizer
                   ComputerTomography
+                  RangeProjector
 )
 
 # tests for BASSO program
@@ -14,3 +15,6 @@ add_subdirectory (MatrixFactorizer)
 
 # tests for ComputerTomography program
 add_subdirectory (ComputerTomography)
+
+# tests for RangeProjector program
+add_subdirectory (RangeProjector)

@@ -1,7 +1,7 @@
 /*
- * BassoConfigurator.cpp
+ * RangeProjectorConfigurator.cpp
  *
- *  Created on: Apr 7, 2015
+ *  Created on: Jul 27, 2015
  *      Author: heber
  */
 
@@ -15,11 +15,11 @@
 
 #include "Log/Logging.hpp"
 
-#include <BassoBase/Options/BassoOptions.hpp>
+#include <RangeProjectorBase/Options/RangeProjectorOptions.hpp>
 
 int main (int argc, char *argv[])
 {
-	BassoOptions opts;
+	RangeProjectorOptions opts;
 	opts.init();
 
 	// parse options

@@ -167,6 +167,9 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 add_subdirectory (src/BassoBase)
 
 # add src folders of executables
+add_subdirectory (src/RangeProjectorBase)
+
+# add src folders of executables
 add_subdirectory (src/MatrixFactorizerBase)
 
 # add src folders of executables

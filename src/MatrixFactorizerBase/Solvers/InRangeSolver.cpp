@@ -14,7 +14,7 @@
 
 #include "Database/Database_mock.hpp"
 #include "MatrixFactorizerBase/Solvers/InverseProblemSolver.hpp"
-#include "MatrixFactorizerBase/Solvers/RangeProjector.hpp"
+#include "RangeProjectorBase/RangeProjector/RangeProjector.hpp"
 #include "Options/CommandLineOptions.hpp"
 
 InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :

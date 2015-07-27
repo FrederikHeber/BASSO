@@ -1,7 +1,6 @@
 
 #include "BassoConfig.h"
 
-// A simple program that computes the square root of a number
 #include <Eigen/Dense>
 #include <fstream>
 #include <iomanip>
