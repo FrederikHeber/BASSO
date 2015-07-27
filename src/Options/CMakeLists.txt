@@ -4,7 +4,8 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Options 
 	CommandLineOptions.cpp
+	Options.cpp
 	)
 
 install (FILES CommandLineOptions.hpp DESTINATION include)
-
+install (FILES Options.hpp DESTINATION include)

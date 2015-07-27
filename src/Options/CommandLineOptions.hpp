@@ -11,20 +11,20 @@
 #include "BassoConfig.h"
 
 #include <boost/filesystem/path.hpp>
-#include <boost/program_options.hpp>
 #include <iosfwd>
 #include <string>
 #include <vector>
 
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Options/Options.hpp"
 
 /** This class contains the default command-line options that all of algorithms need.
  * It may be specialized to add specific commands for a specific executable.
  *
  * Under the hood we use boost::program_options to parse the options.
  */
-class CommandLineOptions
+class CommandLineOptions : public Options
 {
 public:
 	CommandLineOptions();
@@ -42,23 +42,6 @@ public:
 	 */
 	void parse(int argc, char **argv);
 
-	/** Shows the help conditions if desired.
-	 *
-	 * \param char array with program name, i.e. argv[0]
-	 * \return true - help shown, so exit, false - else
-	 */
-	bool showHelpConditions(const char * const program_name) const;
-
-	/** Shows a help message in case an error parsing the option occurs.
-	 *
-	 */
-	void showHelpinErrorCase() const;
-
-	/** Sets the verbosity as specified by the command-line option.
-	 *
-	 */
-	void setVerbosity() const;
-
 	/** Checks whether the values make any sense.
 	 *
 	 * \return true - values sensible, false - not
@@ -75,7 +58,7 @@ public:
 	 *
 	 * @param _output output stream to write to
 	 */
-	void store(std::ostream &_output);
+	void store(std::ostream &_output) const;
 
 protected:
 	/** Override this function to add more options to \a desc.
@@ -123,49 +106,11 @@ private:
 	bool checkSensibility_updatealgorithm() const;
 	bool checkSensibility_wolfeconstants() const;
 
-
-protected:
-	/** Helper template to write "key = value" pair to a stream.
-	 *
-	 * Note that the template class \a T designates the type of the
-	 * value.
-	 *
-	 * \note This function resides here to allow use by derived classes
-	 * while not requiring to have a new namespace (i.e. we just use
-	 * CommandLineOptions as a namespace).
-	 *
-	 * @param _output output stream
-	 * @param _vm map containing all option keys and variables
-	 * @param _token key as string
-	 */
-	template <class T>
-	static
-	void writeValue(
-			std::ostream &_output,
-			const boost::program_options::variables_map &_vm,
-			const std::string &_token)
-	{
-		if (_vm.count(_token))
-			_output << "\t" <<
-				_token << " = " << _vm[_token].as<T>() << std::endl;
-	}
-
-protected:
-	//!> container for all options combined
-	boost::program_options::options_description desc_all;
-
-	//!> container for options specifying the configuration file
-	boost::program_options::options_description desc_config;
-
-	//!> key-value map of all parsed options
-	boost::program_options::variables_map vm;
-
 public:
 	// primary options: set by command-line
 	std::string algorithm_name;
 	double C;
 	bool calculateAngles;
-	boost::filesystem::path config_filename;
 	bool database_replace;
 	double delta;
 	bool enforceRandomMapping;

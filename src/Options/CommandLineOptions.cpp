@@ -22,7 +22,6 @@
 namespace po = boost::program_options;
 
 CommandLineOptions::CommandLineOptions() :
-	desc_all("Configuration Options"),
 	algorithm_name(
 			MinimizerFactory::TypeNames[MinimizerFactory::landweber]),
 	C(.9),
@@ -51,7 +50,6 @@ CommandLineOptions::CommandLineOptions() :
 	stepwidth_type(DetermineStepWidthFactory::MinimizingResidual),
 	tau(1.1),
 	updatetype(LastNSearchDirections::RoundRobin),
-	verbose(0),
 	type(MinimizerFactory::MAX_InstanceType)
 {}
 
@@ -60,6 +58,8 @@ CommandLineOptions::~CommandLineOptions()
 
 void CommandLineOptions::init()
 {
+	Options::init();
+
 	boost::program_options::options_description desc_algorithm("Algorithm options");
 	boost::program_options::options_description desc_banachspace("Banach space options");
 	boost::program_options::options_description desc_general("General options");
@@ -102,12 +102,10 @@ void CommandLineOptions::init()
 	desc_general.add_options()
 			("database-replace", po::value<bool>(),
 					"whether to replace tuples in database file (true) or just add (default=false)")
-			("help", "produce help message")
-	        	("output-steps", po::value<unsigned int>(), "output solution each ... steps")
+			("output-steps", po::value<unsigned int>(),
+					"output solution each ... steps")
 			("tuple-parameters", po::value< std::vector<std::string> >()->multitoken(),
 					"set additional parameters to add to tables in iteration database for distinguishing tuples")
-			("verbose", po::value<unsigned int>(),
-					"set the amount of verbosity")
 			;
 
 	desc_landweber.add_options()
@@ -138,13 +136,7 @@ void CommandLineOptions::init()
 					"set the two wolfe conditions for positivity and stronger than linear (inexact line search)")
 			;
 
-	desc_config.add_options()
-			("config", po::value<boost::filesystem::path>(),
-					"filename of a configuration file containing default option parameters. Note that other command-line values override those in this file.")
-			;
-
 	desc_all
-		.add(desc_config)
 		.add(desc_general)
 		.add(desc_banachspace)
 		.add(desc_algorithm)
@@ -156,17 +148,7 @@ void CommandLineOptions::init()
 
 void CommandLineOptions::parse(int argc, char **argv)
 {
-	/// parse the usual command line options
-	po::store(po::parse_command_line(argc, argv, desc_all), vm);
-	po::notify(vm);
-
-	/// additionally parse config file
-	if (vm.count("config")) {
-		config_filename = vm["config"].as<boost::filesystem::path>();
-		std::ifstream config_file(config_filename.string().c_str());
-		po::store(po::parse_config_file(config_file, desc_all), vm);
-		po::notify(vm);
-	}
+	Options::parse(argc,argv);
 
 	// get desired algorithm
 	if (vm.count("algorithm")) {
@@ -365,12 +347,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Searchspace Index update algorithm set to " << updatetype;
 	}
 
-	if (vm.count("verbose")) {
-		verbose = vm["verbose"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Verbose set to " << verbose;
-	}
-
 	if (vm.count("wolfe-constants")) {
 		wolfe_constants = vm["wolfe-constants"].as< std::vector<double> >();
 		BOOST_LOG_TRIVIAL(debug)
@@ -381,55 +357,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 	}
 
 	internal_parse();
-}
-
-bool CommandLineOptions::showHelpConditions(const char * const program_name) const
-{
-	if (vm.count("help")) {
-		std::cout << program_name << " version "
-				<< Basso_VERSION_MAJOR << "."
-				<< Basso_VERSION_MINOR << std::endl;
-	    std::cout << desc_all << "\n";
-	    return true;
-	} else if (vm.count("version")) {
-		std::cout << program_name << " version "
-				<< Basso_VERSION_MAJOR << "."
-				<< Basso_VERSION_MINOR << std::endl;
-		return true;
-	} else
-		return false;
-}
-
-void CommandLineOptions::showHelpinErrorCase() const
-{
-	std::cout << "There was an error parsing options, use '--help' to learn more." << std::endl;
-}
-
-void CommandLineOptions::setVerbosity() const
-{
-	stopLogging();
-	switch (verbose) {
-	default:
-	case 0:
-		logging::core::get()->set_filter
-		(
-				logging::trivial::severity >= logging::trivial::info
-		);
-		break;
-	case 1:
-		logging::core::get()->set_filter
-		(
-				logging::trivial::severity >= logging::trivial::debug
-		);
-		break;
-	case 2:
-		logging::core::get()->set_filter
-		(
-				logging::trivial::severity >= logging::trivial::trace
-		);
-		break;
-	}
-	startLogging();
 }
 
 bool CommandLineOptions::checkSensibility_delta() const
@@ -604,6 +531,8 @@ bool CommandLineOptions::checkSensibility_wolfeconstants() const
 
 bool CommandLineOptions::checkSensibility() const
 {
+	Options::checkSensibility();
+
 	bool status = true;
 	status &= checkSensibility_delta();
 	status &= checkSensibility_OrthogonalDirections();
@@ -628,6 +557,8 @@ bool CommandLineOptions::checkSensibility() const
 
 void CommandLineOptions::setSecondaryValues()
 {
+	Options::setSecondaryValues();
+
 	type = MinimizerFactory::getTypeForName(algorithm_name);
 
 	// set good maximum of inner iterations
@@ -635,8 +566,10 @@ void CommandLineOptions::setSecondaryValues()
 		maxinneriter = N*100;
 }
 
-void CommandLineOptions::store(std::ostream &_output)
+void CommandLineOptions::store(std::ostream &_output) const
 {
+	Options::store(_output);
+
 	_output << "# [General]" << std::endl;
 	writeValue<bool>(_output, vm,  "database-replace");
 	writeValue<unsigned int>(_output, vm,  "output-steps");
@@ -645,7 +578,6 @@ void CommandLineOptions::store(std::ostream &_output)
 				iter != tuple_parameters.end();)
 			_output << "\ttuple-parameters = " << *(iter++) << std::endl;
 	}
-	writeValue<unsigned int>(_output, vm,  "verbose");
 
 	_output << "# [Banach Space]" << std::endl;
 	writeValue<std::string>(_output, vm,  "type-space-x");
