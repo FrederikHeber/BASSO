@@ -5,6 +5,7 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
                   MatrixFactorizer
                   ComputerTomography
                   RangeProjector
+                  NoiseAdder
 )
 
 # tests for BASSO program
@@ -18,3 +19,6 @@ add_subdirectory (ComputerTomography)
 
 # tests for RangeProjector program
 add_subdirectory (RangeProjector)
+
+# tests for NoiseAdder program
+add_subdirectory (NoiseAdder)

@@ -173,6 +173,9 @@ add_subdirectory (src/RangeProjectorBase)
 add_subdirectory (src/MatrixFactorizerBase)
 
 # add src folders of executables
+add_subdirectory (src/NoiseAdderBase)
+
+# add src folders of executables
 add_subdirectory (src/ComputerTomographyBase)
 
 #### TESTS AND UNITTESTS ####
