@@ -10,6 +10,8 @@
 
 #include "BassoConfig.h"
 
+#include <string>
+
 #include <Eigen/Dense>
 
 #include "Minimizations/types.hpp"
@@ -35,6 +37,21 @@ struct LinearMappingFactory
 			const NormedSpace_weakptr_t _SourceSpaceRef,
 			const NormedSpace_weakptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd & _matrix,
+			const bool _isAdjoint = false);
+
+	/** Factory function creating a linear mapping, i.e. a matrix
+	 * associated to a specific space.
+	 *
+	 * @param _SourceSpaceRef reference to source space
+	 * @param _TargetSpaceRef reference to target space
+	 * @param _name token (or filename) of the matrix object
+	 * @param _isAdjoint states whether matrix is to be applied as transposed or not
+	 * @return
+	 */
+	static const Mapping_ptr_t create(
+			const NormedSpace_weakptr_t _SourceSpaceRef,
+			const NormedSpace_weakptr_t _TargetSpaceRef,
+			const std::string & _name,
 			const bool _isAdjoint = false);
 };
 
