@@ -23,6 +23,7 @@ class LinearMapping;
 class LInfinityDualityMapping;
 class RelativeShrinkageMapping;
 struct SpaceElementWriter;
+struct SpaceElementReader;
 
 namespace detail {
 	template <class T> void setResultingVector(
@@ -49,6 +50,7 @@ private:
 	friend class LInfinityDualityMapping;
 	friend class RelativeShrinkageMapping;
 	friend struct SpaceElementWriter;
+	friend struct SpaceElementReader;
 	template <class vector_type> friend struct VectorSetter;
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)

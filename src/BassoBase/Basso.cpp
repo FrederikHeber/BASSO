@@ -18,7 +18,7 @@
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Elements/SpaceElementWriter.hpp"
+#include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"

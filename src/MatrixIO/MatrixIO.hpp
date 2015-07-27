@@ -10,11 +10,14 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-#include <Eigen/SparseCore>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include <boost/filesystem.hpp>
+
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 
 #include "MatrixIO/MatrixIOExceptions.hpp"
 
@@ -144,6 +147,51 @@ inline std::istream & operator>>(
 			throw MatrixIOStreamEnded_exception();
 	}
 	return ist;
+}
+
+//!> typedef for a pair of dimensions, representing row and column counts
+typedef std::pair<Eigen::MatrixXd::Index,Eigen::MatrixXd::Index> dims_t;
+
+/** Determines the dimensions for a vector or matrix object contained
+ * in the stream \a ist.
+ *
+ * \note we do not change the position inside the stream but the stream
+ * position must be right at the start of the object
+ *
+ * @param ist stream to parse dimensions of object from
+ * @return pair with rows and columns of oject
+ */
+inline dims_t getDimensions(std::istream &ist)
+{
+	std::pair<Eigen::MatrixXd::Index,Eigen::MatrixXd::Index> result;
+
+	size_t position = ist.tellg();
+	if (ist.good()) {
+		// parse first line with dimensions
+		result.first = 0;
+		result.second = 0;
+		{
+			std::string contents;
+			getline(ist, contents);
+			std::stringstream sstr(contents);
+			sstr >> result.first;
+			sstr >> result.second;
+		}
+	}
+	ist.seekg(position);
+
+	return result;
+}
+
+/** Checks whether the string represents the path of a present file.
+ *
+ * @param _name name of file
+ * @return true file present, false - else
+ */
+inline bool isPresentFile(const std::string &_name)
+{
+	boost::filesystem::path matrix_file(_name);
+	return boost::filesystem::exists(matrix_file);
 }
 
 /** Parse a Matlab-like formatted stream \a ist into the matrix \a m.
