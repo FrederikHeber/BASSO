@@ -19,7 +19,8 @@ ComputerTomographyOptions::ComputerTomographyOptions() :
 		num_pixel_x(0),
 		num_pixel_y(0),
 		num_angles(0),
-		num_offsets(0)
+		num_offsets(0),
+		noiselevel(0.)
 {}
 
 void ComputerTomographyOptions::internal_init()
@@ -29,6 +30,8 @@ void ComputerTomographyOptions::internal_init()
 	desc_basso.add_options()
 			("compare-against", po::value< boost::filesystem::path >(),
 					"set the file name of the solution to compare against (BregmanDistance)")
+			("noise-level", po::value< double >(),
+					"set noise level to disturb the projected true solution with  (relative)")
 	        ("num-pixels-x", po::value< unsigned int >(),
 	        		"set the desired number of pixels in x direction")
 			("num-pixels-y", po::value< unsigned int >(),
@@ -56,6 +59,12 @@ void ComputerTomographyOptions::internal_parse()
 		comparison_file = vm["compare-against"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Parsing true solution vector from " << comparison_file;
+	}
+
+	if (vm.count("noise-level")) {
+		noiselevel = vm["noise-level"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Noise level set to " << noiselevel;
 	}
 
 	if (vm.count("num-pixels-x")) {
@@ -150,6 +159,7 @@ void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 {
 	_output << "# [ComputerTomography]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "compare-against");
+	writeValue<double>(_output, vm,  "noise-level");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
 	writeValue<unsigned int>(_output, vm,  "num-angles");

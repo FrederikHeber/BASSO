@@ -204,6 +204,24 @@ int main (int argc, char *argv[])
 			}
 		}
 
+		if (opts.noiselevel != 0.) {
+			// finally, add some noise
+			Eigen::VectorXd noisevector(Y->getDimension());
+			noisevector.setRandom();
+			SpaceElement_ptr_t noise =
+					ElementCreator::create(Y, noisevector);
+			*noise *= y->Norm()/noise->Norm() * opts.noiselevel;
+			BOOST_LOG_TRIVIAL(info)
+					<< "Max and min coeffs of noise are "
+					<< noise->getMaxCoefficientAndIndex().first << " and "
+					<< -1.*((-1.*noise)->getMaxCoefficientAndIndex().first);
+			BOOST_LOG_TRIVIAL(info)
+					<< "Max and min coeffs of image are "
+					<< y->getMaxCoefficientAndIndex().first << " and "
+					<< -1.*((-1.*y)->getMaxCoefficientAndIndex().first);
+			*y += noise;
+		}
+
 		inverseproblem.reset(new InverseProblem(A,X,Y,y));
 	}
 
