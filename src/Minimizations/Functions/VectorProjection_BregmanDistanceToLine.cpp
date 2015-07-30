@@ -11,13 +11,16 @@
 #include <cassert>
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Functions/BregmanDistance.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
 typedef typename MinimizationFunctional< std::vector<double> >::array_type array_type;
 
 BregmanDistanceToLine::BregmanDistanceToLine(
 		const BregmanDistance &_distance,
 		const Norm &_dualnorm,
-		const PowerTypeDualityMapping &_J_q,
+		const Mapping &_J_q,
 		const SpaceElement_ptr_t &_linevector,
 		const SpaceElement_ptr_t &_tobeprojected,
 		const double _powertype

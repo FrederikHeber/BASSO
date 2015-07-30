@@ -10,11 +10,10 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/types.hpp"
+
+class Mapping;
+class Norm;
 
 /** This implements a functor calculating the Bregman distance between
  * two points in a Lp space.
@@ -31,7 +30,7 @@ public:
 	 */
 	BregmanDistance(
 			const Norm &_norm,
-			const PowerTypeDualityMapping &_J_p,
+			const Mapping &_J_p,
 			const double _power);
 
 	/** Constructor for class BregmanDistance.
@@ -99,7 +98,7 @@ private:
 	//!> lp Norm object
 	const Norm &norm;
 	//!> LpDualityMapping object
-	const PowerTypeDualityMapping &J_p;
+	const Mapping &J_p;
 };
 
 

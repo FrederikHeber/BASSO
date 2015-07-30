@@ -10,11 +10,12 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/types.hpp"
+
+class BregmanDistance;
+class Mapping;
+class Norm;
 
 /** This class implements a functional that measures the Bregman
  * Distance of a given vector to a line defined by another.
@@ -26,7 +27,7 @@ class BregmanDistanceToLine :
 public:
 	const BregmanDistance &distance;
 	const Norm &dualnorm;
-	const PowerTypeDualityMapping &J_q;
+	const Mapping &J_q;
 	//!> vector defining the line
 	const SpaceElement_ptr_t &linevector;
 	//!> vector who is to be projected onto linevector
@@ -39,7 +40,7 @@ public:
 	BregmanDistanceToLine(
 			const BregmanDistance &_distance,
 			const Norm &_dualnorm,
-			const PowerTypeDualityMapping &_J_q,
+			const Mapping &_J_q,
 			const SpaceElement_ptr_t &_linevector,
 			const SpaceElement_ptr_t &_tobeprojected,
 			const double powertype

@@ -14,13 +14,15 @@
 
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
 BregmanDistance::BregmanDistance(
 		const Norm &_norm,
-		const PowerTypeDualityMapping &_J_p,
+		const Mapping &_J_p,
 		const double _power) :
 			power(_power),
 			norm(_norm),
@@ -35,9 +37,7 @@ BregmanDistance::BregmanDistance(
 		const InverseProblem_ptr_t &_problem) :
 			power(_problem->SourceSpace->getDualityMapping()->getPower()),
 			norm(*_problem->SourceSpace->getNorm()),
-			J_p(dynamic_cast<const PowerTypeDualityMapping&>(
-							*_problem->SourceSpace->getDualityMapping())
-			)
+			J_p(*_problem->SourceSpace->getDualityMapping())
 {
 	if ((power != 0.) && (power <= 1.))
 		throw MinimizationIllegalValue_exception()

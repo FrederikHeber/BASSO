@@ -10,12 +10,12 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
 #include <vector>
 
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/types.hpp"
+
+class Mapping;
+class Norm;
 
 /** Functor to calculate MetricProjectionFunctional functional/distance.
  *
@@ -32,7 +32,7 @@ public:
 	 */
 	MetricProjectionFunctional(
 			const Norm &_dualnorm,
-			const PowerTypeDualityMapping &_J_q,
+			const Mapping &_J_q,
 			const double _dualpower,
 			const std::vector<SpaceElement_ptr_t> &_U);
 
@@ -107,8 +107,8 @@ private:
 	const double dualpower;
 	//!> lp Norm object
 	const Norm &dualnorm;
-	//!> LpDualityMapping object
-	const PowerTypeDualityMapping &J_q;
+	//!> Mapping object
+	const Mapping &J_q;
 
 	//!> search space for expanding with given coefficients
 	const std::vector<SpaceElement_ptr_t> &U;

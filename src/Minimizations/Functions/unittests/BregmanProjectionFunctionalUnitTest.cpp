@@ -17,12 +17,8 @@
 #include "Math/Helpers.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Functions/BregmanProjectionFunctional.hpp"
-#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
-#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
-#include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
-#include "Minimizations/Norms/L1Norm.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
-#include "Minimizations/Norms/LInfinityNorm.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -118,7 +114,7 @@ void BregmanProjectionFunctionalUnitTest::oneNorm()
 		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_1),
+				J_1,
 				J_1.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.82176,1.01381,1.07100,0.91063,0.59857,1.76535,2.71796,1.92243,0.52698,0.70196;
@@ -151,7 +147,7 @@ void BregmanProjectionFunctionalUnitTest::oneNorm()
 		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_1),
+				J_1,
 				J_1.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.41314,0.62818,0.66478,0.50207,0.28553,1.73849,3.38035,1.75062,0.13821,0.33762;
@@ -184,7 +180,7 @@ void BregmanProjectionFunctionalUnitTest::oneNorm()
 		const Mapping &J_1 = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_1),
+				J_1,
 				J_1.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 1.7741e-02,6.5155e-01,2.9734e-01,1.0730e-01,1.4355e-01,6.5141e+01,1.0328e+03,2.2887e+01,-1.6213e-01,1.0680e-01;
@@ -232,7 +228,7 @@ void BregmanProjectionFunctionalUnitTest::oneoneNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.66508,0.99938,0.98106,1.99821,3.57436,1.10574,0.53693,1.67773,1.89644,1.21761;
@@ -265,7 +261,7 @@ void BregmanProjectionFunctionalUnitTest::oneoneNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.63198,0.91878,0.90229,1.93072,3.62365,1.03683,0.45599,1.59875,1.83592,1.13708;
@@ -298,7 +294,7 @@ void BregmanProjectionFunctionalUnitTest::oneoneNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.529673,0.513800,0.513891,1.680977,5.231910,0.769151,0.047546,1.211317,1.676777,0.732566;
@@ -346,7 +342,7 @@ void BregmanProjectionFunctionalUnitTest::twoNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.62802,0.82295,0.71584,1.81901,2.79042,0.89188,0.28344,1.53771,1.45524,0.97226;
@@ -379,7 +375,7 @@ void BregmanProjectionFunctionalUnitTest::twoNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.52896,0.41386,0.38071,1.51650,3.19301,0.56201,-0.10539,1.14000,1.10983,0.59547;
@@ -412,7 +408,7 @@ void BregmanProjectionFunctionalUnitTest::twoNorm()
 		const Mapping &J_p = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_p),
+				J_p,
 				J_p.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.51837,0.16386,0.23653,1.62694,7.79111,0.56620,-0.31918,0.91932,1.05715,0.39978;
@@ -461,7 +457,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_infty),
+				J_infty,
 				J_infty.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.62787,0.81287,0.56263,1.81008,2.18416,0.87617,0.23439,1.53412,1.30917,0.92277;
@@ -494,7 +490,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_infty),
+				J_infty,
 				J_infty.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 0.52893,0.40382,0.29723,1.50379,2.03986,0.54061,-0.14379,1.13591,0.92445,0.55934;
@@ -527,7 +523,7 @@ void BregmanProjectionFunctionalUnitTest::inftyNorm()
 		const Mapping &J_infty = *SpaceX->getDualSpace()->getDualityMapping();
 		const BregmanProjectionFunctional d_p(
 				*SpaceX->getDualSpace()->getNorm(),
-				dynamic_cast<const PowerTypeDualityMapping &>(J_infty),
+				J_infty,
 				J_infty.getPower(),U,alpha);
 		Eigen::VectorXd expected(10);
 		expected << 5.1825e-01,4.2115e-03,2.0604e-01,5.2869e+00,2.9000e+01,2.4914e+00,-4.1038e-01,8.9170e-01,9.7075e-01,3.3062e-01;

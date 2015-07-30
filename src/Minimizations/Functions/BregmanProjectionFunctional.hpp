@@ -10,12 +10,12 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
 #include <vector>
 
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/types.hpp"
+
+class Mapping;
+class Norm;
 
 /** Functor to calculate BregmanProjectionFunctional functional/distance.
  *
@@ -33,7 +33,7 @@ public:
 	 */
 	BregmanProjectionFunctional(
 			const Norm &_dualnorm,
-			const PowerTypeDualityMapping &_J_q,
+			const Mapping &_J_q,
 			const double _dualpower,
 			const std::vector<SpaceElement_ptr_t> &_U,
 			const std::vector<double> &_alpha);
@@ -78,7 +78,7 @@ private:
 	//!> lp Norm object
 	const Norm &dualnorm;
 	//!> LpDualityMapping object
-	const PowerTypeDualityMapping &J_q;
+	const Mapping &J_q;
 
 	//!> search space used for coefficients
 	const std::vector<SpaceElement_ptr_t> &U;

@@ -9,16 +9,16 @@
 
 #include "VectorProjection.hpp"
 
-#include <boost/log/trivial.hpp>
+#include <utility>
 
-#include "Minimizations/Elements/SpaceElement.hpp"
+#include "Log/Logging.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
 
 VectorProjection::VectorProjection(
 		const Norm &_lpnorm,
-		const PowerTypeDualityMapping &_J_p,
+		const Mapping &_J_p,
 		const double _p
 		) :
 		lpnorm(_lpnorm),

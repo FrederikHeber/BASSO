@@ -10,11 +10,9 @@
 
 #include "BassoConfig.h"
 
-#include <utility>
-
 #include "Minimizations/types.hpp"
 
-class PowerTypeDualityMapping;
+class Mapping;
 class Norm;
 
 /** This functor implements the projection of a vector onto another in
@@ -25,7 +23,7 @@ class VectorProjection
 public:
 	VectorProjection(
 			const Norm &_lpnorm,
-			const PowerTypeDualityMapping &_J_p,
+			const Mapping &_J_p,
 			const double _p
 			);
 	~VectorProjection() {}
@@ -54,7 +52,7 @@ private:
 	//!> lp Norm object
 	const Norm &lpnorm;
 	//!> DualityMapping object
-	const PowerTypeDualityMapping &J_p;
+	const Mapping &J_p;
 	//!> value p of the Lp norm
 	const double p;
 };

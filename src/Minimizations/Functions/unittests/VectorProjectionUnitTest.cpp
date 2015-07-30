@@ -15,8 +15,8 @@
 #include "Log/Logging.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -51,9 +51,7 @@ void VectorProjectionUnitTest::oneoneNorm()
 	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
 			NormedSpaceFactory::create(dim, "lp", args);
-	const PowerTypeDualityMapping &Jp =
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*SpaceX->getDualityMapping());
+	const Mapping &Jp = *SpaceX->getDualityMapping();
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
 
@@ -254,9 +252,7 @@ void VectorProjectionUnitTest::onefiveNorm()
 	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
 			NormedSpaceFactory::create(dim, "lp", args);
-	const PowerTypeDualityMapping &Jp =
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*SpaceX->getDualityMapping());
+	const Mapping &Jp = *SpaceX->getDualityMapping();
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
 
@@ -457,9 +453,7 @@ void VectorProjectionUnitTest::twoNorm()
 	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
 			NormedSpaceFactory::create(dim, "lp", args);
-	const PowerTypeDualityMapping &Jp =
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*SpaceX->getDualityMapping());
+	const Mapping &Jp = *SpaceX->getDualityMapping();
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
 
@@ -690,9 +684,7 @@ void VectorProjectionUnitTest::sixNorm()
 	args += boost::any(p), boost::any(p);
 	const NormedSpace_ptr_t SpaceX =
 			NormedSpaceFactory::create(dim, "lp", args);
-	const PowerTypeDualityMapping &Jp =
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*SpaceX->getDualityMapping());
+	const Mapping &Jp = *SpaceX->getDualityMapping();
 	const Norm &NormX = *SpaceX->getNorm();
 	VectorProjection projector(NormX, Jp, p);
 

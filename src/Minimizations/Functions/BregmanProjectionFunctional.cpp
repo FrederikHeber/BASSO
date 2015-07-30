@@ -13,13 +13,14 @@
 #include <Eigen/Dense>
 #include <numeric>
 
+#include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
-#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
 		const Norm &_dualnorm,
-		const PowerTypeDualityMapping &_J_q,
+		const Mapping &_J_q,
 		const double _dualpower,
 		const std::vector<SpaceElement_ptr_t> &_U,
 		const std::vector<double> &_alpha
@@ -41,9 +42,7 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 		) :
 	dualpower(_problem->SourceSpace->getDualSpace()->getDualityMapping()->getPower()),
 	dualnorm(*_problem->SourceSpace->getDualSpace()->getNorm()),
-	J_q(dynamic_cast<const PowerTypeDualityMapping&>(
-			*_problem->SourceSpace->getDualSpace()->getDualityMapping())
-			),
+	J_q(*_problem->SourceSpace->getDualSpace()->getDualityMapping()),
 	U(_U),
 	alpha(_alpha)
 {
