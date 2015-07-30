@@ -19,7 +19,7 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/VectorProjection.hpp"
-#include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
+#include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -28,10 +28,9 @@ Searchspace::Searchspace(
 		const unsigned int _N) :
 	SearchDirectionSpace_ptr(_SearchDirectionSpace_ptr),
 	projector(*_SearchDirectionSpace_ptr->getNorm(),
-			dynamic_cast<const PowerTypeDualityMapping &>(
-					*_SearchDirectionSpace_ptr->getDualityMapping()
-					),
-					_SearchDirectionSpace_ptr->getDualityMapping()->getPower()),
+				dynamic_cast<const DualityMapping &>(
+						*_SearchDirectionSpace_ptr->getDualityMapping()),
+				_SearchDirectionSpace_ptr->getDualityMapping()->getPower()),
 	U(_N),
 	alphas(_N,0.)
 {

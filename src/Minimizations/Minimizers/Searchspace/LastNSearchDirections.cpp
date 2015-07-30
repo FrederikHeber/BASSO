@@ -60,9 +60,8 @@ const unsigned int calculateMetricProjection(
 	const size_t Ndirs = _searchspace.size();
 	assert( Ndirs == tmin.size() );
 
-	MetricProjectionFunctional metric(DualNormX,
-			dynamic_cast<const PowerTypeDualityMapping&>(J_q),
-			J_q.getPower(), _searchspace);
+	MetricProjectionFunctional metric(
+			DualNormX, J_q, J_q.getPower(), _searchspace);
 	const HyperplaneProjection<MetricProjectionFunctional> functional(
 			metric, dual_solution);
 

@@ -225,9 +225,8 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	assert( Ndirs == tmin.size() );
 
 	// tmin=fminunc(@(t) BregmanProjectionFunctional(t,Jx,u,alpha+d,DualNormX,DualPowerX,TolX),t0,BregmanOptions);
-	BregmanProjectionFunctional bregman(refs.DualNormX,
-			dynamic_cast<const PowerTypeDualityMapping&>(refs.J_q),
-			refs.J_q.getPower(), _searchspace, _alphas);
+	BregmanProjectionFunctional bregman(
+			refs.DualNormX, refs.J_q, refs.J_q.getPower(), _searchspace, _alphas);
 	const HyperplaneProjection<BregmanProjectionFunctional> functional(
 			bregman, dual_solution);
 
@@ -399,9 +398,7 @@ SequentialSubspaceMinimizer::operator()(
 	boost::shared_ptr<BregmanDistance> Delta_p;
 	if (!_truesolution->isZero())
 		Delta_p.reset(new BregmanDistance (
-				refs.NormX,
-				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
-				refs.J_p.getPower()));
+				refs.NormX, refs.J_p, refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
 	setParameterKey(

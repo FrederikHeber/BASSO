@@ -106,9 +106,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 	boost::shared_ptr<BregmanDistance> Delta_p;
 	if (!_truesolution->isZero())
 		Delta_p.reset(new BregmanDistance (
-				refs.NormX,
-				dynamic_cast<const PowerTypeDualityMapping &>(refs.J_p),
-				refs.J_p.getPower()));
+				refs.NormX, refs.J_p, refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
 	setParameterKey(
