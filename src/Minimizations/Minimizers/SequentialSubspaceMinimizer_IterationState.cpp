@@ -11,7 +11,6 @@
 #include "SequentialSubspaceMinimizer.hpp"
 
 #include <algorithm>
-#include <Eigen/Dense>
 #include <iterator>
 #include <limits>
 #include <list>

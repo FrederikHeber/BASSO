@@ -13,7 +13,6 @@
 #include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <cmath>
-#include <Eigen/Dense>
 #include <iterator>
 #include <numeric>
 #include <sstream>

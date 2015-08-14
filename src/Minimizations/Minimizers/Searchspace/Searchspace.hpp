@@ -11,7 +11,6 @@
 #include "BassoConfig.h"
 
 #include <boost/shared_ptr.hpp>
-#include <Eigen/Dense>
 #include <vector>
 
 #include "Minimizations/types.hpp"

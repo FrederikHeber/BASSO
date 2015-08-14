@@ -10,7 +10,6 @@
 
 #include "ResidualMinimizingStepwidth.hpp"
 
-#include <Eigen/Dense>
 #include <boost/bind.hpp>
 #include <boost/math/tools/minima.hpp>
 #include <limits>

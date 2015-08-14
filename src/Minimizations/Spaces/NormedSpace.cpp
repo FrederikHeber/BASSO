@@ -12,7 +12,6 @@
 
 #include <cassert>
 #include <boost/bind.hpp>
-#include <Eigen/Dense>
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"

@@ -10,7 +10,6 @@
 #include "BassoConfig.h"
 
 #include <algorithm>
-#include <Eigen/Dense>
 #include <functional>
 #include <list>
 

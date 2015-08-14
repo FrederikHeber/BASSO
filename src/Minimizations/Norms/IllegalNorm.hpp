@@ -10,9 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <cmath>
-#include <Eigen/Dense>
-
 #include "Norm.hpp"
 
 #include "Minimizations/Norms/Norm.hpp"

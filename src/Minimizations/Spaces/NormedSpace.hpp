@@ -14,7 +14,6 @@
 
 #include <boost/function.hpp>
 #include <boost/weak_ptr.hpp>
-#include <Eigen/Dense>
 
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 

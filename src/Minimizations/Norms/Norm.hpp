@@ -13,8 +13,6 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 
-#include <Eigen/Dense>
-
 /** This class defines the Norm interface.
  *
  */

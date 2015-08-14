@@ -10,8 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 

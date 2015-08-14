@@ -10,8 +10,6 @@
 
 #include "DynamicRegularizedL1NormStepWidth.hpp"
 
-#include <Eigen/Dense>
-
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"

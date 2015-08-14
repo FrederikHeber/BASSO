@@ -8,7 +8,6 @@
 #include "ConjugateValueUnitTest.hpp"
 
 #include <cmath>
-#include <Eigen/Dense>
 #include <limits>
 
 #include "Math/Helpers.hpp"
