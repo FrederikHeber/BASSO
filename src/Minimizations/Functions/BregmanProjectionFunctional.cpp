@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 #include <numeric>
 
+#include "Log/Logging.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
@@ -71,6 +72,11 @@ double BregmanProjectionFunctional::operator()(
 	const double fval =
 			1./dualpower * ::pow(dualnorm(resx), dualpower)
 			+ alpha_times_t;
+	if (isnan(fval))
+		BOOST_LOG_TRIVIAL(error)
+				<< "Encountered NaN in function calculation with "
+				<< *_dualx;
+//				<< " at " << _t << " and argument ";
 	return fval;
 }
 
@@ -88,7 +94,13 @@ std::vector<double> BregmanProjectionFunctional::gradient(
 	*resx = _dualx - resx;
 	std::vector<double> gval(alpha);
 	const SpaceElement_ptr_t dual_resx = J_q(resx);
-	for (size_t i=0;i<_t.size();++i)
+	for (size_t i=0;i<_t.size();++i) {
 		gval[i] -= U[i] * dual_resx;
+		if (isnan(gval[i]))
+			BOOST_LOG_TRIVIAL(error)
+					<< "Encountered NaN in gradient calculation  with "
+					<< *_dualx;
+//					<< " at " << _t << " and argument ";
+	}
 	return gval;
 }
