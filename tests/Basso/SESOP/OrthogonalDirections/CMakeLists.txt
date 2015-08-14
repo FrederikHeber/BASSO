@@ -108,7 +108,7 @@ add_test (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p2_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 9 with relative residual of 0.049.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 10 with relative residual of 0.034.*")
 
 # test 2b: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized_check
@@ -168,7 +168,7 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p1_1_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.0085.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.0079.*")
 
 # test 4b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized_check
@@ -198,7 +198,7 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p1_1_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.048.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 21 with relative residual of 0.042.*")
 
 # test 5b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized_check
@@ -228,7 +228,7 @@ add_test (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p1_1_rinf.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 65 with relative residual of 0.0095.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 67 with relative residual of 0.0094.*")
 
 # test 6b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized_check
@@ -258,7 +258,7 @@ add_test (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p6_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 21 with relative residual of 0.0084.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 22 with relative residual of 0.0083.*")
 
 # test 7b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized_check
@@ -288,7 +288,7 @@ add_test (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p6_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 26 with relative residual of 0.038.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 31 with relative residual of 0.05.*")
 
 # test 8b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized_check
@@ -318,7 +318,7 @@ add_test (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized
 		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/pre/randomvector.m
 		--solution solution_p6_rinf.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized
-	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 82 with relative residual of 0.0067.*")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 79 with relative residual of 0.0094.*")
 
 # test 9b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized_check

@@ -192,33 +192,35 @@ void LastNSearchDirections::update(
 				orderOfApplication.begin()+1,
 				orderOfApplication.end());
 		indices_to_orthogonalize.push_back(*orderOfApplication.begin());
-		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
-				iter != indices_to_orthogonalize.end(); ++iter) {
-			std::vector<double> tmin(1, 0.);
-			switch (orthogonalization_type) {
+		std::vector<double> tmin(indices_to_orthogonalize.size(), 0.);
+		switch (orthogonalization_type) {
 			case MetricOrthogonalization:
-				{
-					const std::vector<SpaceElement_ptr_t> searchspace(1, U[ *iter ]);
-					calculateMetricProjection(
-							newdir,
-							searchspace,
-							tmin
-							);
-				}
-				break;
-			case BregmanOrthogonalization:
-				calculateBregmanProjection(
+				calculateMetricProjection(
 						newdir,
-						U[ *iter ],
+						U,
 						tmin
 						);
+				break;
+			case BregmanOrthogonalization:
+				for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
+						iter != indices_to_orthogonalize.end(); ++iter) {
+					std::vector<double> tmin_tmp(1, 0.);
+					calculateBregmanProjection(
+							newdir,
+							U[ *iter ],
+							tmin_tmp
+							);
+					tmin[ *iter ] = tmin_tmp[0];
+				}
 				break;
 			default:
 				BOOST_LOG_TRIVIAL(error)
 					<< "We cannot get here.";
 				assert(0);
-			}
-			const double projection_coefficient = tmin[0];
+		}
+		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
+				iter != indices_to_orthogonalize.end(); ++iter) {
+			const double projection_coefficient = tmin[*iter];
 			BOOST_LOG_TRIVIAL(info)
 				<< "Projection coefficient of "
 				<< (orthogonalization_type == MetricOrthogonalization ?
