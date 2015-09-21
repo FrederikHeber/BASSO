@@ -165,10 +165,11 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 
 # add src folders of executables
 add_subdirectory (Examples/BassoBase)
-add_subdirectory (Examples/RangeProjectorBase)
+add_subdirectory (Examples/ComputerTomographyBase)
+add_subdirectory (Examples/Gravity)
 add_subdirectory (Examples/MatrixFactorizerBase)
 add_subdirectory (Examples/NoiseAdderBase)
-add_subdirectory (Examples/ComputerTomographyBase)
+add_subdirectory (Examples/RangeProjectorBase)
 
 #### TESTS AND UNITTESTS ####
 
