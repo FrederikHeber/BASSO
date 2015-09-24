@@ -130,13 +130,14 @@ install (FILES "${PROJECT_BINARY_DIR}/BassoConfig.h" DESTINATION include)
 # include source folder
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 
+# include Examples folder
+include_directories ("${PROJECT_SOURCE_DIR}/Examples")
+
 # add the Options library
-include_directories ("${PROJECT_SOURCE_DIR}/Options")
 add_subdirectory (src/Options)
 set (EXTRA_LIBS ${EXTRA_LIBS} Options)
 
 # add the MatrixIO library
-include_directories ("${PROJECT_SOURCE_DIR}/MatrixIO")
 add_subdirectory (src/MatrixIO)
 # is header only
 
@@ -145,7 +146,6 @@ add_subdirectory (src/SolutionFactory)
 set (EXTRA_LIBS ${EXTRA_LIBS} SolutionFactory)
 
 # add the Minimizations library
-include_directories ("${PROJECT_SOURCE_DIR}/Minimizations")
 add_subdirectory (src/Minimizations)
 set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
 
@@ -164,19 +164,11 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 #### EXECUTABLES ####
 
 # add src folders of executables
-add_subdirectory (src/BassoBase)
-
-# add src folders of executables
-add_subdirectory (src/RangeProjectorBase)
-
-# add src folders of executables
-add_subdirectory (src/MatrixFactorizerBase)
-
-# add src folders of executables
-add_subdirectory (src/NoiseAdderBase)
-
-# add src folders of executables
-add_subdirectory (src/ComputerTomographyBase)
+add_subdirectory (Examples/BassoBase)
+add_subdirectory (Examples/RangeProjectorBase)
+add_subdirectory (Examples/MatrixFactorizerBase)
+add_subdirectory (Examples/NoiseAdderBase)
+add_subdirectory (Examples/ComputerTomographyBase)
 
 #### TESTS AND UNITTESTS ####
 
@@ -189,7 +181,7 @@ add_subdirectory (src/Minimizations/Elements/unittests)
 add_subdirectory (src/Minimizations/Functions/unittests)
 add_subdirectory (src/Minimizations/Mappings/unittests)
 add_subdirectory (src/Minimizations/Norms/unittests)
-add_subdirectory (src/ComputerTomographyBase/DiscretizedRadon/unittests)
+add_subdirectory (Examples/ComputerTomographyBase/DiscretizedRadon/unittests)
 
 ### DOXYGEN DOCUMENTATION
 

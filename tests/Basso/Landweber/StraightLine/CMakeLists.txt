@@ -1,6 +1,6 @@
 # test 1a: 
 add_test (Basso_Landweber_StraightLine1
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm Landweber
 		--type-space-x "lp" 
 		--px 2 
@@ -28,7 +28,7 @@ set_tests_properties (Basso_Landweber_StraightLine1_check
 
 # test 2: 
 add_test (Basso_Landweber_StraightLine2
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm Landweber
 		--type-space-x "lp" 
 		--px 4 
@@ -56,7 +56,7 @@ set_tests_properties (Basso_Landweber_StraightLine2_check
 
 # test 3: 
 add_test (Basso_Landweber_StraightLine3
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm Landweber
 		--type-space-x "lp" 
 		--px 1.5 

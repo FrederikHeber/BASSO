@@ -13,7 +13,7 @@ target_link_libraries (BackprojectionMatrixUnitTest
 	${LIBRT_LIBRARIES}) 
 
 add_test (BackprojectionMatrixUnitTest 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/DiscretizedRadon/unittests/BackprojectionMatrixUnitTest)
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/DiscretizedRadon/unittests/BackprojectionMatrixUnitTest)
 
 ########################## DiscretizedRadonMatrixUnitTest #######################
 add_executable (DiscretizedRadonMatrixUnitTest 
@@ -28,7 +28,7 @@ target_link_libraries (DiscretizedRadonMatrixUnitTest
 	${LIBRT_LIBRARIES}) 
 
 add_test (DiscretizedRadonMatrixUnitTest 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/DiscretizedRadon/unittests/DiscretizedRadonMatrixUnitTest)
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/DiscretizedRadon/unittests/DiscretizedRadonMatrixUnitTest)
 
 ########################## point_tUnitTest #######################
 add_executable (point_tUnitTest 
@@ -43,5 +43,5 @@ target_link_libraries (point_tUnitTest
 	${LIBRT_LIBRARIES}) 
 
 add_test (point_tUnitTest 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/DiscretizedRadon/unittests/point_tUnitTest)
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/DiscretizedRadon/unittests/point_tUnitTest)
 

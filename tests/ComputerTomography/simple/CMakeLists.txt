@@ -1,6 +1,6 @@
 # fails because no measurement dimensions
 add_test (ComputerTomographySimple_failmeasurementdimensions 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/ComputerTomography 
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomography 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 
@@ -13,7 +13,7 @@ set_tests_properties (ComputerTomographySimple_failmeasurementdimensions
 
 # fails because of missing rhs file 	
 add_test (ComputerTomographySimple_failmissingfile 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/ComputerTomography 
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomography 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 
@@ -29,7 +29,7 @@ set_tests_properties (ComputerTomographySimple_failmissingfile
 
 # succeeds 	
 add_test (ComputerTomographySimple_succeeds 
-	${PROJECT_BINARY_DIR}/src/ComputerTomographyBase/ComputerTomography 
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomography 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

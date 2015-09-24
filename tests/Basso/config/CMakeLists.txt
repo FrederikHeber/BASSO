@@ -1,11 +1,11 @@
 # does the application run
-add_test (BassoConfiguratorFails ${PROJECT_BINARY_DIR}/src/BassoBase/BassoConfigurator)
+add_test (BassoConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/BassoBase/BassoConfigurator)
 set_tests_properties (BassoConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
 # does the application run
 add_test (BassoConfiguratorFails2 
-	${PROJECT_BINARY_DIR}/src/BassoBase/BassoConfigurator
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/BassoConfigurator
 		--type-space-x "lp" 
 		--px 2)
 set_tests_properties (BassoConfiguratorFails2
@@ -13,7 +13,7 @@ set_tests_properties (BassoConfiguratorFails2
 
 # does the application write config files
 add_test (BassoConfiguratorWritesConfig 
-	${PROJECT_BINARY_DIR}/src/BassoBase/BassoConfigurator
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/BassoConfigurator
 	--config test.conf
 	--type-space-x "lp" 
 	--px 10

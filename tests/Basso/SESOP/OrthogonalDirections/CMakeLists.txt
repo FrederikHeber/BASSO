@@ -1,6 +1,6 @@
 # test 1a: 
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 1
 		--update-algorithm 0
@@ -30,7 +30,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
 
 # test 1c: 
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0
@@ -60,7 +60,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
 
 # test 1e: 
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 4
 		--update-algorithm 0
@@ -90,7 +90,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
 
 # test 2a: 
 add_test (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -120,7 +120,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized_check
 
 # test 3a: 
 add_test (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -150,7 +150,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized_check
 
 # test 4a: 
 add_test (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -180,7 +180,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized_check
 
 # test 5a: 
 add_test (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -210,7 +210,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized_check
 
 # test 6a: 
 add_test (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -240,7 +240,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized_check
 
 # test 7a: 
 add_test (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -270,7 +270,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized_check
 
 # test 8a: 
 add_test (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
@@ -300,7 +300,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized_check
 
 # test 9a: 
 add_test (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized
-	${PROJECT_BINARY_DIR}/src/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--orthogonal-directions 1
