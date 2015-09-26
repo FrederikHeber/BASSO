@@ -35,7 +35,7 @@ check_function_exists (exp HAVE_EXP)
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 FIND_PACKAGE(MPI REQUIRED)
 if (MPI_FOUND)
-	include_directories( "${MPI_CXX_INCLUDE_PATH}")
+	include_directories( ${MPI_CXX_INCLUDE_PATH})
 endif (MPI_FOUND)
 
 ####################### CHECK LIBRARIES  #################################
@@ -43,14 +43,14 @@ endif (MPI_FOUND)
 # find eigen3 package for linear algebra routines
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 FIND_PACKAGE(Eigen3 REQUIRED)
-include_directories( "${EIGEN3_INCLUDE_DIR}" )
+include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 # find cppunit for unit tests
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 FIND_PACKAGE(CppUnit REQUIRED)
 if (CPPUNIT_FOUND)
-	include_directories( "${CPPUNIT_INCLUDE_DIR}" )
-	#set (EXTRA_LIBS ${EXTRA_LIBS} "${CPPUNIT_LIBRARY}")
+	include_directories( ${CPPUNIT_INCLUDE_DIR} )
+	#set (EXTRA_LIBS ${EXTRA_LIBS} ${CPPUNIT_LIBRARY})
 endif (CPPUNIT_FOUND)
 
 # looking for blas
@@ -61,7 +61,7 @@ if (BLAS_FOUND)
        set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
        FIND_PACKAGE(GSL REQUIRED)
        if (GSL_FOUND)
-               include_directories( "${GSL_INCLUDE_DIR}" )
+               include_directories( ${GSL_INCLUDE_DIR} )
                set (GSL_LIBRARY ${GSL_LIBRARIES} ${BLAS_blas_LIBRARY})
        endif (GSL_FOUND)
 endif (BLAS_FOUND)
@@ -70,7 +70,7 @@ endif (BLAS_FOUND)
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 find_package (NLopt)
 if (NLOPT_FOUND)
-               include_directories( "${NLOPT_INCLUDE_DIR}" )
+               include_directories( ${NLOPT_INCLUDE_DIR} )
 endif (NLOPT_FOUND)
 
 # find (p)thread
