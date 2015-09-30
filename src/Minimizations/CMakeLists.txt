@@ -6,6 +6,7 @@ add_library (Minimizations
 	Elements/ElementCreator.cpp
 	Elements/LinearDependencyChecker.cpp
 	Elements/SpaceElement.cpp
+	Elements/SpaceElementFactory.cpp
 	Elements/SpaceElementIO.cpp
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
@@ -53,6 +54,7 @@ install (FILES Elements/ElementCreator.hpp DESTINATION include)
 install (FILES Elements/LinearDependencyChecker.hpp DESTINATION include)
 install (FILES Elements/RepresentationAdvocate.hpp DESTINATION include)
 install (FILES Elements/SpaceElement.hpp DESTINATION include)
+install (FILES Elements/SpaceElementFactory.hpp DESTINATION include)
 install (FILES Elements/SpaceElementIO.hpp DESTINATION include)
 install (FILES Elements/VectorSetter.hpp DESTINATION include)
 
