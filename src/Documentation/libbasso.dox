@@ -12,6 +12,19 @@
  * problems \f$ Ax = y \f$ in general Banach Spaces, namely the generalized
  * Landweber method and the Sequential Subspace Optimization (SESOP) method.
  *
+ * \section general-setup General Setup of the Library
+ *
+ * There are several high-level structures that need to be employed for
+ * specifying an inverse problem and solving it:
+ * -# InverseProblem: Contains all spaces, matrices, and vectors that define
+ *    the above inverse problem.
+ * -# InverseProblemFactory: Constructs the InverseProblem structure from
+ *    some other element that each individually specify the spaces involved,
+ *    each matrix and each vector.
+ * -# SolverFactory: Separate from the InverseProblem is the definition on
+ *    how to solve it. For this a Minimizer and some helper objects are needed,
+ *    e.g. a Database to write informative values about the minimization to.
+ *
  * \section libbasso-landweber Generalized Landweber
  *
  * The Generalized Landweber uses an update of the form
