@@ -239,6 +239,14 @@ SpaceElement_ptr_t SpaceElement::operator=(const Eigen::VectorXd &_vector)
 	vector = _vector;
 	return SpaceElement_ptr_t(SelfRef);
 }
+bool SpaceElement::operator==(const SpaceElement &_element)
+{
+	if (getSpace() != _element.getSpace())
+		return false;
+	if (vector != _element.vector)
+		return false;
+	return true;
+}
 
 std::ostream & operator<<(std::ostream &ost, const SpaceElement &_element)
 {
@@ -264,3 +272,4 @@ const double operator*(
 {
 	return *_element * _otherelement;
 }
+

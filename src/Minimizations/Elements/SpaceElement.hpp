@@ -242,6 +242,13 @@ public:
 	 */
 	SpaceElement_ptr_t operator=(const SpaceElement_ptr_t &_element);
 
+	/** Equality operator
+	 *
+	 * @param _element other element
+	 * @return true - both have equal spaces and components, false - else
+	 */
+	bool operator==(const SpaceElement &_element);
+
 	/** Const getter to the space which this elements belongs to.
 	 *
 	 * @return const ref to space
