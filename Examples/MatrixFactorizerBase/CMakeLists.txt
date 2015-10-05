@@ -7,7 +7,6 @@ add_library (MatrixFactorizerBase
 	Helpers/detail.cpp
 	Options/MatrixFactorizerOptions.cpp
 	Solvers/InRangeSolver.cpp
-	Solvers/InverseProblemSolver.cpp
 	Solvers/MatrixFactorization.cpp
 	Work/Master.cpp
 	Work/Slave.cpp)
@@ -23,7 +22,6 @@ install (FILES ScalingAmbigutiyRemover/MatrixProductEqualizer.hpp DESTINATION in
 install (FILES ScalingAmbigutiyRemover/MatrixProductRenormalizer.hpp DESTINATION include)
 install (FILES ScalingAmbigutiyRemover/TraceRenormalizer.hpp DESTINATION include)
 install (FILES Solvers/InRangeSolver.hpp DESTINATION include)
-install (FILES Solvers/InverseProblemSolver.hpp DESTINATION include)
 install (FILES Work/Master.hpp DESTINATION include)
 install (FILES Work/Slave.hpp DESTINATION include)
 install (FILES Work/WorkPackage.hpp DESTINATION include)

@@ -13,9 +13,9 @@
 #include "Log/Logging.hpp"
 
 #include "Database/Database_mock.hpp"
-#include "MatrixFactorizerBase/Solvers/InverseProblemSolver.hpp"
 #include "RangeProjectorBase/RangeProjector/RangeProjector.hpp"
 #include "Options/CommandLineOptions.hpp"
+#include "Solvers/InverseProblemSolver.hpp"
 
 InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :
 	opts(_opts),
