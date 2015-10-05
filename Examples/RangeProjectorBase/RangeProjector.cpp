@@ -21,7 +21,7 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
-#include "SolutionFactory/SolutionFactory.hpp"
+#include "SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 
@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
 
 	// create database
 	Database_ptr_t database =
-			SolutionFactory::createDatabase(opts);
+			SolverFactory::createDatabase(opts);
 
 	// create projector instance
 	RangeProjector projector(database,opts);

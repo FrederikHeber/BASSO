@@ -2,8 +2,8 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (SolutionFactory 
-	SolutionFactory.cpp
+add_library (SolverFactory 
+	SolverFactory.cpp
 	)
 
-install (FILES SolutionFactory.hpp DESTINATION include)
+install (FILES SolverFactory.hpp DESTINATION include)

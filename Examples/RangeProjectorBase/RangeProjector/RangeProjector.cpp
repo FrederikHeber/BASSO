@@ -24,7 +24,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
-#include "SolutionFactory/SolutionFactory.hpp"
+#include "SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 
@@ -82,7 +82,7 @@ bool RangeProjector::operator()(
 
 	// prepare minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
-			SolutionFactory::createMinimizer(
+			SolverFactory::createMinimizer(
 					opts, inverseproblem, database, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

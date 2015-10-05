@@ -27,7 +27,7 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
-#include "SolutionFactory/SolutionFactory.hpp"
+#include "SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 
@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
 
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
-			SolutionFactory::createInverseProblem(
+			SolverFactory::createInverseProblem(
 					opts, matrix, rhs);
 
 	// prepare true solution
@@ -140,11 +140,11 @@ int main (int argc, char *argv[])
 
 	// create database
 	Database_ptr_t database =
-			SolutionFactory::createDatabase(opts);
+			SolverFactory::createDatabase(opts);
 
 	// create minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
-			SolutionFactory::createMinimizer(
+			SolverFactory::createMinimizer(
 					opts, inverseproblem, database, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

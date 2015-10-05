@@ -11,13 +11,13 @@
 #include "IterationInformation.hpp"
 
 #include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
-#include "SolutionFactory/SolutionFactory.hpp"
+#include "SolverFactory/SolverFactory.hpp"
 
 IterationInformation::IterationInformation(
 		const MatrixFactorizerOptions &_opts,
 		const unsigned int _innersize,
 		const unsigned int _outersize) :
-			database(SolutionFactory::createDatabase(_opts)),
+			database(SolverFactory::createDatabase(_opts)),
 			loop_table(database->addTable("data_loop")),
 			loop_overall_table(database->addTable("data_loop_overall")),
 			loop_tuple(loop_table.getTuple()),

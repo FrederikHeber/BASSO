@@ -141,9 +141,9 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Options)
 add_subdirectory (src/MatrixIO)
 # is header only
 
-# add the SolutionFactory folder
-add_subdirectory (src/SolutionFactory)
-set (EXTRA_LIBS ${EXTRA_LIBS} SolutionFactory)
+# add the SolverFactory folder
+add_subdirectory (src/SolverFactory)
+set (EXTRA_LIBS ${EXTRA_LIBS} SolverFactory)
 
 # add the Minimizations library
 add_subdirectory (src/Minimizations)

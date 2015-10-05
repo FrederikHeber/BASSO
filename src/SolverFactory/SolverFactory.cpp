@@ -1,5 +1,5 @@
 /*
- * SolutionFactory.cpp
+ * SolverFactory.cpp
  *
  *  Created on: Jan 28, 2015
  *      Author: heber
@@ -8,7 +8,7 @@
 
 #include "BassoConfig.h"
 
-#include "SolutionFactory.hpp"
+#include "SolverFactory.hpp"
 
 #include <boost/assign.hpp>
 
@@ -26,7 +26,7 @@
 
 using namespace boost::assign;
 
-InverseProblem_ptr_t SolutionFactory::createInverseProblem(
+InverseProblem_ptr_t SolverFactory::createInverseProblem(
 		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs)
@@ -61,7 +61,7 @@ InverseProblem_ptr_t SolutionFactory::createInverseProblem(
 	return inverseproblem;
 }
 
-Database_ptr_t SolutionFactory::createDatabase(
+Database_ptr_t SolverFactory::createDatabase(
 		const CommandLineOptions &_opts
 		)
 {
@@ -73,7 +73,7 @@ Database_ptr_t SolutionFactory::createDatabase(
 	return database;
 }
 
-MinimizerFactory::instance_ptr_t SolutionFactory::createMinimizer(
+MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
 		Database_ptr_t &_database,

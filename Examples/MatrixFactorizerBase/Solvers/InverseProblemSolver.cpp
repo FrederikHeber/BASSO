@@ -20,7 +20,7 @@
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Options/CommandLineOptions.hpp"
-#include "SolutionFactory/SolutionFactory.hpp"
+#include "SolverFactory/SolverFactory.hpp"
 
 InverseProblemSolver::InverseProblemSolver(
 		Database_ptr_t &_database,
@@ -43,10 +43,10 @@ bool InverseProblemSolver::operator()(
 	GeneralMinimizer::ReturnValues result;
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
-			SolutionFactory::createInverseProblem(
+			SolverFactory::createInverseProblem(
 					opts, _matrix, _rhs);
 	MinimizerFactory::instance_ptr_t minimizer =
-			SolutionFactory::createMinimizer(
+			SolverFactory::createMinimizer(
 					opts, inverseproblem, database, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

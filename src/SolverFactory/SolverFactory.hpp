@@ -1,12 +1,12 @@
 /*
- * SolutionFactory.hpp
+ * SolverFactory.hpp
  *
  *  Created on: Jan 28, 2015
  *      Author: heber
  */
 
-#ifndef SOLUTIONFACTORY_SOLUTIONFACTORY_HPP_
-#define SOLUTIONFACTORY_SOLUTIONFACTORY_HPP_
+#ifndef SOLVERFACTORY_SOLVERFACTORY_HPP_
+#define SOLVERFACTORY_SOLVERFACTORY_HPP_
 
 #include "BassoConfig.h"
 
@@ -29,7 +29,7 @@ class CommandLineOptions;
  * problem is contained, and the Minimization stuff, wherein all
  * functionality is contained for actually solving the problems.
  */
-struct SolutionFactory
+struct SolverFactory
 {
 	/** Creates the inverse problem given the information in \a _opts.
 	 *
@@ -71,4 +71,4 @@ struct SolutionFactory
 
 
 
-#endif /* SOLUTIONFACTORY_SOLUTIONFACTORY_HPP_ */
+#endif /* SOLVERFACTORY_SOLVERFACTORY_HPP_ */
