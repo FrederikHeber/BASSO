@@ -19,6 +19,8 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
+#include "Minimizations/Mappings/SingularValueDecomposition.hpp"
+#include "Minimizations/Mappings/SingularValueDecomposition_impl.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 LinearMapping::LinearMapping(
@@ -139,4 +141,12 @@ const double LinearMapping::MutualCoherence() const
 	BOOST_LOG_TRIVIAL(debug)
 			<< "Mutual coherence of mapping is " << mutual_coherence;
 	return mutual_coherence;
+}
+
+SingularValueDecomposition LinearMapping::getSVD() const
+{
+	SingularValueDecomposition_impl::ptr_t svd_pimpl(
+			new SingularValueDecomposition_impl(matrix));
+	SingularValueDecomposition svd(svd_pimpl);
+	return svd;
 }

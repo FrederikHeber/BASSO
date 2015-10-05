@@ -22,6 +22,7 @@ struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
 class RelativeShrinkageMapping;
+struct SingularValueDecomposition;
 struct SpaceElementWriter;
 struct SpaceElementReader;
 
@@ -49,6 +50,7 @@ private:
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class RelativeShrinkageMapping;
+	friend struct SingularValueDecomposition;
 	friend struct SpaceElementWriter;
 	friend struct SpaceElementReader;
 	template <class vector_type> friend struct VectorSetter;

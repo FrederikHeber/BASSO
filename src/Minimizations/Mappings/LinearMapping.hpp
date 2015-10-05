@@ -15,6 +15,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Mappings/SingularValueDecomposition.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 struct LinearMappingFactory;
@@ -102,6 +103,12 @@ public:
 	 */
 	const boost::chrono::nanoseconds getTiming() const
 	{ return boost::chrono::nanoseconds(0); }
+
+	/** Calculate the SVD for this linear mapping.
+	 *
+	 * @return SVD
+	 */
+	SingularValueDecomposition getSVD() const;
 
 private:
 	//!> matrix representation of this linear mapping
