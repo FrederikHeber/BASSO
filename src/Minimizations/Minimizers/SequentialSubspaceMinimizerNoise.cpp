@@ -143,6 +143,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 	StopCriterion = CheckResiduum(initial_residuum);
 
 	std::vector<double> d(N,0.);
+	istate.status = ReturnValues::started;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, istate.m_residual);
@@ -330,5 +331,6 @@ SequentialSubspaceMinimizerNoise::operator()(
 	data_overall_table.addTuple(overall_tuple);
 
 	// and return solution
+	istate.status = ReturnValues::finished;
 	return istate;
 }

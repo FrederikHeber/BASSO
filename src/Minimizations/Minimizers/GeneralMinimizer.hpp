@@ -69,6 +69,18 @@ public:
 		//!> number of outer iterations till solution
 		int NumberOuterIterations;
 
+		//!> enumerating minimization states
+		enum MinimizationStatus {
+			notbegun=0,
+			starting,
+			started,
+			error,
+			finished
+		};
+
+		//!> status of the minimization
+		enum MinimizationStatus status;
+
 		/** Print the current state of return values.
 		 *
 		 * @param ynorm norm of y for relative residual

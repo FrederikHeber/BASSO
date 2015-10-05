@@ -423,6 +423,7 @@ SequentialSubspaceMinimizer::operator()(
 	const double initial_relative_residuum = fabs(istate.residuum/ynorm);
 	StopCriterion = CheckRelativeResiduum(istate.residuum, ynorm);
 
+	istate.status = ReturnValues::started;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
@@ -542,6 +543,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "Could not create angles view in SQLite database.";
 
 	// and return solution
+	istate.status = ReturnValues::finished;
 	return static_cast<ReturnValues &>(istate);
 }
 

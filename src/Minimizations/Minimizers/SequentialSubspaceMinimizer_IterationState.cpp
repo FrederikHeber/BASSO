@@ -26,7 +26,9 @@
 
 SequentialSubspaceMinimizer::IterationState::IterationState() :
 	isInitialized(false)
-{}
+{
+	status = notbegun;
+}
 
 void SequentialSubspaceMinimizer::IterationState::set(
 		const SpaceElement_ptr_t &_x0,
@@ -51,6 +53,7 @@ void SequentialSubspaceMinimizer::IterationState::set(
 					_N,
 					_orthogonalization_type);
 	isInitialized = true;
+	status = starting;
 }
 
 void

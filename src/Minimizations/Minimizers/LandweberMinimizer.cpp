@@ -81,6 +81,7 @@ LandweberMinimizer::operator()(
 
 	/// -# initialize return structure
 	ReturnValues returnvalues;
+	returnvalues.status = ReturnValues::starting;
 	returnvalues.NumberOuterIterations = 0;
 	// set iterate 'x' as start vector 'x0'
 	returnvalues.m_solution = refs.SpaceX.createElement();
@@ -145,6 +146,7 @@ LandweberMinimizer::operator()(
 					_problem->y->getSpace()->getDualityMapping());
 
 	/// -# loop over stopping criterion
+	returnvalues.status = ReturnValues::started;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, returnvalues.m_residual);
@@ -224,6 +226,8 @@ LandweberMinimizer::operator()(
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	finalizeOverallTuple(overall_tuple, refs);
 	data_overall_table.addTuple(overall_tuple);
+
+	returnvalues.status = ReturnValues::finished;
 
 	return returnvalues;
 }
