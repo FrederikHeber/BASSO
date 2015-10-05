@@ -36,6 +36,17 @@ struct InverseProblemSolver
 
 	/** Functor that solves the inverse problem.
 	 *
+	 * @param _inverseproblem structure defining the inverse problem
+	 * @param _startingvalue starting value
+	 * @return true - success
+	 */
+	bool operator()(
+			InverseProblem_ptr_t &_inverseproblem,
+			const Eigen::VectorXd &_startingvalue
+			);
+
+	/** Functor that solves the inverse problem.
+	 *
 	 * @param _matrix problem matrix
 	 * @param _rhs right-hand side
 	 * @param _startingvalue starting value

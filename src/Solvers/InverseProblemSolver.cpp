@@ -16,6 +16,8 @@
 #include "MatrixFactorizerBase/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/SingularValueDecomposition.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -40,14 +42,26 @@ bool InverseProblemSolver::operator()(
 		const bool _nonnegative
 		)
 {
-	GeneralMinimizer::ReturnValues result;
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
 			SolverFactory::createInverseProblem(
 					opts, _matrix, _rhs);
+
+	bool status = operator()(inverseproblem, _startingvalue);
+	detail::setResultingVector(inverseproblem->x, _solution, _nonnegative);
+	return status;
+}
+
+bool InverseProblemSolver::operator()(
+		InverseProblem_ptr_t &_inverseproblem,
+		const Eigen::VectorXd &_startingvalue
+		)
+{
+	GeneralMinimizer::ReturnValues result;
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, inverseproblem, database, opts.maxiter);
+					opts, _inverseproblem, database, opts.maxiter);
+
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";
@@ -56,48 +70,41 @@ bool InverseProblemSolver::operator()(
 
 	SpaceElement_ptr_t truesolution;
 	if (checkTrueSolution) {
-		// SVD only gives true solution for l2 norm
-		assert( inverseproblem->y->getSpace()->getNorm()->getPvalue() == 2. );
+		const LinearMapping &A = static_cast<LinearMapping&>(*_inverseproblem->A);
+		const SpaceElement_ptr_t &rhs = _inverseproblem->y;
+		SingularValueDecomposition svd = A.getSVD();
+		const SpaceElement_ptr_t truesolution = svd.solve(rhs);
 
 		// empty or true solution from diagonalization
-		Eigen::MatrixXd copymatrix = _matrix;
-		Eigen::JacobiSVD<Eigen::MatrixXd> svd =
-				copymatrix.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
-		const Eigen::VectorXd truesolution_vector =
-				svd.solve(_rhs);
 		BOOST_LOG_TRIVIAL(trace)
-				<< "True solution is " << truesolution_vector.transpose()
+				<< "True solution is " << *truesolution
 				<< " with norm "
-				<< (_matrix*truesolution_vector - _rhs).norm()/_rhs.norm();
-		truesolution =
-				ElementCreator::create(
-						inverseproblem->x->getSpace(),
-						truesolution_vector);
+				<< (A(truesolution) - rhs)->Norm()/rhs->Norm();
 	} else {
 		truesolution =
-				inverseproblem->x->getSpace()->createElement();
+				_inverseproblem->x->getSpace()->createElement();
 	}
 
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 = ElementCreator::create(
-			inverseproblem->x->getSpace(),
+			_inverseproblem->x->getSpace(),
 			_startingvalue);
-	*inverseproblem->x = x0;
+	*_inverseproblem->x = x0;
 	if (x0->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
 	SpaceElement_ptr_t dualx0;
 	if (opts.type_spacex == "lp") {
-		dualx0 = (*inverseproblem->x->getSpace()->getDualityMapping())(x0);
+		dualx0 = (*_inverseproblem->x->getSpace()->getDualityMapping())(x0);
 	} else {
-		dualx0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();
+		dualx0 = _inverseproblem->x->getSpace()->getDualSpace()->createElement();
 		dualx0->setZero();
 	}
 
 	// and minimize
 	try{
 		result = (*minimizer)(
-						inverseproblem,
+						_inverseproblem,
 						x0,
 						dualx0,
 						truesolution);
@@ -108,7 +115,7 @@ bool InverseProblemSolver::operator()(
 				<< std::endl;
 		return false;
 	}
-	detail::setResultingVector(result.m_solution, _solution, _nonnegative);
+	assert( *result.m_solution == *_inverseproblem->x );
 
 	return true;
 }
