@@ -9,6 +9,7 @@
 
 
 #include "BassoConfig.h"
+#include <cmath>
 
 #include <boost/chrono.hpp>
 #include <Eigen/Dense>
@@ -20,13 +21,57 @@
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
-void fillGravityMatrix(
-		Eigen::MatrixXd &_matrix,
-		const int _N,
+static Eigen::VectorXd getDiscretizationVector(
+		const int _N)
+{
+	Eigen::VectorXd discretization_vector(_N);
+	const double meshwidth = 1./double(_N);
+	for (Eigen::VectorXd::Index i=0;i<_N;++i)
+		discretization_vector(i) = (double)i/meshwidth;
+	return discretization_vector;
+}
+
+Eigen::MatrixXd GravityMatrix(
+		const int _N, /* target dim */
+		const int _M, /* source dim */
 		const double _depth
 		)
 {
+	Eigen::MatrixXd matrix(_N,_M);
+	matrix.setZero();
 
+	Eigen::VectorXd discretization_density =
+			getDiscretizationVector(_N);
+	Eigen::VectorXd discretization_field =
+			getDiscretizationVector(_M);
+
+	const double sq_depth = _depth*_depth;
+	const double meshwidth = 1./double(_N);
+	for (Eigen::VectorXd::Index i=0;i<_M;++i) {
+		const double s = discretization_field(i);
+		for (Eigen::VectorXd::Index j=0;j<_N;++j) {
+			const double t = discretization_density(j);
+			matrix(i,j) = meshwidth * _depth/::pow(sq_depth + (s-t)*(s-t) , 3./2.);
+		}
+	}
+
+
+	return matrix;
+}
+
+Eigen::VectorXd GravitySolution(
+		const int _N
+		)
+{
+	Eigen::VectorXd rhs(_N);
+
+	Eigen::VectorXd::Index inner_boundary = 0.4*_N;
+	for (Eigen::VectorXd::Index i=0;i<inner_boundary;++i )
+		rhs(i) = 2.;
+	for (Eigen::VectorXd::Index i=inner_boundary;i<_N;++i )
+		rhs(i) = 1.;
+
+	return rhs;
 }
 
 int main (int argc, char *argv[])
@@ -61,14 +106,13 @@ int main (int argc, char *argv[])
 			false /* true solution calculation */);
 
 	// parse matrix and vector files into instances
-	Eigen::MatrixXd matrix;
-	Eigen::VectorXd rhs;
-	Eigen::VectorXd solution;
-	Eigen::VectorXd solution_start;
-
-	const int N = 100;
-
-	rhs = Eigen::VectorXd(100);
+	const int N = 10;
+	const double depth = 1.;
+	Eigen::MatrixXd matrix = GravityMatrix(N,N, depth);
+	Eigen::VectorXd solution = GravitySolution(N);
+	Eigen::VectorXd rhs = matrix * solution;
+	Eigen::VectorXd solution_start = Eigen::VectorXd(N);
+	solution_start.setZero();
 
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
