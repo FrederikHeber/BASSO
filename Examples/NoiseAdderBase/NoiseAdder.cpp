@@ -20,7 +20,7 @@
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
-#include "SolverFactory/SolverFactory.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 

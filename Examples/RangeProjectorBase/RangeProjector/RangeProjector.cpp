@@ -24,7 +24,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
-#include "SolverFactory/SolverFactory.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 

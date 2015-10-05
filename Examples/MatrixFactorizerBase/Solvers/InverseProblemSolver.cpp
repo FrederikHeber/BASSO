@@ -20,7 +20,7 @@
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Options/CommandLineOptions.hpp"
-#include "SolverFactory/SolverFactory.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 InverseProblemSolver::InverseProblemSolver(
 		Database_ptr_t &_database,

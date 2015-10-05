@@ -11,7 +11,7 @@
 #include "IterationInformation.hpp"
 
 #include "MatrixFactorizerBase/Options/MatrixFactorizerOptions.hpp"
-#include "SolverFactory/SolverFactory.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 IterationInformation::IterationInformation(
 		const MatrixFactorizerOptions &_opts,

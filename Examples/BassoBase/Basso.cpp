@@ -27,7 +27,7 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
-#include "SolverFactory/SolverFactory.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 
