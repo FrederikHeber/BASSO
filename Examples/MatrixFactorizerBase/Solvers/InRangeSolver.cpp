@@ -13,8 +13,9 @@
 #include "Log/Logging.hpp"
 
 #include "Database/Database_mock.hpp"
-#include "RangeProjectorBase/RangeProjector/RangeProjector.hpp"
+#include "MatrixFactorizerBase/Helpers/detail.hpp"
 #include "Options/CommandLineOptions.hpp"
+#include "RangeProjectorBase/RangeProjector/RangeProjector.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
 InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :
@@ -78,10 +79,11 @@ bool InRangeSolver::operator()(
 			projected_rhs,
 			_solution_start,
 			_solution,
-			_loop_nr >= 3))
+			_loop_nr >= 3)) {
+		BOOST_LOG_TRIVIAL(trace)
+			<< "Resulting vector is " << _solution.transpose();
 		return false;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Resulting vector is " << _solution.transpose();
+	}
 
 	return true;
 }

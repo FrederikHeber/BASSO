@@ -18,7 +18,6 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
-#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Options/CommandLineOptions.hpp"
@@ -47,12 +46,15 @@ bool InverseProblemSolver::operator()(
 			SolverFactory::createInverseProblem(
 					opts, _matrix, _rhs);
 
-	bool status = operator()(inverseproblem, _startingvalue);
-	detail::setResultingVector(inverseproblem->x, _solution, _nonnegative);
-	return status;
+	GeneralMinimizer::ReturnValues result =
+			operator()(inverseproblem, _startingvalue);
+
+	detail::setResultingVector(result.m_solution, _solution, _nonnegative);
+
+	return result.status == GeneralMinimizer::ReturnValues::finished;
 }
 
-bool InverseProblemSolver::operator()(
+GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 		InverseProblem_ptr_t &_inverseproblem,
 		const Eigen::VectorXd &_startingvalue
 		)
@@ -65,7 +67,8 @@ bool InverseProblemSolver::operator()(
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";
-		return false;
+		result.status = GeneralMinimizer::ReturnValues::error;
+		return result;
 	}
 
 	SpaceElement_ptr_t truesolution;
@@ -113,10 +116,12 @@ bool InverseProblemSolver::operator()(
 		std::cerr << "Illegal value for "
 				<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
 				<< std::endl;
-		return false;
+		result.status = GeneralMinimizer::ReturnValues::error;
+		return result;
 	}
 	assert( *result.m_solution == *_inverseproblem->x );
+	assert( result.m_solution->getSpace().get() == _inverseproblem->x->getSpace().get() );
 
-	return true;
+	return result;
 }
 

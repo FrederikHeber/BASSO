@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/types.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 
 class CommandLineOptions;
 
@@ -40,7 +41,7 @@ struct InverseProblemSolver
 	 * @param _startingvalue starting value
 	 * @return true - success
 	 */
-	bool operator()(
+	GeneralMinimizer::ReturnValues operator()(
 			InverseProblem_ptr_t &_inverseproblem,
 			const Eigen::VectorXd &_startingvalue
 			);
@@ -50,18 +51,17 @@ struct InverseProblemSolver
 	 * @param _matrix problem matrix
 	 * @param _rhs right-hand side
 	 * @param _startingvalue starting value
-	 * @param _solution on return containing solution
+	 * @param _solution to contain solution on exit
 	 * @param _nonnegative whether solution's components must be non-negative
-	 * @return true - success
+	 * @return true - success, false - else
 	 */
 	bool operator()(
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::MatrixXd &_rhs,
 			const Eigen::VectorXd &_startingvalue,
 			Eigen::VectorXd &_solution,
-			const bool _nonnegative = false
+			const bool _nonnegative
 			);
-
 private:
 	//!> database reference for storing iteration information
 	Database_ptr_t database;
