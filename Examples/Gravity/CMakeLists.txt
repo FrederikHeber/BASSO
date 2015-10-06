@@ -3,13 +3,16 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 # add the executable for matrix factorization
-add_executable (Gravity 
-	Gravity.cpp
+add_library (GravityBase 
 	Options/GravityOptions.cpp)
 
 install (FILES Options/GravityOptions.hpp DESTINATION include)
 
+# add the executable
+add_executable (Gravity
+	Gravity.cpp)
 target_link_libraries ( Gravity
+	GravityBase
 	${EXTRA_LIBS}
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
@@ -19,3 +22,16 @@ target_link_libraries ( Gravity
 	${LIBRT_LIBRARIES}
 	${MPI_LIBRARIES})
 install (TARGETS Gravity DESTINATION bin)
+
+add_executable (GravityConfigurator 
+	GravityConfigurator.cpp)
+target_link_libraries ( GravityConfigurator 
+	GravityBase
+	${EXTRA_LIBS} 
+	${NLOPT_LIBRARIES}
+	${GSL_LIBRARY} 
+	${CMAKE_THREAD_LIBS_INIT} 
+	${Boost_LIBRARIES}
+	${POCO_SQL_LIBRARIES}
+	${LIBRT_LIBRARIES}) 
+install (TARGETS GravityConfigurator DESTINATION bin)
