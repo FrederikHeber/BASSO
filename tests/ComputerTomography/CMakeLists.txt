@@ -20,3 +20,6 @@ add_subdirectory (simple)
 
 # configuration file tests
 add_subdirectory (config)
+
+# SheppLogan phantom tests
+add_subdirectory (SheppLogan)
