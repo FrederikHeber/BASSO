@@ -9,7 +9,9 @@
 
 
 #include "BassoConfig.h"
+
 #include <cmath>
+#include <fstream>
 
 #include <boost/chrono.hpp>
 #include <Eigen/Dense>
@@ -18,6 +20,7 @@
 #include "Log/Logging.hpp"
 #include "Options/GravityOptions.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+#include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
@@ -158,6 +161,26 @@ int main (int argc, char *argv[])
 	BOOST_LOG_TRIVIAL(info) << "The operation took "
 			<< boost::chrono::duration<double>(timing_end - timing_start)
 			<< ".";
+
+	// writing solution
+	{
+		using namespace MatrixIO;
+		if (!opts.density_file.string().empty()) {
+			std::ofstream ost(opts.density_file.string().c_str());
+			if (ost.good())
+				try {
+					SpaceElementWriter::output(ost, result.m_solution);
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write density to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.density_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No density file given." << std::endl;
+		}
+	}
 
 	// exit
 	return 0;
