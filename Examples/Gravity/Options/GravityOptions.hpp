@@ -55,6 +55,8 @@ public:
 	// primary values
 	double depth;
 	unsigned int discretization;
+	boost::filesystem::path gravityfield_file;
+	boost::filesystem::path density_file;
 
 	// secondary values
 };
