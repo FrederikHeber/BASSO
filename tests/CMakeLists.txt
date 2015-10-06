@@ -22,3 +22,6 @@ add_subdirectory (RangeProjector)
 
 # tests for NoiseAdder program
 add_subdirectory (NoiseAdder)
+
+# tests for Gravity program
+add_subdirectory (Gravity)
