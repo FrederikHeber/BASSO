@@ -16,7 +16,7 @@
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
-#include "Options/CommandLineOptions.hpp"
+#include "Options/GravityOptions.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
 	boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
-	CommandLineOptions opts;
+	GravityOptions opts;
 	opts.init();
 
 	// parse options
@@ -106,8 +106,8 @@ int main (int argc, char *argv[])
 			false /* true solution calculation */);
 
 	// parse matrix and vector files into instances
-	const int N = 10;
-	const double depth = 1.;
+	const int N = opts.discretization;
+	const double depth = opts.depth;
 	Eigen::MatrixXd matrix = GravityMatrix(N,N, depth);
 	Eigen::VectorXd solution = GravitySolution(N);
 	Eigen::VectorXd rhs = matrix * solution;
