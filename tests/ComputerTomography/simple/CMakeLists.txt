@@ -14,4 +14,4 @@ add_test (ComputerTomographySimple
 		--num-pixels-y 11		 
 		--rhs ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/simple/pre/vector.m)
 set_tests_properties (ComputerTomographySimple
-	PROPERTIES WILL_FAIL false)
+	PROPERTIES PASS_REGULAR_EXPRESSION "olution after 10 with .* residual of 0.23")
