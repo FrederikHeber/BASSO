@@ -4,7 +4,11 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 # add the executable for matrix factorization
 add_executable (Gravity 
-	Gravity.cpp)
+	Gravity.cpp
+	Options/GravityOptions.cpp)
+
+install (FILES Options/GravityOptions.hpp DESTINATION include)
+
 target_link_libraries ( Gravity
 	${EXTRA_LIBS}
 	${NLOPT_LIBRARIES}
