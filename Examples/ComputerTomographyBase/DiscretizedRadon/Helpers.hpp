@@ -16,21 +16,15 @@
 
 namespace detail {
 
-	/** Returns the center of the pixel indicated by the indices \a _i
-	 * and \a _j, this is times 1 over h_x/h_y.
+	/** Precalculates the pixel centers for on direction.
 	 *
-	 * @param _i index for x
-	 * @param _j index for y
-	 * @param _h_x length of a pixel in x direction
-	 * @param _h_y length of a pixel in y direction
-	 * @return pixel center coordinates
+	 * @param _h length of a pixel in the respective direction
+	 * @param _num_pixel number of pixel in the respective direction
+	 * @return pixel center component for respective direction
 	 */
-	point_t getPixelCenter(
-			const unsigned int _i,
-			const unsigned int _j,
-			const double _h_x,
-			const double _h_y
-			);
+	std::vector<double> calculatePixelCenter(
+			const double _h,
+			const unsigned int _num_pixel);
 
 	/** Function to generate a vector filled with omegas for a set of
 	 * increasing angles.

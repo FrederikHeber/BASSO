@@ -30,8 +30,14 @@ BackprojectionMatrix::BackprojectionMatrix(
 {
 	matrix.setZero();
 
-	// precalculate omegas
+	// precalculate omegas and pixel centers
 	std::vector< point_t > omegas = detail::calculateOmegas(num_angles);
+	const double h_x = 2./(double)num_pixel_x;
+	const double h_y = 2./(double)num_pixel_y;
+	std::vector< double > pixelcenter_x =
+			detail::calculatePixelCenter(h_x, num_pixel_x);
+	std::vector< double > pixelcenter_y =
+			detail::calculatePixelCenter(h_y, num_pixel_y);
 
 	// go through every pixel
 	assert( _num_offsets % 2 == 1);
@@ -39,14 +45,11 @@ BackprojectionMatrix::BackprojectionMatrix(
 			_num_offsets > 1 ?
 					(_num_offsets-1) / 2 : 0;
 	const double delta = 1./(double)half_offsets;
-	const double h_x = 2./(double)num_pixel_x;
-	const double h_y = 2./(double)num_pixel_y;
 	const double prefactor = M_PI/(double)num_angles;
 	for (unsigned int pixel_x = 0; pixel_x < num_pixel_x; ++pixel_x) {
 		for (unsigned int pixel_y = 0; pixel_y < num_pixel_y; ++pixel_y) {
 			const unsigned int row_index = pixel_y + (pixel_x*num_pixel_y);
-			const point_t x =
-					detail::getPixelCenter(pixel_x, pixel_y, h_x, h_y);
+			const point_t x(pixelcenter_x[pixel_x], pixelcenter_y[pixel_y]);
 //			if (x.squaredNorm() - 1. > BASSOTOLERANCE)
 //				continue;
 			for (unsigned int angle = 0; angle < _num_angles; ++angle) {

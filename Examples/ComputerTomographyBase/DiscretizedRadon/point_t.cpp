@@ -24,6 +24,10 @@ bool point_t::operator<(
 	return false;
 }
 
+point_t::point_t(const double _x, const double _y) :
+	 Eigen::Vector2d(_x,_y)
+{}
+
 point_t::point_t(
 		const Eigen::Vector2d &_p) :
 	 Eigen::Vector2d(_p)

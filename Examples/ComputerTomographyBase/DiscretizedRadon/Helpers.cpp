@@ -14,17 +14,14 @@
 
 namespace detail {
 
-	point_t getPixelCenter(
-			const unsigned int _i,
-			const unsigned int _j,
-			const double _h_x,
-			const double _h_y
-			)
+	std::vector<double> calculatePixelCenter(
+			const double _h,
+			const unsigned int _num_pixel)
 	{
-		point_t point;
-		point[0] = -1.+(_i+.5)*_h_x;
-		point[1] = -1.+(_j+.5)*_h_y;
-		return point;
+		std::vector<double> values(_num_pixel);
+		for (unsigned int pixel_x = 0; pixel_x < _num_pixel; ++pixel_x)
+			values[pixel_x] = -1.+(pixel_x+.5)*_h;
+		return values;
 	}
 
 	std::vector< point_t > calculateOmegas(const unsigned int _num_angles)

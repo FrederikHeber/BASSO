@@ -28,6 +28,13 @@ public:
 	 */
 	point_t();
 
+	/** Conversion cstor from two doubles to point_t
+	 *
+	 * @param _x x component
+	 * @param _y y component
+	 */
+	point_t(const double _x, const double _y);
+
 	/** Conversion cstor from eigen vector to point_t
 	 *
 	 * @param _p eigen vector
