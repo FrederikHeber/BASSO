@@ -107,6 +107,15 @@ set (POCO_SQL_LIBRARIES
 	${Poco_Foundation_LIBRARY_RELEASE}
 	)
 
+# find libpng
+find_package(PNG)
+if (PNG_FOUND)
+	include_directories(${PNG_INCLUDE_DIRS})
+	set (PNG_LIBRARIES ${PNG_LIBRARIES})
+	set( PNG_FOUND ${PNG_FOUND})
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${PNG_DEFINITIONS})
+endif (PNG_FOUND)
+
 ######################## BassoConfig.hpp #################################
 
 # configure a header file to pass some CMake settings
@@ -163,13 +172,8 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 
 #### EXECUTABLES ####
 
-# add src folders of executables
-add_subdirectory (Examples/BassoBase)
-add_subdirectory (Examples/ComputerTomographyBase)
-add_subdirectory (Examples/Gravity)
-add_subdirectory (Examples/MatrixFactorizerBase)
-add_subdirectory (Examples/NoiseAdderBase)
-add_subdirectory (Examples/RangeProjectorBase)
+# add Examples folders of executables
+add_subdirectory (Examples)
 
 #### TESTS AND UNITTESTS ####
 
