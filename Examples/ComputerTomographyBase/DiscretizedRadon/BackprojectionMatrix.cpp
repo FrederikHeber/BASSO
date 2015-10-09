@@ -50,7 +50,8 @@ BackprojectionMatrix::BackprojectionMatrix(
 //			if (x.squaredNorm() - 1. > BASSOTOLERANCE)
 //				continue;
 			for (unsigned int angle = 0; angle < _num_angles; ++angle) {
-				const double s = omegas[angle].dot(x);
+				const double s =
+						std::min(1.,std::max(-1.,omegas[angle].dot(x)));
 				const double t = s/delta;
 				const int k = floor(t);
 				const double u = t - (double)k;
