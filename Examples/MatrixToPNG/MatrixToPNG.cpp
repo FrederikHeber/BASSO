@@ -61,19 +61,43 @@ int main (int argc, char *argv[])
 	}
 	assert( matrix.rows() == num_pixels);
 
-	if (boost::filesystem::is_regular(opts.image_file)) {
+	if (!boost::filesystem::exists(opts.image_file)) {
+		// find bounds
+		const double min = matrix.minCoeff();
+		const double max = matrix.maxCoeff();
+		const double length = fabs(max - min);
 		png::image< png::rgb_pixel > image(opts.num_pixel_x, opts.num_pixel_y);
 		for (size_t y = 0; y < image.get_height(); ++y)
 		{
 		 for (size_t x = 0; x < image.get_width(); ++x)
 		 {
-			 image[y][x] = png::rgb_pixel(x, y, matrix[x+y*opts.num_pixel_x]);
+			 unsigned int i;
+			 unsigned int j;
+			 unsigned int multiplier = image.get_width();
+
+			 if (opts.LeftToRight)
+				 i = x;
+			 else
+				 i = image.get_width() - x - 1;
+
+			 if (opts.BottomToTop)
+				 j = y;
+			 else
+				 j = image.get_height() - y - 1;
+
+			 if (opts.Flip) {
+				 multiplier = image.get_height();
+				 std::swap(i,j);
+			 }
+
+			 const unsigned int value = 255.*(matrix[i+j*multiplier] - min)/length;
+			 image[y][x] = png::rgb_pixel(value, value, value);
 			 // non-checking equivalent of image.set_pixel(x, y, ...);
 		 }
 		}
 		image.write(opts.image_file.string());
 	} else {
-		BOOST_LOG_TRIVIAL(error) << "The given output file is invalid.";
+		BOOST_LOG_TRIVIAL(error) << "The given output file exists.";
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =

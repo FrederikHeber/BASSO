@@ -18,7 +18,10 @@ namespace po = boost::program_options;
 
 MatrixToPNGOptions::MatrixToPNGOptions() :
 		num_pixel_x(0),
-		num_pixel_y(0)
+		num_pixel_y(0),
+		LeftToRight(false),
+		BottomToTop(false),
+		Flip(false)
 {}
 
 void MatrixToPNGOptions::init()
@@ -36,6 +39,12 @@ void MatrixToPNGOptions::init()
 	        		"set the desired number of pixels in x direction")
 			("num-pixels-y", po::value< unsigned int >(),
 					"set the desired number of pixels in y direction")
+			("left-to-right", po::value< bool >(),
+					"set whether to run the rows from left to right or reverse")
+			("bottom-to-top", po::value< bool >(),
+					"set whether to run the columns from bottom to top or reverse")
+			("flip", po::value< bool >(),
+					"set whether to exchange rows and columns")
 	        ;
 
 	desc_all.add(desc_matrixtopng);
@@ -67,6 +76,27 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Number of y pixels was set to " << num_pixel_y;
+	}
+
+	if (vm.count("left-to-right")) {
+		LeftToRight = vm["left-to-right"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We go through rows from "
+			<< (LeftToRight ? "left to right" : "right to left");
+	}
+
+	if (vm.count("bottom-to-top")) {
+		BottomToTop = vm["bottom-to-top"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We go through columns from "
+			<< (BottomToTop ? "bottom to top" : "top to bottom");
+	}
+
+
+	if (vm.count("flip")) {
+		Flip = vm["flip"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We " << (Flip ? "do" : "don't") << " exchange rows and columns";
 	}
 }
 
@@ -123,4 +153,7 @@ void MatrixToPNGOptions::store(std::ostream &_output) const
 	writeValue<boost::filesystem::path>(_output, vm,  "image");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
+	writeValue<bool>(_output, vm,  "left-to-right");
+	writeValue<bool>(_output, vm,  "bottom-to-top");
+	writeValue<bool>(_output, vm,  "flip");
 }

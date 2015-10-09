@@ -57,6 +57,9 @@ public:
 	boost::filesystem::path image_file;
 	unsigned int num_pixel_x;
 	unsigned int num_pixel_y;
+	bool LeftToRight;
+	bool BottomToTop;
+	bool Flip;
 
 	// secondary values
 };
