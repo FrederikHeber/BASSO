@@ -110,10 +110,13 @@ set (POCO_SQL_LIBRARIES
 # find libpng
 find_package(PNG)
 if (PNG_FOUND)
-	include_directories(${PNG_INCLUDE_DIRS})
-	set (PNG_LIBRARIES ${PNG_LIBRARIES})
-	set( PNG_FOUND ${PNG_FOUND})
-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${PNG_DEFINITIONS})
+	find_package(png++)
+	if (png++_FOUND)
+		include_directories(${PNG_INCLUDE_DIRS} ${png++_INCLUDE_DIRS})
+		set (PNG_LIBRARIES ${PNG_LIBRARIES})
+		set( PNG_FOUND ${PNG_FOUND})
+		set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${PNG_DEFINITIONS})
+	endif (png++_FOUND)
 endif (PNG_FOUND)
 
 ######################## BassoConfig.hpp #################################
