@@ -44,6 +44,7 @@ add_library (Minimizations
 	Minimizers/StepWidths/DetermineStepWidthFactory.cpp
 	Minimizers/StepWidths/LandweberFixedStepWidth.cpp
 	Minimizers/StepWidths/ResidualMinimizingStepwidth.cpp
+	Minimizers/StoppingCriteria/StoppingCriterion.cpp
 	Norms/NormFactory.cpp
 	Spaces/NormedSpaceFactory.cpp
 	Spaces/NormedSpace.cpp
@@ -113,6 +114,12 @@ install (FILES Minimizers/StepWidths/DetermineStepWidthFactory.hpp DESTINATION i
 install (FILES Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/LandweberFixedStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/ResidualMinimizingStepwidth.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/CheckIterationCount.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/CheckResiduum.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/CheckWalltime.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/StoppingCriterion.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/StoppingCriterion_impl.hpp DESTINATION include)
 
 install (FILES Norms/Specifics/DualRegularizedL1Norm.hpp DESTINATION include)
 install (FILES Norms/Specifics/RegularizedL1Norm.hpp DESTINATION include)
