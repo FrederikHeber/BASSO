@@ -75,6 +75,8 @@ void CommandLineOptions::init()
 	        		"set the filename to write information on iteration in sqlite format")
 			("minimization-library", po::value<std::string>(),
 					"set which minimization library to use (gsl,nlopt)")
+			("stopping-criteria", po::value< std::string >(),
+					"set (optionally) the desired stopping criteria, boolean operators allowed. This overrules any set stopping parameters such as maxiter, max-walltime, and delta.")
 			("max-inner-iterations", po::value<unsigned int>(),
 					"set the maximum amount of inner iterations")
 			("maxiter", po::value<unsigned int>(),
@@ -329,6 +331,12 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< stepwidth_type << "\n";
 	}
 
+	if (vm.count("stopping-criteria")) {
+		stopping_criteria = vm["stopping-criteria"].as< std::string >();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Stopping criteria was set to " << stopping_criteria;
+	}
+
 	if (vm.count("tau")) {
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
@@ -558,7 +566,7 @@ void CommandLineOptions::setSecondaryValues()
 	if (maxinneriter == 0)
 		maxinneriter = N*100;
 
-	{
+	if (stopping_criteria.empty()) {
 		int count = 0;
 		if (vm.count("delta")) {
 			if (count != 0)
