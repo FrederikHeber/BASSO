@@ -24,9 +24,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( point_tUnitTest );
 void point_tUnitTest::setUp()
 {
 	// DiscretizedRadonMatrix uses logging
-	logging::core::get()->set_filter
+	boost::log::core::get()->set_filter
 			(
-					logging::trivial::severity >= logging::trivial::info
+					boost::log::trivial::severity >= boost::log::trivial::info
 			);
 	startLogging();
 }

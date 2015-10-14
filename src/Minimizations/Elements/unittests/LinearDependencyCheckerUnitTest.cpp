@@ -22,9 +22,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( LinearDependencyCheckerUnitTest );
 void LinearDependencyCheckerUnitTest::setUp()
 {
 	// LinearDependencyChecker uses logging
-	logging::core::get()->set_filter
+	boost::log::core::get()->set_filter
 			(
-					logging::trivial::severity >= logging::trivial::info
+					boost::log::trivial::severity >= boost::log::trivial::info
 			);
 	startLogging();
 }

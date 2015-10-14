@@ -91,21 +91,21 @@ void Options::setVerbosity() const
 	switch (verbose) {
 	default:
 	case 0:
-		logging::core::get()->set_filter
+		boost::log::core::get()->set_filter
 		(
-				logging::trivial::severity >= logging::trivial::info
+				boost::log::trivial::severity >= boost::log::trivial::info
 		);
 		break;
 	case 1:
-		logging::core::get()->set_filter
+		boost::log::core::get()->set_filter
 		(
-				logging::trivial::severity >= logging::trivial::debug
+				boost::log::trivial::severity >= boost::log::trivial::debug
 		);
 		break;
 	case 2:
-		logging::core::get()->set_filter
+		boost::log::core::get()->set_filter
 		(
-				logging::trivial::severity >= logging::trivial::trace
+				boost::log::trivial::severity >= boost::log::trivial::trace
 		);
 		break;
 	}

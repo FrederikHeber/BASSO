@@ -23,11 +23,6 @@
 #include <set>
 #include <vector>
 
-namespace logging = boost::log;
-namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace keywords = boost::log::keywords;
-
 void startLogging();
 void stopLogging();
 
