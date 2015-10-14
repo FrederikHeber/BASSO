@@ -118,6 +118,7 @@ install (FILES Minimizers/StoppingCriteria/CheckIterationCount.hpp DESTINATION i
 install (FILES Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckResiduum.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckWalltime.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/StoppingArguments.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/StoppingCriterion.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/StoppingCriterion_impl.hpp DESTINATION include)
 
