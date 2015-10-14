@@ -98,7 +98,6 @@ private:
 	bool checkSensibility_tau() const;
 	bool checkSensibility_tuple_parameters() const;
 	bool checkSensibility_algorithm() const;
-	bool checkSensibility_max() const;
 	bool checkSensibility_minlib() const;
 	bool checkSensibility_norms() const;
 	bool checkSensibility_pvalues() const;
@@ -139,6 +138,7 @@ public:
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options
+	std::string stopping_criteria;
 	enum MinimizerFactory::InstanceType type;
 };
 

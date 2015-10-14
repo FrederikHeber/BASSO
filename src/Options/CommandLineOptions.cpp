@@ -456,17 +456,6 @@ bool CommandLineOptions::checkSensibility_minlib() const
 	return true;
 }
 
-bool CommandLineOptions::checkSensibility_max() const
-{
-	if ((vm.count("maxiter")) && (vm.count("max-walltime"))) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "You have specified both max-iter and max-walltime.";
-		return false;
-	}
-
-	return true;
-}
-
 bool CommandLineOptions::checkSensibility_norms() const
 {
 	if ((!NormFactory::getInstance().isValidType(type_spacex))
@@ -540,7 +529,6 @@ bool CommandLineOptions::checkSensibility() const
 	status &= checkSensibility_tau();
 	status &= checkSensibility_tuple_parameters();
 	status &= checkSensibility_algorithm();
-	status &= checkSensibility_max();
 	status &= checkSensibility_minlib();
 	status &= checkSensibility_norms();
 	status &= checkSensibility_pvalues();
@@ -564,6 +552,31 @@ void CommandLineOptions::setSecondaryValues()
 	// set good maximum of inner iterations
 	if (maxinneriter == 0)
 		maxinneriter = N*100;
+
+	{
+		int count = 0;
+		if (vm.count("delta")) {
+			if (count != 0)
+				stopping_criteria += " || ";
+			if (vm.count("algorithm") && (algorithm_name == "RESESOP"))
+				stopping_criteria += "Residuum";
+			else
+				stopping_criteria += "RelativeResiduum";
+			++count;
+		}
+		if (vm.count("maxiter")) {
+			if (count != 0)
+				stopping_criteria += " || ";
+			stopping_criteria += "MaxIterationCount";
+			++count;
+		}
+		if (vm.count("max-walltime")) {
+			if (count != 0)
+				stopping_criteria += " || ";
+			stopping_criteria += "MaxWalltime";
+			++count;
+		}
+	}
 }
 
 void CommandLineOptions::store(std::ostream &_output) const
@@ -593,6 +606,7 @@ void CommandLineOptions::store(std::ostream &_output) const
 	writeValue<double>(_output, vm,  "delta");
 	writeValue<boost::filesystem::path>(_output, vm, "iteration-file");
 	writeValue<std::string>(_output, vm,  "minimization-library");
+	writeValue<std::string>(_output, vm,  "stopping-criteria");
 	writeValue<unsigned int>(_output, vm,  "max-inner-iterations");
 	writeValue<unsigned int>(_output, vm,  "maxiter");
 	writeValue<unsigned int>(_output, vm,  "max-walltime");
