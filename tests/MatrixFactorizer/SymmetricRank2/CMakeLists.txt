@@ -6,7 +6,8 @@ add_test (MatrixFactorizer_SymmetricRank2
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 0.01
+		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
 		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank2/pre/data.m 

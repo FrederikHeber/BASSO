@@ -14,6 +14,7 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {
@@ -30,6 +31,7 @@ MinimizerFactory::createInstance(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
+		const StoppingCriterion::ptr_t &_stopping_criteria,
 		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 		const unsigned int _outputsteps,
 		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
@@ -45,6 +47,7 @@ MinimizerFactory::createInstance(
 				_maxiter,
 				_maxinneriter,
 				_database,
+				_stopping_criteria,
 				_stepwidth_type,
 				_outputsteps
 				);
@@ -56,6 +59,7 @@ MinimizerFactory::createInstance(
 					_maxiter,
 					_maxinneriter,
 					_database,
+					_stopping_criteria,
 					_outputsteps,
 					_orthogonalization_type
 					);
@@ -67,6 +71,7 @@ MinimizerFactory::createInstance(
 					_maxiter,
 					_maxinneriter,
 					_database,
+					_stopping_criteria,
 					_outputsteps,
 					_orthogonalization_type
 					);

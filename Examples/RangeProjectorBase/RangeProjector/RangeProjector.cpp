@@ -24,6 +24,7 @@
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
@@ -80,10 +81,15 @@ bool RangeProjector::operator()(
 	InverseProblem_ptr_t inverseproblem(
 			new InverseProblem(As,Ys,Xs,dualmappedrhs) );
 
+	// create stopping criterion
+	StoppingCriteriaFactory stop_factory;
+	StoppingCriterion::ptr_t stopping_criterion =
+			stop_factory.create(opts.stopping_criteria, opts.stopping_args);
+
 	// prepare minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, inverseproblem, database, opts.maxiter);
+					opts, inverseproblem, database, stopping_criterion, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";

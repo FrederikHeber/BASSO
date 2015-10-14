@@ -15,6 +15,7 @@
 
 #include "Database/Table.hpp"
 #include "Minimizations/types.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 class BregmanDistance;
 class Database;
@@ -33,6 +34,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const StoppingCriterion::ptr_t &_stopping_criteria,
 			const unsigned int _outputsteps=0
 			);
 
@@ -174,45 +176,21 @@ public:
 	 */
 	bool isValidMinLibName(const std::string &_name);
 
-	/** Checks whether walltime limit was surpassed.
+	/** Checks the stopping condition whether the iteration should stop
+	 * or not.
 	 *
 	 * @param _time current used time (i.e. current time - start time)
-	 * @return true - \a _time exceeds set walltime, false - may continue
-	 */
-	bool CheckWalltime(
-			const boost::chrono::duration<double> &_time) const;
-
-	/** Checks whether more iterations than a specified limit have
-	 * been performed.
-	 *
-	 * \note This is overruled if \a MaxWalltime is given.
-	 *
 	 * @param _current_outeriterations number of iterations
-	 * @return true - iteration count exceeds limit, false - may continue
-	 */
-	bool CheckIterations(
-			const int _current_outeriterations) const;
-
-	/** Checks whether the residuum has fallen beneath a specified
-	 * limit.
-	 *
-	 * @param _residuum current residuum
-	 * @return true - \a _residuum is less than \a TolY, false - may continue
-	 */
-	bool CheckResiduum(
-			const double _residuum) const;
-
-	/** Checks whether the residuum relative to the norm of \a y has fallen
-	 * beneath a specified limit.
-	 *
 	 * @param _residuum current residuum
 	 * @param _ynorm norm of the right-hand side
-	 * @return true - \a _residuum relative to \a _ynorm is less than \a TolY,
-	 * 		   false - may continue
+	 * @return true - stop, false - continue
 	 */
-	bool CheckRelativeResiduum(
+	bool CheckStoppingCondition(
+			const boost::chrono::duration<double> &_time,
+			const int _current_outeriterations,
 			const double _residuum,
 			const double _ynorm) const;
+
 protected:
 	/** Internal function called after GeneralMinimizer state has been
 	 * resetted.
@@ -296,6 +274,9 @@ private:
 	const Norm_ptr_t l2norm;
 
 protected:
+
+	//!> stopping criteria
+	const StoppingCriterion::ptr_t stopping_criteria;
 
 	//!> additional parameter, value pairs that are added to each submitted tuple
 	const std::vector<std::string> tuple_params;

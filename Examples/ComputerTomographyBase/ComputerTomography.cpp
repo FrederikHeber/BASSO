@@ -38,6 +38,7 @@
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
@@ -249,10 +250,15 @@ int main (int argc, char *argv[])
 	Database_ptr_t database =
 			SolverFactory::createDatabase(opts);
 
+	// create stopping criterion
+	StoppingCriteriaFactory stop_factory;
+	StoppingCriterion::ptr_t stopping_criterion =
+			stop_factory.create(opts.stopping_criteria, opts.stopping_args);
+
 	// create minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, inverseproblem, database, opts.maxiter);
+					opts, inverseproblem, database, stopping_criterion, opts.maxiter);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";

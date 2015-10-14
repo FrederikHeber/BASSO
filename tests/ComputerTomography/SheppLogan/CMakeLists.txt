@@ -7,6 +7,7 @@ add_test (ComputerTomographySheppLogan
 		--py 2 
 		--powery 2 
 		--delta 0.01 
+		--maxiter 50
 		--num-angles 60
 		--num-offsets 61
 		--num-pixels-x 21

@@ -39,6 +39,7 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
+		const StoppingCriterion::ptr_t &_stopping_criteria,
 		const unsigned int _outputsteps,
 		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 		) :
@@ -48,6 +49,7 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		_maxiter,
 		_maxinneriter,
 		_database,
+		_stopping_criteria,
 		_outputsteps,
 		_orthogonalization_type
 		),
@@ -138,9 +140,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	/// -# check stopping criterion
 	const double ynorm = refs.NormY(refs.y);
-	bool StopCriterion = false;
 	const double initial_residuum = istate.residuum;
-	StopCriterion = CheckResiduum(initial_residuum);
+	bool StopCriterion = CheckStoppingCondition(
+			boost::chrono::duration<double>(0.),
+			istate.NumberOuterIterations,
+			istate.residuum,
+			ynorm);
 
 	std::vector<double> d(N,0.);
 	istate.status = ReturnValues::started;
@@ -301,10 +306,11 @@ SequentialSubspaceMinimizerNoise::operator()(
 				boost::chrono::high_resolution_clock::now();
 		++istate.NumberOuterIterations;
 		const double current_residuum = istate.residuum;
-		StopCriterion =
-				CheckIterations(istate.NumberOuterIterations)
-				|| CheckResiduum(current_residuum)
-				|| CheckWalltime(boost::chrono::duration<double>(timing_intermediate - timing_start));
+		StopCriterion = CheckStoppingCondition(
+			timing_intermediate - timing_start,
+			istate.NumberOuterIterations,
+			istate.residuum,
+			ynorm);
 
 		/// check for non-convergence
 		if (isNonConverging(current_residuum,

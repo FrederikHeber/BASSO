@@ -27,6 +27,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const StoppingCriterion::ptr_t &_stopping_criteria,
 			const unsigned int _outputsteps,
 			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 			);

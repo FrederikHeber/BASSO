@@ -20,6 +20,7 @@
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Options/CommandLineOptions.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
@@ -60,9 +61,15 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 		)
 {
 	GeneralMinimizer::ReturnValues result;
+
+	// create stopping criterion
+	StoppingCriteriaFactory stop_factory;
+	StoppingCriterion::ptr_t stopping_criterion =
+			stop_factory.create(opts.stopping_criteria, opts.stopping_args);
+
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, _inverseproblem, database, opts.maxiter);
+					opts, _inverseproblem, database, stopping_criterion, opts.maxiter);
 
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

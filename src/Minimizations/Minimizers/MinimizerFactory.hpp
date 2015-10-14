@@ -16,6 +16,7 @@
 #include "Minimizations/types.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 class Database;
 class DualityMappingsContainer;
@@ -50,6 +51,7 @@ public:
 	 * @param _maxiter maximum number of iterations
 	 * @param _maxinneriter maximum number of inner iterations
 	 * @param _database database to store iteration information to
+	 * @param _stopping_criteria the stopping criteria
 	 * @param _stepwidth_type which step width procedure to use (landweber)
 	 * @param _outputsteps write temporary solution each .. steps
 	 * @param _orthogonal_directions orthogonalize new search direction?
@@ -62,6 +64,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const StoppingCriterion::ptr_t &_stopping_criteria,
 			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 			const unsigned int _outputsteps=0,
 			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type

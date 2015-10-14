@@ -81,7 +81,7 @@ struct parser
         	StoppingCriteriaFactory::Combination_types combination_type =
         			f.getCombinationTypeForName(tokenword.str());
         	if (stop_type != StoppingCriteriaFactory::MAX_StoppingCriteria_types) {
-            	BOOST_LOG_TRIVIAL(info)
+            	BOOST_LOG_TRIVIAL(debug)
     				<< "Matched instance: " << tokenword.str();
         		StoppingCriterion::ptr_t newcriterion =
         				f.createCriterion( stop_type, args );
@@ -93,7 +93,7 @@ struct parser
         			criterion = newcriterion;
         		}
         	} else if (combination_type != StoppingCriteriaFactory::MAX_Combination_types) {
-            	BOOST_LOG_TRIVIAL(info)
+            	BOOST_LOG_TRIVIAL(debug)
     				<< "Matched combination: " << tokenword.str();
         		// check whether it's an operator
         		assert( combiner == StoppingCriteriaFactory::NoCombination);
@@ -105,8 +105,8 @@ struct parser
             break;
         }
         case ID_CHAR:       // matched something else
-        	BOOST_LOG_TRIVIAL(info)
-				<< "Matched a char." << t.value();
+//        	BOOST_LOG_TRIVIAL(info)
+//				<< "Matched a char." << t.value();
         	// check whether it's a boolean operator
             break;
         }

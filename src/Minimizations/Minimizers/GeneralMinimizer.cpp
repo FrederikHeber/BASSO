@@ -46,6 +46,7 @@ GeneralMinimizer::GeneralMinimizer(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
+		const StoppingCriterion::ptr_t &_stopping_criteria,
 		const unsigned int _outputsteps
 		) :
 	Delta(_Delta),
@@ -62,6 +63,7 @@ GeneralMinimizer::GeneralMinimizer(
 			"lp",
 			_inverseproblem->x->getSpace(),
 			NormFactory::args_t(1, boost::any(2.)))),
+	stopping_criteria(_stopping_criteria),
 	parameter_key(0),
 	database(_database),
 	parameters_table(database.addTable("parameters")),
@@ -104,36 +106,16 @@ void GeneralMinimizer::SearchDirection::update(
 					<< "newdir is " << u;
 }
 
-bool GeneralMinimizer::CheckWalltime(
-		const boost::chrono::duration<double> &_time) const
-{
-	if (MaxWalltime != boost::chrono::duration<double>(0.))
-		return _time >= MaxWalltime;
-	else
-		return false;
-}
-
-bool GeneralMinimizer::CheckIterations(
-		const int _current_outeriterations) const
-{
-	// walltime overrules maxiter
-	if (MaxWalltime == boost::chrono::duration<double>(0.))
-		return _current_outeriterations >= MaxOuterIterations;
-	else
-		return false;
-}
-
-bool GeneralMinimizer::CheckResiduum(
-		const double _residuum) const
-{
-	return _residuum <= TolY;
-}
-
-bool GeneralMinimizer::CheckRelativeResiduum(
+bool GeneralMinimizer::CheckStoppingCondition(
+		const boost::chrono::duration<double> &_time,
+		const int _current_outeriterations,
 		const double _residuum,
 		const double _ynorm) const
 {
-	return _residuum/_ynorm <= TolY;
+	const bool result =
+			(*stopping_criteria)(
+					_time, _current_outeriterations, _residuum, _ynorm);
+	return result;
 }
 
 void GeneralMinimizer::ReturnValues::output(

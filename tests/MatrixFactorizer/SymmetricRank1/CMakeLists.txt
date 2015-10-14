@@ -7,6 +7,7 @@ add_test (MatrixFactorizer_SymmetricRank1
 		--py 2 
 		--powery 2 
 		--delta 0.01 
+		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
 		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank1/pre/data.m 

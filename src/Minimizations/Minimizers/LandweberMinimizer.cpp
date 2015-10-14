@@ -41,6 +41,7 @@ LandweberMinimizer::LandweberMinimizer(
 		const unsigned int _maxiter,
 		const unsigned int _maxinneriter,
 		Database &_database,
+		const StoppingCriterion::ptr_t &_stopping_criteria,
 		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 		const unsigned int _outputsteps
 		) :
@@ -50,6 +51,7 @@ LandweberMinimizer::LandweberMinimizer(
 				_maxiter,
 				_maxinneriter,
 				_database,
+				_stopping_criteria,
 				_outputsteps
 				),
 	C(0.9),
@@ -119,7 +121,11 @@ LandweberMinimizer::operator()(
 
 	/// -# check stopping criterion
 	bool StopCriterion = false;
-	StopCriterion = CheckRelativeResiduum(returnvalues.residuum, ynorm);
+	StopCriterion = CheckStoppingCondition(
+			boost::chrono::duration<double>(0.),
+			returnvalues.NumberOuterIterations,
+			returnvalues.residuum,
+			ynorm);
 
 	// calculate some values prior to loop
 	SpaceElement_ptr_t dual_solution = refs.DualSpaceX.createElement();
@@ -202,11 +208,11 @@ LandweberMinimizer::operator()(
 		boost::chrono::high_resolution_clock::time_point timing_intermediate =
 				boost::chrono::high_resolution_clock::now();
 		++returnvalues.NumberOuterIterations;
-		StopCriterion =
-				CheckIterations(returnvalues.NumberOuterIterations)
-				|| CheckRelativeResiduum(returnvalues.residuum,ynorm)
-				|| CheckWalltime(boost::chrono::duration<double>(
-						timing_intermediate - timing_start));
+		StopCriterion = CheckStoppingCondition(
+			timing_intermediate - timing_start,
+			returnvalues.NumberOuterIterations,
+			returnvalues.residuum,
+			ynorm);
 
 		/// print intermediate solution
 		printIntermediateSolution(

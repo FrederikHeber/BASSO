@@ -26,6 +26,7 @@ public:
 			const unsigned int _maxiter,
 			const unsigned int _maxinneriter,
 			Database &_database,
+			const StoppingCriterion::ptr_t &_stopping_criteria,
 			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
 			const unsigned int _outputsteps=0
 			);

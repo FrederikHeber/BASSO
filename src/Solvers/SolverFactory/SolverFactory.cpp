@@ -77,6 +77,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
 		Database_ptr_t &_database,
+		const StoppingCriterion::ptr_t &_stopping_criteria,
 		const unsigned int _maxiterations
 		)
 {
@@ -91,6 +92,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 			_maxiterations,
 			_opts.maxinneriter,
 			*_database,
+			_stopping_criteria,
 			(const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type,
 			_opts.outputsteps,
 			_opts.orthogonalization_type);
