@@ -188,6 +188,7 @@ add_subdirectory (src/Math/unittests)
 add_subdirectory (src/Minimizations/Elements/unittests)
 add_subdirectory (src/Minimizations/Functions/unittests)
 add_subdirectory (src/Minimizations/Mappings/unittests)
+add_subdirectory (src/Minimizations/Minimizers/StoppingCriteria/unittests)
 add_subdirectory (src/Minimizations/Norms/unittests)
 add_subdirectory (Examples/ComputerTomographyBase/DiscretizedRadon/unittests)
 
