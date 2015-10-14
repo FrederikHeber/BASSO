@@ -175,6 +175,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Magnitude of noise was set to " << delta;
+		stopping_args.setTolerance(delta);
 	}
 
 	if (vm.count("database-replace")) {
@@ -208,6 +209,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		maxiter = vm["maxiter"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum iterations was set to " << maxiter;
+		stopping_args.setMaxIterations(maxiter);
 	}
 
 	if (vm.count("max-inner-iterations")) {
@@ -219,7 +221,9 @@ void CommandLineOptions::parse(int argc, char **argv)
 	if (vm.count("max-walltime")) {
 		maxwalltime = vm["max-walltime"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum Walltime was set to " << maxwalltime;
+			<< "Maximum Walltime was set to " << maxwalltime << " seconds.";
+		stopping_args.setMaxWalltime(
+				boost::chrono::duration<double>(maxwalltime));
 	}
 
 	if (vm.count("minimization-library")) {
@@ -329,6 +333,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau was set to " << tau;
+		stopping_args.setTolerance(stopping_args.getTolerance()*tau);
 	}
 
 	if (vm.count("tuple-parameters")) {

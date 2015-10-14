@@ -17,6 +17,7 @@
 
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Options/Options.hpp"
 
 /** This class contains the default command-line options that all of algorithms need.
@@ -139,6 +140,7 @@ public:
 
 	// secondary options: set by other options
 	std::string stopping_criteria;
+	StoppingArguments stopping_args;
 	enum MinimizerFactory::InstanceType type;
 };
 
