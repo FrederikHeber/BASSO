@@ -23,3 +23,6 @@ add_subdirectory (config)
 
 # SheppLogan phantom tests
 add_subdirectory (SheppLogan)
+
+# SheppLogan phantom tests
+add_subdirectory (SheppLogan_wNoise)
