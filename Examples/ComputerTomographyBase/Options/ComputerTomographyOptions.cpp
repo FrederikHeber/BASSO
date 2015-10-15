@@ -107,58 +107,40 @@ void ComputerTomographyOptions::internal_parse()
 	}
 }
 
-bool ComputerTomographyOptions::internal_help_conditions() const
+bool ComputerTomographyOptions::internal_checkSensibility() const
 {
-	if (!vm.count("normx")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Norm of space X normx not set";
-		return true;
-	}
-
-	if (!vm.count("normy")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Norm of space Y normy not set";
-		return true;
-	}
-
 	if (!vm.count("num-pixels-x")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of pixels in x direction not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("num-pixels-y")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of pixels in y direction not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("num-angles")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of angle discretization steps not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("num-offsets")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of lateral offsets not set";
-		return true;
+		return false;
 	}
 
 	if ((!vm.count("rhs")) || (!boost::filesystem::exists(rhs_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Right-hand side file not set or not present.";
-		return true;
+		return false;
 
 	}
 
-	return false;
-}
-
-bool ComputerTomographyOptions::internal_checkSensibility() const
-{
 	return true;
-
 }
 
 void ComputerTomographyOptions::internal_setSecondaryValues()

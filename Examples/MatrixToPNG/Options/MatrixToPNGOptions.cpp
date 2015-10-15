@@ -100,38 +100,40 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 	}
 }
 
-bool MatrixToPNGOptions::help_conditions() const
+bool MatrixToPNGOptions::internal_checkSensibility() const
 {
 	if (!vm.count("matrix")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "matrix filename not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("image")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "image filename not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("num-pixels-x")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of pixels in x direction not set";
-		return true;
+		return false;
 	}
 
 	if (!vm.count("num-pixels-y")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Number of pixels in y direction not set";
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 bool MatrixToPNGOptions::checkSensibility() const
 {
 	bool status = Options::checkSensibility();
+
+	status &= internal_checkSensibility();
 
 	if (!status)
 		showHelpinErrorCase();

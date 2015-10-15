@@ -32,6 +32,11 @@ public:
 	/** Add more sensibility checks.
 	 *
 	 */
+	bool internal_checkSensibility() const;
+
+	/** Add more sensibility checks.
+	 *
+	 */
 	bool checkSensibility() const;
 
 	/** Add more secondary values.

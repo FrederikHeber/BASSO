@@ -60,39 +60,22 @@ void RangeProjectorOptions::internal_parse()
 	}
 }
 
-bool RangeProjectorOptions::internal_help_conditions() const
+bool RangeProjectorOptions::internal_checkSensibility() const
 {
 	if ((!vm.count("matrix")) || (!boost::filesystem::exists(matrix_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Matrix file not set or not present.";
-		return true;
+		return false;
 
-	}
-
-	if (!vm.count("normx")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Norm of space X normx not set";
-		return true;
-	}
-
-	if (!vm.count("normy")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Norm of space Y normy not set";
-		return true;
 	}
 
 	if ((!vm.count("rhs")) || (!boost::filesystem::exists(rhs_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Right-hand side file not set or not present.";
-		return true;
+		return false;
 
 	}
 
-	return false;
-}
-
-bool RangeProjectorOptions::internal_checkSensibility() const
-{
 	return true;
 }
 

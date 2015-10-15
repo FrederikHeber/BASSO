@@ -31,11 +31,6 @@ private:
 	 */
 	void internal_parse();
 
-	/** Add more conditions when help is shown.
-	 *
-	 */
-	bool internal_help_conditions() const;
-
 	/** Add more sensibility checks.
 	 *
 	 */

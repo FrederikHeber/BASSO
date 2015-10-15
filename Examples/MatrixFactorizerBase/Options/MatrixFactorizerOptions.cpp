@@ -91,25 +91,20 @@ void MatrixFactorizerOptions::internal_parse()
 
 }
 
-bool MatrixFactorizerOptions::internal_help_conditions() const
+bool MatrixFactorizerOptions::internal_checkSensibility() const
 {
 	if ((!vm.count("data")) || (!boost::filesystem::exists(data_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Data file not set or not present.";
-		return true;
+		return false;
 
 	}
 	if (!vm.count("sparse-dimension")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Sparse dimensionality not set";
-		return true;
+		return false;
 	}
 
-	return false;
-}
-
-bool MatrixFactorizerOptions::internal_checkSensibility() const
-{
 	// We have to check N+1 directions for linear independence. This should
 	// be possible at least judging from the the dimensionality of the
 	// space, hence this requirement. Otherwise, one of the offsets to

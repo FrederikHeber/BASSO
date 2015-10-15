@@ -65,19 +65,15 @@ void Options::parse(int argc, char **argv)
 
 bool Options::showHelpConditions(const char * const program_name) const
 {
-	if (vm.count("help")) {
+	if (vm.count("help") || vm.count("version")) {
 		std::cout << program_name << " version "
 				<< Basso_VERSION_MAJOR << "."
 				<< Basso_VERSION_MINOR << std::endl;
 	    std::cout << desc_all << "\n";
 	    return true;
-	} else if (vm.count("version")) {
-		std::cout << program_name << " version "
-				<< Basso_VERSION_MAJOR << "."
-				<< Basso_VERSION_MINOR << std::endl;
-		return true;
-	} else
+	} else {
 		return false;
+	}
 }
 
 void Options::showHelpinErrorCase() const

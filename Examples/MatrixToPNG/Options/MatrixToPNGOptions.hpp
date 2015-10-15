@@ -30,10 +30,10 @@ public:
 	 */
 	void parse(int argc, char **argv);
 
-	/** Add more conditions when help is shown.
+	/** Add more sensibility checks.
 	 *
 	 */
-	bool help_conditions() const;
+	bool internal_checkSensibility() const;
 
 	/** Add more sensibility checks.
 	 *

@@ -65,15 +65,28 @@ void GravityOptions::internal_parse()
 	}
 }
 
-bool GravityOptions::internal_help_conditions() const
-{
-	return false;
-}
-
 bool GravityOptions::internal_checkSensibility() const
 {
-	return true;
+	// not yet needed, we don't adhere external gravity information
+//	if ((!vm.count("gravity-file")) || (!boost::filesystem::exists(gravityfield_file))) {
+//		BOOST_LOG_TRIVIAL(error)
+//				<< "Gravity file not set or not present.";
+//		return false;
+//	}
 
+	if (!vm.count("depth")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Depth is not set";
+		return false;
+	}
+
+	if (!vm.count("discretization")) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Discretization is not set";
+		return false;
+	}
+
+	return true;
 }
 
 void GravityOptions::internal_setSecondaryValues()

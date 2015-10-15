@@ -72,11 +72,6 @@ protected:
 	 */
 	virtual void internal_parse() {}
 
-	/** Override this function to add more conditions when help is shown.
-	 *
-	 */
-	virtual bool internal_help_conditions() const { return false; }
-
 	/** Override this function to add more sensibility checks.
 	 *
 	 */

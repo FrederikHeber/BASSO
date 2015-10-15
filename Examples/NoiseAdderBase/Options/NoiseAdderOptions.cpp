@@ -71,28 +71,34 @@ void NoiseAdderOptions::parse(int argc, char **argv)
 	}
 }
 
-bool NoiseAdderOptions::checkSensibility() const
+bool NoiseAdderOptions::internal_checkSensibility() const
 {
-	Options::checkSensibility();
-
-	bool status = true;
 	if (!vm.count("noise-level")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Noise level is not set";
-		status = false;
+		return false;
 	}
 
 	if ((!vm.count("input")) || (!boost::filesystem::exists(input_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Input file not set or not present.";
-		status = false;
+		return false;
 	}
 
 	if ((!vm.count("output")) || (boost::filesystem::exists(output_file))) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Output file not set or already present.";
-		status = false;
+		return false;
 	}
+
+	return true;
+}
+
+bool NoiseAdderOptions::checkSensibility() const
+{
+	bool status = Options::checkSensibility();
+
+	status &= internal_checkSensibility();
 
 	if (!status)
 		showHelpinErrorCase();
