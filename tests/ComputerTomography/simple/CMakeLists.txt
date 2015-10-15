@@ -7,7 +7,7 @@ add_test (ComputerTomographySimple_failmeasurementdimensions
 		--py 2 
 		--powery 2 
 		--delta 0.01 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/simple/pre/sinogram.mat)
+		--sinogram ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/simple/pre/sinogram.mat)
 set_tests_properties (ComputerTomographySimple_failmeasurementdimensions
 	PROPERTIES WILL_FAIL true)
 
@@ -41,6 +41,6 @@ add_test (ComputerTomographySimple_succeeds
 		--num-offsets 3
 		--num-pixels-x 11
 		--num-pixels-y 11		 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/simple/pre/vector.m)
+		--sinogram ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/simple/pre/vector.m)
 set_tests_properties (ComputerTomographySimple_succeeds
 	PROPERTIES PASS_REGULAR_EXPRESSION "olution after 10 with .* residual of 0.23")

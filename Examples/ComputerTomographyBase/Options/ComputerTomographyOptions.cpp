@@ -28,8 +28,8 @@ void ComputerTomographyOptions::internal_init()
 	boost::program_options::options_description desc_basso("ComputerTomography options");
 
 	desc_basso.add_options()
-			("compare-against", po::value< boost::filesystem::path >(),
-					"set the file name of the solution to compare against (BregmanDistance)")
+			("phantom", po::value< boost::filesystem::path >(),
+					"set the file name of the solution/phantom to compare against (BregmanDistance)")
 			("noise-level", po::value< double >(),
 					"set noise level to disturb the projected true solution with  (relative)")
 	        ("num-pixels-x", po::value< unsigned int >(),
@@ -42,8 +42,8 @@ void ComputerTomographyOptions::internal_init()
 					"set the desired number of lateral offsets of detector")
 			("radon-matrix", po::value< boost::filesystem::path >(),
 					"set the file name to write the discretized Radon transformation matrix to")
-	        ("rhs", po::value< boost::filesystem::path >(),
-	        		"set the vector file of the right-hand side")
+	        ("sinogram", po::value< boost::filesystem::path >(),
+	        		"set the vector file of the right-hand side/sinogram")
 			("solution", po::value< boost::filesystem::path >(),
 					"set the file name to write solution vector to, i.e. x in y = A*x")
 			("solution-image", po::value< boost::filesystem::path >(),
@@ -55,10 +55,10 @@ void ComputerTomographyOptions::internal_init()
 
 void ComputerTomographyOptions::internal_parse()
 {
-	if (vm.count("compare-against")) {
-		comparison_file = vm["compare-against"].as<boost::filesystem::path>();
+	if (vm.count("phantom")) {
+		comparison_file = vm["phantom"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing true solution vector from " << comparison_file;
+			<< "Parsing true solution/phantom vector from " << comparison_file;
 	}
 
 	if (vm.count("noise-level")) {
@@ -97,10 +97,10 @@ void ComputerTomographyOptions::internal_parse()
 			<< "Filename of vector was set to " << radon_matrix;
 	}
 
-	if (vm.count("rhs")) {
-		rhs_file = vm["rhs"].as<boost::filesystem::path>();
+	if (vm.count("sinogram")) {
+		rhs_file = vm["sinogram"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << rhs_file;
+			<< "Filename of sinogram was set to " << rhs_file;
 	}
 
 	if (vm.count("solution")) {
@@ -142,9 +142,9 @@ bool ComputerTomographyOptions::internal_checkSensibility() const
 		return false;
 	}
 
-	if ((!vm.count("rhs")) || (!boost::filesystem::exists(rhs_file))) {
+	if ((!vm.count("sinogram")) || (!boost::filesystem::exists(rhs_file))) {
 		BOOST_LOG_TRIVIAL(error)
-				<< "Right-hand side file not set or not present.";
+				<< "RHS/Sinogram file not set or not present.";
 		return false;
 
 	}
@@ -158,14 +158,14 @@ void ComputerTomographyOptions::internal_setSecondaryValues()
 void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 {
 	_output << "# [ComputerTomography]" << std::endl;
-	writeValue<boost::filesystem::path>(_output, vm,  "compare-against");
+	writeValue<boost::filesystem::path>(_output, vm,  "phantom");
 	writeValue<double>(_output, vm,  "noise-level");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
 	writeValue<unsigned int>(_output, vm,  "num-angles");
 	writeValue<unsigned int>(_output, vm,  "num-offsets");
 	writeValue<boost::filesystem::path>(_output, vm,  "radon-matrix");
-	writeValue<boost::filesystem::path>(_output, vm,  "rhs");
+	writeValue<boost::filesystem::path>(_output, vm,  "sinogram");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-image");
 }

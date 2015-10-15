@@ -13,7 +13,7 @@ add_test (ComputerTomographySheppLogan
 		--num-pixels-x 21
 		--num-pixels-y 21
 		--solution solution.mat
-		--rhs ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan/pre/sinogram.mat)
+		--sinogram ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan/pre/sinogram.mat)
 set_tests_properties (ComputerTomographySheppLogan
 	PROPERTIES PASS_REGULAR_EXPRESSION "olution after 50.* residual of .*0.29")
 
