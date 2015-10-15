@@ -83,8 +83,15 @@ int main (int argc, char *argv[])
 					return 255;
 				}
 			else {
-				std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
-				return 255;
+				if (opts.rhs_file.string().empty())
+					BOOST_LOG_TRIVIAL(debug)
+							<< "No rhs file was given.";
+				else {
+					std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
+					return 255;
+				}
+				rhs = Eigen::VectorXd(num_measurements);
+				rhs.setZero();
 			}
 		}
 

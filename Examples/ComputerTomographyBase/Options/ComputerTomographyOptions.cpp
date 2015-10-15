@@ -142,9 +142,10 @@ bool ComputerTomographyOptions::internal_checkSensibility() const
 		return false;
 	}
 
-	if ((!vm.count("sinogram")) || (!boost::filesystem::exists(rhs_file))) {
+	if (((!vm.count("sinogram")) || (!boost::filesystem::exists(rhs_file)))
+		&& ((!vm.count("phantom")) || (!boost::filesystem::exists(comparison_file)))) {
 		BOOST_LOG_TRIVIAL(error)
-				<< "RHS/Sinogram file not set or not present.";
+				<< "Both right-hand side and solution file not set or not present.";
 		return false;
 
 	}
