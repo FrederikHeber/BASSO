@@ -88,6 +88,7 @@ protected:
 	virtual void internal_store(std::ostream &_output) const {}
 
 private:
+	bool checkSensibility_config() const;
 	bool checkSensibility_delta() const;
 	bool checkSensibility_OrthogonalDirections() const;
 	bool checkSensibility_regularizationparameter() const;

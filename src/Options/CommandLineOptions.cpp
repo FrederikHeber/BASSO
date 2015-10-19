@@ -13,6 +13,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/filesystem.hpp>
+
 #include "Log/Logging.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
@@ -372,6 +374,18 @@ void CommandLineOptions::parse(int argc, char **argv)
 	internal_parse();
 }
 
+bool CommandLineOptions::checkSensibility_config() const
+{
+	if (vm.count("config")) {
+		if (!boost::filesystem::exists(config_filename)) {
+				BOOST_LOG_TRIVIAL(error)
+					<< "Specified config file " << config_filename << " does not exist.";
+				return false;
+		}
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_delta() const
 {
 	if (!vm.count("delta")) {
@@ -536,6 +550,7 @@ bool CommandLineOptions::checkSensibility() const
 	Options::checkSensibility();
 
 	bool status = true;
+	status &= checkSensibility_config();
 	status &= checkSensibility_delta();
 	status &= checkSensibility_OrthogonalDirections();
 	status &= checkSensibility_regularizationparameter();
