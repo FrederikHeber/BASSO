@@ -98,8 +98,6 @@ install (FILES Mappings/Specifics/LInfinityDualityMapping.hpp DESTINATION includ
 install (FILES Mappings/Specifics/RelativeShrinkageMapping.hpp DESTINATION include)
 
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
-install (FILES Minimizers/GeneralMinimizer_DefaultDualityMappings.hpp DESTINATION include)
-install (FILES Minimizers/GeneralMinimizer_RegularizedL1Norm.hpp DESTINATION include)
 install (FILES Minimizers/LandweberMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/MinimizationExceptions.hpp DESTINATION include)
 install (FILES Minimizers/MinimizerFactory.hpp DESTINATION include)

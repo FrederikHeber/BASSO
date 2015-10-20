@@ -8,4 +8,4 @@ add_library (Solvers
 	)
 
 install (FILES InverseProblemSolver.hpp DESTINATION include)
-install (FILES Solvers/SolverFactory/SolverFactory.hpp DESTINATION include)
+install (FILES SolverFactory/SolverFactory.hpp DESTINATION include)

@@ -5,7 +5,6 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 add_library (NoiseAdderBase
 	Options/NoiseAdderOptions.cpp)
 
-install (FILES NoiseAdder/NoiseAdder.hpp DESTINATION include)
 install (FILES Options/NoiseAdderOptions.hpp DESTINATION include)
 
 # add the executable
