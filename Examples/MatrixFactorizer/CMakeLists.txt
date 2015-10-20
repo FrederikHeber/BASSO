@@ -13,7 +13,7 @@ add_library (MatrixFactorizerBase
 
 install (FILES Database/IterationInformation.hpp DESTINATION include)
 install (FILES Helpers/detail.hpp DESTINATION include)
-install (FILES IterationChecks/MaxIterationChecks.hpp DESTINATION include)
+install (FILES IterationChecks/MaxIterationsChecker.hpp DESTINATION include)
 install (FILES IterationChecks/RelativeResidualChecker.hpp DESTINATION include)
 install (FILES IterationChecks/ResidualChecker.hpp DESTINATION include)
 install (FILES Options/filesystem_path_serialization.hpp DESTINATION include)

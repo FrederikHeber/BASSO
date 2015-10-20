@@ -20,7 +20,7 @@
 #include "MatrixFactorizer/Work/Master.hpp"
 #include "MatrixFactorizer/IterationChecks/RelativeResidualChecker.hpp"
 #include "MatrixFactorizer/IterationChecks/ResidualChecker.hpp"
-#include "MatrixFactorizer/IterationChecks/MaxIterationsCheck.hpp"
+#include "MatrixFactorizer/IterationChecks/MaxIterationsChecker.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductEqualizer.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
@@ -67,7 +67,7 @@ void MatrixFactorization::operator()(
 		BOOST_LOG_TRIVIAL(info)
 			<< "#" << loop_nr << " 1/2, residual is " << residual;
 		info.replace(IterationInformation::LoopTable, "residual", residual);
-		MaxIterationsCheck MaxIterations(opts.max_loops);
+		MaxIterationsChecker MaxIterations(opts.max_loops);
 		RelativeChangeResidualChecker RelativeResidual(opts.residual_threshold);
 		ResidualChecker Residual(opts.residual_threshold);
 

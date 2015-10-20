@@ -1,25 +1,25 @@
 /*
- * MaxIterationsCheck.hpp
+ * MaxIterationsChecker.hpp
  *
  *  Created on: Jun 26, 2015
  *      Author: heber
  */
 
-#ifndef MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECK_HPP_
-#define MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECK_HPP_
+#ifndef MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECKER_HPP_
+#define MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECKER_HPP_
 
 #include "BassoConfig.h"
 
 /** Checks whether the maximum allowed iteration check as been exceeded.
  *
  */
-struct MaxIterationsCheck
+struct MaxIterationsChecker
 {
-	/** Constructor for class MaxIterationsCheck
+	/** Constructor for class MaxIterationsChecker
 	 *
 	 * @param _max_iterations maximum iterations allowed
 	 */
-	MaxIterationsCheck(
+	MaxIterationsChecker(
 			const unsigned int _max_iterations
 			) :
 		max_iterations(_max_iterations)
@@ -44,4 +44,4 @@ private:
 
 
 
-#endif /* MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECK_HPP_ */
+#endif /* MATRIXFACTORIZERBASE_ITERATIONCHECKS_MAXITERATIONSCHECKER_HPP_ */
