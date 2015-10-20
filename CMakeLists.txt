@@ -119,6 +119,28 @@ if (PNG_FOUND)
 	endif (png++_FOUND)
 endif (PNG_FOUND)
 
+####################### CHECK given DIFF #################################
+
+# should ndiff be used instead of diff
+option (USE_NDIFF
+	"Use ndiff instead of diff" OFF)
+
+if (USE_NDIFF)
+	set (NDIFF_PATH ${NDIFF_PATH} CACHE STRING "path to numerical diff")
+	FIND_PROGRAM(NDIFF NAME ndiff PATHS ${NDIFF_PATH} /usr/bin/ /bin ENV PATH NO_DEFAULT_PATH)
+	if (NDIFF EQUAL NDIFF-NOTFOUND)
+		set (DIFFCMD diff CACHE STRING "command to compare result files")
+	else (NDIFF EQUAL NDIFF-NOTFOUND)
+		set (NDIFF_FOUND ${NDIFF_FOUND})
+		set (DIFFCMD ${NDIFF} CACHE STRING "command to compare result files")
+	endif (NDIFF EQUAL NDIFF-NOTFOUND)
+	if (NDIFF_OPTIONS)
+		set (NDIFF_OPTIONS ${NDIFF_OPTIONS} CACHE STRING "Options for (numerical) diff")
+	endif (NDIFF_OPTIONS)
+else (USE_NDIFF)
+	set (DIFFCMD diff CACHE STRING "command to compare result files")
+endif (USE_NDIFF)
+
 ######################## BassoConfig.hpp #################################
 
 # configure a header file to pass some CMake settings

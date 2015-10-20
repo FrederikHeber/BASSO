@@ -55,6 +55,24 @@ Add
 to activate the timing measurements of each part of the algorithm.
 
 
+Special purpose diff
+--------------------
+
+Result files are compared against stored files in the regression tests using
+'diff' by default. 'diff' compares literally and does not know about numerical
+(im)precision. Hence, a different diff, such as ndiff, may be specified via
+
+-DUSE_NDIFF=ON -DNDIFF_PATH=<path to ndiff's bin folder> 
+-DNDIFF_OPTIONS:LIST="-relerr;1e-4;-q"
+
+to activate comparison of outputfiles with ndiff. The semicolons ";" are
+required to ensure that we have a list of options (otherwise they are presented
+to ndiff as single string which will not work).
+
+Note: There is another ndiff program used to compare XML output files from
+nmap. Hence, the path NDIFF_PATH to ndiff's bin folder should always be given.
+
+
 Various Tests
 -------------
 
