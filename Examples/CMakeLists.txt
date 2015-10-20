@@ -1,12 +1,12 @@
 #### EXECUTABLES ####
 
 # add src folders of executables
-add_subdirectory (BassoBase)
-add_subdirectory (ComputerTomographyBase)
+add_subdirectory (Basso)
+add_subdirectory (ComputerTomography)
 add_subdirectory (Gravity)
-add_subdirectory (MatrixFactorizerBase)
+add_subdirectory (MatrixFactorizer)
 if (PNG_FOUND)
 	add_subdirectory (MatrixToPNG)
 endif (PNG_FOUND)
-add_subdirectory (NoiseAdderBase)
-add_subdirectory (RangeProjectorBase)
+add_subdirectory (NoiseAdder)
+add_subdirectory (RangeProjector)

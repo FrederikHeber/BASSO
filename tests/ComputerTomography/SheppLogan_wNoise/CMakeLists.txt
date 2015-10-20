@@ -1,6 +1,6 @@
 # does simple test call work?
 add_test (ComputerTomographySheppLogan_wNoise 
-	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomography
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomography
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

@@ -1,6 +1,6 @@
 # test 1: check angles
 add_test (Basso_SESOP_RandomMatrix_Angles
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso 
 		--algorithm SESOP
 		--number-directions 4
 		--calculateAngles 1

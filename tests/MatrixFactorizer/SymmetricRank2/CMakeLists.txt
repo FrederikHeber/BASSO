@@ -1,6 +1,6 @@
 # does simple test call work?
 add_test (MatrixFactorizer_SymmetricRank2
-	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizerBase/MatrixFactorizer 
+	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizer 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

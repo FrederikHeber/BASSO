@@ -1,6 +1,6 @@
 # test 1: 
 add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso
 		--algorithm SESOP
 		--number-directions 2
 		--searchspace "Nemirovsky"
@@ -30,7 +30,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections_check
 
 # test 2: Nemirovsky with not two search directions
 add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections_fail
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso
 		--algorithm SESOP
 		--number-directions 4
 		--searchspace "Nemirovsky"

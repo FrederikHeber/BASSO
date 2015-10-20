@@ -1,6 +1,6 @@
 # test 1: with Wolfe conditions
 add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0

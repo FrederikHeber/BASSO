@@ -1,11 +1,11 @@
 # does the application run
-add_test (ComputerTomographyConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomographyConfigurator)
+add_test (ComputerTomographyConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomographyConfigurator)
 set_tests_properties (ComputerTomographyConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
 # does the application run
 add_test (ComputerTomographyConfiguratorFails2 
-	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomographyConfigurator
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomographyConfigurator
 		--type-space-x "lp" 
 		--px 2)
 set_tests_properties (ComputerTomographyConfiguratorFails2
@@ -13,7 +13,7 @@ set_tests_properties (ComputerTomographyConfiguratorFails2
 
 # does the application write config files
 add_test (ComputerTomographyConfiguratorWritesConfig 
-	${PROJECT_BINARY_DIR}/Examples/ComputerTomographyBase/ComputerTomographyConfigurator
+	${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomographyConfigurator
 	--config test.conf
 	--type-space-x "lp" 
 	--px 10

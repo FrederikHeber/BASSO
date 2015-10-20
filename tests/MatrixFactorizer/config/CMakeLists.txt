@@ -1,11 +1,11 @@
 # does the application run
-add_test (MatrixFactorizerConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/MatrixFactorizerBase/MatrixFactorizerConfigurator)
+add_test (MatrixFactorizerConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizerConfigurator)
 set_tests_properties (MatrixFactorizerConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
 # does the application run
 add_test (MatrixFactorizerConfiguratorFails2 
-	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizerBase/MatrixFactorizerConfigurator
+	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizerConfigurator
 		--type-space-x "lp" 
 		--px 2)
 set_tests_properties (MatrixFactorizerConfiguratorFails2
@@ -13,7 +13,7 @@ set_tests_properties (MatrixFactorizerConfiguratorFails2
 
 # does the application write config files
 add_test (MatrixFactorizerConfiguratorWritesConfig 
-	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizerBase/MatrixFactorizerConfigurator
+	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizerConfigurator
 	--config test.conf
 	--type-space-x "lp" 
 	--px 10

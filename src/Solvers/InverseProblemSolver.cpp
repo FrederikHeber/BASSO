@@ -13,7 +13,7 @@
 #include <cassert>
 
 #include "Log/Logging.hpp"
-#include "MatrixFactorizerBase/Helpers/detail.hpp"
+#include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"

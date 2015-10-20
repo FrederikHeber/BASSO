@@ -190,7 +190,7 @@ add_subdirectory (src/Minimizations/Functions/unittests)
 add_subdirectory (src/Minimizations/Mappings/unittests)
 add_subdirectory (src/Minimizations/Minimizers/StoppingCriteria/unittests)
 add_subdirectory (src/Minimizations/Norms/unittests)
-add_subdirectory (Examples/ComputerTomographyBase/DiscretizedRadon/unittests)
+add_subdirectory (Examples/ComputerTomography/DiscretizedRadon/unittests)
 
 ### DOXYGEN DOCUMENTATION
 

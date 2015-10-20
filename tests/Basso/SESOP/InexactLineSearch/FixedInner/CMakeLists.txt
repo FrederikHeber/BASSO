@@ -1,6 +1,6 @@
 # test 1a: with fixed inner iterations
 add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso 
 		--algorithm SESOP
 		--number-directions 2
 		--update-algorithm 0

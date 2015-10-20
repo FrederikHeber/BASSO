@@ -1,6 +1,6 @@
 # does simple call to configurator work?
 add_test (RangeProjectorConfiguratorSimple_Vector 
-	${PROJECT_BINARY_DIR}/Examples/RangeProjectorBase/RangeProjectorConfigurator
+	${PROJECT_BINARY_DIR}/Examples/RangeProjector/RangeProjectorConfigurator
 		--config RangeProjector.cfg
 		--verbose 1
 		--type-space-x "lp" 
@@ -27,7 +27,7 @@ set_tests_properties (RangeProjectorConfiguratorSimple_Vector_check
 
 # does simple test call work?
 add_test (RangeProjectorSimple 
-	${PROJECT_BINARY_DIR}/Examples/RangeProjectorBase/RangeProjector
+	${PROJECT_BINARY_DIR}/Examples/RangeProjector/RangeProjector
 		--config RangeProjector.cfg)
 set_tests_properties (RangeProjectorSimple
 	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of X.*2")
@@ -42,7 +42,7 @@ set_tests_properties (RangeProjectorSimple
 
 # test 2: project twice does not change it anymore
 add_test (RangeProjectorSecondProjection
-	${PROJECT_BINARY_DIR}/Examples/RangeProjectorBase/RangeProjector 
+	${PROJECT_BINARY_DIR}/Examples/RangeProjector/RangeProjector 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 
@@ -63,7 +63,7 @@ set_tests_properties (RangeProjectorSecondProjection_check
 
 # does simple test call fail when matrix does not exist?
 add_test (RangeProjectorSimple_NonExistantMatrix 
-	${PROJECT_BINARY_DIR}/Examples/RangeProjectorBase/RangeProjector 
+	${PROJECT_BINARY_DIR}/Examples/RangeProjector/RangeProjector 
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

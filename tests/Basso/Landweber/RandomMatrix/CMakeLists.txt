@@ -1,6 +1,6 @@
 # test 1a: solving random matrix with Landweber
 add_test (Basso_Landweber_RandomMatrix
-	${PROJECT_BINARY_DIR}/Examples/BassoBase/Basso 
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso 
 		--algorithm Landweber
 		--type-space-x "lp" 
 		--px 2 
