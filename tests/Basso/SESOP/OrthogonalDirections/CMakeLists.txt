@@ -22,7 +22,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
@@ -52,7 +52,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2
 
 # test 1d: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
@@ -82,7 +82,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4
 
 # test 1f: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r2.m solution_p2_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
@@ -112,7 +112,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized
 
 # test 2b: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r11.m solution_p2_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_r11.m solution_p2_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r11_orthogonalized_check
@@ -142,7 +142,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized
 
 # test 3b: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_rinf.m solution_p2_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p2_rinf.m solution_p2_rinf.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_rinf_orthogonalized_check
@@ -172,7 +172,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized
 
 # test 4b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_r2.m solution_p1_1_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_r2.m solution_p1_1_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r2_orthogonalized_check
@@ -202,7 +202,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized
 
 # test 5b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_r11.m solution_p1_1_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_r11.m solution_p1_1_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_r11_orthogonalized_check
@@ -232,7 +232,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized
 
 # test 6b: checking results
 add_test (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_rinf.m solution_p1_1_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p1_1_rinf.m solution_p1_1_rinf.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p1_1_rinf_orthogonalized_check
@@ -262,7 +262,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized
 
 # test 7b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_r2.m solution_p6_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_r2.m solution_p6_r2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r2_orthogonalized_check
@@ -292,7 +292,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized
 
 # test 8b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_r11.m solution_p6_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_r11.m solution_p6_r11.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_r11_orthogonalized_check
@@ -322,7 +322,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized
 
 # test 9b: checking results
 add_test (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_rinf.m solution_p6_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OrthogonalDirections/post/solution_p6_rinf.m solution_p6_rinf.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p6_rinf_orthogonalized_check

@@ -20,7 +20,7 @@ set_tests_properties (Basso_Landweber_StraightLine1
 
 # test 1b: checking results
 add_test (Basso_Landweber_StraightLine1_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline1.m  straightline1.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline1.m  straightline1.m)
 set_tests_properties (Basso_Landweber_StraightLine1_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_Landweber_StraightLine1_check
@@ -48,7 +48,7 @@ set_tests_properties (Basso_Landweber_StraightLine2
 
 # test 2b: checking results
 add_test (Basso_Landweber_StraightLine2_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline2.m  straightline2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline2.m  straightline2.m)
 set_tests_properties (Basso_Landweber_StraightLine2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_Landweber_StraightLine2_check
@@ -76,7 +76,7 @@ set_tests_properties (Basso_Landweber_StraightLine3
 
 # test 3b: checking results
 add_test (Basso_Landweber_StraightLine3_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline3.m  straightline3.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/StraightLine/post/straightline3.m  straightline3.m)
 set_tests_properties (Basso_Landweber_StraightLine3_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_Landweber_StraightLine3_check

@@ -22,7 +22,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2
 
 # test 1b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p1_1_r2_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_r2.m  solution_p1_1_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_r2.m  solution_p1_1_r2.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r2_check
@@ -52,7 +52,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11
 
 # test 2b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p1_1_r11_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_r11.m  solution_p1_1_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_r11.m  solution_p1_1_r11.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_r11_check
@@ -82,7 +82,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf
 
 # test 3b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p1_1_rinf_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_rinf.m  solution_p1_1_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p1_1_rinf.m  solution_p1_1_rinf.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p1_1_rinf_check
@@ -112,7 +112,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2
 
 # test 4b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p2_r2_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_r2.m  solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_r2.m  solution_p2_r2.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r2_check
@@ -142,7 +142,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11
 
 # test 5b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p2_r11_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_r11.m  solution_p2_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_r11.m  solution_p2_r11.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_r11_check
@@ -172,7 +172,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf
 
 # test 6b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p2_rinf_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_rinf.m  solution_p2_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p2_rinf.m  solution_p2_rinf.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p2_rinf_check
@@ -203,7 +203,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r2
 
 # test 7b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p6_r2_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_r2.m  solution_p6_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_r2.m  solution_p6_r2.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r2_check
@@ -233,7 +233,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r11
 
 # test 8b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p6_r11_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_r11.m  solution_p6_r11.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_r11.m  solution_p6_r11.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r11_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_r11_check
@@ -263,7 +263,7 @@ set_tests_properties (Basso_RESESOP_RandomMatrix_p6_rinf
 
 # test 9b: checking results
 add_test (Basso_RESESOP_RandomMatrix_p6_rinf_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_rinf.m  solution_p6_rinf.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/RESESOP/noiseless/post/solution_p6_rinf.m  solution_p6_rinf.m)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_rinf_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_RESESOP_RandomMatrix_p6_rinf_check

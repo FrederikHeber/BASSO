@@ -17,7 +17,7 @@ set_tests_properties (RangeProjectorConfiguratorSimple_Vector
 
 # test 2b: checking results
 add_test (RangeProjectorConfiguratorSimple_Vector_check
-	diff 
+	diff
 		--ignore-matching-lines=matrix
 		--ignore-matching-lines=rhs
 		RangeProjector.cfg 
@@ -57,7 +57,7 @@ set_tests_properties (RangeProjectorSecondProjection
 
 # test 2b: checking results
 add_test (RangeProjectorSecondProjection_check
-	diff solution.mat solution2.mat)
+	${DIFFCMD} ${NDIFF_OPTIONS} solution.mat solution2.mat)
 set_tests_properties (RangeProjectorSecondProjection_check
 	PROPERTIES DEPENDS RangeProjectorSecondProjection)
 

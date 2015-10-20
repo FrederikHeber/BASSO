@@ -22,7 +22,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostparallel.m  solution_mostparallel.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostparallel.m  solution_mostparallel.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_check
@@ -52,7 +52,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal
 
 # test 2b: checking results
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostorthogonal.m  solution_mostorthogonal.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostorthogonal.m  solution_mostorthogonal.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_check
@@ -82,7 +82,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMappin
 
 # test 3b: checking results
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostparallel_randommapping.m  solution_mostparallel_randommapping.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostparallel_randommapping.m  solution_mostparallel_randommapping.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostParallel_randomMapping_check
@@ -112,7 +112,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapp
 
 # test 4b: checking results
 add_test (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostorthogonal_randommapping.m  solution_mostorthogonal_randommapping.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/VariousSearchspaceUpdates/post/solution_mostorthogonal_randommapping.m  solution_mostorthogonal_randommapping.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_UpdateToMostOrthogonal_randomMapping_check

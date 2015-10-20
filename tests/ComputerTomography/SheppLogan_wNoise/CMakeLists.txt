@@ -20,6 +20,6 @@ set_tests_properties (ComputerTomographySheppLogan_wNoise
 
 # test 1b: checking results
 add_test (ComputerTomographySheppLogan_wNoise_check
-	diff ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan_wNoise/post/solution.mat solution.mat)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan_wNoise/post/solution.mat solution.mat)
 set_tests_properties (ComputerTomographySheppLogan_wNoise_check
 	PROPERTIES DEPENDS ComputerTomographySheppLogan_wNoise)

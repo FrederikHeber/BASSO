@@ -26,7 +26,7 @@ add_subdirectory (NoiseAdder)
 # tests for Gravity program
 add_subdirectory (Gravity)
 
-# test ndiff only when desired
-if ((USE_NDIFF) AND (NDIFF_FOUND))
+# test n${DIFFCMD} ${NDIFF_OPTIONS}only when desired
+if (USE_NDIFF)
 	add_subdirectory (ndiff)
-endif ((USE_NDIFF) AND (NDIFF_FOUND))
+endif (USE_NDIFF)

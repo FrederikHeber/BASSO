@@ -23,7 +23,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/InexactLineSearch/WolfeConditions/post/solution.m solution.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/InexactLineSearch/WolfeConditions/post/solution.m solution.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_Wolfe_check

@@ -18,7 +18,7 @@ add_test (MatrixFactorizer_SymmetricRank4
 
 # test 1b: checking results
 add_test (MatrixFactorizer_SymmetricRank4_check_first
-	diff ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank4/post/first-factor.m first-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank4/post/first-factor.m first-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank4_check_first
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_SymmetricRank4_check_first
@@ -26,7 +26,7 @@ set_tests_properties (MatrixFactorizer_SymmetricRank4_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_SymmetricRank4_check_second
-	diff ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank4/post/second-factor.m second-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank4/post/second-factor.m second-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank4_check_second
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_SymmetricRank4_check_second

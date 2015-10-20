@@ -22,7 +22,7 @@ set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_NemirovskyDirections_check
-	diff ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OtherSearchDirections/post/solution.m  solution.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/OtherSearchDirections/post/solution.m  solution.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_NemirovskyDirections_check

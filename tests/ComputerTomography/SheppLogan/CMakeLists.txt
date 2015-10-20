@@ -19,6 +19,6 @@ set_tests_properties (ComputerTomographySheppLogan
 
 # test 1b: checking results
 add_test (ComputerTomographySheppLogan_check
-	diff ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan/post/solution.mat solution.mat)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan/post/solution.mat solution.mat)
 set_tests_properties (ComputerTomographySheppLogan_check
 	PROPERTIES DEPENDS ComputerTomographySheppLogan)

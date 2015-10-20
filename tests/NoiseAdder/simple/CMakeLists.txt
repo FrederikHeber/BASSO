@@ -11,7 +11,7 @@ set_tests_properties (NoiseAdderConfiguratorSimple_Vector
 
 # test 2b: checking results
 add_test (NoiseAdderConfiguratorSimple_Vector_check
-	diff 
+	diff
 		--ignore-matching-lines=input 
 		NoiseAdder.cfg 
 		${PROJECT_SOURCE_DIR}/tests/NoiseAdder/simple/post/NoiseAdder.cfg)
