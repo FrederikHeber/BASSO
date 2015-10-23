@@ -290,9 +290,9 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in X was set to " << powerx;
 	} else if (vm.count("px")) {
+		powerx = px > 2. ? px : 2.;
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Using px as powerx." << "\n.";
-		powerx = px;
+			<< "Using px as powerx if above 2: " << powerx << "\n.";
 	}
 
 	if (vm.count("powery")) {
@@ -300,9 +300,9 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Power of duality maping in Y was set to " << powery;
 	} else if (vm.count("py")) {
+		powery = py > 2. ? py : 2.;
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Using py as powery." << "\n.";
-		powery = py;
+			<< "Using py as powery if above 2: " << powery << "\n.";
 	}
 
 	if (vm.count("regularization-parameter")) {
