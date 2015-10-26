@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3")
 
 # The version number.
 set (Basso_VERSION_MAJOR 1)
-set (Basso_VERSION_MINOR 3)
+set (Basso_VERSION_MINOR 4)
 
 # should we count and measure the time of all operations?
 option (USE_TIMINGS 
