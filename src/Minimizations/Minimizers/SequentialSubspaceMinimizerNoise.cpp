@@ -52,25 +52,8 @@ SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		_stopping_criteria,
 		_outputsteps,
 		_orthogonalization_type
-		),
-	tau(1.1)
-{
-	// change y tolerance according to regularization parameter
-	const_cast<double&>(TolY) = tau * Delta;
-}
-
-void SequentialSubspaceMinimizerNoise::setTau(
-		const double _tau
 		)
-{
-	// check that regularization parameter is greater than 1
-	if (_tau <= 1.)
-		throw MinimizationIllegalValue_exception()
-			<< MinimizationIllegalValue_name("tau");
-	const_cast<double&>(tau) = _tau;
-	// change y tolerance according to regularization parameter
-	const_cast<double&>(TolY) = tau * Delta;
-}
+{}
 
 SequentialSubspaceMinimizerNoise::ReturnValues
 SequentialSubspaceMinimizerNoise::operator()(

@@ -131,8 +131,6 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 			break;
 		case MinimizerFactory::sequentialsubspace_noise:
 			static_cast<SequentialSubspaceMinimizerNoise*>(
-					minimizer.get())->setTau(_opts.tau);
-			static_cast<SequentialSubspaceMinimizerNoise*>(
 					minimizer.get())->setN(_opts.N);
 			break;
 		default:

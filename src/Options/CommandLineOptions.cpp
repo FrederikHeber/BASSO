@@ -50,7 +50,7 @@ CommandLineOptions::CommandLineOptions() :
 			SearchspaceFactory::getName(
 					SearchspaceFactory::LastNDirections)),
 	stepwidth_type(DetermineStepWidthFactory::MinimizingResidual),
-	tau(1.1),
+	tau(1.),
 	updatetype(LastNSearchDirections::RoundRobin),
 	type(MinimizerFactory::MAX_InstanceType)
 {}
@@ -133,7 +133,7 @@ void CommandLineOptions::init()
 			("searchspace", po::value< std::string >(),
 					"set the type of search directions used")
 			("tau", po::value<double>(),
-					"set the value for discrepancy parameter tau")
+					"set the value for discrepancy parameter tau, default is 1.1")
 			("update-algorithm", po::value<unsigned int>(),
 					"sets the algorithm which search direction is updated for multiple ones")
 			("wolfe-constants", po::value< std::vector<double> >()->multitoken(),
@@ -343,8 +343,11 @@ void CommandLineOptions::parse(int argc, char **argv)
 		tau = vm["tau"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau was set to " << tau;
-		stopping_args.setTolerance(stopping_args.getTolerance()*tau);
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "tau set to default value of " << tau;
 	}
+	stopping_args.setDiscrepancyParameter(tau);
 
 	if (vm.count("tuple-parameters")) {
 		tuple_parameters = vm["tuple-parameters"].as< std::vector<std::string> >();
@@ -438,15 +441,11 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 
 bool CommandLineOptions::checkSensibility_tau() const
 {
-	if (vm.count("tau")) {
-		const std::string &resesop_name =
-				MinimizerFactory::getNameForType(
-							MinimizerFactory::sequentialsubspace_noise);
-		if (algorithm_name != resesop_name) {
-			BOOST_LOG_TRIVIAL(warning)
-					<< "Tau is set, but not " << resesop_name << ", ignoring";
-			return false;
-		}
+	if ((vm.count("tau")) && (tau < 1.)) {
+		BOOST_LOG_TRIVIAL(warning)
+				<< "Tau is set, but value of " << tau
+				<< " is not greater equal to 1.";
+		return false;
 	}
 	return true;
 }

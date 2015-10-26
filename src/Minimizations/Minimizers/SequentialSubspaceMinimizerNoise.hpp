@@ -34,35 +34,12 @@ public:
 
 	~SequentialSubspaceMinimizerNoise() {}
 
-	/** Setter for tau.
-	 *
-	 * This is to have a definite place where tau is changed. Hence,
-	 * it is const and cannot accidentally be changed in the code, but
-	 * it can still be set after the instance has been created.
-	 *
-	 * @param _tau new value of tau, tau in (1, infty)
-	 */
-	void setTau(const double _tau);
-
 	GeneralMinimizer::ReturnValues operator()(
 			const InverseProblem_ptr_t &_problem,
 			const SpaceElement_ptr_t &_startvalue,
 			const SpaceElement_ptr_t &_dualstartvalue,
 			const SpaceElement_ptr_t &_truesolution
 			);
-
-private:
-	// internal variables
-
-//	//!> number of columns (M)
-//	unsigned int NoCols;
-//	//!> number of rows (N)
-//	unsigned int NoRows;
-
-	// constants
-
-	//!> regularization parameter for discrepancy principle, tau > 1
-	const double tau;
 };
 
 

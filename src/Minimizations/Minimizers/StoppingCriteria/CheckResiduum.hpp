@@ -26,7 +26,7 @@ struct CheckResiduum : public StoppingCriterion_impl
 			const double _residuum,
 			const double _ynorm) const
 	{
-		return _residuum <= args.getTolerance();
+		return _residuum <= args.getTolerance()*args.getDiscrepancyParameter();
 	}
 
 	const StoppingArguments args;

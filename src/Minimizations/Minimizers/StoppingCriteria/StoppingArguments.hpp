@@ -24,7 +24,8 @@ struct StoppingArguments
 	StoppingArguments() :
 		MaxWalltime(boost::chrono::seconds(0)),
 		MaxIterations(0),
-		Tolerance(0)
+		Tolerance(0.),
+		DiscrepancyParameter(1.)
 	{}
 
 	// getter
@@ -38,6 +39,9 @@ struct StoppingArguments
 	double getTolerance() const
 	{ return Tolerance; }
 
+	double getDiscrepancyParameter() const
+	{ return DiscrepancyParameter; }
+
 	// setter
 
 	void setMaxWalltime(const boost::chrono::duration<double> _MaxWalltime)
@@ -49,10 +53,14 @@ struct StoppingArguments
 	void setTolerance(const double _Tolerance)
 	{ Tolerance = _Tolerance; }
 
+	void setDiscrepancyParameter(const double _DiscrepancyParameter)
+	{ DiscrepancyParameter = _DiscrepancyParameter; }
+
 private:
 	boost::chrono::duration<double> MaxWalltime;
 	int MaxIterations;
 	double Tolerance;
+	double DiscrepancyParameter;
 };
 
 
