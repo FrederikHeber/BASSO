@@ -179,8 +179,11 @@ void CommandLineOptions::parse(int argc, char **argv)
 		delta = vm["delta"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Magnitude of noise was set to " << delta;
-		stopping_args.setTolerance(delta);
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "delta set to default value of " << delta;
 	}
+	stopping_args.setTolerance(delta);
 
 	if (vm.count("database-replace")) {
 		database_replace = vm["database-replace"].as<bool>();
@@ -213,8 +216,11 @@ void CommandLineOptions::parse(int argc, char **argv)
 		maxiter = vm["maxiter"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum iterations was set to " << maxiter;
-		stopping_args.setMaxIterations(maxiter);
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum iterations set to default value of " << maxiter;
 	}
+	stopping_args.setMaxIterations(maxiter);
 
 	if (vm.count("max-inner-iterations")) {
 		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
@@ -226,9 +232,13 @@ void CommandLineOptions::parse(int argc, char **argv)
 		maxwalltime = vm["max-walltime"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum Walltime was set to " << maxwalltime << " seconds.";
-		stopping_args.setMaxWalltime(
-				boost::chrono::duration<double>(maxwalltime));
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum Walltime set to default value of "
+			<< boost::chrono::duration<double>(maxwalltime) << " seconds.";
 	}
+	stopping_args.setMaxWalltime(
+			boost::chrono::duration<double>(maxwalltime));
 
 	if (vm.count("minimization-library")) {
 		minlib = vm["minimization-library"].as<std::string>();
