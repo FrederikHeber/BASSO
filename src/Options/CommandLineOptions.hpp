@@ -134,6 +134,7 @@ public:
 	double regularization_parameter;
 	std::string searchspace_type;
 	unsigned int stepwidth_type;
+	std::string stopping_criteria;
 	double tau;
 	std::vector<std::string> tuple_parameters;
 	enum LastNSearchDirections::UpdateAlgorithmType updatetype;
@@ -141,7 +142,6 @@ public:
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options
-	std::string stopping_criteria;
 	StoppingArguments stopping_args;
 	enum MinimizerFactory::InstanceType type;
 
@@ -175,12 +175,12 @@ private:
 		ar & regularization_parameter;
 		ar & searchspace_type;
 		ar & stepwidth_type;
+		ar & stopping_criteria;
 		ar & tau;
 		ar & tuple_parameters;
 		ar & updatetype;
 		ar & verbose;
 		ar & wolfe_constants;
-		ar & type;
 	}
 
 	template<class Archive>
@@ -211,15 +211,18 @@ private:
 		ar & regularization_parameter;
 		ar & searchspace_type;
 		ar & stepwidth_type;
+		ar & stopping_criteria;
 		ar & tau;
 		ar & tuple_parameters;
 		ar & updatetype;
 		ar & verbose;
 		ar & wolfe_constants;
-		ar & type;
 
 		// set verbosity after loading
 		setVerbosity();
+
+		// set secondary values
+		setSecondaryValues();
 	}
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
