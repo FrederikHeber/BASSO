@@ -647,6 +647,7 @@ void CommandLineOptions::store(std::ostream &_output) const
 	writeValue<unsigned int>(_output, vm,  "max-inner-iterations");
 	writeValue<unsigned int>(_output, vm,  "maxiter");
 	writeValue<unsigned int>(_output, vm,  "max-walltime");
+	writeValue<double>(_output, vm,  "tau");
 
 	_output << "# [Landweber]" << std::endl;
 	writeValue<double>(_output, vm,  "C");
@@ -659,7 +660,6 @@ void CommandLineOptions::store(std::ostream &_output) const
 	writeValue<bool>(_output, vm,  "inexact-linesearch");
 	writeValue<unsigned int>(_output, vm,  "orthogonal-directions");
 	writeValue<std::string>(_output, vm,  "searchspace");
-	writeValue<double>(_output, vm,  "tau");
 	writeValue<unsigned int>(_output, vm,  "update-algorithm");
 	if (vm.count("wolfe-constants") != 0) {
 		const std::vector<double> values =
