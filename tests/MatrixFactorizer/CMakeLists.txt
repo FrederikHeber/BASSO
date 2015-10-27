@@ -27,3 +27,8 @@ add_subdirectory (config)
 add_subdirectory (SymmetricRank1)
 add_subdirectory (SymmetricRank2)
 add_subdirectory (SymmetricRank4)
+
+# test MatrixFactorizer with mpirun
+if (MPI_FOUND)
+	add_subdirectory (mpirun)
+endif (MPI_FOUND)

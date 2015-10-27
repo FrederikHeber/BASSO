@@ -36,6 +36,9 @@ set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 FIND_PACKAGE(MPI REQUIRED)
 if (MPI_FOUND)
 	include_directories( ${MPI_CXX_INCLUDE_PATH})
+	FIND_PROGRAM(MPIRUN NAME mpirun PATHS usr/bin/ /bin ENV PATH NO_DEFAULT_PATH)
+	set (MPIRUN_FOUND ${MPIRUN_FOUND})
+	set (MPIRUN ${MPIRUN} CACHE STRING "command to launch multiple mpi jobs")
 endif (MPI_FOUND)
 
 ####################### CHECK LIBRARIES  #################################
