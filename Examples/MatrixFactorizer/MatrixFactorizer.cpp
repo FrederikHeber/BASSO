@@ -96,6 +96,12 @@ int main(int argc, char **argv)
 	int returnstatus = 0;
 #ifdef MPI_FOUND
 	if (world.rank() == 0) {
+		BOOST_LOG_TRIVIAL(info)
+				<< "We have one master to distribute and "
+				<< (world.size()-1) << " slaves to work on the problem.";
+#else
+		BOOST_LOG_TRIVIAL(info)
+			<< "A single process solves the problem.";
 #endif
 		/// starting timing
 		boost::chrono::high_resolution_clock::time_point timing_start =
@@ -123,7 +129,8 @@ int main(int argc, char **argv)
 		factorizer(data, returnstatus);
 
 #ifdef MPI_FOUND
-		// exchange return status
+		// exchange return status to tell clients whether everything is ok
+		// or whether we need to stop execution
 		mpi::broadcast(world, returnstatus, 0);
 #endif
 

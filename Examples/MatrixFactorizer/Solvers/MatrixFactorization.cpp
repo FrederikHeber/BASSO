@@ -61,6 +61,9 @@ void MatrixFactorization::operator()(
 #ifdef MPI_FOUND
 	Master master(world);
 
+	// So far, Slaves are present and expect initial go (or not full_terminate
+	// signal). Hence, if something has gone wrong, then we need at least to
+	// tell them here before the actual solver loop
 	if (_returnstatus != 0) {
 		master.sendTerminate();
 	} else

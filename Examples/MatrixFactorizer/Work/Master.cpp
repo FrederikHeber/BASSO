@@ -18,6 +18,7 @@
 
 namespace mpi = boost::mpi;
 
+#include <cassert>
 #include <deque>
 
 #include "Log/Logging.hpp"
@@ -30,7 +31,10 @@ using namespace detail;
 
 Master::Master(mpi::communicator &_world) :
 	world(_world)
-{}
+{
+	// only master should use this class directly, others use Slave
+	assert( world.rank() == 0);
+}
 
 bool Master::solve(
 		const CommandLineOptions &_opts,
@@ -56,6 +60,7 @@ bool Master::solve(
 		assert( id != -1 );
 		AvailableWorkers.push_back(id);
 	}
+	assert(AvailableWorkers.size() == world.size()-(unsigned int)1);
 
 	// send round global information
 	BOOST_LOG_TRIVIAL(debug)
