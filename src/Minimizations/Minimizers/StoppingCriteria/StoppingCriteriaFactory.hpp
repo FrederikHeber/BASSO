@@ -29,10 +29,11 @@ struct StoppingCriteriaFactory
 	//!> enumeration of all stopping criteria
 	enum StoppingCriteria_types
 	{
-		IterationCount,
-		RelativeResiduum,
-		Residuum,
-		Walltime,
+		IterationCount,	//!< number of iterations
+		RelativeChangeResiduum, //!< relative change in residuum between iteration steps
+		RelativeResiduum, //!< relative residuum with respect to initial value
+		Residuum, //!< absolute value of residuum
+		Walltime, //!< walltime
 		MAX_StoppingCriteria_types
 	};
 

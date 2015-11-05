@@ -22,6 +22,7 @@
 #include "Log/Logging.hpp"
 
 #include "Minimizations/Minimizers/StoppingCriteria/CheckIterationCount.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/CheckRelativeChangeResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckWalltime.hpp"
@@ -118,6 +119,7 @@ StoppingCriteriaFactory::StoppingCriteriaFactory()
 {
 	// fill string to criterion type map
 	StringToCriterionTypeMap["MaxIterationCount"] = IterationCount;
+	StringToCriterionTypeMap["RelativeChangeResiduum"] = RelativeChangeResiduum;
 	StringToCriterionTypeMap["RelativeResiduum"] = RelativeResiduum;
 	StringToCriterionTypeMap["Residuum"] = Residuum;
 	StringToCriterionTypeMap["MaxWalltime"] = Walltime;
@@ -170,6 +172,9 @@ StoppingCriteriaFactory::createCriterion(
 	switch (_type) {
 	case IterationCount:
 		criterion.reset( new CheckIterationCount(_args) );
+		break;
+	case RelativeChangeResiduum:
+		criterion.reset( new CheckRelativeChangeResiduum(_args) );
 		break;
 	case RelativeResiduum:
 		criterion.reset( new CheckRelativeResiduum(_args) );

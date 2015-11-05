@@ -114,6 +114,7 @@ install (FILES Minimizers/StepWidths/DynamicRegularizedL1NormStepWidth.hpp DESTI
 install (FILES Minimizers/StepWidths/LandweberFixedStepWidth.hpp DESTINATION include)
 install (FILES Minimizers/StepWidths/ResidualMinimizingStepwidth.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckIterationCount.hpp DESTINATION include)
+install (FILES Minimizers/StoppingCriteria/CheckRelativeChangeResiduum.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckResiduum.hpp DESTINATION include)
 install (FILES Minimizers/StoppingCriteria/CheckWalltime.hpp DESTINATION include)
