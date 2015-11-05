@@ -13,9 +13,6 @@ add_library (MatrixFactorizerBase
 
 install (FILES Database/IterationInformation.hpp DESTINATION include)
 install (FILES Helpers/detail.hpp DESTINATION include)
-install (FILES IterationChecks/MaxIterationsChecker.hpp DESTINATION include)
-install (FILES IterationChecks/RelativeResidualChecker.hpp DESTINATION include)
-install (FILES IterationChecks/ResidualChecker.hpp DESTINATION include)
 install (FILES Options/MatrixFactorizerOptions.hpp DESTINATION include)
 install (FILES ScalingAmbiguityRemover/MatrixProductEqualizer.hpp DESTINATION include)
 install (FILES ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp DESTINATION include)
