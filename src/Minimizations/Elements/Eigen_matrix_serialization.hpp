@@ -30,7 +30,7 @@ namespace boost
 		size_t cols = t.cols();
         ar & rows;
         ar & cols;
-        if( rows * cols != t.size() )
+        if ((rows != t.rows()) || (cols != t.cols()))
         	t.resize( rows, cols );
 
         ar & boost::serialization::make_array(t.data(), t.size());
