@@ -15,6 +15,10 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/split_member.hpp>
+
+#include "Options/filesystem_path_serialization.hpp"
 
 /** This class defines the interface for all derived instances that obtain
  * options from the command-line options and store them internally.
@@ -115,6 +119,27 @@ public:
 	boost::filesystem::path config_filename;
 	//!> desired verbosity level
 	unsigned int verbose;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void save(Archive & ar, const unsigned int version) const
+	{
+		ar & config_filename;
+		ar & verbose;
+	}
+
+	template<class Archive>
+	void load(Archive & ar, const unsigned int version)
+	{
+		ar & config_filename;
+		ar & verbose;
+
+		// set verbosity after loading
+		setVerbosity();
+	}
+
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 #endif /* OPTIONS_OPTIONS_HPP_ */

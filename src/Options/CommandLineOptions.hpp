@@ -150,10 +150,12 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const unsigned int version) const
 	{
+		// CommandLineOptions
+		ar & boost::serialization::base_object<const Options>(*this);
+
 		ar & algorithm_name;
 		ar & C;
 		ar & calculateAngles;
-		ar & config_filename;
 		ar & database_replace;
 		ar & delta;
 		ar & enforceRandomMapping;
@@ -179,17 +181,18 @@ private:
 		ar & tau;
 		ar & tuple_parameters;
 		ar & updatetype;
-		ar & verbose;
 		ar & wolfe_constants;
 	}
 
 	template<class Archive>
 	void load(Archive & ar, const unsigned int version)
 	{
+		// CommandLineOptions
+		ar & boost::serialization::base_object<Options>(*this);
+
 		ar & algorithm_name;
 		ar & C;
 		ar & calculateAngles;
-		ar & config_filename;
 		ar & database_replace;
 		ar & delta;
 		ar & enforceRandomMapping;
@@ -215,11 +218,7 @@ private:
 		ar & tau;
 		ar & tuple_parameters;
 		ar & updatetype;
-		ar & verbose;
 		ar & wolfe_constants;
-
-		// set verbosity after loading
-		setVerbosity();
 
 		// set secondary values
 		setSecondaryValues();

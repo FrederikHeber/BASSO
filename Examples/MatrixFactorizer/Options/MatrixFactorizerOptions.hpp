@@ -90,8 +90,8 @@ private:
 		ar & solution_product_file;
 		ar & sparse_dim;
 
-		// set verbosity after loading
-		setVerbosity();
+		// set secondary values
+		setSecondaryValues();
 	}
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
