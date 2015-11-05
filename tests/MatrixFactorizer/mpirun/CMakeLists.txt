@@ -10,7 +10,7 @@ add_test (MatrixFactorizer_mpirun
 		--powery 2 
 		--delta 0.01 
 		--maxiter 50
-		--max-loops 10
+		--max-loops 11
 		--number-directions 1
 		--sparse-dim 1
 		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/pre/data.m 

@@ -24,6 +24,9 @@
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductEqualizer.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 MatrixFactorization::MatrixFactorization(
 		const MatrixFactorizerOptions &_opts,
@@ -89,14 +92,22 @@ void MatrixFactorization::operator()(
 		BOOST_LOG_TRIVIAL(info)
 			<< "#" << loop_nr << " 1/2, residual is " << residual;
 		info.replace(IterationInformation::LoopTable, "residual", residual);
-		MaxIterationsChecker MaxIterations(opts.max_loops);
-		RelativeChangeResidualChecker RelativeResidual(opts.residual_threshold);
-		ResidualChecker Residual(opts.residual_threshold);
 
-		bool stop_condition =
-				RelativeResidual(residual)
-				|| Residual(residual)
-				|| MaxIterations(loop_nr);
+		// create outer ("loop") stopping criteria
+		StoppingArguments stopping_args;
+		stopping_args.setTolerance(opts.residual_threshold);
+		stopping_args.setMaxIterations(opts.max_loops);
+		std::string stopping_criteria(
+				"MaxIterationCount || RelativeChangeResiduum || Residuum");
+		StoppingCriteriaFactory stop_factory;
+		StoppingCriterion::ptr_t stopping_criterion =
+				stop_factory.create(stopping_criteria, stopping_args);
+
+		bool stop_condition = (*stopping_criterion)(
+				boost::chrono::duration<double>(0),
+				loop_nr,
+				residual,
+				1.);
 
 		// submit loop tuple
 		info.addTuple(IterationInformation::LoopTable);
@@ -228,10 +239,11 @@ void MatrixFactorization::operator()(
 				BOOST_LOG_TRIVIAL(info)
 					<< "#" << loop_nr << " 2/2, residual is " << residual;
 				info.replace(IterationInformation::LoopTable, "residual", residual);
-				stop_condition =
-						RelativeResidual(residual)
-						|| Residual(residual)
-						|| MaxIterations(loop_nr);
+				stop_condition = (*stopping_criterion)(
+						boost::chrono::duration<double>(0),
+						loop_nr,
+						residual,
+						1.);
 			}
 
 			// submit loop tuple
