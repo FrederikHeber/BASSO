@@ -614,6 +614,8 @@ void CommandLineOptions::setSecondaryValues()
 			++count;
 		}
 	}
+
+	internal_setSecondaryValues();
 }
 
 void CommandLineOptions::store(std::ostream &_output) const
