@@ -18,14 +18,14 @@ add_test (MatrixFactorizer_mpirun
 		--solution-second-factor second-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun
 	PROPERTIES WILL_FAIL false)
-#set_tests_properties (MatrixFactorizer_mpirun
-#	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*5.9")
+set_tests_properties (MatrixFactorizer_mpirun
+	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*5.9")
 
 # test 1b: checking results
 add_test (MatrixFactorizer_mpirun_check_first
 	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/post/first-factor.m first-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun_check_first
-	PROPERTIES WILL_FAIL true)
+	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_mpirun_check_first
 	PROPERTIES DEPENDS MatrixFactorizer_mpirun)
 
@@ -33,6 +33,6 @@ set_tests_properties (MatrixFactorizer_mpirun_check_first
 add_test (MatrixFactorizer_mpirun_check_second
 	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/post/second-factor.m second-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun_check_second
-	PROPERTIES WILL_FAIL true)
+	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_mpirun_check_second
 	PROPERTIES DEPENDS MatrixFactorizer_mpirun)

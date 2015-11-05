@@ -183,7 +183,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "delta set to default value of " << delta;
 	}
-	stopping_args.setTolerance(delta);
 
 	if (vm.count("database-replace")) {
 		database_replace = vm["database-replace"].as<bool>();
@@ -220,7 +219,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum iterations set to default value of " << maxiter;
 	}
-	stopping_args.setMaxIterations(maxiter);
 
 	if (vm.count("max-inner-iterations")) {
 		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
@@ -237,8 +235,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Maximum Walltime set to default value of "
 			<< boost::chrono::duration<double>(maxwalltime) << " seconds.";
 	}
-	stopping_args.setMaxWalltime(
-			boost::chrono::duration<double>(maxwalltime));
 
 	if (vm.count("minimization-library")) {
 		minlib = vm["minimization-library"].as<std::string>();
@@ -357,7 +353,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau set to default value of " << tau;
 	}
-	stopping_args.setDiscrepancyParameter(tau);
 
 	if (vm.count("tuple-parameters")) {
 		tuple_parameters = vm["tuple-parameters"].as< std::vector<std::string> >();
@@ -614,6 +609,11 @@ void CommandLineOptions::setSecondaryValues()
 			++count;
 		}
 	}
+	stopping_args.setTolerance(delta);
+	stopping_args.setMaxIterations(maxiter);
+	stopping_args.setMaxWalltime(
+			boost::chrono::duration<double>(maxwalltime));
+	stopping_args.setDiscrepancyParameter(tau);
 
 	internal_setSecondaryValues();
 }
