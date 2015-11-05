@@ -72,8 +72,8 @@ bool Master::solve(
 	mpi::broadcast(world, const_cast<unsigned int &>(_loop_nr), 0);
 
 	// allocate variables for non-blocking communication
-	std::vector<WorkPackage> packages(world.size());
-	std::vector<WorkResult> results(world.size());
+	std::vector<WorkPackage> packages(world.size()-1);
+	std::vector<WorkResult> results(world.size()-1);
 	std::deque<mpi::request> uncompleted_requests;
 
 	// go through all columns of rhs
@@ -84,19 +84,19 @@ bool Master::solve(
 		// send current column of rhs as work package
 		const size_t freeworker = AvailableWorkers.front();
 		AvailableWorkers.pop_front();
-		packages[freeworker] =
+		packages[freeworker-1] =
 				WorkPackage(_rhs.col(col), _solution.col(col), col);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#0 - sending work package " << col
 				<< " to " << freeworker << ".";
-		world.isend(freeworker, ColumnWise, packages[freeworker]);
+		world.isend(freeworker, ColumnWise, packages[freeworker-1]);
 
 		// receive solution in a non-blocking manner
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#0 - launching receiving work package " << col
 				<< " from " << freeworker << ".";
 		mpi::request request_object =
-				world.irecv(freeworker, ColumnWise, results[freeworker]);
+				world.irecv(freeworker, ColumnWise, results[freeworker-1]);
 		uncompleted_requests.push_back(request_object);
 
 		// wait for free workers if non available
@@ -159,16 +159,16 @@ bool Master::handleResult(
 	if (_result.error() != 0) {
 		// look at stop_condition and store solution
 		const int id = _result.source();
-		solve_ok &= _results[id].solve_ok;
-		_solution.col(_results[id].col) = _results[id].solution;
+		solve_ok &= _results[id-1].solve_ok;
+		_solution.col(_results[id-1].col) = _results[id-1].solution;
 		if ((_solution.innerSize() > 10) || (_solution.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
-					<< "Got solution for col #" << _results[id].col
-					<< "\n" << _results[id].solution.transpose();
+					<< "Got solution for col #" << _results[id-1].col
+					<< "\n" << _results[id-1].solution.transpose();
 		} else {
 			BOOST_LOG_TRIVIAL(debug)
-					<< "Got solution for col #" << _results[id].col
-					<< "\n" << _results[id].solution.transpose();
+					<< "Got solution for col #" << _results[id-1].col
+					<< "\n" << _results[id-1].solution.transpose();
 		}
 	} else
 		solve_ok = false;
