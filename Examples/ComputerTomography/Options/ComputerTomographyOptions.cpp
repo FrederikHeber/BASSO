@@ -16,11 +16,11 @@
 namespace po = boost::program_options;
 
 ComputerTomographyOptions::ComputerTomographyOptions() :
+		noiselevel(0.),
 		num_pixel_x(0),
 		num_pixel_y(0),
 		num_angles(0),
 		num_offsets(0),
-		noiselevel(0.),
 		seed(-1)
 {}
 
@@ -33,6 +33,8 @@ void ComputerTomographyOptions::internal_init()
 					"set the file name of the solution/phantom to compare against (BregmanDistance)")
 			("noise-level", po::value< double >(),
 					"set noise level to disturb the projected true solution with  (relative)")
+			("noisy-sinogram", po::value< boost::filesystem::path >(),
+					"set the file name of the output noisy sinogram")
 	        ("num-pixels-x", po::value< unsigned int >(),
 	        		"set the desired number of pixels in x direction")
 			("num-pixels-y", po::value< unsigned int >(),
@@ -68,6 +70,12 @@ void ComputerTomographyOptions::internal_parse()
 		noiselevel = vm["noise-level"].as<double>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Noise level set to " << noiselevel;
+	}
+
+	if (vm.count("noisy-sinogram")) {
+		noisy_sinogram_file = vm["noisy-sinogram"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of noisy sinogram was set to " << noisy_sinogram_file;
 	}
 
 	if (vm.count("num-pixels-x")) {
@@ -159,6 +167,12 @@ bool ComputerTomographyOptions::internal_checkSensibility() const
 
 	}
 
+	if ((vm.count("noisy-sinogram")) && (boost::filesystem::exists(noisy_sinogram_file))) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Noisy sinogram file is already present.";
+		return false;
+	}
+
 	return true;
 }
 
@@ -170,6 +184,7 @@ void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 	_output << "# [ComputerTomography]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "phantom");
 	writeValue<double>(_output, vm,  "noise-level");
+	writeValue<boost::filesystem::path>(_output, vm,  "noisy-sinogram");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
 	writeValue<unsigned int>(_output, vm,  "num-angles");

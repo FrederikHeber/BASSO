@@ -153,23 +153,6 @@ int main (int argc, char *argv[])
 			BOOST_LOG_TRIVIAL(info)
 					<< "Solution given, calculating rhs from it.";
 			y = (*A)(truesolution);
-
-			using namespace MatrixIO;
-			if (!opts.rhs_file.string().empty()) {
-				std::ofstream ost(opts.rhs_file.string().c_str());
-				if (ost.good())
-					try {
-						SpaceElementWriter::output(ost, y);
-					} catch (MatrixIOStreamEnded_exception &e) {
-						std::cerr << "Failed to fully write rhs to file.\n";
-					}
-				else {
-					std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
-					return 255;
-				}
-			} else {
-				std::cout << "No rhs file given." << std::endl;
-			}
 		}
 
 		if (opts.noiselevel != 0.) {
@@ -191,6 +174,23 @@ int main (int argc, char *argv[])
 					<< y->getMaxCoefficientAndIndex().first << " and "
 					<< -1.*((-1.*y)->getMaxCoefficientAndIndex().first);
 			*y += noise;
+
+			using namespace MatrixIO;
+		}
+		if (!opts.noisy_sinogram_file.string().empty()) {
+			std::ofstream ost(opts.noisy_sinogram_file.string().c_str());
+			if (ost.good())
+				try {
+					SpaceElementWriter::output(ost, y);
+				} catch (MatrixIOStreamEnded_exception &e) {
+					std::cerr << "Failed to fully write noisy sinogram to file.\n";
+				}
+			else {
+				std::cerr << "Failed to open " << opts.noisy_sinogram_file.string() << std::endl;
+				return 255;
+			}
+		} else {
+			std::cout << "No noisy sinogram file given." << std::endl;
 		}
 
 		inverseproblem.reset(new InverseProblem(A,X,Y,y));

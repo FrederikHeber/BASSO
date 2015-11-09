@@ -49,16 +49,17 @@ public:
 
 	// primary values
 	boost::filesystem::path comparison_file;
+	double noiselevel;
+	boost::filesystem::path noisy_sinogram_file;
 	unsigned int num_pixel_x;
 	unsigned int num_pixel_y;
 	unsigned int num_angles;
 	unsigned int num_offsets;
 	boost::filesystem::path radon_matrix;
 	boost::filesystem::path rhs_file;
+	int seed;
 	boost::filesystem::path solution_file;
 	boost::filesystem::path solution_image_file;
-	double noiselevel;
-	int seed;
 
 	// secondary values
 };
