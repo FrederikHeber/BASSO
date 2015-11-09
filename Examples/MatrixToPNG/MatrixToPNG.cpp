@@ -41,24 +41,8 @@ int main (int argc, char *argv[])
 	// parse vector files into instances
 	Eigen::VectorXd matrix;
 	const double num_pixels = opts.num_pixel_x * opts.num_pixel_y;
-	{
-		using namespace MatrixIO;
-
-		{
-			std::ifstream ist(opts.matrix_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> matrix;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse rhs from " << opts.matrix_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				std::cerr << "Failed to open " << opts.matrix_file.string() << std::endl;
-				return 255;
-			}
-		}
-	}
+	if (!MatrixIO::parse(opts.matrix_file.string(), "matrix", matrix))
+		return 255;
 	assert( matrix.rows() == num_pixels);
 
 	if (!boost::filesystem::exists(opts.image_file)) {

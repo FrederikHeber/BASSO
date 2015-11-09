@@ -234,56 +234,37 @@ void MatrixFactorization::operator()(
 		renormalizer(spectral_matrix, pixel_matrix);
 
 		/// output solution
-		{
-			using namespace MatrixIO;
-			if (!opts.solution_factor_one_file.string().empty()) {
-				std::ofstream ost(opts.solution_factor_one_file.string().c_str());
-				if (ost.good())
-					try {
-						ost << spectral_matrix;
-					} catch (MatrixIOStreamEnded_exception &e) {
-						std::cerr << "Failed to fully write first solution factor to file.\n";
-					}
-				else {
-					std::cerr << "Failed to open " << opts.solution_factor_one_file.string() << std::endl;
-					_returnstatus = 255;
-				}
-			} else {
-				std::cout << "No first solution factor file name given." << std::endl;
-			}
-
-			if (!opts.solution_factor_two_file.string().empty()) {
-				std::ofstream ost(opts.solution_factor_two_file.string().c_str());
-				if (ost.good())
-					try {
-						ost << pixel_matrix;
-					} catch (MatrixIOStreamEnded_exception &e) {
-						std::cerr << "Failed to fully write second solution factor to file.\n";
-					}
-				else {
-					std::cerr << "Failed to open " << opts.solution_factor_two_file.string() << std::endl;
-					_returnstatus = 255;
-				}
-			} else {
-				std::cout << "No second solution factor file name given." << std::endl;
-			}
-
-			if (!opts.solution_product_file.string().empty()) {
-				std::ofstream ost(opts.solution_product_file.string().c_str());
-				if (ost.good())
-					try {
-						ost << spectral_matrix * pixel_matrix;
-					} catch (MatrixIOStreamEnded_exception &e) {
-						std::cerr << "Failed to fully write solution product to file.\n";
-					}
-				else {
-					std::cerr << "Failed to open " << opts.solution_product_file.string() << std::endl;
-					_returnstatus = 255;
-				}
-			} else {
-				std::cout << "No solution product file name given." << std::endl;
+		if (!opts.solution_factor_one_file.string().empty()) {
+			if (!MatrixIO::store(
+					opts.solution_factor_one_file.string(),
+					"spectral matrix",
+					spectral_matrix)) {
+				_returnstatus = 255;
+				BOOST_LOG_TRIVIAL(error) <<
+						"Failed to write first solution factor file.";
 			}
 		}
+		if (!opts.solution_factor_two_file.string().empty()) {
+			if (!MatrixIO::store(
+					opts.solution_factor_two_file.string(),
+					"pixel matrix",
+					pixel_matrix)) {
+				_returnstatus = 255;
+				BOOST_LOG_TRIVIAL(error) <<
+						"Failed to write second solution factor file.";
+			}
+		}
+		if (!opts.solution_product_file.string().empty()) {
+			if (!MatrixIO::store(
+					opts.solution_product_file.string(),
+					"solution product",
+					spectral_matrix * pixel_matrix)) {
+				_returnstatus = 255;
+				BOOST_LOG_TRIVIAL(error) <<
+						"Failed to write solution product file.";
+			}
+		}
+
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Resulting first factor transposed is\n" << spectral_matrix.transpose();
 		BOOST_LOG_TRIVIAL(debug)

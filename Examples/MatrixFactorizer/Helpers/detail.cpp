@@ -48,21 +48,8 @@ int detail::parseDataFile(
 {
 	using namespace MatrixIO;
 
-	{
-		std::ifstream ist(_filename.c_str());
-		if (ist.good())
-			try {
-				ist >> _data;
-			} catch (MatrixIOStreamEnded_exception &e) {
-				std::cerr << "Failed to fully parse data matrix from " << _filename << std::endl;
-				return 255;
-			}
-		else {
-			std::cerr << "Failed to open " << _filename << std::endl;
-			return 255;
-		}
-
-	}
+	if (!MatrixIO::parse(_filename, "data matrix", _data))
+		return 255;
 
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((_data.innerSize() > 10) || (_data.outerSize() > 10)) {

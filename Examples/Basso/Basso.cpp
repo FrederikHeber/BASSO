@@ -58,63 +58,15 @@ int main (int argc, char *argv[])
 	Eigen::MatrixXd matrix;
 	Eigen::VectorXd rhs;
 	Eigen::VectorXd solution;
-	{
-		using namespace MatrixIO;
-
-		{
-			std::ifstream ist(opts.matrix_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> matrix;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse matrix from " << opts.matrix_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				std::cerr << "Failed to open " << opts.matrix_file.string() << std::endl;
-				return 255;
-			}
-
-		}
-		{
-			std::ifstream ist(opts.rhs_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> rhs;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse rhs from " << opts.rhs_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
-				return 255;
-			}
-		}
-
-		{
-			// just try to parse solution, we ignore if file does not exist
-			std::ifstream ist(opts.comparison_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> solution;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse solution from " << opts.comparison_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				if (opts.comparison_file.string().empty())
-					BOOST_LOG_TRIVIAL(debug)
-							<< "No solution file was given.";
-				else {
-					BOOST_LOG_TRIVIAL(error)
-						<< "Could not parse solution from " << opts.comparison_file.string();
-					return 255;
-				}
-				solution = Eigen::VectorXd(matrix.outerSize());
-				solution.setZero();
-			}
-		}
+	if (!MatrixIO::parse(opts.matrix_file.string(), "matrix", matrix))
+		return 255;
+	if (!MatrixIO::parse(opts.rhs_file.string(), "rhs", rhs))
+		return 255;
+	if (!MatrixIO::parse(opts.comparison_file.string(), "solution", solution)) {
+		solution = Eigen::VectorXd(matrix.outerSize());
+		solution.setZero();
 	}
+
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)

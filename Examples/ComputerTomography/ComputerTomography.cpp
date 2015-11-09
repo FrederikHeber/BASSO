@@ -70,55 +70,16 @@ int main (int argc, char *argv[])
 	Eigen::VectorXd solution;
 	const double num_pixels = opts.num_pixel_x * opts.num_pixel_y;
 	const double num_measurements = opts.num_angles * opts.num_offsets;
-	{
-		using namespace MatrixIO;
-
-		{
-			std::ifstream ist(opts.rhs_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> rhs;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse rhs from " << opts.rhs_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				if (opts.rhs_file.string().empty())
-					BOOST_LOG_TRIVIAL(debug)
-							<< "No rhs file was given.";
-				else {
-					std::cerr << "Failed to open " << opts.rhs_file.string() << std::endl;
-					return 255;
-				}
-				rhs = Eigen::VectorXd(num_measurements);
-				rhs.setZero();
-			}
-		}
-
-		{
-			// just try to parse solution, we ignore if file does not exist
-			std::ifstream ist(opts.comparison_file.string().c_str());
-			if (ist.good())
-				try {
-					ist >> solution;
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully parse solution from " << opts.comparison_file.string() << std::endl;
-					return 255;
-				}
-			else {
-				if (opts.comparison_file.string().empty())
-					BOOST_LOG_TRIVIAL(debug)
-							<< "No solution file was given.";
-				else {
-					BOOST_LOG_TRIVIAL(error)
-						<< "Could not parse solution from " << opts.comparison_file.string();
-					return 255;
-				}
-				solution = Eigen::VectorXd(num_pixels);
-				solution.setZero();
-			}
-		}
+	if (!MatrixIO::parse(opts.rhs_file.string(), "rhs", rhs)) {
+		rhs = Eigen::VectorXd(num_measurements);
+		rhs.setZero();
 	}
+
+	if (!MatrixIO::parse(opts.comparison_file.string(), "solution", solution)) {
+		solution = Eigen::VectorXd(num_pixels);
+		solution.setZero();
+	}
+
 	// check that dimensions fit
 	if (solution.size() != num_pixels) {
 		BOOST_LOG_TRIVIAL(error)
@@ -239,22 +200,10 @@ int main (int argc, char *argv[])
 	{
 		DiscretizedRadon &radon =
 				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
-		using namespace MatrixIO;
-		if (!opts.radon_matrix.string().empty()) {
-			std::ofstream ost(opts.radon_matrix.string().c_str());
-			if (ost.good())
-				try {
-					ost << radon.get().getMatrix();
-				} catch (MatrixIOStreamEnded_exception &e) {
-					std::cerr << "Failed to fully write radon matrix to file.\n";
-				}
-			else {
-				std::cerr << "Failed to open " << opts.radon_matrix.string() << std::endl;
-				return 255;
-			}
-		} else {
-			std::cout << "No radon matrix file given." << std::endl;
-		}
+		MatrixIO::store(
+				opts.radon_matrix.string(),
+				"radon matrix",
+				radon.get().getMatrix());
 	}
 
 	// print parsed matrix and vector if small or high verbosity requested

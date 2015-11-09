@@ -11,6 +11,7 @@
 #include "BassoConfig.h"
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -19,12 +20,73 @@
 #include <Eigen/Dense>
 #include <Eigen/SparseCore>
 
+#include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIOExceptions.hpp"
 
 /** This namespace combines functions to read and write matrices and
  * vectors from the Eigen library
  */
 namespace MatrixIO {
+
+/** Parse a vector \a _vector from a file \a _vector_file.
+ *
+ * @param _vector_file filename of vector file
+ * @param _vector_name name of vector for output messages
+ * @param _vector vector instance
+ * @return true - parsing succeeded, false - some error occurred
+ */
+template <class T>
+bool parse(
+		const std::string &_filename,
+		const std::string &_name,
+		T &_instance)
+{
+	std::ifstream ist(_filename.c_str());
+	if (ist.good()) {
+		try {
+			ist >> _instance;
+		} catch (MatrixIOStreamEnded_exception &e) {
+			std::cerr << "Failed to fully parse " << _name << " from "
+					<< _filename << std::endl;
+			return false;
+		}
+		return true;
+	} else {
+		if (_filename.empty())
+			BOOST_LOG_TRIVIAL(debug)
+					<< "No " << _name << " file was given.";
+		else {
+			std::cerr << "Failed to open " << _filename << std::endl;
+			return false;
+		}
+		return false;
+	}
+	return true;
+}
+
+template <class T>
+bool store(
+		const std::string &_filename,
+		const std::string &_name,
+		const T &_instance)
+{
+	if (!_filename.empty()) {
+		std::ofstream ost(_filename.c_str());
+		if (ost.good())
+			try {
+				ost << _instance;
+			} catch (MatrixIOStreamEnded_exception &e) {
+				std::cerr << "Failed to fully write " << _name << " to file.\n";
+			}
+		else {
+			std::cerr << "Failed to open " << _filename << std::endl;
+			return 255;
+		}
+	} else {
+		std::cout << "No " << _name << " file given." << std::endl;
+	}
+	return true;
+}
 
 /** Output contents of \a m into stream \ost in Matlab-like format.
  *
