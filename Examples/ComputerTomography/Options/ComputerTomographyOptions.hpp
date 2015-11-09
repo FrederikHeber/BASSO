@@ -58,6 +58,7 @@ public:
 	boost::filesystem::path solution_file;
 	boost::filesystem::path solution_image_file;
 	double noiselevel;
+	int seed;
 
 	// secondary values
 };

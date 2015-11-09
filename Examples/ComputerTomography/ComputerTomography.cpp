@@ -214,6 +214,9 @@ int main (int argc, char *argv[])
 		if (opts.noiselevel != 0.) {
 			// finally, add some noise
 			Eigen::VectorXd noisevector(Y->getDimension());
+			// with given seed if valid
+			if (opts.seed >= 0)
+				srand(opts.seed);
 			noisevector.setRandom();
 			SpaceElement_ptr_t noise =
 					ElementCreator::create(Y, noisevector);

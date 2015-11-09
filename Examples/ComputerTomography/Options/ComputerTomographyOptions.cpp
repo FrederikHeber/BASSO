@@ -20,7 +20,8 @@ ComputerTomographyOptions::ComputerTomographyOptions() :
 		num_pixel_y(0),
 		num_angles(0),
 		num_offsets(0),
-		noiselevel(0.)
+		noiselevel(0.),
+		seed(-1)
 {}
 
 void ComputerTomographyOptions::internal_init()
@@ -42,6 +43,8 @@ void ComputerTomographyOptions::internal_init()
 					"set the desired number of lateral offsets of detector")
 			("radon-matrix", po::value< boost::filesystem::path >(),
 					"set the file name to write the discretized Radon transformation matrix to")
+			("seed", po::value< int >(),
+					"set the random number generator seed")
 	        ("sinogram", po::value< boost::filesystem::path >(),
 	        		"set the vector file of the right-hand side/sinogram")
 			("solution", po::value< boost::filesystem::path >(),
@@ -95,6 +98,12 @@ void ComputerTomographyOptions::internal_parse()
 		radon_matrix = vm["radon-matrix"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Filename of vector was set to " << radon_matrix;
+	}
+
+	if (vm.count("seed")) {
+		seed = vm["seed"].as<int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Random number generator seed was set to " << seed;
 	}
 
 	if (vm.count("sinogram")) {
@@ -166,6 +175,7 @@ void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 	writeValue<unsigned int>(_output, vm,  "num-angles");
 	writeValue<unsigned int>(_output, vm,  "num-offsets");
 	writeValue<boost::filesystem::path>(_output, vm,  "radon-matrix");
+	writeValue<int>(_output, vm,  "seed");
 	writeValue<boost::filesystem::path>(_output, vm,  "sinogram");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-image");
