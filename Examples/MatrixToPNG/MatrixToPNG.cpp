@@ -50,36 +50,68 @@ int main (int argc, char *argv[])
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
 		const double length = fabs(max - min);
-		png::image< png::rgb_pixel > image(opts.num_pixel_x, opts.num_pixel_y);
-		for (size_t y = 0; y < image.get_height(); ++y)
+
+		png::image< png::rgb_pixel > *image = NULL;
+		switch(opts.Rotate) {
+		case 0:
+		case 2:
+			image = new png::image< png::rgb_pixel >(opts.num_pixel_y, opts.num_pixel_x);
+			break;
+		case 1:
+		case 3:
+			image = new png::image< png::rgb_pixel >(opts.num_pixel_x, opts.num_pixel_y);
+			break;
+		default:
+			assert(0); /* Case cannot happen */
+			break;
+		}
+		assert( image != NULL );
+		unsigned int multiplier = !opts.Flip ? opts.num_pixel_x : opts.num_pixel_y;
+		for (size_t y = 0; y < opts.num_pixel_y; ++y)
 		{
-		 for (size_t x = 0; x < image.get_width(); ++x)
+		 for (size_t x = 0; x < opts.num_pixel_x; ++x)
 		 {
 			 unsigned int i;
 			 unsigned int j;
-			 unsigned int multiplier = image.get_width();
 
 			 if (opts.LeftToRight)
 				 i = x;
 			 else
-				 i = image.get_width() - x - 1;
+				 i = opts.num_pixel_x - x - 1;
 
 			 if (opts.BottomToTop)
 				 j = y;
 			 else
-				 j = image.get_height() - y - 1;
+				 j = opts.num_pixel_y - y - 1;
 
-			 if (opts.Flip) {
-				 multiplier = image.get_height();
+			 if (opts.Flip)
 				 std::swap(i,j);
-			 }
 
 			 const unsigned int value = 255.*(matrix[i+j*multiplier] - min)/length;
-			 image[y][x] = png::rgb_pixel(value, value, value);
-			 // non-checking equivalent of image.set_pixel(x, y, ...);
+			 const png::rgb_pixel pixel_value = png::rgb_pixel(value, value, value);
+			 switch(opts.Rotate) {
+			 case 0:
+				 (*image)[x][y] = pixel_value;
+				 break;
+			 case 1:
+				 (*image)[opts.num_pixel_y-1-y][x] = pixel_value;
+				 break;
+			 case 2:
+				 (*image)[opts.num_pixel_x-1-x][opts.num_pixel_y-1-y] = pixel_value;
+				 break;
+			 case 3:
+				 (*image)[y][opts.num_pixel_x-1-x] = pixel_value;
+				 break;
+			 default:
+				 assert(0); /* case should not happen */
+				 break;
+			 }
+			 // non-checking equivalent of image->set_pixel(x, y, ...);
 		 }
 		}
-		image.write(opts.image_file.string());
+		image->write(opts.image_file.string());
+		if (image != NULL)
+			delete image;
 	} else {
 		BOOST_LOG_TRIVIAL(error) << "The given output file exists.";
 	}

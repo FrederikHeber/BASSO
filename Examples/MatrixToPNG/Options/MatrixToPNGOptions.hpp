@@ -60,6 +60,7 @@ public:
 	bool LeftToRight;
 	bool BottomToTop;
 	bool Flip;
+	unsigned int Rotate;
 
 	// secondary values
 };

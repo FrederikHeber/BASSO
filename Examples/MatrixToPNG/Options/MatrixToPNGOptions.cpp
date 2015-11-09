@@ -21,7 +21,8 @@ MatrixToPNGOptions::MatrixToPNGOptions() :
 		num_pixel_y(0),
 		LeftToRight(false),
 		BottomToTop(false),
-		Flip(false)
+		Flip(false),
+		Rotate(0)
 {}
 
 void MatrixToPNGOptions::init()
@@ -39,12 +40,14 @@ void MatrixToPNGOptions::init()
 	        		"set the desired number of pixels in x direction")
 			("num-pixels-y", po::value< unsigned int >(),
 					"set the desired number of pixels in y direction")
-			("left-to-right", po::value< bool >(),
-					"set whether to run the rows from left to right or reverse")
 			("bottom-to-top", po::value< bool >(),
 					"set whether to run the columns from bottom to top or reverse")
 			("flip", po::value< bool >(),
 					"set whether to exchange rows and columns")
+			("left-to-right", po::value< bool >(),
+					"set whether to run the rows from left to right or reverse")
+			("rotate", po::value< unsigned int >(),
+					"set final rotation to none(0), -90 (1), -180(2), +90 (3)")
 	        ;
 
 	desc_all.add(desc_matrixtopng);
@@ -98,6 +101,12 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "We " << (Flip ? "do" : "don't") << " exchange rows and columns";
 	}
+
+	if (vm.count("rotate")) {
+		Rotate = vm["rotate"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We rotate to " << Rotate;
+	}
 }
 
 bool MatrixToPNGOptions::internal_checkSensibility() const
@@ -133,6 +142,9 @@ bool MatrixToPNGOptions::checkSensibility() const
 {
 	bool status = Options::checkSensibility();
 
+	if (vm.count("rotate"))
+		status &= (Rotate >= 0) && (Rotate <=3);
+
 	status &= internal_checkSensibility();
 
 	if (!status)
@@ -158,4 +170,5 @@ void MatrixToPNGOptions::store(std::ostream &_output) const
 	writeValue<bool>(_output, vm,  "left-to-right");
 	writeValue<bool>(_output, vm,  "bottom-to-top");
 	writeValue<bool>(_output, vm,  "flip");
+	writeValue<unsigned int>(_output, vm,  "rotate");
 }
