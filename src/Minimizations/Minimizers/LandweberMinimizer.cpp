@@ -166,6 +166,7 @@ LandweberMinimizer::operator()(
 
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
+		per_iteration_tuple.replace( "residual", returnvalues.residuum);
 		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
@@ -217,7 +218,8 @@ LandweberMinimizer::operator()(
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );
-	overall_tuple.replace( "relative_residual", returnvalues.residuum );
+	overall_tuple.replace( "residual", returnvalues.residuum );
+	overall_tuple.replace( "relative_residual", returnvalues.residuum/ynorm );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	finalizeOverallTuple(overall_tuple, refs);
