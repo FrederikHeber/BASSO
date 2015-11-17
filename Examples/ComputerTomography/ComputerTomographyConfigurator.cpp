@@ -8,6 +8,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/exception/all.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <ComputerTomography/Options/ComputerTomographyOptions.hpp>
@@ -21,7 +22,14 @@ int main (int argc, char *argv[])
 	opts.init();
 
 	// parse options
-	opts.parse(argc, argv);
+	try {
+		opts.parse(argc, argv);
+	} catch (std::exception &e) {
+		std::cerr << "An error occurred: "
+				<< e.what()
+				<< std::endl;
+		return 255;
+	}
 
 	if (opts.showHelpConditions(argv[0]))
 		return 1;

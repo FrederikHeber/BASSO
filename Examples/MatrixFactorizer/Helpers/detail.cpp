@@ -27,7 +27,14 @@ int detail::parseOptions(
 	_opts.init();
 
 	// parse options
-	_opts.parse(_argc, _argv);
+	try {
+		_opts.parse(_argc, _argv);
+	} catch (std::exception &e) {
+		std::cerr << "An error occurred: "
+				<< e.what()
+				<< std::endl;
+		return 255;
+	}
 
 	if (_opts.showHelpConditions(_argv[0]))
 		return 1;
