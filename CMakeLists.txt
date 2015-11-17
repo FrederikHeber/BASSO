@@ -22,6 +22,29 @@ option (USE_TIMINGS
 option (FULLMATRIXNORM
 	"Use operator norm instead of matrix norm, requires SVD calculation" OFF)
 
+###################### GIT VERSION HEADER  ################################
+
+# create a version target which must be added to every executable
+FIND_PACKAGE(Git)
+FILE(WRITE ${CMAKE_BINARY_DIR}/version.h.in
+"\#define VERSION \"@VERSION@\""
+)
+FILE(WRITE ${CMAKE_BINARY_DIR}/version.cmake
+"EXECUTE_PROCESS(
+     COMMAND ${GIT_EXECUTABLE} describe --dirty --always
+     OUTPUT_VARIABLE VERSION
+     OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+ CONFIGURE_FILE(\${SRC} \${DST} @ONLY)
+")
+#INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+ADD_CUSTOM_TARGET(
+    version
+    ${CMAKE_COMMAND} -D SRC=${CMAKE_BINARY_DIR}/version.h.in
+                     -D DST=${CMAKE_BINARY_DIR}/version.h
+                     -P ${CMAKE_BINARY_DIR}/version.cmake
+)
+
 ######################## CHECK HEADERS  ##################################
 
 # does the system provide the log and exp functions?

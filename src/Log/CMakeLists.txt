@@ -4,4 +4,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (Log Logging.cpp Logging.hpp)
 
+ADD_DEPENDENCIES(Log version)
+
 install (FILES Logging.hpp DESTINATION include)
+

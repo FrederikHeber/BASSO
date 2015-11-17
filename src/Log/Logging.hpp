@@ -26,6 +26,9 @@
 void startLogging();
 void stopLogging();
 
+void showVersion(const std::string _programname = std::string(""));
+void showCopyright();
+
 template<class T>
 std::ostream & operator<<(std::ostream &ost, const std::list<T> & values)
 {

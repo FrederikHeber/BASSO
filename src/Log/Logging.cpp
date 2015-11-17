@@ -9,6 +9,8 @@
 
 #include "BassoConfig.h"
 
+#include "version.h"
+
 BOOST_LOG_ATTRIBUTE_KEYWORD(timestamp, "TimeStamp", boost::posix_time::ptime);
 
 namespace logging = boost::log;
@@ -43,5 +45,21 @@ void stopLogging()
 
     // flush output
     core->flush();
+}
+
+void showVersion(const std::string _programname)
+{
+	if (_programname.empty())
+		std::cout << "Version " << Basso_VERSION_MAJOR << "." << Basso_VERSION_MINOR
+			<< " -- build " << VERSION << std::endl;
+	else
+		std::cout << _programname << " version " << Basso_VERSION_MAJOR << "."
+		<< Basso_VERSION_MINOR << " -- build " << VERSION << std::endl;
+}
+
+void showCopyright()
+{
+	std::cout << "(C) 2014-2016 Universität des Saarlandes. All rights reserved."
+			<< std::endl;
 }
 
