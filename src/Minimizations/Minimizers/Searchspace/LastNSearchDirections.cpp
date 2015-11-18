@@ -219,7 +219,7 @@ void LastNSearchDirections::update(
 		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
 				iter != indices_to_orthogonalize.end(); ++iter) {
 			const double projection_coefficient = tmin[*iter];
-			BOOST_LOG_TRIVIAL(info)
+			BOOST_LOG_TRIVIAL(debug)
 				<< "Projection coefficient of "
 				<< (orthogonalization_type == MetricOrthogonalization ?
 						"metric" : "bregman" )
@@ -230,7 +230,7 @@ void LastNSearchDirections::update(
 		}
 		const double prenorm = _newdir->Norm();
 		const double postnorm = newdir->Norm();
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm after projection changed from "
 			<< prenorm << " to " << postnorm;
 
