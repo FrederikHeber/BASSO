@@ -79,7 +79,7 @@ bool InRangeSolver::operator()(
 			projected_rhs,
 			_solution_start,
 			_solution,
-			_loop_nr >= 3)) {
+			false)) { //_loop_nr >= 3)) {
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Resulting vector is " << _solution.transpose();
 		return false;
