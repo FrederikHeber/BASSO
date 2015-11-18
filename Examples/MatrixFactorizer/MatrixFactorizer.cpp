@@ -156,9 +156,6 @@ int main(int argc, char **argv)
 		// exchange return status
 		mpi::broadcast(world, returnstatus, 0);
 	}
-
-	// End MPI
-	MPI_Finalize ();
 #endif
 
 	/// exit
