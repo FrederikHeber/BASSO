@@ -72,7 +72,6 @@ bool Master::solve(
 	mpi::broadcast(world, const_cast<unsigned int &>(_loop_nr), 0);
 
 	// allocate variables for non-blocking communication
-	std::vector<WorkPackage> packages(world.size()-1);
 	std::vector<WorkResult> results(world.size()-1);
 	std::deque<mpi::request> uncompleted_requests;
 
@@ -84,12 +83,16 @@ bool Master::solve(
 		// send current column of rhs as work package
 		const size_t freeworker = AvailableWorkers.front();
 		AvailableWorkers.pop_front();
-		packages[freeworker-1] =
+		WorkPackage package =
 				WorkPackage(_rhs.col(col), _solution.col(col), col);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#0 - sending work package " << col
 				<< " to " << freeworker << ".";
-		world.isend(freeworker, ColumnWise, packages[freeworker-1]);
+		// if we ever use isend again, then we also need to store the
+		// resulting mpi::requests for isend (and not only for irecv)
+		// and wait for \b both.
+		// See here http://stackoverflow.com/questions/4024940/boost-mpi-whats-received-isnt-what-was-sent
+		world.send(freeworker, ColumnWise, package);
 
 		// receive solution in a non-blocking manner
 		BOOST_LOG_TRIVIAL(debug)
