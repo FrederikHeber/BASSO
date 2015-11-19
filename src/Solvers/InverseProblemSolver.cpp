@@ -15,6 +15,7 @@
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
@@ -38,8 +39,7 @@ bool InverseProblemSolver::operator()(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
 		const Eigen::VectorXd &_startingvalue,
-		Eigen::VectorXd &_solution,
-		const bool _nonnegative
+		Eigen::VectorXd &_solution
 		)
 {
 	// prepare inverse problem
@@ -50,7 +50,7 @@ bool InverseProblemSolver::operator()(
 	GeneralMinimizer::ReturnValues result =
 			operator()(inverseproblem, _startingvalue);
 
-	detail::setResultingVector(result.m_solution, _solution, _nonnegative);
+	_solution = RepresentationAdvocate::get(result.m_solution);
 
 	return result.status == GeneralMinimizer::ReturnValues::finished;
 }

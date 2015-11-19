@@ -37,14 +37,12 @@ struct RangeProjectionSolver
 	 * @param _matrix matrix onto whose range to project
 	 * @param _rhs vector to project
 	 * @param _resultingvalue projected vector
-	 * @param _nonnegative controls whether solution must be non-negative
 	 * @return true - success
 	 */
 	bool operator()(
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::VectorXd &_rhs,
-			Eigen::VectorXd &_resultingvalue,
-			const bool _nonnegative
+			Eigen::VectorXd &_resultingvalue
 			);
 
 private:

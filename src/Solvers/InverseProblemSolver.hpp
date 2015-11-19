@@ -52,15 +52,13 @@ struct InverseProblemSolver
 	 * @param _rhs right-hand side
 	 * @param _startingvalue starting value
 	 * @param _solution to contain solution on exit
-	 * @param _nonnegative whether solution's components must be non-negative
 	 * @return true - success, false - else
 	 */
 	bool operator()(
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::MatrixXd &_rhs,
 			const Eigen::VectorXd &_startingvalue,
-			Eigen::VectorXd &_solution,
-			const bool _nonnegative
+			Eigen::VectorXd &_solution
 			);
 private:
 	//!> database reference for storing iteration information

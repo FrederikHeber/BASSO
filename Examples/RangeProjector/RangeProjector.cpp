@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
 
 	// and project
 	Eigen::VectorXd solution;
-	projector(matrix, rhs, solution, false);
+	projector(matrix, rhs, solution);
 
 	// writing solution
 	{

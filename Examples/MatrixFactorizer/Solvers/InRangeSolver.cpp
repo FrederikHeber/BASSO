@@ -55,8 +55,7 @@ bool InRangeSolver::operator()(
 		if (!projector(
 				_matrix,
 				_rhs,
-				projected_rhs,
-				false))
+				projected_rhs))
 			return false;
 	}
 	BOOST_LOG_TRIVIAL(trace)
@@ -78,8 +77,7 @@ bool InRangeSolver::operator()(
 			_matrix,
 			projected_rhs,
 			_solution_start,
-			_solution,
-			false)) { //_loop_nr >= 3)) {
+			_solution)) {
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Resulting vector is " << _solution.transpose();
 		return false;

@@ -16,6 +16,7 @@
 #include "Math/Helpers.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
@@ -45,8 +46,7 @@ RangeProjectionSolver::RangeProjectionSolver(
 bool RangeProjectionSolver::operator()(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs,
-		Eigen::VectorXd &_resultingvalue,
-		const bool _nonnegative
+		Eigen::VectorXd &_resultingvalue
 		)
 {
 	// prepare right-hand side
@@ -139,7 +139,7 @@ bool RangeProjectionSolver::operator()(
 				rhs +
 				(*inverseproblem->x->getSpace()->getDualityMapping())
 					(result.m_solution);
-		detail::setResultingVector(projected_solution, _resultingvalue, _nonnegative);
+		_resultingvalue = RepresentationAdvocate::get(projected_solution);
 	}
 
 	return true;

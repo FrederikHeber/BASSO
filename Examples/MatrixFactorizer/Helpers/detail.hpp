@@ -38,21 +38,6 @@ namespace detail
 		return difference_matrix.norm();
 	}
 
-	/** Sets a given SpaceElement by some other instance of another
-	 * but compatible type.
-	 */
-	template <class T>
-	void setResultingVector(
-			const SpaceElement_ptr_t &_element,
-			T &_vector,
-			bool _nonnegative)
-	{
-		_vector = RepresentationAdvocate::get(_element);
-		if (_nonnegative)
-			for (unsigned int i=0;i<_element->getSpace()->getDimension();++i)
-				_vector[i] = std::max(0.,_vector[i]);
-	}
-
 	/** Parses the options from the command-line.
 	 *
 	 * @param _argc argument count
