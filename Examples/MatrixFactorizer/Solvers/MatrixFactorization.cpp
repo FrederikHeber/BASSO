@@ -27,6 +27,7 @@
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 
 using namespace boost::assign;
 
@@ -147,6 +148,11 @@ void MatrixFactorization::operator()(
 				residual,
 				1.);
 
+		// create auxiliary constraints
+		AuxiliaryConstraintsFactory constraint_factory;
+		AuxiliaryConstraints::ptr_t auxiliary_constraints =
+				constraint_factory.create(opts.auxiliary_constraints);
+
 		// submit loop tuple
 		info.addTuple(IterationInformation::LoopTable);
 
@@ -184,7 +190,8 @@ void MatrixFactorization::operator()(
 										_data.col(dim),
 										pixel_matrix.col(dim),
 										solution,
-										dim
+										dim,
+										auxiliary_constraints
 										);
 						if (solver_ok)
 							pixel_matrix.col(dim) = solution;
@@ -207,7 +214,8 @@ void MatrixFactorization::operator()(
 									spectral_opts,
 									spectral_matrix,
 									_data,
-									pixel_matrix
+									pixel_matrix,
+									opts.auxiliary_constraints
 									);
 					// place accumulated values in loop table
 					master.insertAccumulatedProjectorValues(
@@ -277,7 +285,8 @@ void MatrixFactorization::operator()(
 										_data.row(dim).transpose(),
 										spectral_matrix.col(dim),
 										solution,
-										dim
+										dim,
+										auxiliary_constraints
 										);
 						if (solver_ok)
 							spectral_matrix.col(dim) = solution;
@@ -300,7 +309,8 @@ void MatrixFactorization::operator()(
 									pixel_opts,
 									pixel_matrix.transpose(),
 									_data.transpose(),
-									spectral_matrix
+									spectral_matrix,
+									opts.auxiliary_constraints
 									);
 					// place accumulated values in loop table
 					master.insertAccumulatedProjectorValues(

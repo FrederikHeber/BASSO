@@ -23,6 +23,8 @@
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 
 using namespace boost::assign;
 
@@ -100,6 +102,11 @@ int main (int argc, char *argv[])
 	// create database
 	Database_ptr_t database =
 			SolverFactory::createDatabase(opts);
+
+	// create auxiliary constraints
+	AuxiliaryConstraintsFactory constraint_factory;
+	AuxiliaryConstraints::ptr_t auxiliary_constraints =
+			constraint_factory.create(opts.auxiliary_constraints);
 
 	// create projector instance
 	RangeProjectionSolver projector(matrix, rhs, database, opts);

@@ -25,6 +25,8 @@ namespace mpi = boost::mpi;
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 #include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
 #include "Options/CommandLineOptions.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 
 Slave::Slave(boost::mpi::communicator &_world) :
 		world(_world)
@@ -53,6 +55,11 @@ void Slave::operator()()
 		mpi::broadcast(world, overall_keys, 0);
 
 		BOOST_LOG_TRIVIAL(debug)
+				<< "#" << world.rank() << " - getting constraints.";
+		std::string auxiliary_constraints_string;
+		mpi::broadcast(world, auxiliary_constraints_string, 0);
+
+		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting matrix.";
 		Eigen::MatrixXd matrix;
 		mpi::broadcast(world, matrix, 0);
@@ -68,6 +75,11 @@ void Slave::operator()()
 		}
 
 		InRangeSolver solver(opts, overall_keys);
+
+		// create auxiliary constraints
+		AuxiliaryConstraintsFactory constraint_factory;
+		AuxiliaryConstraints::ptr_t auxiliary_constraints =
+				constraint_factory.create(auxiliary_constraints_string);
 
 		// we stop working only when we get the termination signal
 		// from the master
@@ -110,8 +122,8 @@ void Slave::operator()()
 								rhs,
 								solution_startvalue,
 								solution,
-								col
-								);
+								col,
+								auxiliary_constraints);
 
 				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 					BOOST_LOG_TRIVIAL(trace)

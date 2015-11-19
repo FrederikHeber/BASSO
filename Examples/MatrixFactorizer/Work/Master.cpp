@@ -72,7 +72,8 @@ bool Master::solve(
 		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
-		Eigen::MatrixXd &_solution
+		Eigen::MatrixXd &_solution,
+		const std::string &_auxiliary_constraints
 		)
 {
 	// send round that we don't terminate yet
@@ -98,6 +99,9 @@ bool Master::solve(
 			<< "#0 - broadcasting options.";
 	mpi::broadcast(world, const_cast<CommandLineOptions &>(_opts), 0);
 	mpi::broadcast(world, const_cast<InnerProblemDatabase::keys_t &>(overall_keys), 0);
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#0 - broadcasting constraints.";
+	mpi::broadcast(world, const_cast<std::string &>(_auxiliary_constraints), 0);
 	BOOST_LOG_TRIVIAL(debug)
 			<< "#0 - broadcasting matrix.";
 	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);
