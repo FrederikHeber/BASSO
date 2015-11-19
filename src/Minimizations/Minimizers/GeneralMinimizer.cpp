@@ -299,13 +299,14 @@ void GeneralMinimizer::setParameterKey(
 			const std::string &value = (*iter++);
 			try {
 				const int int_value = boost::lexical_cast<int>(value);
-				const double double_value = boost::lexical_cast<double>(value);
-				if ((double)int_value == double_value)
-					parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
-				else
-					parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
+				parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
 			} catch(const boost::bad_lexical_cast &) {
-				parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
+				try {
+					const double double_value = boost::lexical_cast<double>(value);
+					parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
+				} catch(const boost::bad_lexical_cast &) {
+					parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
+				}
 			}
 		}
 	} else {
