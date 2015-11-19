@@ -14,6 +14,7 @@
 
 #include "Minimizations/Elements/SpaceElement.hpp"
 
+class AuxiliaryConstraints;
 class Backprojection;
 class DiscretizedRadon;
 class InRangeSolver;
@@ -38,6 +39,7 @@ struct SpaceElementReader;
 class RepresentationAdvocate
 {
 private:
+	friend class AuxiliaryConstraints;
 	friend class Backprojection;
 	friend class DiscretizedRadon;
 	friend class InRangeSolver;
