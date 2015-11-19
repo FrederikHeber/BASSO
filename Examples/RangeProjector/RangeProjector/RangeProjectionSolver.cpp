@@ -1,5 +1,5 @@
 /*
- * RangeProjector.cpp
+ * RangeProjectionSolver.cpp
  *
  *  Created on: Jun 26, 2015
  *      Author: heber
@@ -10,7 +10,7 @@
 
 #include <boost/assign.hpp>
 
-#include "RangeProjector.hpp"
+#include "RangeProjectionSolver.hpp"
 
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
@@ -29,7 +29,7 @@
 
 using namespace boost::assign;
 
-RangeProjector::RangeProjector(
+RangeProjectionSolver::RangeProjectionSolver(
 		Database_ptr_t &_database,
 		const CommandLineOptions &_opts
 		) :
@@ -42,7 +42,7 @@ RangeProjector::RangeProjector(
 			MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
 }
 
-bool RangeProjector::operator()(
+bool RangeProjectionSolver::operator()(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs,
 		Eigen::VectorXd &_resultingvalue,

@@ -3,10 +3,10 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (RangeProjectorBase
-	RangeProjector/RangeProjector.cpp
+	RangeProjector/RangeProjectionSolver.cpp
 	Options/RangeProjectorOptions.cpp)
 
-install (FILES RangeProjector/RangeProjector.hpp DESTINATION include)
+install (FILES RangeProjector/RangeProjectionSolver.hpp DESTINATION include)
 install (FILES Options/RangeProjectorOptions.hpp DESTINATION include)
 
 # add the executable

@@ -16,7 +16,7 @@
 #include <boost/assign.hpp>
 
 #include "RangeProjector/Options/RangeProjectorOptions.hpp"
-#include "RangeProjector/RangeProjector/RangeProjector.hpp"
+#include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
@@ -101,7 +101,7 @@ int main (int argc, char *argv[])
 			SolverFactory::createDatabase(opts);
 
 	// create projector instance
-	RangeProjector projector(database,opts);
+	RangeProjectionSolver projector(database,opts);
 
 	// and project
 	Eigen::VectorXd solution;

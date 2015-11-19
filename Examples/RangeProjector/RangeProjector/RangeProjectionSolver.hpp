@@ -1,12 +1,12 @@
 /*
- * RangeProjector.hpp
+ * RangeProjectionSolver.hpp
  *
  *  Created on: Jun 26, 2015
  *      Author: heber
  */
 
-#ifndef RANGEPROJECTORBASE_RANGEPROJECTOR_HPP_
-#define RANGEPROJECTORBASE_RANGEPROJECTOR_HPP_
+#ifndef RANGEPROJECTORBASE_RANGEPROJECTIONSOLVER_HPP_
+#define RANGEPROJECTORBASE_RANGEPROJECTIONSOLVER_HPP_
 
 #include "BassoConfig.h"
 
@@ -19,14 +19,14 @@
 /** This class contains all code for projecting a give vector onto the
  * range of a given matrix.
  */
-struct RangeProjector
+struct RangeProjectionSolver
 {
-	/** Constructor for class RangeProjector.
+	/** Constructor for class RangeProjectionSolver.
 	 *
 	 * @param _database ref to database
 	 * @param _opts options defining manner of inverse problem solving
 	 */
-	RangeProjector(
+	RangeProjectionSolver(
 			Database_ptr_t &_database,
 			const CommandLineOptions &_opts
 			);
@@ -55,4 +55,4 @@ private:
 };
 
 
-#endif /* RANGEPROJECTORBASE_RANGEPROJECTOR_HPP_ */
+#endif /* RANGEPROJECTORBASE_RANGEPROJECTIONSOLVER_HPP_ */

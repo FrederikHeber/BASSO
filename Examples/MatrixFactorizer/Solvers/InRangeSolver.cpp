@@ -15,7 +15,7 @@
 #include "Database/Database_mock.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Options/CommandLineOptions.hpp"
-#include "RangeProjector/RangeProjector/RangeProjector.hpp"
+#include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
 InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :
@@ -48,7 +48,7 @@ bool InRangeSolver::operator()(
 			<< projected_rhs.transpose();
 	{
 		// project y onto image of K
-		RangeProjector projector(
+		RangeProjectionSolver projector(
 				mock_db,
 				opts
 				);
