@@ -69,6 +69,10 @@ void MatrixFactorization::operator()(
 	} else
 #endif
 	{
+		/// start timing
+		boost::chrono::high_resolution_clock::time_point timing_start =
+				boost::chrono::high_resolution_clock::now();
+
 		unsigned int loop_nr = 0;
 
 		/// construct solution starting points
@@ -241,8 +245,19 @@ void MatrixFactorization::operator()(
 			BOOST_LOG_TRIVIAL(info)
 				<< "Loop iteration performed " << loop_nr
 				<< " times.";
+
+		/// end timing
+		boost::chrono::high_resolution_clock::time_point timing_end =
+				boost::chrono::high_resolution_clock::now();
+		BOOST_LOG_TRIVIAL(info) << "The operation took "
+				<< boost::chrono::duration<double>(timing_end - timing_start).count()
+				<< " seconds.";
+
+		/// set last iteration information entry
 		info.replace(IterationInformation::OverallTable, "loops", (int)loop_nr);
 		info.replace(IterationInformation::OverallTable, "residual", residual);
+		info.replace(IterationInformation::OverallTable, "runtime",
+				boost::chrono::duration<double>(timing_end - timing_start).count());
 		info.addTuple(IterationInformation::OverallTable);
 
 #ifdef MPI_FOUND

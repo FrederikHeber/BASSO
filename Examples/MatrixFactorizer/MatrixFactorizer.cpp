@@ -103,10 +103,6 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info)
 			<< "A single process solves the problem.";
 #endif
-		/// starting timing
-		boost::chrono::high_resolution_clock::time_point timing_start =
-				boost::chrono::high_resolution_clock::now();
-
 		/// some required parameters
 		MatrixFactorizerOptions opts;
 		if (returnstatus == 0)
@@ -141,12 +137,6 @@ int main(int argc, char **argv)
 					factorizer.spectral_matrix,
 					factorizer.pixel_matrix);
 
-		/// finish timing
-		boost::chrono::high_resolution_clock::time_point timing_end =
-				boost::chrono::high_resolution_clock::now();
-		BOOST_LOG_TRIVIAL(info) << "The operation took "
-				<< boost::chrono::duration<double>(timing_end - timing_start)
-				<< ".";
 #ifdef MPI_FOUND
 	} else {
 		// enter in solve() loop

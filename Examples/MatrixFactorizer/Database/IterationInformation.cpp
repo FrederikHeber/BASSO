@@ -36,6 +36,7 @@ IterationInformation::IterationInformation(
 	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	overall_tuple.insert( std::make_pair("runtime", 0.), Table::Data);
 }
 
 IterationInformation::~IterationInformation()
