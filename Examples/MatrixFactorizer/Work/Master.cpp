@@ -40,8 +40,7 @@ bool Master::solve(
 		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::MatrixXd &_rhs,
-		Eigen::MatrixXd &_solution,
-		const unsigned int _loop_nr
+		Eigen::MatrixXd &_solution
 		)
 {
 	// send round that we don't terminate yet
@@ -69,7 +68,6 @@ bool Master::solve(
 	BOOST_LOG_TRIVIAL(debug)
 			<< "#0 - broadcasting matrix.";
 	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);
-	mpi::broadcast(world, const_cast<unsigned int &>(_loop_nr), 0);
 
 	// allocate variables for non-blocking communication
 	std::vector<WorkResult> results(world.size()-1);

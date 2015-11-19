@@ -54,8 +54,6 @@ void Slave::operator()()
 				<< "#" << world.rank() << " - getting matrix.";
 		Eigen::MatrixXd matrix;
 		mpi::broadcast(world, matrix, 0);
-		unsigned int loop_nr = 0;
-		mpi::broadcast(world, loop_nr, 0);
 
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 			BOOST_LOG_TRIVIAL(trace)
@@ -110,8 +108,8 @@ void Slave::operator()()
 								rhs,
 								solution_startvalue,
 								solution,
-								col,
-								loop_nr);
+								col
+								);
 
 				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
 					BOOST_LOG_TRIVIAL(trace)

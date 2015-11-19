@@ -35,8 +35,7 @@ bool InRangeSolver::operator()(
 		const Eigen::VectorXd &_rhs,
 		const Eigen::VectorXd &_solution_start,
 		Eigen::VectorXd &_solution,
-		const unsigned int _dim,
-		const unsigned int _loop_nr
+		const unsigned int _dim
 		)
 {
 	Eigen::VectorXd projected_rhs(_rhs);

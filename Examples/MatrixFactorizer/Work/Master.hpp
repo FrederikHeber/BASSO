@@ -43,16 +43,13 @@ public:
 	 * @param _matrix inverse problem matrix
 	 * @param _rhs right-hand side matrix
 	 * @param _solution on return solution matrix
-	 * @param _loop_nr current outer iteration step (deciding on
-	 * 		 when to enforce non-negativity constraint)
 	 * @return true - success
 	 */
 	bool solve(
 			const CommandLineOptions &_opts,
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::MatrixXd &_rhs,
-			Eigen::MatrixXd &_solution,
-			const unsigned int _loop_nr
+			Eigen::MatrixXd &_solution
 			);
 
 	/** Sends the terminate signal to the Slaves.

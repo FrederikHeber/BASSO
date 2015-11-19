@@ -44,8 +44,6 @@ struct InRangeSolver
 	 * @param _solution_start initial value for solution
 	 * @param _solution on return containing solution
 	 * @param _dim unique index (for output statements only)
-	 * @param _loop_nr current outer iteration step (deciding on
-	 * 		 when to enforce non-negativity constraint)
 	 * @return true - success
 	 */
 	bool operator()(
@@ -53,8 +51,7 @@ struct InRangeSolver
 			const Eigen::VectorXd &_rhs,
 			const Eigen::VectorXd &_solution_start,
 			Eigen::VectorXd &_solution,
-			const unsigned int _dim,
-			const unsigned int _loop_nr
+			const unsigned int _dim
 			);
 
 private:

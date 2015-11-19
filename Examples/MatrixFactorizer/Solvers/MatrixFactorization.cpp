@@ -139,8 +139,8 @@ void MatrixFactorization::operator()(
 									_data.col(dim),
 									pixel_matrix.col(dim),
 									solution,
-									dim,
-									loop_nr);
+									dim
+									);
 					pixel_matrix.col(dim) = solution;
 				}
 			}
@@ -151,8 +151,8 @@ void MatrixFactorization::operator()(
 								spectral_opts,
 								spectral_matrix,
 								_data,
-								pixel_matrix,
-								loop_nr);
+								pixel_matrix
+								);
 			}
 #endif
 
@@ -199,8 +199,8 @@ void MatrixFactorization::operator()(
 									_data.row(dim).transpose(),
 									spectral_matrix.col(dim),
 									solution,
-									dim,
-									loop_nr);
+									dim
+									);
 					spectral_matrix.col(dim) = solution;
 				}
 			}
@@ -211,8 +211,8 @@ void MatrixFactorization::operator()(
 								pixel_opts,
 								pixel_matrix.transpose(),
 								_data.transpose(),
-								spectral_matrix,
-								loop_nr);
+								spectral_matrix
+								);
 			}
 #endif
 			spectral_matrix.transposeInPlace();
