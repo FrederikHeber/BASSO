@@ -23,5 +23,8 @@ set_tests_properties (MatrixFactorizerUsageMessage
 # configuration file tests
 add_subdirectory (config)
 
+# indefinite matrices
+add_subdirectory (Indefinite)
+
 # non-negative matrices
 add_subdirectory (Nonnegative)
