@@ -61,6 +61,8 @@ public:
 	{
 		//!> solution vector
 		SpaceElement_ptr_t m_solution;
+		//!> dual of solution vector
+		SpaceElement_ptr_t m_dual_solution;
 		//!> residual vector
 		SpaceElement_ptr_t m_residual;
 		//!> remaining residuum, i.e. norm of residual

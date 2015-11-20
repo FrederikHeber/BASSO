@@ -80,6 +80,8 @@ LandweberMinimizer::operator()(
 	// set iterate 'x' as start vector 'x0'
 	returnvalues.m_solution = refs.SpaceX.createElement();
 	*returnvalues.m_solution = _startvalue;
+	returnvalues.m_dual_solution = refs.DualSpaceX.createElement();
+	*returnvalues.m_dual_solution = _dualstartvalue;
 	returnvalues.m_residual = refs.SpaceY.createElement();
 	// calculate starting residual and norm
 	returnvalues.residuum = calculateResidual(
@@ -121,10 +123,6 @@ LandweberMinimizer::operator()(
 			returnvalues.residuum,
 			ynorm);
 
-	// calculate some values prior to loop
-	SpaceElement_ptr_t dual_solution = refs.DualSpaceX.createElement();
-	*dual_solution = _dualstartvalue;
-
 	// create Bregman distance object
 	boost::shared_ptr<BregmanDistance> Delta_p;
 	if (!_truesolution->isZero())
@@ -155,7 +153,7 @@ LandweberMinimizer::operator()(
 		/// find step width
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
 		double alpha = (*stepwidth)(
-				dual_solution,
+				returnvalues.m_dual_solution,
 				searchdir.u,
 				returnvalues.m_solution,
 				returnvalues.m_residual,
@@ -171,17 +169,17 @@ LandweberMinimizer::operator()(
 		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
-						Delta_p, returnvalues.m_solution, _truesolution, dual_solution));
+						Delta_p, returnvalues.m_solution, _truesolution, returnvalues.m_dual_solution));
 		per_iteration_tuple.replace( "error",
 				calculateError(returnvalues.m_solution, _truesolution));
 		per_iteration_tuple.replace( "stepwidth", alpha);
 
 		/// update iterate
-		*dual_solution -= alpha * searchdir.u;
+		*returnvalues.m_dual_solution -= alpha * searchdir.u;
 		BOOST_LOG_TRIVIAL(trace)
-				<< "x^*_n+1 is " << dual_solution;
+				<< "x^*_n+1 is " << returnvalues.m_dual_solution;
 		// finally map back from X^{\conj} to X: x_{n+1}
-		*returnvalues.m_solution = refs.J_q(dual_solution);
+		*returnvalues.m_solution = refs.J_q(returnvalues.m_dual_solution);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "x_n+1 is " << returnvalues.m_solution;
 		*_problem->x = returnvalues.m_solution;

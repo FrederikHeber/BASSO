@@ -78,18 +78,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 			residual);
 		istate.set(
 				_startvalue,
+				_dualstartvalue,
 				residual,
 				residuum,
 				N,
 				OrthogonalizationType);
 	}
-
-	/// calculate some values prior to loop
-	// Jx=DualityMapping(x,NormX,PowerX,TolX);
-	SpaceElement_ptr_t dual_solution = refs.DualSpaceX.createElement();
-	*dual_solution = _dualstartvalue;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Jx_0 is " << dual_solution;
 
 	// create Bregman distance object
 	boost::shared_ptr<BregmanDistance> Delta_p;
@@ -136,7 +130,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		const double alpha =
 				searchdir.u * istate.m_solution - ::pow(istate.residuum, refs.j_r.getPower());
 		BOOST_LOG_TRIVIAL(trace) << "alpha is " << alpha;
-		updateSearchspace(_truesolution, dual_solution, searchdir.u, alpha);
+		updateSearchspace(_truesolution, searchdir.u, alpha);
 		const unsigned int index = istate.searchspace->getIndex();
 
 		// d=Delta*Residual^(PowerY-1); (24) or (32)
@@ -152,7 +146,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
-								Delta_p, istate.m_solution, _truesolution, dual_solution));
+								Delta_p, istate.m_solution, _truesolution, istate.m_dual_solution));
 		per_iteration_tuple.replace( "error",
 				calculateError(istate.m_solution, _truesolution));
 		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
@@ -166,7 +160,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		double stepwidth_norm = 0.;
 		try {
 			std::vector<double> tmin(1, 0.);
-			if (dual_solution->isApproxToConstant(0, TolX)) {
+			if (istate.m_dual_solution->isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
 				tmin[0] = ::pow(beta, refs.J_p.getPower() - 1.);
 				BOOST_LOG_TRIVIAL(trace)
@@ -188,7 +182,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				steps[0] = ScaleFactor*(istate.getAlphas()[index]+d[index]);
 
 //				const unsigned int inner_iterations =
-						calculateStepWidth(refs, dual_solution, tmin,
+						calculateStepWidth(refs, istate.m_dual_solution, tmin,
 								ConstrainedSearchSpace, steps);
 
 				tmin[0] *= ScaleFactor;
@@ -199,7 +193,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			tmin.resize(2, 0.);
 			if (index != 0)
 				std::swap(tmin[index], tmin[0]);
-			updateIterates(refs, tmin, _problem->x, dual_solution);
+			updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
 		} catch (MinimizerIllegalNumber_exception &e) {
 			BOOST_LOG_TRIVIAL(error)
 					<< "Encountered illegal number in line search minimum, not updating.";
@@ -250,7 +244,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 				std::vector<double> tmin(N, 0.);
 //				const unsigned int inner_iterations =
-						calculateStepWidth(refs, dual_solution, tmin,
+						calculateStepWidth(refs, istate.m_dual_solution, tmin,
 								ScaledSearchSpace, steps);
 
 				// scale tmin back
@@ -262,7 +256,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 
 				/// update iterate
-				updateIterates(refs, tmin, _problem->x, dual_solution);
+				updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
 			}
 		}
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));

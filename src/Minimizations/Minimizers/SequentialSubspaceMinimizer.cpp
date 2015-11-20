@@ -122,18 +122,6 @@ bool createAnglesViews(const Database &_database)
 	return status;
 }
 
-
-SpaceElement_ptr_t calculateDualStartingValue(
-		const SpaceElement_ptr_t &_dualstartvalue)
-{
-	SpaceElement_ptr_t dual_solution =
-			_dualstartvalue->getSpace()->createElement();
-	*dual_solution = _dualstartvalue;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Jx_0 is " << dual_solution;
-	return dual_solution;
-}
-
 void
 SequentialSubspaceMinimizer::addAdditionalParametersToTuple(
 		Table::Tuple_t &_tuple,
@@ -320,16 +308,15 @@ void SequentialSubspaceMinimizer::updateAngleTable(
 
 void SequentialSubspaceMinimizer::updateSearchspace(
 		const SpaceElement_ptr_t& _truesolution,
-		const SpaceElement_ptr_t& dual_solution,
 		const SpaceElement_ptr_t& newdir,
 		const double alpha)
 {
 	/// update search space with new direction
 	if (_truesolution->isZero()) {
-		istate.updateSearchSpace(newdir, alpha, dual_solution,
+		istate.updateSearchSpace(newdir, alpha, istate.m_dual_solution,
 				istate.m_solution);
 	} else {
-		istate.updateSearchSpace(newdir, alpha, dual_solution, _truesolution);
+		istate.updateSearchSpace(newdir, alpha, istate.m_dual_solution, _truesolution);
 	}
 	BOOST_LOG_TRIVIAL(trace)<< "updated_index is " << istate.searchspace->getIndex();
 }
@@ -345,12 +332,13 @@ void SequentialSubspaceMinimizer::updateIterates(
 		const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
 		for (size_t i = 0; i < N; ++i)
 			*tempelement += tmin[i] * istate.getSearchSpace()[i];
-		*dual_x -= tempelement;
+		*istate.m_dual_solution -= tempelement;
 	}
-	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << dual_x;
-	*istate.m_solution = refs.J_q(dual_x);
+	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << istate.m_dual_solution;
+	*istate.m_solution = refs.J_q(istate.m_dual_solution);
 	BOOST_LOG_TRIVIAL(trace)<< "x_n+1 is " << istate.m_solution;
 	*_x = istate.m_solution;
+	*dual_x = istate.m_dual_solution;
 }
 
 SequentialSubspaceMinimizer::ReturnValues
@@ -375,16 +363,12 @@ SequentialSubspaceMinimizer::operator()(
 			residual);
 		istate.set(
 				_startvalue,
+				_dualstartvalue,
 				residual,
 				residuum,
 				N,
 				OrthogonalizationType);
 	}
-
-	/// -# calculate some values prior to loop
-	// Jx=DualityMapping(x,NormX,PowerX,TolX);
-	SpaceElement_ptr_t dual_solution =
-			calculateDualStartingValue(_dualstartvalue);
 
 	// create Bregman distance object
 	boost::shared_ptr<BregmanDistance> Delta_p;
@@ -443,7 +427,7 @@ SequentialSubspaceMinimizer::operator()(
 			<< "alpha is " << alpha;
 
 		// add u to U and alpha to alphas
-		updateSearchspace(_truesolution, dual_solution, searchdir.u, alpha);
+		updateSearchspace(_truesolution, searchdir.u, alpha);
 
 		/// get optimal stepwidth
 		std::vector<double> tmin(N, 0.);
@@ -451,7 +435,7 @@ SequentialSubspaceMinimizer::operator()(
 		unsigned int inner_iterations = 0;
 		try {
 			inner_iterations =
-					calculateStepWidth(refs, dual_solution, tmin,
+					calculateStepWidth(refs, istate.m_dual_solution, tmin,
 							istate.getSearchSpace(), istate.getAlphas());
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		} catch (MinimizerIllegalNumber_exception &e) {
@@ -479,7 +463,7 @@ SequentialSubspaceMinimizer::operator()(
 		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
-								Delta_p, istate.m_solution, _truesolution, dual_solution));
+								Delta_p, istate.m_solution, _truesolution, istate.m_dual_solution));
 		per_iteration_tuple.replace( "error",
 				calculateError(istate.m_solution, _truesolution));
 		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
@@ -492,7 +476,7 @@ SequentialSubspaceMinimizer::operator()(
 			data_angle_table.addTuple(angle_tuple);
 
 		/// update iterate
-		updateIterates(refs, tmin, _problem->x, dual_solution);
+		updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
 
 		/// update residual
 		istate.residuum = calculateResidual(_problem,istate.m_residual);

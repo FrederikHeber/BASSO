@@ -147,7 +147,6 @@ protected:
 
 	void updateSearchspace(
 			const SpaceElement_ptr_t& _truesolution,
-			const SpaceElement_ptr_t& dual_solution,
 			const SpaceElement_ptr_t& newdir,
 			const double alpha);
 
@@ -177,6 +176,7 @@ protected:
 		/** Initializer for the internal iteration state
 		 *
 		 * @param _x0 initial iterate
+		 * @param _dual_x0 initial dual of iterate
 		 * @param _residual initial residual vector
 		 * @param _residuum initial residuum
 		 * @param _N number of search directions
@@ -184,6 +184,7 @@ protected:
 		 */
 		void set(
 				const SpaceElement_ptr_t &_x0,
+				const SpaceElement_ptr_t &_dual_x0,
 				const SpaceElement_ptr_t &_residual,
 				const double _residuum,
 				const unsigned int _N,

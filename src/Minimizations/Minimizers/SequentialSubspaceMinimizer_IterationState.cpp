@@ -31,6 +31,7 @@ SequentialSubspaceMinimizer::IterationState::IterationState() :
 
 void SequentialSubspaceMinimizer::IterationState::set(
 		const SpaceElement_ptr_t &_x0,
+		const SpaceElement_ptr_t &_dual_x0,
 		const SpaceElement_ptr_t &_residual,
 		const double _residuum,
 		const unsigned int _N,
@@ -42,6 +43,8 @@ void SequentialSubspaceMinimizer::IterationState::set(
 	// set iterate 'x' as start vector 'x0'
 	m_solution = _x0->getSpace()->createElement();
 	m_solution = _x0;
+	m_dual_solution = _dual_x0->getSpace()->createElement();
+	m_dual_solution = _dual_x0;
 	// calculate starting residual and norm
 	residuum = _residuum;
 	m_residual = _residual->getSpace()->createElement();

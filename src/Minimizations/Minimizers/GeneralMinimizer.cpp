@@ -132,6 +132,8 @@ void GeneralMinimizer::ReturnValues::output(
 	BOOST_LOG_TRIVIAL(trace)
 	<< "x_n is " << m_solution;
 	BOOST_LOG_TRIVIAL(trace)
+	<< "dual_x_n is " << m_dual_solution;
+	BOOST_LOG_TRIVIAL(trace)
 	<< "R_n is " << m_residual;
 }
 
