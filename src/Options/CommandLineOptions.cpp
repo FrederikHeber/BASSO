@@ -472,17 +472,34 @@ bool CommandLineOptions::checkSensibility_OrthogonalDirections() const
 
 bool CommandLineOptions::checkSensibility_regularizationparameter() const
 {
-	if (((type_spacex == "regularized_l1")
-			&& (px == 1.)
-			&& !vm.count("regularization-parameter"))
-		|| ((type_spacex == "regularized_l1")
-				&& (px != 1.)
-				&& vm.count("regularization-parameter"))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Either regularization parameter set but not l1 norm "
-				<< "specified or the other way round.";
-		return false;
+	if (type_spacex == "regularized_l1") {
+		if (!vm.count("regularization-parameter")) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "No regularization parameter set.";
+			return false;
+		} else {
+			if (vm.count("px") && (px != 1.)) {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Regularization parameter given and px set but not to l1 norm.";
+				return false;
+			}
+		}
 	}
+
+	if (type_spacey == "regularized_l1") {
+		if (!vm.count("regularization-parameter")) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "No regularization parameter set.";
+			return false;
+		} else {
+			if (vm.count("py") && (py != 1.)) {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Regularization parameter given and py set but not to l1 norm.";
+				return false;
+			}
+		}
+	}
+
 	if (vm.count("regularization-parameter")) {
 		if (((vm.count("stepwidth-algorithm")
 				&& (algorithm_name != MinimizerFactory::getNameForType(MinimizerFactory::landweber))))
@@ -553,14 +570,16 @@ bool CommandLineOptions::checkSensibility_norms() const
 
 bool CommandLineOptions::checkSensibility_pvalues() const
 {
-	if ((type_spacex.substr(0,2) != "lp") && (vm.count("px") != 0)) {
+	if ((type_spacex.substr(0,2) != "lp") &&
+			((vm.count("px") != 0) && (px != 1.))) {
 		BOOST_LOG_TRIVIAL(error)
-			<< "No lp type desired but px value given";
+			<< "No lp type desired but px value unequal 1 given";
 		return false;
 	}
-	if ((type_spacey.substr(0,2) != "lp") && (vm.count("py") != 0)) {
+	if ((type_spacey.substr(0,2) != "lp") &&
+			((vm.count("py") != 0) && (py != 1.))) {
 		BOOST_LOG_TRIVIAL(error)
-			<< "No lp type desired but py value given";
+			<< "No lp type desired but py value unequal 1 given";
 		return false;
 	}
 	return true;
@@ -667,6 +686,12 @@ void CommandLineOptions::setSecondaryValues()
 	stopping_args.setMaxWalltime(
 			boost::chrono::duration<double>(maxwalltime));
 	stopping_args.setDiscrepancyParameter(tau);
+
+	// set lp value in case of regularized_l1
+	if ((type_spacex == "regularized_l1") && (vm.count("px") == 0))
+		px = 1.;
+	if ((type_spacey == "regularized_l1") && (vm.count("py") == 0))
+		py = 1.;
 
 	internal_setSecondaryValues();
 }
