@@ -23,15 +23,5 @@ set_tests_properties (MatrixFactorizerUsageMessage
 # configuration file tests
 add_subdirectory (config)
 
-# various symmetric rank decompositions
-add_subdirectory (SymmetricRank1)
-add_subdirectory (SymmetricRank2)
-add_subdirectory (SymmetricRank4)
-
-# re-running a factorization maintains result
-add_subdirectory (rerun)
-
-# test MatrixFactorizer with mpirun
-if (MPI_FOUND)
-	add_subdirectory (mpirun)
-endif (MPI_FOUND)
+# non-negative matrices
+add_subdirectory (Nonnegative)
