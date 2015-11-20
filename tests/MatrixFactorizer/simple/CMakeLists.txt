@@ -8,7 +8,7 @@ add_test (MatrixFactorizerSimple_NonExistantMatrix
 		--powery 2 
 		--delta 0.01
 		--sparse-dim 1
-		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/simple/pre/nomatrix.m 
+		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/nomatrix.m 
 		--solution-first-factor first-factor.m
 		--solution-second-factor second-factor.m)
 set_tests_properties (MatrixFactorizerSimple_NonExistantMatrix

@@ -7,8 +7,8 @@ add_test (BassoSimple
 		--py 2 
 		--powery 2 
 		--delta 0.01 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m)
 set_tests_properties (BassoSimple
 	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of X.*2")
 set_tests_properties (BassoSimple
@@ -27,8 +27,8 @@ add_test (BassoSimple_NonExistantMatrix
 		--py 2 
 		--powery 2 
 		--delta 0.01 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/nomatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/nomatrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m)
 set_tests_properties (BassoSimple_NonExistantMatrix
 	PROPERTIES WILL_FAIL true)
 
@@ -43,8 +43,8 @@ add_test (BassoSimple_TupleParameters
 		--delta 0.01 
 		--iteration-file simple.db
 		--tuple-parameters "seed" "426"
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/simple/pre/vector.m)
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m)
 set_tests_properties (BassoSimple_TupleParameters
 	PROPERTIES PASS_REGULAR_EXPRESSION "tuple parameters.*seed,426,")
 	

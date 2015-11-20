@@ -13,7 +13,7 @@ add_test (MatrixFactorizer_mpirun
 		--max-loops 11
 		--number-directions 1
 		--sparse-dim 1
-		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/pre/data.m 
+		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 		--solution-first-factor first-factor.m
 		--solution-second-factor second-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun
@@ -23,7 +23,7 @@ set_tests_properties (MatrixFactorizer_mpirun
 
 # test 1b: checking results
 add_test (MatrixFactorizer_mpirun_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/post/first-factor.m first-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun_check_first
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_mpirun_check_first
@@ -31,7 +31,7 @@ set_tests_properties (MatrixFactorizer_mpirun_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_mpirun_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/mpirun/post/second-factor.m second-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor.m)
 set_tests_properties (MatrixFactorizer_mpirun_check_second
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_mpirun_check_second

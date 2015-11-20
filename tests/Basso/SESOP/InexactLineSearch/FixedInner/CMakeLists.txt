@@ -14,15 +14,15 @@ add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner
 		--maxiter 100 
 		--iteration-file SESOP.db
 		--max-inner-iterations 10
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/InexactLineSearch/FixedInner/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/InexactLineSearch/FixedInner/pre/randomvector.m
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m
 		--solution solution.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 18 with relative residual of 0.0098.*")
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/InexactLineSearch/FixedInner/post/solution.m solution.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution.m solution.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_InexactLinesearch_fixedinner_check

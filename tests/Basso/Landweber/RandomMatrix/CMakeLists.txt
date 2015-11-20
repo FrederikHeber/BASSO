@@ -12,15 +12,15 @@ add_test (Basso_Landweber_RandomMatrix
 		--C 1 
 		--maxiter 100 
 		--iteration-file Landweber.db
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/RandomMatrix/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/RandomMatrix/pre/randomvector.m
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m
 		--solution solution.m)
 set_tests_properties (Basso_Landweber_RandomMatrix
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 100 with relative residual of 0.87.*")
 
 # test 1b: checking results
 add_test (Basso_Landweber_RandomMatrix_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/Basso/Landweber/RandomMatrix/post/solution.m  solution.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution.m  solution.m)
 set_tests_properties (Basso_Landweber_RandomMatrix_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_Landweber_RandomMatrix_check

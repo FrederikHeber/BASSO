@@ -10,7 +10,7 @@ add_test (MatrixFactorizer_SymmetricRank1
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
-		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank1/pre/data.m 
+		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 		--solution-first-factor first-factor.m
 		--solution-second-factor second-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank1
@@ -20,7 +20,7 @@ set_tests_properties (MatrixFactorizer_SymmetricRank1
 
 # test 1b: checking results
 add_test (MatrixFactorizer_SymmetricRank1_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank1/post/first-factor.m first-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank1_check_first
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_SymmetricRank1_check_first
@@ -28,7 +28,7 @@ set_tests_properties (MatrixFactorizer_SymmetricRank1_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_SymmetricRank1_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank1/post/second-factor.m second-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank1_check_second
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_SymmetricRank1_check_second
@@ -45,6 +45,6 @@ add_test (MatrixFactorizer_SymmetricRank1_fail
 		--delta 0.01 
 		--number-directions 2
 		--sparse-dim 1
-		--data ${PROJECT_SOURCE_DIR}/tests/MatrixFactorizer/SymmetricRank1/pre/data.m)
+		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank1_fail
 	PROPERTIES WILL_FAIL true)

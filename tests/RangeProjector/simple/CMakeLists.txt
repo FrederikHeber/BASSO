@@ -9,8 +9,8 @@ add_test (RangeProjectorConfiguratorSimple_Vector
 		--py 2 
 		--powery 2 
 		--delta 1e-8 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/pre/matrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/pre/vector.m
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m
 		--solution solution.mat)
 set_tests_properties (RangeProjectorConfiguratorSimple_Vector
 	PROPERTIES PASS_REGULAR_EXPRESSION "Magnitude of noise.*.1")
@@ -21,7 +21,7 @@ add_test (RangeProjectorConfiguratorSimple_Vector_check
 		--ignore-matching-lines=matrix
 		--ignore-matching-lines=rhs
 		RangeProjector.cfg 
-		${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/post/RangeProjector.cfg)
+		${CMAKE_CURRENT_SOURCE_DIR}/post/RangeProjector.cfg)
 set_tests_properties (RangeProjectorConfiguratorSimple_Vector_check
 	PROPERTIES DEPENDS RangeProjectorConfiguratorSimple_Vector)
 
@@ -49,7 +49,7 @@ add_test (RangeProjectorSecondProjection
 		--py 2 
 		--powery 2 
 		--delta 1e-8 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/pre/matrix.m 
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
 		--rhs solution.mat
 		--solution solution2.mat)
 set_tests_properties (RangeProjectorSecondProjection
@@ -70,7 +70,7 @@ add_test (RangeProjectorSimple_NonExistantMatrix
 		--py 2 
 		--powery 2 
 		--delta 0.01 
-		--matrix ${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/pre/nomatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/RangeProjector/simple/pre/vector.m)
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/nomatrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m)
 set_tests_properties (RangeProjectorSimple_NonExistantMatrix
 	PROPERTIES WILL_FAIL true)

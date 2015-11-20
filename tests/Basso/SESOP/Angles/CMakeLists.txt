@@ -14,8 +14,8 @@ add_test (Basso_SESOP_RandomMatrix_Angles
 		--delta 0.01 
 		--maxiter 5
 		--iteration-file SESOP.db
-		--matrix ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/Angles/pre/randommatrix.m 
-		--rhs ${PROJECT_SOURCE_DIR}/tests/Basso/SESOP/Angles/pre/randomvector.m)
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles
 	PROPERTIES PASS_REGULAR_EXPRESSION "Bregman Angles #0 is 0.1.*")
 set_tests_properties (Basso_SESOP_RandomMatrix_Angles

@@ -14,12 +14,12 @@ add_test (ComputerTomographySheppLogan_wNoise
 		--num-pixels-x 41
 		--num-pixels-y 41
 		--solution solution.mat
-		--phantom ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan_wNoise/pre/phantom.mat)
+		--phantom ${CMAKE_CURRENT_SOURCE_DIR}/pre/phantom.mat)
 set_tests_properties (ComputerTomographySheppLogan_wNoise
 	PROPERTIES PASS_REGULAR_EXPRESSION "olution after 50.* residual of .*0.03")
 
 # test 1b: checking results
 add_test (ComputerTomographySheppLogan_wNoise_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${PROJECT_SOURCE_DIR}/tests/ComputerTomography/SheppLogan_wNoise/post/solution.mat solution.mat)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution.mat solution.mat)
 set_tests_properties (ComputerTomographySheppLogan_wNoise_check
 	PROPERTIES DEPENDS ComputerTomographySheppLogan_wNoise)
