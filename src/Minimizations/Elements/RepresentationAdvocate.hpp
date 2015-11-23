@@ -58,7 +58,7 @@ private:
 	friend struct SpaceElementWriter;
 	friend struct SpaceElementReader;
 	friend class SplitFeasibilitySolver;
-	template <class vector_type> friend struct VectorSetter;
+	friend struct VectorSetter;
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }

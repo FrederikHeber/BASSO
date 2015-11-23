@@ -45,7 +45,7 @@ endif (MPI_FOUND)
 
 # find eigen3 package for linear algebra routines
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-FIND_PACKAGE(Eigen3 REQUIRED)
+FIND_PACKAGE(Eigen3 3.2.0)
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 # find cppunit for unit tests

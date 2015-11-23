@@ -15,12 +15,23 @@
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 
-template <class vector_type>
 struct VectorSetter
 {
+	/** Setter for vector and matrix cols/rows.
+	 *
+	 * Use like this be first defining an Eigen::Ref to your object:
+	 * \begincode
+	 * const Eigen::Ref<Eigen::MatrixXd::ColXpr> col = matrix.col(i);
+	 * VectorSetter::set(col, ...);
+	 * \endcode
+	 *
+	 * @param _vector
+	 * @param _element
+	 */
+	template <class T>
 	static void set(
-			const SpaceElement_ptr_t &_element,
-			vector_type &_vector)
+			Eigen::Ref<T> _vector,
+			const SpaceElement_ptr_t &_element)
 	{
 		_vector = RepresentationAdvocate::get(_element);
 	}
