@@ -222,6 +222,7 @@ void MatrixFactorization::operator()(
 				MatrixProductEqualizer equalizer;
 				const double scaling_change =
 						equalizer(spectral_matrix, pixel_matrix);
+				info.replace(IterationInformation::LoopTable, "scaling_change", scaling_change);
 				BOOST_LOG_TRIVIAL(info)
 					<< "Scaling factor is " << scaling_change;
 			}
