@@ -20,6 +20,7 @@
 #include "MatrixFactorizer/Work/Master.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductEqualizer.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp"
+#include "MatrixFactorizer/ScalingAmbiguityRemover/ScalingAmbiguityMaintainer.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
@@ -217,6 +218,14 @@ void MatrixFactorization::operator()(
 #endif
 			spectral_matrix.transposeInPlace();
 
+			// check criterion
+			{
+				residual =
+						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+				BOOST_LOG_TRIVIAL(info)
+					<< "#" << loop_nr << " 2/2, residual is " << residual;
+			}
+
 			// remove ambiguity
 			{
 				MatrixProductEqualizer equalizer;
@@ -240,7 +249,7 @@ void MatrixFactorization::operator()(
 				residual =
 						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
 				BOOST_LOG_TRIVIAL(info)
-					<< "#" << loop_nr << " 2/2, residual is " << residual;
+					<< "#" << loop_nr << ", residual is " << residual;
 				info.replace(IterationInformation::LoopTable, "residual", residual);
 				stop_condition = (*stopping_criterion)(
 						boost::chrono::duration<double>(0),
