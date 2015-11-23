@@ -75,11 +75,9 @@ namespace detail
 	/** Constructs random starting matrices.
 	 *
 	 * @param _matrix matrix to construct
-	 * @param _nonnegative whether to construct non-negative starting matrices
 	 */
 	void constructRandomMatrix(
-			Eigen::MatrixXd &_matrix,
-			const bool _nonnegative
+			Eigen::MatrixXd &_matrix
 			);
 
 	/** Constructs zero starting matrices.

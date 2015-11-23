@@ -90,18 +90,13 @@ int detail::parseDataFile(
 }
 
 void detail::constructRandomMatrix(
-		Eigen::MatrixXd &_matrix,
-		const bool _nonnegative
+		Eigen::MatrixXd &_matrix
 		)
 {
 	TraceRenormalizer renormalizer;
 	// generate random matrix drawn from [-1,1]
 	_matrix.setRandom();
 	// push to [0,1] if non-negativity desired
-	if (_nonnegative) {
-		_matrix += Eigen::MatrixXd::Ones(_matrix.rows(), _matrix.cols());
-		_matrix *= .5;
-	}
 	renormalizer.renormalize(_matrix);
 	if ((_matrix.innerSize() > 10) || (_matrix.outerSize() > 10)) {
 		if (_matrix.innerSize() > _matrix.outerSize())

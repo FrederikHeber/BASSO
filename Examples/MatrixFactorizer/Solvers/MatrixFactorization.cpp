@@ -14,6 +14,8 @@
 #include <fstream>
 #include <string>
 
+#include <boost/assign.hpp>
+
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Database/IterationInformation.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
@@ -23,9 +25,13 @@
 #include "MatrixFactorizer/ScalingAmbiguityRemover/MatrixProductRenormalizer.hpp"
 #include "MatrixFactorizer/ScalingAmbiguityRemover/ScalingAmbiguityMaintainer.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
+#include "Minimizations/Elements/VectorSetter.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 
@@ -107,30 +113,21 @@ void MatrixFactorization::operator()(
 		/// construct solution starting points
 		if (!parse_status) {
 			BOOST_LOG_TRIVIAL(info)
-					<< "Setting spectral matrix to random starting values.";
+					<< "Setting spectral matrix K to random starting values.";
 			spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
-			detail::constructRandomMatrix(
-					spectral_matrix,
-					opts.type_spacex.find("nonnegative") != std::string::npos);
+			detail::constructRandomMatrix(spectral_matrix);
 		} else
 			BOOST_LOG_TRIVIAL(info)
-					<< "Using spectral matrix parsed from file.";
+					<< "Using spectral matrix K parsed from file.";
 		if (!parse_status) {
 			BOOST_LOG_TRIVIAL(info)
-					<< "Setting pixel matrix to zero.";
+					<< "Setting pixel matrix X to zero.";
 			pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
 			detail::constructZeroMatrix(
 					pixel_matrix);
 		} else
 			BOOST_LOG_TRIVIAL(info)
-					<< "Using pixel matrix parsed from file.";
-
-		/// iterate over the two factors
-		double residual =
-				detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-		BOOST_LOG_TRIVIAL(info)
-			<< "#" << loop_nr << " 1/2, residual is " << residual;
-		info.replace(IterationInformation::LoopTable, "residual", residual);
+					<< "Using pixel matrix X parsed from file.";
 
 		// create outer ("loop") stopping criteria
 		StoppingArguments stopping_args;
@@ -142,19 +139,67 @@ void MatrixFactorization::operator()(
 		StoppingCriterion::ptr_t stopping_criterion =
 				stop_factory.create(stopping_criteria, stopping_args);
 
-		bool stop_condition = (*stopping_criterion)(
-				boost::chrono::duration<double>(0),
-				loop_nr,
-				residual,
-				1.);
-
 		// create auxiliary constraints
 		AuxiliaryConstraintsFactory constraint_factory;
 		AuxiliaryConstraints::ptr_t auxiliary_constraints =
 				constraint_factory.create(opts.auxiliary_constraints);
 
+		/// create feasible solution starting points
+		if (auxiliary_constraints) {
+			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+				BOOST_LOG_TRIVIAL(trace)
+						<< "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose();
+			} else {
+				BOOST_LOG_TRIVIAL(info)
+						<< "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose();
+			}
+
+			NormedSpaceFactory::args_t args_SpaceL2;
+			args_SpaceL2 +=
+					boost::any(2.),
+					boost::any(2.);
+			NormedSpace_ptr_t L2 =
+					NormedSpaceFactory::create(
+							opts.sparse_dim, "lp", args_SpaceL2);
+			spectral_matrix.transposeInPlace();
+			for (int i=0;i<_data.cols();++i) {
+				SpaceElement_ptr_t tempvector = ElementCreator::create(
+						L2,
+						spectral_matrix.col(i));
+//				BOOST_LOG_TRIVIAL(info)
+//							<< "tempvector of col " << i << " before constraining is " << *tempvector;
+				(*auxiliary_constraints)(tempvector);
+//				BOOST_LOG_TRIVIAL(info)
+//							<< "tempvector of col " << i << " after constraining is " << *tempvector;
+				const Eigen::Ref<Eigen::MatrixXd::ColXpr> col = spectral_matrix.col(i);
+				VectorSetter::set(col, tempvector);
+			}
+			spectral_matrix.transposeInPlace();
+
+			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+				BOOST_LOG_TRIVIAL(trace)
+							<< "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose();
+			} else {
+				BOOST_LOG_TRIVIAL(info)
+							<< "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose();
+			}
+		}
+
+		/// iterate over the two factors
+		double residual =
+				detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+		BOOST_LOG_TRIVIAL(info)
+			<< "#" << loop_nr << " 1/2, residual is " << residual;
+		info.replace(IterationInformation::LoopTable, "residual", residual);
+
 		// submit loop tuple
 		info.addTuple(IterationInformation::LoopTable);
+
+		bool stop_condition = (*stopping_criterion)(
+				boost::chrono::duration<double>(0),
+				loop_nr,
+				residual,
+				1.);
 
 		while (!stop_condition) {
 			// update loop count
@@ -168,10 +213,10 @@ void MatrixFactorization::operator()(
 
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 				BOOST_LOG_TRIVIAL(trace)
-						<< "Current spectral matrix is\n" << spectral_matrix;
+						<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
 			} else {
 				BOOST_LOG_TRIVIAL(info)
-						<< "Current spectral matrix is\n" << spectral_matrix;
+						<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
 			}
 
 #ifdef MPI_FOUND
@@ -234,10 +279,10 @@ void MatrixFactorization::operator()(
 
 			if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 				BOOST_LOG_TRIVIAL(trace)
-						<< "Resulting pixel matrix is\n" << pixel_matrix;
+						<< "Resulting pixel matrix X is\n" << pixel_matrix;
 			} else {
 				BOOST_LOG_TRIVIAL(info)
-						<< "Resulting pixel matrix is\n" << pixel_matrix;
+						<< "Resulting pixel matrix X is\n" << pixel_matrix;
 			}
 
 			// check criterion
@@ -261,10 +306,10 @@ void MatrixFactorization::operator()(
 
 			if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 				BOOST_LOG_TRIVIAL(trace)
-						<< "Current pixel matrix is\n" << pixel_matrix;
+						<< "Current pixel matrix X is\n" << pixel_matrix;
 			} else {
 				BOOST_LOG_TRIVIAL(info)
-						<< "Current pixel matrix is\n" << pixel_matrix;
+						<< "Current pixel matrix X is\n" << pixel_matrix;
 			}
 
 			// must transpose in place, as spectral_matrix.transpose() is const
@@ -348,10 +393,10 @@ void MatrixFactorization::operator()(
 
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 				BOOST_LOG_TRIVIAL(trace)
-						<< "Resulting spectral matrix is\n" << spectral_matrix;
+						<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
 			} else {
 				BOOST_LOG_TRIVIAL(info)
-						<< "Resulting spectral matrix is\n" << spectral_matrix;
+						<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
 			}
 
 			// check criterion
