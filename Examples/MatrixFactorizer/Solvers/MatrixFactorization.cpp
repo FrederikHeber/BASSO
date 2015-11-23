@@ -113,7 +113,7 @@ void MatrixFactorization::operator()(
 		while (!stop_condition) {
 			// update loop count
 			++loop_nr;
-			info.replace(IterationInformation::LoopTable, "loop_nr", (int)loop_nr);
+			info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr-1)+1);
 
 			BOOST_LOG_TRIVIAL(debug)
 				<< "======================== #" << loop_nr << "/1 ==================";
@@ -169,12 +169,18 @@ void MatrixFactorization::operator()(
 			{
 				residual =
 						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+				info.replace(IterationInformation::LoopTable, "residual", residual);
 				BOOST_LOG_TRIVIAL(info)
 					<< "#" << loop_nr << " 1/2, residual is " << residual;
 			}
 
+			// submit loop tuple
+			info.addTuple(IterationInformation::LoopTable);
+
 			BOOST_LOG_TRIVIAL(debug)
 				<< "======================== #" << loop_nr << "/2 ==================";
+
+			info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr));
 
 	//		renormalizeMatrixByTrace(pixel_matrix);
 
