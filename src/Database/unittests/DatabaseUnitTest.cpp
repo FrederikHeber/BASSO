@@ -7,7 +7,7 @@
 
 #include "DatabaseUnitTest.hpp"
 
-#include "Database/Database.hpp"
+#include "Database/TableDirectoryDatabase_mock.hpp"
 #include "Database/Table.hpp"
 
 // Registers the fixture into the 'registry'
@@ -25,7 +25,7 @@ void DatabaseUnitTest::tearDown()
 
 void DatabaseUnitTest::simpleTest()
 {
-    Database mydata;
+    TableDirectoryDatabase_mock mydata;
     Table &mytable = mydata.addTable("mytable");
     Table::Tuple_t& tuple = mytable.getTuple();
     tuple.insert( std::make_pair("p", 1), Table::Parameter );

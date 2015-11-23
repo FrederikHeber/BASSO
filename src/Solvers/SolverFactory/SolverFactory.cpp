@@ -13,7 +13,7 @@
 #include <boost/assign.hpp>
 
 #include "Options/CommandLineOptions.hpp"
-#include "Database/Database.hpp"
+#include "Database/SQLDatabase.hpp"
 #include "Log/Logging.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
@@ -65,7 +65,7 @@ Database_ptr_t SolverFactory::createDatabase(
 		const CommandLineOptions &_opts
 		)
 {
-	Database_ptr_t database(new Database());
+	Database_ptr_t database(new SQLDatabase());
 	if (!_opts.iteration_file.string().empty())
 		database->setDatabaseFile(_opts.iteration_file.string());
 	database->setReplacePresentParameterTuples(_opts.database_replace);

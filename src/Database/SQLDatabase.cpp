@@ -1,5 +1,5 @@
 /*
- * Database.cpp
+ * SQLSQLDatabase.cpp
  *
  *  Created on: Jun 12, 2014
  *      Author: heber
@@ -8,7 +8,7 @@
 
 #include "BassoConfig.h"
 
-#include "Database.hpp"
+#include "SQLDatabase.hpp"
 
 #include <boost/assign.hpp>
 //#include <iterator>
@@ -25,11 +25,11 @@ using namespace Poco::Data;
 using namespace boost::assign;
 
 // static entities
-std::vector<std::string> Database::TypeNames(Database_types::MAX_TYPES);
+std::vector<std::string> SQLDatabase::TypeNames(Database_types::MAX_TYPES);
 
 #define BASSO_MAXKEYS 18
 
-Database::Database() :
+SQLDatabase::SQLDatabase() :
 		DatabaseFileGiven(false),
 		ReplacePresentParameterTuples(false),
 		MaxKeys(BASSO_MAXKEYS)
@@ -42,7 +42,7 @@ Database::Database() :
 	SQLite::Connector::registerConnector();
 }
 
-Database::~Database()
+SQLDatabase::~SQLDatabase()
 {
 	// write information
 	writeAllTables();
@@ -51,11 +51,11 @@ Database::~Database()
 	SQLite::Connector::unregisterConnector();
 }
 
-bool Database::writeAllTables() const
+bool SQLDatabase::writeAllTables() const
 {
 	bool status = true;
-	for (tables_t::const_iterator tableiter = tables.begin();
-			tableiter != tables.end(); ++tableiter) {
+	for (TableDirectory::TableIterator_t tableiter = directory.begin();
+			tableiter != directory.end(); ++tableiter) {
 		const Table &currenttable = *tableiter->second;
 		status &= writeTable(currenttable);
 	}
@@ -63,7 +63,7 @@ bool Database::writeAllTables() const
     return status;
 }
 
-bool Database::createTableIfNotExists(
+bool SQLDatabase::createTableIfNotExists(
 		const Table &_table,
 		const Table::KeyType_t &_KeyTypes,
 		const Table::keys_t &_allowed_keys) const
@@ -98,7 +98,7 @@ bool Database::createTableIfNotExists(
 	return true;
 }
 
-std::string Database::printTupleWhereStatement(
+std::string SQLDatabase::printTupleWhereStatement(
 		const Table::Tuple_t &_tuple,
 		const Table::KeyType_t &_KeyTypes) const
 {
@@ -127,7 +127,7 @@ std::string Database::printTupleWhereStatement(
 	return valuestream.str();
 }
 
-bool Database::hasTupleOneParameter(
+bool SQLDatabase::hasTupleOneParameter(
 		const Table::Tuple_t &_tuple) const
 {
 	for (Table::Tuple_t::const_iterator paramiter = _tuple.begin();
@@ -138,7 +138,7 @@ bool Database::hasTupleOneParameter(
 	return false;
 }
 
-bool Database::deletePresentTuplesinTable(
+bool SQLDatabase::deletePresentTuplesinTable(
 		const Table &_table,
 		const Table::KeyType_t &_KeyTypes) const
 {
@@ -165,7 +165,7 @@ bool Database::deletePresentTuplesinTable(
 	return true;
 }
 
-bool Database::updateTable(
+bool SQLDatabase::updateTable(
 		const Table &_table,
 		const Table::KeyType_t &_KeyTypes,
 		const Table::keys_t &_allowed_keys) const
@@ -192,7 +192,7 @@ bool Database::updateTable(
 		switch (valuevector.size()) {
 		case 0:
 			BOOST_LOG_TRIVIAL(warning)
-				<< "Database contains no values";
+				<< "SQLDatabase contains no values";
 			break;
 		// use preprocessor magic to create the range of cases
 #include <boost/preprocessor/iteration/local.hpp>
@@ -219,7 +219,7 @@ bool Database::updateTable(
 	return true;
 }
 
-bool Database::writeTable(const Table &_table) const
+bool SQLDatabase::writeTable(const Table &_table) const
 {
 	// skip if table is uptodate
 	if (_table.uptodate)
@@ -259,7 +259,7 @@ bool Database::writeTable(const Table &_table) const
 	return status;
 }
 
-bool Database::readTable(
+bool SQLDatabase::readTable(
 		Table& _table)
 {
 	/// check if table is uptodate
@@ -411,51 +411,19 @@ bool Database::readTable(
 	return true;
 }
 
-Table& Database::addTable(const std::string &_name)
+bool SQLDatabase::executeSQLStatement(const std::string &_command) const
 {
-	// check whether table of such a name is not already present
-	tables_t::iterator iter = tables.find(_name);
-	if (iter == tables.end()) {
-		Table::ptr insert_table(new Table(_name));
-		tables.insert( std::make_pair(_name, insert_table) );
-		iter = tables.find(_name);
-	}
-	return *iter->second;
+	// if we don't connect to sqlite file, we transparently drop the statement
+	if (!DatabaseFileGiven)
+		return true;
+
+	Session ses("SQLite", filename.c_str());
+	Statement stmt = ( ses << _command );
+	stmt.execute();
+	return stmt.done();
 }
 
-bool Database::removeTable(const std::string &_name)
-{
-	tables_t::iterator iter = tables.find(_name);
-	const bool status = iter != tables.end();
-	if (status)
-		tables.erase(iter);
-	return status;
-}
-
-bool Database::clearTable(const std::string &_name)
-{
-	tables_t::iterator iter = tables.find(_name);
-	const bool status = iter != tables.end();
-	if (status)
-		iter->second->clear();
-	return status;
-}
-
-Table& Database::getTable(const std::string &_name)
-{
-	tables_t::iterator iter = tables.find(_name);
-	assert( iter != tables.end() );
-	return *iter->second;
-}
-
-const Table& Database::getTableConst(const std::string &_name) const
-{
-	tables_t::const_iterator iter = tables.find(_name);
-	assert( iter != tables.end() );
-	return *iter->second;
-}
-
-bool Database::isTuplePresentInTable(
+bool SQLDatabase::isTuplePresentInTable(
 		const Table &_table,
 		const Table::Tuple_t &_tuple) const
 {
@@ -481,12 +449,12 @@ bool Database::isTuplePresentInTable(
 	return (rowid.size() != 0);
 }
 
-size_t Database::getIdOfTuplePresentInTable(
+size_t SQLDatabase::getIdOfTuplePresentInTable(
 		const Table &_table,
 		const Table::Tuple_t &_tuple) const
 {
 	// we cannot admonish this: If a tuple is already in the sqlite table,
-	// we still have to add it to Database's tables as otherwise we cannot
+	// we still have to add it to SQLDatabase's tables as otherwise we cannot
 	// form sensible SQL statements (without knowing the table structure).
 //	if (!_table.isUptodate())
 //		BOOST_LOG_TRIVIAL(warning)
@@ -525,16 +493,4 @@ size_t Database::getIdOfTuplePresentInTable(
 			return rowid[0];
 		}
 	}
-}
-
-bool Database::executeSQLStatement(const std::string &_command) const
-{
-	// if we don't connect to sqlite file, we transparently drop the statement
-	if (!DatabaseFileGiven)
-		return true;
-
-	Session ses("SQLite", filename.c_str());
-	Statement stmt = ( ses << _command );
-	stmt.execute();
-	return stmt.done();
 }

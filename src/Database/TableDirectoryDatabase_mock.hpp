@@ -1,72 +1,34 @@
 /*
- * Database_mock.hpp
+ * TableDirectoryDatabase_mock.hpp
  *
- *  Created on: Apr 15, 2015
+ *  Created on: Nov 23, 2015
  *      Author: heber
  */
 
-#ifndef DATABASE_MOCK_HPP_
-#define DATABASE_MOCK_HPP_
+#ifndef TABLEDIRECTORYDATABASE_MOCK_HPP_
+#define TABLEDIRECTORYDATABASE_MOCK_HPP_
 
-#include "Database.hpp"
-#include "Table_mock.hpp"
+#include "BassoConfig.h"
 
-class Database_mock : public Database
+#include "Database/TableDirectoryDatabase.hpp"
+
+class TableDirectoryDatabase_mock : public TableDirectoryDatabase
 {
 public:
-	Database_mock() :
-		table_mock("dummy_table")
+	/** Cstor of class TableDirectoryDatabase_mock.
+	 *
+	 */
+	TableDirectoryDatabase_mock()
+	{}
+
+	/** Dstor of class TableDirectoryDatabase_mock.
+	 *
+	 */
+	virtual ~TableDirectoryDatabase_mock()
 	{}
 
 	void setDatabaseFile( const std::string &_filename)
 	{}
-
-	/** Add a new table with name \a _name to this database.
-	 *
-	 * @param _name name of new table
-	 * @return ref to the table, present one if it already existed
-	 */
-	Table& addTable(const std::string &_name)
-	{ return table_mock; }
-
-	/** Removes a table with name \a _name from this database.
-	 *
-	 * @param _name name of new table
-	 * @return true - table found and removed, false - else
-	 */
-	bool removeTable(const std::string &_name)
-	{ return true; }
-
-	/** Removes contents of a table with name \a _name from this database.
-	 *
-	 * @param _name name of new table
-	 * @return true - table found and contents removed, false - else
-	 */
-	bool clearTable(const std::string &_name)
-	{ return true; }
-
-	/** Getter for a table by its name \a _name.
-	 *
-	 * @param _name name of table
-	 * @return ref to the table
-	 */
-	Table& getTable(const std::string &_name)
-	{ return table_mock; }
-
-	/** Getter for a table by its name \a _name.
-	 *
-	 * @param _name name of table
-	 * @return const ref to the table
-	 */
-	const Table& getTableConst(const std::string &_name) const
-	{ return table_mock; }
-
-	/** Returns the number of tables present in the database.
-	 *
-	 * @return number of tables
-	 */
-	const size_t size() const
-	{ return 1; }
 
 	/** Setter for whether tuples are replaced (with respect to their parameter
 	 * part or we just add new ones regardless of same-parametered present ones.
@@ -138,12 +100,7 @@ public:
 	 */
 	bool isDatabaseFileGiven() const
 	{ return true; }
-
-private:
-	//!> single mock table to return
-	Table_mock table_mock;
-
 };
 
 
-#endif /* DATABASE_MOCK_HPP_ */
+#endif /* TABLEDIRECTORYDATABASE_MOCK_HPP_ */

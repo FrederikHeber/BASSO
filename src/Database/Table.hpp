@@ -20,7 +20,8 @@
 #include "Database/DefaultValue.hpp"
 #include "Database/types.hpp"
 
-class Database;
+class SQLDatabase;
+class TableDirectory;
 
 /** This class represents a single table in a Database.
  *
@@ -28,8 +29,11 @@ class Database;
 class Table
 {
 protected:
-	//!> grant Database access to private functions
-	friend class Database;
+	//!> grant SQLDatabase access to private functions
+	friend class SQLDatabase;
+
+	//!> grant TableDirectory access to private functions
+	friend class TableDirectory;
 
 	//!> typedef for this instance wrapped in a shared_ptr
 	typedef boost::shared_ptr<Table> ptr;
@@ -58,7 +62,7 @@ public:
 
 	/** The Tuple_t contains the data as a map of key/value pairs.
 	 */
-		class Tuple_t :
+	class Tuple_t :
 		public TokenTypeMap_t
 	{
 	protected:

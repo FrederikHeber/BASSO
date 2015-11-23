@@ -10,18 +10,18 @@
 
 #include "BassoConfig.h"
 
-#include <boost/shared_ptr.hpp>
-#include <map>
 #include <string>
-#include <vector>
+
+#include <boost/shared_ptr.hpp>
 
 #include "Database/Table.hpp"
 
-/** The Database class provides a single instance to contain all iteration-
- * related data. The data is eventually placed in a single-file (sqlite)
- * allowing for command-line parsing and data extraction for creating figures.
+/** The Database class provides the interface for a single instance to contain
+ * all iteration-related data. The data is eventually placed in a single-file
+ * (sqlite) allowing for command-line parsing and data extraction for creating
+ * figures.
  *
- * \section Outline of the class and usage outline
+ * \section outline Outline of the class and usage outline
  *
  * The Database is used by adding tables via addTable(), which immediately
  * returns a reference to the instantiated table. The reference of the new
@@ -30,7 +30,7 @@
  * the whole set of known tables to disc. For updating just a single
  * table writeTable() can be used.
  *
- * \section A brief walk in SQL land sql-walkthru
+ * \section sql-walk A brief walk in SQL land sql-walkthru
  *
  * In general, SQL databases have multiple tables. They are linked via keys
  * where each row in a table is identified by a unique so-called \b primary
@@ -42,7 +42,7 @@
  * while the user in the foreground simply operates with a normal table. In
  * this case the larger, combined table directly.
  *
- * \section Central idea idea
+ * \section central-idea Central idea
  *
  * The central idea for the database in a laboratory code is that you have
  * (at least) two tables: one table stores the parameter set and another
@@ -59,53 +59,64 @@ public:
 	//!> typedef for wrapping Database instance in shared_ptr
 	typedef boost::shared_ptr<Database> Database_ptr_t;
 
-	Database();
-	virtual ~Database();
+	/** Cstor of class Database.
+	 *
+	 */
+	Database()
+	{}
 
-	void setDatabaseFile( const std::string &_filename)
-	{ filename = _filename; DatabaseFileGiven = true; }
+	/** Dstor of class Database.
+	 *
+	 */
+	virtual ~Database()
+	{}
+
+	/** Set the filename where the database is stored.
+	 *
+	 * @param _filename file name to write database to
+	 */
+	virtual void setDatabaseFile( const std::string &_filename) = 0;
 
 	/** Add a new table with name \a _name to this database.
 	 *
 	 * @param _name name of new table
 	 * @return ref to the table, present one if it already existed
 	 */
-	virtual Table& addTable(const std::string &_name);
+	virtual Table& addTable(const std::string &_name) = 0;
 
 	/** Removes a table with name \a _name from this database.
 	 *
 	 * @param _name name of new table
 	 * @return true - table found and removed, false - else
 	 */
-	virtual bool removeTable(const std::string &_name);
+	virtual bool removeTable(const std::string &_name) = 0;
 
 	/** Removes contents of a table with name \a _name from this database.
 	 *
 	 * @param _name name of new table
 	 * @return true - table found and contents removed, false - else
 	 */
-	bool clearTable(const std::string &_name);
+	virtual bool clearTable(const std::string &_name) = 0;
 
 	/** Getter for a table by its name \a _name.
 	 *
 	 * @param _name name of table
 	 * @return ref to the table
 	 */
-	virtual Table& getTable(const std::string &_name);
+	virtual Table& getTable(const std::string &_name) = 0;
 
 	/** Getter for a table by its name \a _name.
 	 *
 	 * @param _name name of table
 	 * @return const ref to the table
 	 */
-	virtual const Table& getTableConst(const std::string &_name) const;
+	virtual const Table& getTableConst(const std::string &_name) const = 0;
 
 	/** Returns the number of tables present in the database.
 	 *
 	 * @return number of tables
 	 */
-	virtual const size_t size() const
-	{ return tables.size(); }
+	virtual const size_t size() const = 0;
 
 	/** Setter for whether tuples are replaced (with respect to their parameter
 	 * part or we just add new ones regardless of same-parametered present ones.
@@ -115,8 +126,7 @@ public:
 	 *
 	 * @param _flag true - replace, false - just add
 	 */
-	void setReplacePresentParameterTuples(const bool _flag)
-	{ ReplacePresentParameterTuples = _flag; }
+	virtual void setReplacePresentParameterTuples(const bool _flag) = 0;
 
 	/** Checks whether a tuple is present in the sqlite table without
 	 * causing any warning if table is not uptodate.
@@ -127,7 +137,7 @@ public:
 	 */
 	virtual bool isTuplePresentInTable(
 			const Table &_table,
-			const Table::Tuple_t &_tuple) const;
+			const Table::Tuple_t &_tuple) const = 0;
 
 	/** Returns the rowid (sqlite specific primary key) for the requested
 	 * \a _tuple in table \a _table.
@@ -138,21 +148,21 @@ public:
 	 */
 	virtual size_t getIdOfTuplePresentInTable(
 			const Table &_table,
-			const Table::Tuple_t &_tuple) const;
+			const Table::Tuple_t &_tuple) const = 0;
 
 	/** Writes a single table \a _table in the sqlite file.
 	 *
 	 * @param _table table to write to sqlite file
 	 * @return true - everything ok, false - else
 	 */
-	virtual bool writeTable(const Table &_table) const;
+	virtual bool writeTable(const Table &_table) const = 0;
 
 	/** Execute a given string SQL command \a _command.
 	 *
 	 * \param _command SQL statement to execute
 	 * \return true - everything ok, false - command failed
 	 */
-	virtual bool executeSQLStatement(const std::string &_command) const;
+	virtual bool executeSQLStatement(const std::string &_command) const = 0;
 
 	/** Writes all tables in the database as an sqlite file.
 	 *
@@ -161,7 +171,7 @@ public:
 	 *
 	 * @return true - succesfully written, false - something went wrong
 	 */
-	virtual bool writeAllTables() const;
+	virtual bool writeAllTables() const = 0;
 
 	/** Getter for whether a database file was given.
 	 *
@@ -170,92 +180,7 @@ public:
 	 *
 	 * @return true - filename given, false - else
 	 */
-	bool isDatabaseFileGiven() const
-	{ return DatabaseFileGiven; }
-
-private:
-
-	/** Adds the table to the sqlite file if it not already exists.
-	 *
-	 * @param _table table to create
-	 * @param _KeyTypes map with type for each key (column name)
-	 * @param _allowed_keys vector of all allowed keys (filter for column names)
-	 * @return true - everything ok, false - else
-	 */
-	bool createTableIfNotExists(
-			const Table &_table,
-			const Table::KeyType_t &_KeyTypes,
-			const Table::keys_t &_allowed_keys) const;
-
-	/** Deletes all present tuples in given \a _table the sqlite file.
-	 *
-	 * @param _table table whose present tuples to remove
-	 * @param _KeyTypes map with type for each key (column name)
-	 * @return true - everything ok, false - else
-	 */
-	bool deletePresentTuplesinTable(
-			const Table &_table,
-			const Table::KeyType_t &_KeyTypes) const;
-
-	/** Reads a single table \a _table from the sqlite file.
-	 *
-	 * \note We can only parse columns that are already present in \a
-	 * _table. This is basically a limitation of the poco library we
-	 * use to get sqlite functionality. Sqlite knows about
-	 * \code
-	 * 	PRAGMA table_info(table_name);
-	 * \endcode
-	 * but we cannot squeeze the information into an STL container; it
-	 * will just go into void. Hence, the tables is deleted (if non-
-	 * empty) and filled with all tuples from columns that were present
-	 * already before.
-	 *
-	 * @param _table table to read
-	 * @return true - everything ok, false - else
-	 */
-	bool readTable(Table &_table);
-
-	/** Updates the values in the sqlite table with the same named
-	 * table \a _table.
-	 *
-	 * @param _table table to take values from for update
-	 * @param _KeyTypes column name to type map
-	 * @param _allowed_keys set of keys (column names) to modify
-	 * @return true - everything ok, false - else
-	 */
-	bool updateTable(
-			const Table &_table,
-			const Table::KeyType_t &_KeyTypes,
-			const Table::keys_t &_allowed_keys) const;
-
-	std::string printTupleWhereStatement(
-			const Table::Tuple_t &_tuple,
-			const Table::KeyType_t &_KeyTypes) const;
-
-	bool hasTupleOneParameter(
-			const Table::Tuple_t &_tuple) const;
-
-private:
-	//!> states whether a database file name has been given or not.
-	bool DatabaseFileGiven;
-
-	//!> states whether we replace already present parameter tuples or just add new ones
-	bool ReplacePresentParameterTuples;
-
-	//!> contains the filename of the database for storing
-	std::string filename;
-
-	//!> static vector with all type names
-	static std::vector<std::string> TypeNames;
-
-	//!> typedef for the set of tables
-	typedef std::map<std::string, Table::ptr> tables_t;
-
-	//!> list of all tables of this database
-	tables_t tables;
-
-	//!> maximum number of keys per table
-	const unsigned int MaxKeys;
+	virtual bool isDatabaseFileGiven() const = 0;
 };
 
 
