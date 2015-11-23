@@ -55,8 +55,8 @@ struct HyperplaneProjection :
 			) const
 	{
 		const double returnvalue = functional(_value, x);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "func() evaluates to " << returnvalue;
+//		BOOST_LOG_TRIVIAL(trace)
+//			<< "func() evaluates to " << returnvalue;
 		return returnvalue;
 	}
 
@@ -67,8 +67,8 @@ struct HyperplaneProjection :
 			const std::vector<double> grad = functional.gradient(_value, x);
 			std::stringstream outputstream;
 			outputstream << grad;
-			BOOST_LOG_TRIVIAL(trace)
-				<< "grad() evaluates to " << outputstream.str();
+//			BOOST_LOG_TRIVIAL(trace)
+//				<< "grad() evaluates to " << outputstream.str();
 			return grad;
 		}
 
