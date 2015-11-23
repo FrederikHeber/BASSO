@@ -218,8 +218,13 @@ void MatrixFactorization::operator()(
 			spectral_matrix.transposeInPlace();
 
 			// remove ambiguity
-			MatrixProductEqualizer equalizer;
-			equalizer(spectral_matrix, pixel_matrix);
+			{
+				MatrixProductEqualizer equalizer;
+				const double scaling_change =
+						equalizer(spectral_matrix, pixel_matrix);
+				BOOST_LOG_TRIVIAL(info)
+					<< "Scaling factor is " << scaling_change;
+			}
 
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 				BOOST_LOG_TRIVIAL(trace)

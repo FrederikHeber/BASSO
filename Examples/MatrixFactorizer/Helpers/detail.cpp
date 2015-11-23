@@ -79,7 +79,7 @@ void detail::constructStartingMatrices(
 		_spectral_matrix += Eigen::MatrixXd::Ones(_spectral_matrix.rows(), _spectral_matrix.cols());
 		_spectral_matrix *= .5;
 	}
-	renormalizer(_spectral_matrix);
+	renormalizer.renormalize(_spectral_matrix);
 	if ((_spectral_matrix.innerSize() > 10) || (_spectral_matrix.outerSize() > 10)) {
 		BOOST_LOG_TRIVIAL(trace)
 				<< "Initial spectral matrix is\n" << _spectral_matrix;

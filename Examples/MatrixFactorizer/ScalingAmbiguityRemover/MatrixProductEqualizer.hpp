@@ -12,6 +12,8 @@
 
 #include <Eigen/Dense>
 
+#include "ScalingAmbiguityRemover.hpp"
+
 /** Equalizes the scaling of both matrices by multiplying them with the
  * weighted average of both scaling factors over each individual scaling
  * factor.
@@ -19,11 +21,11 @@
  * This is a sort of iterative way of obtaining rescaled matrices,
  * \sa MatrixProductRenormalizer
  */
-struct MatrixProductEqualizer
+struct MatrixProductEqualizer : public ScalingAmbiguityRemover
 {
-	void operator()(
+	double operator()(
 			Eigen::MatrixXd &_matrixone,
-			Eigen::MatrixXd &_matrixtwo)
+			Eigen::MatrixXd &_matrixtwo) const
 	{
 		const double factorone = _matrixone.diagonal().maxCoeff();
 		const double factortwo = _matrixtwo.diagonal().maxCoeff();
@@ -34,6 +36,8 @@ struct MatrixProductEqualizer
 			_matrixone *= factor;
 			_matrixtwo *= 1./factor;
 		}
+
+		return factor;
 		//	if (_matrix.hasNaN())
 		//		throw MinimizerIllegalNumber_exception()
 		//		<< MinimizerIllegalNumber_variablename("matrix");
