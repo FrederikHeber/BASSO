@@ -14,6 +14,7 @@ add_library (MatrixFactorizerBase
 
 install (FILES Database/InnerProblemDatabase.hpp DESTINATION include)
 install (FILES Database/IterationInformation.hpp DESTINATION include)
+install (FILES Database/MaxMinAverage.hpp DESTINATION include)
 install (FILES Helpers/detail.hpp DESTINATION include)
 install (FILES Options/MatrixFactorizerOptions.hpp DESTINATION include)
 install (FILES ScalingAmbiguityRemover/MatrixProductEqualizer.hpp DESTINATION include)

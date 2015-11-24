@@ -98,6 +98,33 @@ public:
 	 */
 	bool isDatabaseFileGiven() const
 	{ return true; }
+
+private:
+
+	/** Addes the required columns for the accumulated values to the \a _table.
+	 *
+	 * @param _table table to insert columns
+	 * @param _keyname key to insert (for each key four columns:
+	 * 			min_, max_, avg_, and var_)
+	 */
+	static void prepareTableForAccumulatedValues(
+			Table &_table,
+			const std::string &_keyname);
+
+	/** Addes the accumulated information to the (hopefully) prepared \a _table.
+	 *
+	 * @param _table table to add accumulated information to
+	 */
+	void insertAccumulatedValues(
+			Table &_table) const;
+
+public:
+	// here we extend the TableDirectoryDatabase functionality
+
+	void accumulateData() const;
+
+	//!> accumulated data for placement in another table.
+	mutable Table::TokenTypeMap_t accumulatedData;
 };
 
 
