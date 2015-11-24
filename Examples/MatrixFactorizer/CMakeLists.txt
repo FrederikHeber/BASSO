@@ -3,6 +3,7 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (MatrixFactorizerBase
+	Database/InnerProblemDatabase.cpp
 	Database/IterationInformation.cpp
 	Helpers/detail.cpp
 	Options/MatrixFactorizerOptions.cpp
@@ -11,6 +12,7 @@ add_library (MatrixFactorizerBase
 	Work/Master.cpp
 	Work/Slave.cpp)
 
+install (FILES Database/InnerProblemDatabase.hpp DESTINATION include)
 install (FILES Database/IterationInformation.hpp DESTINATION include)
 install (FILES Helpers/detail.hpp DESTINATION include)
 install (FILES Options/MatrixFactorizerOptions.hpp DESTINATION include)
