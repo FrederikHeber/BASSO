@@ -79,6 +79,12 @@ public:
 	const size_t size() const
 	{ return directory.size(); }
 
+	/** Clears the whole database.
+	 *
+	 */
+	void clear()
+	{ directory.clear(); }
+
 protected:
 	//!> internal directory for all tables
 	TableDirectory directory;

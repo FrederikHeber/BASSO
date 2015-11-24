@@ -24,6 +24,11 @@ public:
 	SQLDatabase();
 	virtual ~SQLDatabase();
 
+	/** Clears the whole database.
+	 *
+	 */
+	virtual void clear();
+
 	void setDatabaseFile( const std::string &_filename)
 	{ filename = _filename; DatabaseFileGiven = true; }
 

@@ -84,10 +84,11 @@ GeneralMinimizer::GeneralMinimizer(
 
 GeneralMinimizer::~GeneralMinimizer()
 {
-	// add view to database if not present
-	if (!createViews())
-		BOOST_LOG_TRIVIAL(warning)
-			<< "Could not create overall or per_iteration views.";
+	// add view if not present to database if not empty
+	if (database.size() != 0)
+		if (!createViews())
+			BOOST_LOG_TRIVIAL(warning)
+				<< "Could not create overall or per_iteration views.";
 }
 
 void GeneralMinimizer::SearchDirection::update(

@@ -51,6 +51,7 @@ bool InRangeSolver::operator()(
 				mock_db,
 				opts
 				);
+		mock_db->clear();
 		if (!projector(
 				_matrix,
 				_rhs,
@@ -63,6 +64,7 @@ bool InRangeSolver::operator()(
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Difference y_" << _dim << "-y'_" << _dim << " is "
 			<< (_rhs-projected_rhs).transpose();
+
 	BOOST_LOG_TRIVIAL(debug)
 			<< "........................ n=" << _dim << " ..................";
 
@@ -72,6 +74,7 @@ bool InRangeSolver::operator()(
 			mock_db,
 			opts,
 			false /* true solution calculation */);
+	mock_db->clear();
 	if (!solver(
 			_matrix,
 			projected_rhs,
@@ -81,6 +84,7 @@ bool InRangeSolver::operator()(
 			<< "Resulting vector is " << _solution.transpose();
 		return false;
 	}
+
 
 	return true;
 }

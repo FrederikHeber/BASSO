@@ -51,6 +51,15 @@ SQLDatabase::~SQLDatabase()
 	SQLite::Connector::unregisterConnector();
 }
 
+void SQLDatabase::clear()
+{
+	TableDirectoryDatabase::clear();
+	DatabaseFileGiven = false;
+	ReplacePresentParameterTuples = false;
+	filename = std::string("");
+	const_cast<unsigned int &>(MaxKeys) = BASSO_MAXKEYS;
+}
+
 bool SQLDatabase::writeAllTables() const
 {
 	bool status = true;

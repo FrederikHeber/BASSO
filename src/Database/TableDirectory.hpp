@@ -63,6 +63,12 @@ struct TableDirectory
 	const size_t size() const
 	{ return tables.size(); }
 
+	/** Clears the whole directory.
+	 *
+	 */
+	void clear()
+	{ tables.clear(); }
+
 private:
 	//!> typedef for the set of tables
 	typedef std::map<std::string, Table::ptr> tables_t;
