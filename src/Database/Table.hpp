@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/any.hpp>
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <set>
@@ -170,7 +171,26 @@ public:
 	virtual bool empty() const
 	{ return internal_table.empty(); }
 
-private:
+	//!> typedef for a single row in boost::any form
+	typedef std::vector< Database_types::typevariant_t > any_values_t;
+
+	/** Returns all values of \a _keys for each tuple.
+     *
+     * @param _key key to look for
+     * @return vector of values of the corresponding keys
+     */
+    any_values_t getAllValuesPerType(const std::string &_key) const
+    {
+    	any_values_t values;
+    	for (internal_table_t::const_iterator iter = internal_table.begin();
+    			iter != internal_table.end(); ++iter) {
+    		Tuple_t::const_iterator finditer = iter->find(_key);
+    		// if key present in given ones
+    		if (finditer != iter->end())
+    			values.push_back(finditer->second);
+    	}
+		return values;
+    }
 
 	//!> unique set of all column names
 	typedef std::set<std::string> keys_t;
@@ -192,6 +212,8 @@ private:
 	 */
 	KeyType_t getKeyToTypeMap(
 			const keys_t &_keys) const;
+
+private:
 
 	/** Perform a sanity check whether each key has a value of the always
 	 * same type over all tuples in internal_table.
