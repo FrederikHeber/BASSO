@@ -31,6 +31,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the file name of the data matrix")
 			("max-loops", po::value<unsigned int>(),
 					"set the maximum number of loops iterating over each factor")
+			("overall-keys", po::value< std::vector<std::string> >()->multitoken(),
+					"set the columns to pass from inner problem's overall tables")
 			("residual-threshold", po::value<double>(),
 					"set the threshold of the matrix residual when to stop the iteration")
 			("solution-product", po::value< boost::filesystem::path >(),
@@ -57,6 +59,19 @@ void MatrixFactorizerOptions::internal_parse()
 		max_loops = vm["max-loops"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Performing " << max_loops << " loop iterations over the two factors.";
+	}
+
+	if (vm.count("overall-keys")) {
+		overall_keys = vm["overall-keys"].as< std::vector<std::string> >();
+		std::stringstream output;
+		std::copy(overall_keys.begin(), overall_keys.end(),
+				std::ostream_iterator<std::string>(output, ","));
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Overall keys was set to " << output.str();
+	} else {
+		overall_keys.clear();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We don't accumulate any iteration keys from solver's overall table.";
 	}
 
 	if (vm.count("residual-threshold")) {
@@ -141,6 +156,11 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 	_output << "# [MatrixFactorizer]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "data");
 	writeValue<unsigned int>(_output, vm,  "max-loops");
+	if (overall_keys.size() != 0) {
+		for (std::vector<std::string>::const_iterator iter = overall_keys.begin();
+				iter != overall_keys.end();)
+			_output << "\toverall-keys = " << *(iter++) << std::endl;
+	}
 	writeValue<double>(_output, vm,  "residual-threshold");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");
