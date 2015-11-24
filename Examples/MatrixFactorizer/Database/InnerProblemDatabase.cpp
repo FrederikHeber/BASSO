@@ -10,6 +10,12 @@
 
 #include "InnerProblemDatabase.hpp"
 
+#include <boost/assign.hpp>
+
+#include "Database/Table_mock.hpp"
+
+using namespace boost::assign;
+
 InnerProblemDatabase::InnerProblemDatabase() :
 	overall_table_accumulator(*this)
 {}
@@ -22,7 +28,21 @@ InnerProblemDatabase::InnerProblemDatabase(
 			"data_overall",
 			_overall_keys.begin(),
 			_overall_keys.end())
-{}
+{
+	truetables += "data_overall";
+}
+
+Table& InnerProblemDatabase::addTable(const std::string &_name)
+{
+	if (truetables.count(_name) != 0) {
+		// generate full table
+		return TableDirectoryDatabase::addTable(_name);
+	} else {
+		// generate mockup
+		Table::ptr insert_table(new Table_mock(_name));
+		return directory.insertTable( _name, insert_table );
+	}
+}
 
 void InnerProblemDatabase::clear()
 {

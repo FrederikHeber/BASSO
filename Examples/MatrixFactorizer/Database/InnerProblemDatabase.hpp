@@ -61,8 +61,17 @@ public:
 	void setReplacePresentParameterTuples(const bool _flag)
 	{}
 
+	/** Add a new table with name \a _name to this database.
+	 *
+	 * @param _name name of new table
+	 * @return ref to the table, present one if it already existed
+	 */
+	Table& addTable(const std::string &_name);
+
 	/** Clears the whole database.
 	 *
+	 * \note We override this function in order to store away values before
+	 * deletion.
 	 */
 	void clear();
 
@@ -143,6 +152,11 @@ public:
 private:
 	//!> data accumulator for overall table
 	TableDataAccumulator overall_table_accumulator;
+
+	//!> typedef for a set of table names
+	typedef std::set<std::string> tables_t;
+	//!> list of tables who are NOT mocked
+	tables_t truetables;
 };
 
 
