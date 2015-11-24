@@ -51,12 +51,25 @@ public:
 			const Database_types::types_t &_type,
 			const std::string &_keyname);
 
-private:
-	/** Internal function to accumulate the data into an internal map
-	 * from the Table's Tuple_t's.
+	/** Function to accumulate the data of a current loop into an internal
+	 * map from the Table's Tuple_t's.
 	 *
 	 */
-	void operateOnData() const;
+	void extractData() const;
+
+private:
+	typedef std::map<
+				std::string,
+				std::pair<
+					Database_types::types_t,
+					Table::any_values_t> > accumulatedValues_t;
+	//!> accumulated data for placement in another table.
+	mutable accumulatedValues_t accumulatedValues;
+
+	/** Internal function to average the data.
+	 *
+	 */
+	void finalizeData() const;
 };
 
 

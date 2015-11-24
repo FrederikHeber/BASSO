@@ -55,7 +55,7 @@ TableDataOperator::valuevectors_t convertTuplesToValueVector(
 }
 
 TableDataOperator::valuevectors_t
-TableDataOperator::extractData() const
+TableDataOperator::extractValues() const
 {
 	// do nothing on empty keys
 	if (accumulated_keys.empty())
@@ -90,7 +90,7 @@ TableDataOperator::extractData() const
 			accumulated_keys.begin(), accumulated_keys.end()));
 	valuevectors_t valuevectors =
 			convertTuplesToValueVector(datatable, KeyTypes, accumulated_keys);
-	assert(valuevectors.size() == 1);
+	assert(valuevectors.size() == accumulated_keys.size());
 
 	return valuevectors;
 }
@@ -102,7 +102,7 @@ void TableDataOperator::insertValues(
 	if (accumulated_keys.empty())
 		return;
 
-	operateOnData();
+	finalizeData();
 
 	Table::Tuple_t &tuple = _table.getTuple();
 

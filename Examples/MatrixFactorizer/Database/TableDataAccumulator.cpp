@@ -44,13 +44,13 @@ void insertValue(
 	_accumulatedData["var_"+_keyname] = Bregman.variance;
 }
 
-void TableDataAccumulator::operateOnData() const
+void TableDataAccumulator::extractData() const
 {
 	// do nothing on empty keys
 	if (accumulated_keys.empty())
 		return;
 
-	const valuevectors_t valuevectors = extractData();
+	const valuevectors_t valuevectors = extractValues();
 	for (Table::keys_t::const_iterator keyiter = accumulated_keys.begin();
 			keyiter != accumulated_keys.end();
 			++keyiter) {
@@ -59,22 +59,43 @@ void TableDataAccumulator::operateOnData() const
 				std::distance(accumulated_keys.begin(), keyiter);
 		BOOST_LOG_TRIVIAL(trace)
 				<< "There are " << valuevectors[iterindex].second.size() << " values for " << keyname;
-		switch(valuevectors[iterindex].first) {
-		case Database_types::inttype:
-		{
-			insertValue<int>(accumulatedData, keyname, valuevectors[iterindex].second);
-			break;
-		}
-		case Database_types::doubletype:
-		{
-			insertValue<double>(accumulatedData, keyname, valuevectors[iterindex].second);
-			break;
-		}
-		case Database_types::valchartype:
-		default:
-			BOOST_LOG_TRIVIAL(error)
-				<< "Unknown type for key " << keyname;
-			break;
+		assert(valuevectors[iterindex].second.size()==1);
+		const accumulatedValues_t::iterator iter =
+				accumulatedValues.find(keyname);
+		if (iter != accumulatedValues.end())
+			iter->second.second.push_back(valuevectors[iterindex].second[0]);
+		else
+			accumulatedValues[keyname] =
+					std::make_pair(
+							valuevectors[iterindex].first,
+							Table::any_values_t(1, valuevectors[iterindex].second[0])
+					);
+	}
+}
+
+void TableDataAccumulator::finalizeData() const
+{
+	for (accumulatedValues_t::const_iterator valueiter = accumulatedValues.begin();
+			valueiter != accumulatedValues.end(); ++valueiter) {
+		const std::string &keyname = valueiter->first;
+		const Database_types::types_t &type = valueiter->second.first;
+		const Table::any_values_t &values = valueiter->second.second;
+		switch(type) {
+			case Database_types::inttype:
+			{
+				insertValue<int>(accumulatedData, keyname, values);
+				break;
+			}
+			case Database_types::doubletype:
+			{
+				insertValue<double>(accumulatedData, keyname, values);
+				break;
+			}
+			case Database_types::valchartype:
+			default:
+				BOOST_LOG_TRIVIAL(error)
+					<< "Unknown type for key " << keyname;
+				break;
 		}
 	}
 }
@@ -100,20 +121,20 @@ void TableDataAccumulator::prepareTableForAccumulatedValues(
 	Table::Tuple_t &tuple = _table.getTuple();
 
 	switch(_type) {
-	case Database_types::inttype:
-	{
-		insertDefaultValue<int>(tuple, _keyname);
-		break;
-	}
-	case Database_types::doubletype:
-	{
-		insertDefaultValue<double>(tuple, _keyname);
-		break;
-	}
-	case Database_types::valchartype:
-	default:
-		BOOST_LOG_TRIVIAL(error)
-			<< "Unknown or unhandleable type for key " << _keyname;
-		break;
+		case Database_types::inttype:
+		{
+			insertDefaultValue<int>(tuple, _keyname);
+			break;
+		}
+		case Database_types::doubletype:
+		{
+			insertDefaultValue<double>(tuple, _keyname);
+			break;
+		}
+		case Database_types::valchartype:
+		default:
+			BOOST_LOG_TRIVIAL(error)
+				<< "Unknown or unhandleable type for key " << _keyname;
+			break;
 	}
 }

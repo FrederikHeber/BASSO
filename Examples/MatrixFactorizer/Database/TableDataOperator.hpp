@@ -68,7 +68,7 @@ protected:
 	 * @return vectors, one per \a accumulated_keys, each containing
 	 * 			all the values over the tuples in the table.
 	 */
-	valuevectors_t extractData() const;
+	valuevectors_t extractValues() const;
 
 	//!> accumulated data for placement in another table.
 	mutable Table::TokenTypeMap_t accumulatedData;
@@ -77,7 +77,12 @@ protected:
 	 * from the Table's Tuple_t's.
 	 *
 	 */
-	virtual void operateOnData() const = 0;
+	virtual void extractData() const = 0;
+
+	/** Internal function to average the data.
+	 *
+	 */
+	virtual void finalizeData() const = 0;
 
 	//!> reference to database to get tables from
 	const Database& db;

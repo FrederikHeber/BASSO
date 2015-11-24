@@ -16,6 +16,12 @@
 #include "Database/TableDirectoryDatabase.hpp"
 #include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 
+/** The InnerProblemDatabase may essentially be used multiple times
+ * and keeps a memory (in the form of the accumulated values) over
+ * time despite any Database::clear() calls. This is because we
+ * hook into Database::finish() and store away all information in
+ * the accumulated values for later use.
+ */
 class InnerProblemDatabase : public TableDirectoryDatabase
 {
 public:
@@ -54,6 +60,18 @@ public:
 	 */
 	void setReplacePresentParameterTuples(const bool _flag)
 	{}
+
+	/** Clears the whole database.
+	 *
+	 */
+	void clear();
+
+	/** Finalize the data in the database.
+	 *
+	 * \note We override this function in order to store away values before
+	 * deletion.
+	 */
+	void finish();
 
 	/** Checks whether a tuple is present in the sqlite table without
 	 * causing any warning if table is not uptodate.

@@ -24,6 +24,17 @@ InnerProblemDatabase::InnerProblemDatabase(
 			_overall_keys.end())
 {}
 
+void InnerProblemDatabase::clear()
+{
+	TableDirectoryDatabase::clear();
+}
+
+void InnerProblemDatabase::finish()
+{
+	// extract present data
+	overall_table_accumulator.extractData();
+}
+
 void InnerProblemDatabase::insertAccumulatedValues(
 		Table &_table
 		) const
