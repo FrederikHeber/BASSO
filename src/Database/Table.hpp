@@ -30,6 +30,10 @@ class TableDirectory;
  */
 class Table
 {
+public:
+	//!> typedef for this instance wrapped in a shared_ptr
+	typedef boost::shared_ptr<Table> ptr;
+
 protected:
 	//!> grant SQLDatabase access to private functions
 	friend class SQLDatabase;
@@ -39,9 +43,6 @@ protected:
 
 	//!> grant IterationInformation access to dummy cstor
 	friend class IterationInformation;
-
-	//!> typedef for this instance wrapped in a shared_ptr
-	typedef boost::shared_ptr<Table> ptr;
 
 	/** Constructor for class Table.
 	 *

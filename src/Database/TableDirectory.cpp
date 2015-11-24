@@ -68,3 +68,13 @@ const Table& TableDirectory::getTableConst(const std::string &_name) const
 	assert( iter != tables.end() );
 	return *iter->second;
 }
+
+Table& TableDirectory::insertTable(
+		const std::string &_name,
+		const Table::ptr &_ref)
+{
+	tables.insert( std::make_pair(_name, _ref) );
+	tables_t::iterator iter = tables.find(_name);
+	assert( iter != tables.end() );
+	return *iter->second;
+}

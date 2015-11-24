@@ -74,6 +74,16 @@ struct TableDirectory
 	 */
 	void clear();
 
+	/** Convenience function to insert elsewhere created table.
+	 *
+	 * This is useful for e.g. inserting Table_mock's in the
+	 * directory.
+	 *
+	 * @param _name name of table
+	 * @param _ref reference to table instance
+	 */
+	Table& insertTable(const std::string &_name, const Table::ptr &_ref);
+
 private:
 	//!> typedef for the set of tables
 	typedef std::map<std::string, Table::ptr> tables_t;
