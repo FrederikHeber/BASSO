@@ -37,7 +37,7 @@ public:
 	 * @param _name name of new table
 	 * @return ref to the table, present one if it already existed
 	 */
-	Table& addTable(const std::string &_name)
+	virtual Table& addTable(const std::string &_name)
 	{ return directory.addTable(_name); }
 
 	/** Removes a table with name \a _name from this database.
@@ -45,7 +45,7 @@ public:
 	 * @param _name name of new table
 	 * @return true - table found and removed, false - else
 	 */
-	bool removeTable(const std::string &_name)
+	virtual bool removeTable(const std::string &_name)
 	{ return directory.removeTable(_name); }
 
 	/** Removes contents of a table with name \a _name from this database.
@@ -61,7 +61,7 @@ public:
 	 * @param _name name of table
 	 * @return ref to the table
 	 */
-	Table& getTable(const std::string &_name)
+	virtual Table& getTable(const std::string &_name)
 	{ return directory.getTable(_name); }
 
 	/** Getter for a table by its name \a _name.
@@ -69,14 +69,14 @@ public:
 	 * @param _name name of table
 	 * @return const ref to the table
 	 */
-	const Table& getTableConst(const std::string &_name) const
+	virtual const Table& getTableConst(const std::string &_name) const
 	{ return directory.getTableConst(_name); }
 
 	/** Returns the number of tables present in the database.
 	 *
 	 * @return number of tables
 	 */
-	const size_t size() const
+	virtual const size_t size() const
 	{ return directory.size(); }
 
 	/** Resets the whole database to initial status.
@@ -88,7 +88,7 @@ public:
 	/** Clears all tables in the database.
 	 *
 	 */
-	void clear()
+	virtual void clear()
 	{ directory.clear(); }
 
 	/** Finalize the data in the database.
