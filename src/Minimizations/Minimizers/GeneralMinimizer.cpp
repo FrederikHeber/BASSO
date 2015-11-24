@@ -351,7 +351,7 @@ void GeneralMinimizer::setParameterKey(
 					parameters_table, parameter_tuple);
 		// clear table such that present tuple is not stored again
 		database.clearTable(parameters_table.getName());
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 			<< "Setting parameter_key to " << rowid;
 	} else {
 		// else set rowid to arbitrary value as there is no file anyway
