@@ -3,6 +3,7 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (MatrixFactorizerBase
+	Database/AccumulatedValues.cpp
 	Database/InnerProblemDatabase.cpp
 	Database/IterationInformation.cpp
 	Database/TableDataAccumulator.cpp
@@ -14,6 +15,7 @@ add_library (MatrixFactorizerBase
 	Work/Master.cpp
 	Work/Slave.cpp)
 
+install (FILES Database/AccumulatedValues.hpp DESTINATION include)
 install (FILES Database/InnerProblemDatabase.hpp DESTINATION include)
 install (FILES Database/IterationInformation.hpp DESTINATION include)
 install (FILES Database/MaxMinAverage.hpp DESTINATION include)

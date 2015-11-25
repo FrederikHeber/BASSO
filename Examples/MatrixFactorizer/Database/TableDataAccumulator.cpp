@@ -60,7 +60,7 @@ void TableDataAccumulator::extractData() const
 		BOOST_LOG_TRIVIAL(trace)
 				<< "There are " << valuevectors[iterindex].second.size() << " values for " << keyname;
 		assert(valuevectors[iterindex].second.size()==1);
-		const accumulatedValues_t::iterator iter =
+		const AccumulatedValues::iterator iter =
 				accumulatedValues.find(keyname);
 		if (iter != accumulatedValues.end())
 			iter->second.second.push_back(valuevectors[iterindex].second[0]);
@@ -75,7 +75,7 @@ void TableDataAccumulator::extractData() const
 
 void TableDataAccumulator::finalizeData() const
 {
-	for (accumulatedValues_t::const_iterator valueiter = accumulatedValues.begin();
+	for (AccumulatedValues::const_iterator valueiter = accumulatedValues.begin();
 			valueiter != accumulatedValues.end(); ++valueiter) {
 		const std::string &keyname = valueiter->first;
 		const Database_types::types_t &type = valueiter->second.first;
@@ -138,3 +138,11 @@ void TableDataAccumulator::prepareTableForAccumulatedValues(
 			break;
 	}
 }
+
+void TableDataAccumulator::addAccumulatedValues(
+		const AccumulatedValues &_values)
+{
+	if (_values.size() != 0)
+		accumulatedValues.insert(_values.begin(),_values.end());
+}
+

@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include "MatrixFactorizer/Database/AccumulatedValues.hpp"
 #include "MatrixFactorizer/Database/TableDataOperator.hpp"
 
 class TableDataAccumulator : public TableDataOperator
@@ -57,14 +58,29 @@ public:
 	 */
 	void extractData() const;
 
+	/** Getter for the accumulated (temporary) values.
+	 *
+	 * This is used by the parallel implementation to transfer accumulated
+	 * values from Slave to Master node.
+	 *
+	 * @return ref to accumulated values
+	 */
+	const AccumulatedValues& getAccumulatedValues() const
+	{ return accumulatedValues; }
+
+	/** Adder for another set of accumulated values.
+	 *
+	 * This is used by the parallel implementation to add the transfered
+	 * values at the Master node.
+	 *
+	 * @param _values accumulated values to add
+	 */
+	void addAccumulatedValues(
+			const AccumulatedValues &_values);
+
 private:
-	typedef std::map<
-				std::string,
-				std::pair<
-					Database_types::types_t,
-					Table::any_values_t> > accumulatedValues_t;
 	//!> accumulated data for placement in another table.
-	mutable accumulatedValues_t accumulatedValues;
+	mutable AccumulatedValues accumulatedValues;
 
 	/** Internal function to average the data.
 	 *
