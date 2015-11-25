@@ -89,7 +89,7 @@ bool RangeProjectionSolver::operator()(
 	// prepare minimizer
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, inverseproblem, database, stopping_criterion, opts.maxiter);
+					opts, inverseproblem, database, stopping_criterion);
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";

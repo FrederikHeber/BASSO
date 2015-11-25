@@ -69,7 +69,7 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, _inverseproblem, database, stopping_criterion, opts.maxiter);
+					opts, _inverseproblem, database, stopping_criterion);
 
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

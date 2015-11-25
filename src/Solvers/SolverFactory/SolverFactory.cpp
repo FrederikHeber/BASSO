@@ -77,8 +77,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
 		Database_ptr_t &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const unsigned int _maxiterations
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		)
 {
 	MinimizerFactory factory;
@@ -89,7 +88,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 			_opts.type,
 			_inverseproblem,
 			_opts.delta,
-			_maxiterations,
+			_opts.maxiter,
 			_opts.maxinneriter,
 			*_database,
 			_stopping_criteria,

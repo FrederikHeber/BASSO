@@ -58,7 +58,6 @@ struct SolverFactory
 	 * @param _inverseproblem inverse problem to be solved/minimized
 	 * @param _database database to write iteration data to
 	 * @param _stopping_criteria the stopping criteria
-	 * @param _maxiterations maximum iterations for the minimizer
 	 * @return NULL - something went wrong,
 	 * 		   else - constructed minimizer instance, ready to go
 	 *
@@ -67,8 +66,7 @@ struct SolverFactory
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
 		Database_ptr_t &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const unsigned int _maxiterations
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		);
 };
 
