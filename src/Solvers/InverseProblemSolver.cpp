@@ -12,6 +12,7 @@
 
 #include <cassert>
 
+#include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
@@ -19,52 +20,32 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
-#include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Options/CommandLineOptions.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 InverseProblemSolver::InverseProblemSolver(
+		InverseProblem_ptr_t &_inverseproblem,
 		Database_ptr_t &_database,
 		const CommandLineOptions &_opts,
 		const bool _checkTrueSolution
 		) :
+		inverseproblem(_inverseproblem),
 		database(_database),
 		opts(_opts),
-		checkTrueSolution(_checkTrueSolution)
-{}
-
-bool InverseProblemSolver::operator()(
-		const Eigen::MatrixXd &_matrix,
-		const Eigen::MatrixXd &_rhs,
-		const Eigen::VectorXd &_startingvalue,
-		Eigen::VectorXd &_solution
-		)
+		checkTrueSolution(_checkTrueSolution),
+		name("InverseProblem")
 {
-	// prepare inverse problem
-	InverseProblem_ptr_t inverseproblem =
-			SolverFactory::createInverseProblem(
-					opts, _matrix, _rhs);
-
-	GeneralMinimizer::ReturnValues result =
-			operator()(inverseproblem, _startingvalue);
-
-	_solution = RepresentationAdvocate::get(result.m_solution);
-
-	return result.status == GeneralMinimizer::ReturnValues::finished;
+	minimizer = SolverFactory::createMinimizer(
+					opts, _inverseproblem, database);
 }
 
 GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
-		InverseProblem_ptr_t &_inverseproblem,
-		const Eigen::VectorXd &_startingvalue
-		)
+		const SpaceElement_ptr_t &_startingvalue)
 {
 	GeneralMinimizer::ReturnValues result;
-
-	MinimizerFactory::instance_ptr_t minimizer =
-			SolverFactory::createMinimizer(
-					opts, _inverseproblem, database);
+	result.residuum = 0.;
 
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
@@ -75,8 +56,8 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 
 	SpaceElement_ptr_t truesolution;
 	if (checkTrueSolution) {
-		const LinearMapping &A = static_cast<LinearMapping&>(*_inverseproblem->A);
-		const SpaceElement_ptr_t &rhs = _inverseproblem->y;
+		const LinearMapping &A = static_cast<LinearMapping&>(*inverseproblem->A);
+		const SpaceElement_ptr_t &rhs = inverseproblem->y;
 		SingularValueDecomposition svd = A.getSVD();
 		const SpaceElement_ptr_t truesolution = svd.solve(rhs);
 
@@ -87,32 +68,33 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 				<< (A(truesolution) - rhs)->Norm()/rhs->Norm();
 	} else {
 		truesolution =
-				_inverseproblem->x->getSpace()->createElement();
+				inverseproblem->x->getSpace()->createElement();
 	}
 
 	// prepare start value and dual solution
-	SpaceElement_ptr_t x0 = ElementCreator::create(
-			_inverseproblem->x->getSpace(),
-			_startingvalue);
-	*_inverseproblem->x = x0;
-	if (x0->getSpace()->getDimension() < 10)
+	result.m_solution = _startingvalue->getSpace()->createElement();
+	*result.m_solution = _startingvalue;
+	*inverseproblem->x = result.m_solution;
+	if (result.m_solution->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Starting at x0 = " << x0;
-	SpaceElement_ptr_t dualx0;
+			<< "Starting at x0 = " << result.m_solution;
+
 	// only for smooth spaces we may use the duality mapping
-	if (_inverseproblem->x->getSpace()->getNorm()->isSmooth()) {
-		dualx0 = (*_inverseproblem->x->getSpace()->getDualityMapping())(x0);
+	if (inverseproblem->x->getSpace()->getNorm()->isSmooth()) {
+		result.m_dual_solution =
+				(*inverseproblem->x->getSpace()->getDualityMapping())(result.m_solution);
 	} else {
-		dualx0 = _inverseproblem->x->getSpace()->getDualSpace()->createElement();
-		dualx0->setZero();
+		result.m_dual_solution =
+				inverseproblem->x->getSpace()->getDualSpace()->createElement();
+		result.m_dual_solution->setZero();
 	}
 
-	// and minimize
+	/// solver inverse problem
 	try{
 		result = (*minimizer)(
-						_inverseproblem,
-						x0,
-						dualx0,
+						inverseproblem,
+						result.m_solution,
+						result.m_dual_solution,
 						truesolution);
 		minimizer->resetState();
 	} catch (MinimizationIllegalValue_exception &e) {
@@ -122,9 +104,18 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 		result.status = GeneralMinimizer::ReturnValues::error;
 		return result;
 	}
-	assert( *result.m_solution == *_inverseproblem->x );
-	assert( result.m_solution->getSpace().get() == _inverseproblem->x->getSpace().get() );
+	assert( *result.m_solution == *inverseproblem->x );
+	assert( result.m_solution->getSpace().get() == inverseproblem->x->getSpace().get() );
 
 	return result;
 }
 
+void InverseProblemSolver::clear()
+{
+	database->clear();
+}
+
+void InverseProblemSolver::finish()
+{
+	database->finish();
+}

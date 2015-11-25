@@ -103,19 +103,12 @@ int main (int argc, char *argv[])
 	Database_ptr_t database =
 			SolverFactory::createDatabase(opts);
 
-	InverseProblemSolver solver(
-			database,
-			opts,
-			false /* true solution calculation */);
-
 	// parse matrix and vector files into instances
 	const int N = opts.discretization;
 	const double depth = opts.depth;
 	Eigen::MatrixXd matrix = GravityMatrix(N,N, depth);
 	Eigen::VectorXd solution = GravitySolution(N);
 	Eigen::VectorXd rhs = matrix * solution;
-	Eigen::VectorXd solution_start = Eigen::VectorXd(N);
-	solution_start.setZero();
 
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
@@ -135,8 +128,17 @@ int main (int argc, char *argv[])
 			SolverFactory::createInverseProblem(
 					opts, matrix, rhs);
 
+	// solving
+	InverseProblemSolver solver(
+			inverseproblem,
+			database,
+			opts,
+			false /* true solution calculation */);
+	SpaceElement_ptr_t solution_start =
+			inverseproblem->x->getSpace()->createElement();
+	solution_start->setZero();
 	GeneralMinimizer::ReturnValues result =
-			solver( inverseproblem, solution_start);
+			solver( solution_start );
 	if (result.status == GeneralMinimizer::ReturnValues::error)
 		BOOST_LOG_TRIVIAL(error) << "Something went wrong during minimization.";
 

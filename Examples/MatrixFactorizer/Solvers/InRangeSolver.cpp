@@ -13,9 +13,11 @@
 #include "Log/Logging.hpp"
 
 #include "MatrixFactorizer/Helpers/detail.hpp"
+#include "Minimizations/Elements/ElementCreator.hpp"
 #include "Options/CommandLineOptions.hpp"
 #include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
+#include "Solvers/SolverFactory/SolverFactory.hpp"
 
 InRangeSolver::InRangeSolver(
 		const CommandLineOptions &_opts,
@@ -76,25 +78,38 @@ bool InRangeSolver::operator()(
 	BOOST_LOG_TRIVIAL(debug)
 			<< "........................ n=" << _dim << " ..................";
 
+	// prepare inverse problem
+	InverseProblem_ptr_t inverseproblem =
+			SolverFactory::createInverseProblem(
+					opts, _matrix, projected_rhs);
+
+	boost::shared_ptr<InverseProblemSolver> solver;
+	{
+		solver.reset(
+				new InverseProblemSolver(
+						inverseproblem,
+						solver_db,
+						opts,
+						false /* true solution calculation */)
+				);
+	}
+
 	// solve inverse problem for projected right-hand side
-	_solution = _solution_start;
-	InverseProblemSolver solver(
-			solver_db,
-			opts,
-			false /* true solution calculation */);
-	if (!solver(
-			_matrix,
-			projected_rhs,
-			_solution_start,
-			_solution)) {
+	SpaceElement_ptr_t solution_start = ElementCreator::create(
+			inverseproblem->x->getSpace(),
+			_solution_start);
+	solver_db->clear();
+	GeneralMinimizer::ReturnValues result =
+			(*solver)(solution_start);
+	solver_db->finish();
+
+	if (result.status == GeneralMinimizer::ReturnValues::finished) {
+		_solution = RepresentationAdvocate::get(result.m_solution);
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Resulting vector is " << _solution.transpose();
+		return true;
+	} else
 		return false;
-	}
-	solver_db->clear();
-
-
-	return true;
 }
 
 void InRangeSolver::insertAccumulatedProjectorValues(
