@@ -62,3 +62,13 @@ void InnerProblemDatabase::insertAccumulatedValues(
 	overall_table_accumulator.insertValues(
 			_table);
 }
+
+void InnerProblemDatabase::insertValues(
+		const std::vector<AccumulatedValues>::const_iterator &_values_first,
+		const std::vector<AccumulatedValues>::const_iterator &_values_last
+		)
+{
+	for (std::vector<AccumulatedValues>::const_iterator iter = _values_first;
+			iter != _values_last; ++iter)
+		overall_table_accumulator.addAccumulatedValues(*iter);
+}

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "Database/TableDirectoryDatabase.hpp"
+#include "MatrixFactorizer/Database/AccumulatedValues.hpp"
 #include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 
 /** The InnerProblemDatabase may essentially be used multiple times
@@ -149,6 +150,31 @@ public:
 	void insertAccumulatedValues(
 			Table &_table
 			) const;
+
+	/** Getter for the accumulated (temporary) values.
+	 *
+	 * This is used by the parallel implementation to transfer accumulated
+	 * values from Slave to Master node.
+	 *
+	 * @return ref to accumulated values
+	 */
+	const AccumulatedValues& getAccumulatedValues() const
+	{ return overall_table_accumulator.getAccumulatedValues(); }
+
+	/** Function to add a received vector of accumulated values into
+	 * the internal \a overall_table_accumulator.
+	 *
+	 * This is used by the parallel implementation to gather all values
+	 * from the Slave nodes at the Master node.
+	 *
+	 * @param _values_first vector of accumulated values
+	 * @param _values_last vector of accumulated values
+	 */
+	void insertValues(
+			const std::vector<AccumulatedValues>::const_iterator &_values_first,
+			const std::vector<AccumulatedValues>::const_iterator &_values_last
+			);
+
 private:
 	//!> data accumulator for overall table
 	TableDataAccumulator overall_table_accumulator;

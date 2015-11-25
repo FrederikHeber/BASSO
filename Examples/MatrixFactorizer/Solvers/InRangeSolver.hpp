@@ -66,6 +66,26 @@ struct InRangeSolver
 	void insertAccumulatedSolverValues(
 			Table &_table) const;
 
+	/** Getter for the accumulated values of the projector inner problem.
+	 *
+	 * This is used by the parallel implementation to obtain the values
+	 * for the the Slave nodes to transmit to Master node.
+	 *
+	 * @return ref to accumulated values from projection problem
+	 */
+	const AccumulatedValues& getAccumulatedProjectorValues() const
+	{ return projectorDB.getAccumulatedValues(); }
+
+	/** Getter for the accumulated values of the minimization inner problem.
+	 *
+	 * This is used by the parallel implementation to obtain the values
+	 * for the the Slave nodes to transmit to Master node.
+	 *
+	 * @return ref to accumulated values from minimization problem
+	 */
+	const AccumulatedValues& getAccumulatedSolverValues() const
+	{ return solverDB.getAccumulatedValues(); }
+
 private:
 	const CommandLineOptions &opts;
 	//!> table database for projector iteration information

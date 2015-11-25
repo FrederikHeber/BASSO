@@ -21,6 +21,7 @@
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 
 class CommandLineOptions;
+class Table;
 
 /** This class contains all code related to the master in the master/slave
  * parallelization implementation
@@ -57,6 +58,32 @@ public:
 			Eigen::MatrixXd &_solution
 			);
 
+	/** Insert accumulated and gathered values from projector problem into
+	 * given \a _table.
+	 *
+	 * @param _table table to insert values to
+	 */
+	void insertAccumulatedProjectorValues(
+			Table &_table) const;
+
+	/** Insert accumulated and gathered values from solver problem into
+	 * given \a _table.
+	 *
+	 * @param _table table to insert values to
+	 */
+	void insertAccumulatedSolverValues(
+			Table &_table) const;
+
+	/** Resets the internal databases for projector problem
+	 *
+	 */
+	void resetAccumulatedProjectorValues();
+
+	/** Resets the internal databases for solver problem.
+	 *
+	 */
+	void resetAccumulatedSolverValues();
+
 	/** Sends the terminate signal to the Slaves.
 	 *
 	 */
@@ -79,6 +106,11 @@ private:
 	boost::mpi::communicator &world;
 	//!> ref to overall keys to broadcast to clients
 	const InnerProblemDatabase::keys_t &overall_keys;
+
+	//!> table database for projector iteration information
+	Database::Database_ptr_t projector_db;
+	//!> table database for solver iteration information
+	Database::Database_ptr_t solver_db;
 };
 
 #endif /* MPI_FOUND */

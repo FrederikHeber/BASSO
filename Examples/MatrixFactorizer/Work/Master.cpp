@@ -20,7 +20,10 @@ namespace mpi = boost::mpi;
 
 #include <cassert>
 #include <deque>
+#include <functional>
+#include <numeric>
 
+#include "Database/Table.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "MatrixFactorizer/Work/WorkPackage.hpp"
@@ -33,10 +36,36 @@ Master::Master(
 		mpi::communicator &_world,
 		const InnerProblemDatabase::keys_t &_overall_keys) :
 	world(_world),
-	overall_keys(_overall_keys)
+	overall_keys(_overall_keys),
+	projector_db(new InnerProblemDatabase),
+	solver_db(new InnerProblemDatabase(_overall_keys))
 {
 	// only master should use this class directly, others use Slave
 	assert( world.rank() == 0);
+}
+
+void printNumberOfValues(
+		const size_t _rank,
+		const std::string &_name,
+		const std::vector<AccumulatedValues> &_values
+		)
+{
+	std::vector<size_t> sizes(_values.size(), 0);
+	std::transform(
+			const_cast< const std::vector<AccumulatedValues>& >(_values).begin(),
+			const_cast< const std::vector<AccumulatedValues>& >(_values).end(),
+			sizes.begin(),
+			std::mem_fun_ref(&AccumulatedValues::getNumberOfValues));
+	std::stringstream output;
+	std::copy(sizes.begin(), sizes.end(),
+			std::ostream_iterator<size_t>(output, ","));
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#" << _rank << " gathered " << output.str();
+	const size_t totalentries =
+			std::accumulate(sizes.begin(), sizes.end(), 0);
+	BOOST_LOG_TRIVIAL(debug)
+			<< "#" << _rank << " gathered " << totalentries
+			<< " accumulated values from " << _name << " problem.";
 }
 
 bool Master::solve(
@@ -150,8 +179,53 @@ bool Master::solve(
 				<< "#0 - sending termination signal to " << i << ".";
 		world.send(i, ColumnWise, WorkPackage());
 	}
+	// gather operation for values accumulated from inner problem's overall tables
+	{
+		std::vector<AccumulatedValues> out_values;
+		out_values.resize(world.size());
+		AccumulatedValues in_values;
+		boost::mpi::gather(world, in_values, out_values, 0);
+		printNumberOfValues(world.rank(), "projector", out_values);
+		// skip the master's empty values
+		static_cast<InnerProblemDatabase &>(*projector_db.get()).
+				insertValues(++out_values.begin(), out_values.end());
+	}
+	{
+		std::vector<AccumulatedValues> out_values;
+		out_values.resize(world.size());
+		AccumulatedValues in_values;
+		boost::mpi::gather(world, in_values, out_values, 0);
+		printNumberOfValues(world.rank(), "minimization", out_values);
+		// skip the master's empty values
+		static_cast<InnerProblemDatabase &>(*solver_db.get()).
+				insertValues(++out_values.begin(), out_values.end());
+	}
 
 	return continue_condition;
+}
+
+void Master::insertAccumulatedProjectorValues(
+		Table &_table) const
+{
+	static_cast<InnerProblemDatabase &>(*projector_db.get()).
+			insertAccumulatedValues(_table);
+}
+
+void Master::insertAccumulatedSolverValues(
+		Table &_table) const
+{
+	static_cast<InnerProblemDatabase &>(*solver_db.get()).
+			insertAccumulatedValues(_table);
+}
+
+void Master::resetAccumulatedProjectorValues()
+{
+	projector_db.reset(new InnerProblemDatabase(overall_keys));
+}
+
+void Master::resetAccumulatedSolverValues()
+{
+	solver_db.reset(new InnerProblemDatabase(overall_keys));
 }
 
 bool Master::handleResult(

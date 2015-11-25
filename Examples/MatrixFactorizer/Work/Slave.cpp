@@ -133,6 +133,23 @@ void Slave::operator()()
 						<< "#" << world.rank() << " - terminating.";
 			}
 		}
+		// gather accumulated values from solved inner problems
+		{
+			const AccumulatedValues &in_values =
+					solver.getAccumulatedProjectorValues();
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << world.rank() << " sending " << in_values.getNumberOfValues()
+					<< " accumulated values from projector problem.";
+			boost::mpi::gather(world, in_values, 0);
+		}
+		{
+			const AccumulatedValues &in_values =
+					solver.getAccumulatedSolverValues();
+			BOOST_LOG_TRIVIAL(debug)
+					<< "#" << world.rank() << " sending " << in_values.getNumberOfValues()
+					<< " accumulated values from minimization problem.";
+			boost::mpi::gather(world, in_values, 0);
+		}
 	}
 }
 

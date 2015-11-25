@@ -161,6 +161,9 @@ void MatrixFactorization::operator()(
 								_data,
 								pixel_matrix
 								);
+				// place accumulated values in loop table
+				master.insertAccumulatedSolverValues(info.getLoopTable());
+				master.resetAccumulatedSolverValues();
 			}
 #endif
 
@@ -231,6 +234,9 @@ void MatrixFactorization::operator()(
 								_data.transpose(),
 								spectral_matrix
 								);
+				// place accumulated values in loop table
+				master.insertAccumulatedSolverValues(info.getLoopTable());
+				master.resetAccumulatedSolverValues();
 			}
 #endif
 			spectral_matrix.transposeInPlace();
