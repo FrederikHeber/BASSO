@@ -37,7 +37,7 @@ Master::Master(
 		const InnerProblemDatabase::keys_t &_overall_keys) :
 	world(_world),
 	overall_keys(_overall_keys),
-	projector_db(new InnerProblemDatabase),
+	projector_db(new InnerProblemDatabase(_overall_keys)),
 	solver_db(new InnerProblemDatabase(_overall_keys))
 {
 	// only master should use this class directly, others use Slave

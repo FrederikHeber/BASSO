@@ -22,7 +22,7 @@ InRangeSolver::InRangeSolver(
 		const InnerProblemDatabase::keys_t &_overall_keys
 		) :
 	opts(_opts),
-	projector_db(new InnerProblemDatabase),
+	projector_db(new InnerProblemDatabase(_overall_keys)),
 	solver_db(new InnerProblemDatabase(_overall_keys)),
 	projectorDB(static_cast<InnerProblemDatabase &>(*projector_db.get())),
 	solverDB(static_cast<InnerProblemDatabase &>(*solver_db.get()))

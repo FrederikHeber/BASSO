@@ -58,7 +58,11 @@ IterationInformation::IterationInformation(
 				TableDataAccumulator::prepareTableForAccumulatedValues(
 						loop_table,
 						Table::getVariantsType(tupleiter->second),
-						(*iter));
+						(*iter)+"_projection");
+				TableDataAccumulator::prepareTableForAccumulatedValues(
+						loop_table,
+						Table::getVariantsType(tupleiter->second),
+						(*iter)+"_minimization");
 			}
 		}
 	}
