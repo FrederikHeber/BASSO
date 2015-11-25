@@ -10,20 +10,36 @@
 
 #include "BassoConfig.h"
 
+#include <string>
+#include <vector>
+
 #include "Database/TableDirectoryDatabase.hpp"
+#include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 
 class InnerProblemDatabase : public TableDirectoryDatabase
 {
 public:
+	//!> expose Table-internal keys typedef to public part
+	typedef std::vector<std::string> keys_t ;
+
 	/** Cstor of class InnerProblemDatabase.
 	 *
 	 */
 	InnerProblemDatabase();
 
+	/** Cstor of class InnerProblemDatabase.
+	 *
+	 * @param _overall_keys keys to pass along from overall table
+	 */
+	InnerProblemDatabase(
+			const keys_t &_overall_keys
+			);
+
 	/** Dstor of class InnerProblemDatabase.
 	 *
 	 */
-	virtual ~InnerProblemDatabase();
+	virtual ~InnerProblemDatabase()
+	{}
 
 	void setDatabaseFile( const std::string &_filename)
 	{}
@@ -99,32 +115,16 @@ public:
 	bool isDatabaseFileGiven() const
 	{ return true; }
 
-private:
-
-	/** Addes the required columns for the accumulated values to the \a _table.
-	 *
-	 * @param _table table to insert columns
-	 * @param _keyname key to insert (for each key four columns:
-	 * 			min_, max_, avg_, and var_)
-	 */
-	static void prepareTableForAccumulatedValues(
-			Table &_table,
-			const std::string &_keyname);
-
-	/** Addes the accumulated information to the (hopefully) prepared \a _table.
+	/** Adds the accumulated information to the (hopefully) prepared \a _table.
 	 *
 	 * @param _table table to add accumulated information to
 	 */
 	void insertAccumulatedValues(
-			Table &_table) const;
-
-public:
-	// here we extend the TableDirectoryDatabase functionality
-
-	void accumulateData() const;
-
-	//!> accumulated data for placement in another table.
-	mutable Table::TokenTypeMap_t accumulatedData;
+			Table &_table
+			) const;
+private:
+	//!> data accumulator for overall table
+	TableDataAccumulator overall_table_accumulator;
 };
 
 

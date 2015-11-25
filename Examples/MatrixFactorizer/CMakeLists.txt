@@ -5,6 +5,8 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 add_library (MatrixFactorizerBase
 	Database/InnerProblemDatabase.cpp
 	Database/IterationInformation.cpp
+	Database/TableDataAccumulator.cpp
+	Database/TableDataOperator.cpp
 	Helpers/detail.cpp
 	Options/MatrixFactorizerOptions.cpp
 	Solvers/InRangeSolver.cpp
@@ -15,6 +17,8 @@ add_library (MatrixFactorizerBase
 install (FILES Database/InnerProblemDatabase.hpp DESTINATION include)
 install (FILES Database/IterationInformation.hpp DESTINATION include)
 install (FILES Database/MaxMinAverage.hpp DESTINATION include)
+install (FILES Database/TableDataAccumulator.hpp DESTINATION include)
+install (FILES Database/TableDataOperator.hpp DESTINATION include)
 install (FILES Helpers/detail.hpp DESTINATION include)
 install (FILES Options/MatrixFactorizerOptions.hpp DESTINATION include)
 install (FILES ScalingAmbiguityRemover/MatrixProductEqualizer.hpp DESTINATION include)
