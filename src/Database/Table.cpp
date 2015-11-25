@@ -20,9 +20,8 @@ void Table::addTuple(const Tuple_t &_tuple)
 	internal_table.insert(_tuple);
 }
 
-static
 enum Database_types::types_t
-getVariantsType(const boost::variant<int, double, std::string> &_variant)
+Table::getVariantsType(const Database_types::typevariant_t &_variant)
 {
 	if (boost::get<const int>(&_variant) != NULL)
 		return Database_types::inttype;

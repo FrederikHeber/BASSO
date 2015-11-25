@@ -61,6 +61,15 @@ public:
 			std::string,
 			Database_types::typevariant_t > TokenTypeMap_t;
 
+	/** Helper function to translate Database_types::typevariant_t
+	 * into Database_types::types_t.
+	 *
+	 * @param _variant given typevariant
+	 * @return return type
+	 */
+	static enum Database_types::types_t
+	getVariantsType(const Database_types::typevariant_t &_variant);
+
 	/** The Tuple_t contains the data as a map of key/value pairs.
 	 */
 	class Tuple_t :
