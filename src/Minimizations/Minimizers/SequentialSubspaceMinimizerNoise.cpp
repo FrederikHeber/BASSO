@@ -33,24 +33,16 @@
 #include "Minimizations/Norms/Norm.hpp"
 
 SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
+		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		const unsigned int _maxinneriter,
 		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const unsigned int _outputsteps,
-		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		) :
 	SequentialSubspaceMinimizer(
+		_opts,
 		_inverseproblem,
-		_Delta,
-		_maxiter,
-		_maxinneriter,
 		_database,
-		_stopping_criteria,
-		_outputsteps,
-		_orthogonalization_type
+		_stopping_criteria
 		)
 {}
 

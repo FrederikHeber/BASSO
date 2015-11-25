@@ -22,14 +22,10 @@ class SequentialSubspaceMinimizerNoise : public SequentialSubspaceMinimizer
 {
 public:
 	SequentialSubspaceMinimizerNoise(
+			const CommandLineOptions &_opts,
 			const InverseProblem_ptr_t &_inverseproblem,
-			const double _Delta,
-			const unsigned int _maxiter,
-			const unsigned int _maxinneriter,
 			Database &_database,
-			const StoppingCriterion::ptr_t &_stopping_criteria,
-			const unsigned int _outputsteps,
-			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
+			const StoppingCriterion::ptr_t &_stopping_criteria
 			);
 
 	~SequentialSubspaceMinimizerNoise() {}

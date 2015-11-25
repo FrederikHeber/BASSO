@@ -32,6 +32,7 @@
 #include "Minimizations/Norms/NormFactory.hpp"
 #include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 //#define BREGMANDISTANCEERRORTHRESHOLD 1
 
@@ -41,22 +42,19 @@ using namespace boost::assign;
 GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
 
 GeneralMinimizer::GeneralMinimizer(
+		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		const unsigned int _maxinneriter,
 		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const unsigned int _outputsteps
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		) :
-	Delta(_Delta),
+	Delta(_opts.delta),
 	MaxWalltime(0.),
-	MaxOuterIterations(_maxiter),
-	MaxInnerIterations(_maxinneriter),
+	MaxOuterIterations(_opts.maxiter),
+	MaxInnerIterations(_opts.maxinneriter),
 	TolX(1e-6),
 	TolY(Delta),
 	TolFun(1e-12),
-	outputsteps(_outputsteps),
+	outputsteps(_opts.outputsteps),
 	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
 	l2norm(NormFactory::getInstance().create(

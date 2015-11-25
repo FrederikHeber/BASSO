@@ -37,38 +37,26 @@ MinimizerFactory::createInstance(
 	switch(_opts.type) {
 	case landweber:
 		instance = new LandweberMinimizer(
+				_opts,
 				_inverseproblem,
-				_opts.delta,
-				_opts.maxiter,
-				_opts.maxinneriter,
 				_database,
-				_stopping_criteria,
-				(const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type,
-				_opts.outputsteps
+				_stopping_criteria
 				);
 		break;
 	case sequentialsubspace:
 			instance = new SequentialSubspaceMinimizer(
+					_opts,
 					_inverseproblem,
-					_opts.delta,
-					_opts.maxiter,
-					_opts.maxinneriter,
 					_database,
-					_stopping_criteria,
-					_opts.outputsteps,
-					_opts.orthogonalization_type
+					_stopping_criteria
 					);
 			break;
 	case sequentialsubspace_noise:
 			instance = new SequentialSubspaceMinimizerNoise(
+					_opts,
 					_inverseproblem,
-					_opts.delta,
-					_opts.maxiter,
-					_opts.maxinneriter,
 					_database,
-					_stopping_criteria,
-					_opts.outputsteps,
-					_opts.orthogonalization_type
+					_stopping_criteria
 					);
 			break;
 	default:

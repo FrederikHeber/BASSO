@@ -34,28 +34,22 @@
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 LandweberMinimizer::LandweberMinimizer(
+		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		const unsigned int _maxinneriter,
 		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
-		const unsigned int _outputsteps
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		) :
 	GeneralMinimizer(
-				_inverseproblem,
-				_Delta,
-				_maxiter,
-				_maxinneriter,
-				_database,
-				_stopping_criteria,
-				_outputsteps
-				),
+			_opts,
+			_inverseproblem,
+			_database,
+			_stopping_criteria
+			),
 	C(0.9),
-	stepwidth_type(_stepwidth_type)
+	stepwidth_type((const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type)
 {}
 
 void LandweberMinimizer::setC(const double _C)

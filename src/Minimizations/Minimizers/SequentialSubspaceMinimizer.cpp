@@ -34,34 +34,28 @@
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 using namespace boost::assign;
 
 SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
+		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		const unsigned int _maxinneriter,
 		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const unsigned int _outputsteps,
-		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		) :
 	GeneralMinimizer(
+			_opts,
 			_inverseproblem,
-			_Delta,
-			_maxiter,
-			_maxinneriter,
 			_database,
-			_stopping_criteria,
-			_outputsteps
+			_stopping_criteria
 			),
 	N(2),
 	inexactLinesearch(false),
 	constant_positivity(1e-6),
 	constant_interpolation(0.6),
 	DoCalculateAngles(false),
-	OrthogonalizationType(_orthogonalization_type)
+	OrthogonalizationType(_opts.orthogonalization_type)
 {}
 
 void SequentialSubspaceMinimizer::setN(
