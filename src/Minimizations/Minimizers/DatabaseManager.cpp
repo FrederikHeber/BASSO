@@ -12,17 +12,13 @@
 
 #include <cassert>
 #include <cmath>
-#include <string>
-#include <vector>
 
 #include <boost/lexical_cast.hpp>
 
 #include "Database/Database.hpp"
-#include "Database/Table.hpp"
 #include "Log/Logging.hpp"
-#include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
 
-GeneralMinimizer::DatabaseManager::DatabaseManager(
+DatabaseManager::DatabaseManager(
 		Database &_database,
 		const addAdditionalParameters_t &_add_param_callback) :
 	database(_database),
@@ -33,12 +29,12 @@ GeneralMinimizer::DatabaseManager::DatabaseManager(
 	data_overall_table(database.addTable("data_overall"))
 {}
 
-size_t GeneralMinimizer::DatabaseManager::size() const
+size_t DatabaseManager::size() const
 {
 	return database.size();
 }
 
-void GeneralMinimizer::DatabaseManager::setParameterKey(
+void DatabaseManager::setParameterKey(
 		double _val_NormX,
 		double _val_NormY,
 		const unsigned int _N,
@@ -130,7 +126,7 @@ void GeneralMinimizer::DatabaseManager::setParameterKey(
 	const_cast<size_t &>(parameter_key) = rowid;
 }
 
-Table::Tuple_t & GeneralMinimizer::DatabaseManager::preparePerIterationTuple() const
+Table::Tuple_t & DatabaseManager::preparePerIterationTuple() const
 {
 	assert(parameter_key != 0);
 
@@ -146,7 +142,7 @@ Table::Tuple_t & GeneralMinimizer::DatabaseManager::preparePerIterationTuple() c
 	return per_iteration_tuple;
 }
 
-Table::Tuple_t & GeneralMinimizer::DatabaseManager::prepareOverallTuple() const
+Table::Tuple_t & DatabaseManager::prepareOverallTuple() const
 {
 	assert(parameter_key != 0);
 
@@ -165,7 +161,7 @@ Table::Tuple_t & GeneralMinimizer::DatabaseManager::prepareOverallTuple() const
 	return overall_tuple;
 }
 
-void GeneralMinimizer::DatabaseManager::finalizeOverallTuple(
+void DatabaseManager::finalizeOverallTuple(
 		Table::Tuple_t &_overall_tuple,
 		QuickAccessReferences &_refs) const
 {
@@ -200,7 +196,7 @@ void GeneralMinimizer::DatabaseManager::finalizeOverallTuple(
 	// NOTE: due to Eigen's lazy evaluation runtime is not measured accurately
 }
 
-bool GeneralMinimizer::DatabaseManager::createViews() const
+bool DatabaseManager::createViews() const
 {
 	// write tables beforehand
 	database.writeAllTables();
@@ -236,7 +232,7 @@ bool GeneralMinimizer::DatabaseManager::createViews() const
 	return status;
 }
 
-void GeneralMinimizer::DatabaseManager::setAdditionalTupleParameters(
+void DatabaseManager::setAdditionalTupleParameters(
 			const std::vector<std::string> &_tuple_params)
 {
 	assert ( _tuple_params.size() % 2 == 0);

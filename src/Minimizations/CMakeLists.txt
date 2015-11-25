@@ -29,8 +29,8 @@ add_library (Minimizations
 	Mappings/Specifics/LpDualityMapping.cpp
 	Mappings/Specifics/LInfinityDualityMapping.cpp
 	Mappings/Specifics/RelativeShrinkageMapping.cpp
+	Minimizers/DatabaseManager.cpp
 	Minimizers/GeneralMinimizer.cpp
-	Minimizers/GeneralMinimizer_DatabaseManager.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/MinimizerFactory.cpp
 	Minimizers/SequentialSubspaceMinimizer.cpp
@@ -98,6 +98,7 @@ install (FILES Mappings/Specifics/LpDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/LInfinityDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/Specifics/RelativeShrinkageMapping.hpp DESTINATION include)
 
+install (FILES Minimizers/DatabaseManager.hpp DESTINATION include)
 install (FILES Minimizers/GeneralMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/LandweberMinimizer.hpp DESTINATION include)
 install (FILES Minimizers/MinimizationExceptions.hpp DESTINATION include)
