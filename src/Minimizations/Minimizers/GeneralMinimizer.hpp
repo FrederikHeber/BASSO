@@ -232,9 +232,6 @@ protected:
 	//!> IterationInformation needs access to DatabaseContainer
 	friend class IterationInformation;
 
-	//!> callback used by DatabaseManager needed in cstor
-	DatabaseManager::addAdditionalParameters_t add_params_callback;
-
 	//!> manager for all database access
 	DatabaseManager dbcontainer;
 

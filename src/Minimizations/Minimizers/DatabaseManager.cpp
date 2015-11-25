@@ -13,16 +13,19 @@
 #include <cassert>
 #include <cmath>
 
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 
-DatabaseManager::DatabaseManager(
-		Database &_database,
-		const addAdditionalParameters_t &_add_param_callback) :
+static void NoOpAddParams(Table::Tuple_t &, const bool)
+{}
+
+
+DatabaseManager::DatabaseManager(Database &_database) :
 	database(_database),
-	add_param_callback(_add_param_callback),
+	add_param_callback(boost::bind(NoOpAddParams, _1, _2)),
 	parameter_key(0),
 	parameters_table(database.addTable("parameters")),
 	data_per_iteration_table(database.addTable("data_per_iteration")),

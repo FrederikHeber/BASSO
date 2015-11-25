@@ -29,12 +29,8 @@ struct DatabaseManager
 	/** Cstor of struct DatabaseManager.
 	 *
 	 * @param _database database to manage
-	 * @param _add_param_callback callback function to add additional
-	 * 		columns to parameters table
 	 */
-	DatabaseManager(
-			Database &_database,
-			const addAdditionalParameters_t &_add_param_callback);
+	DatabaseManager(Database &_database);
 
 	/** Returns the number of tables in the database.
 	 *
@@ -47,6 +43,15 @@ struct DatabaseManager
 	 * \return true - views created, false - statements failed
 	 */
 	bool createViews() const;
+
+	/** Setter for the callback function to add more parameter columns.
+	 *
+	 * @param _add_param_callback call back to set
+	 */
+	void setAddParamsCallback(
+			const addAdditionalParameters_t _add_param_callback)
+	{ const_cast<addAdditionalParameters_t&>(add_param_callback) =
+			_add_param_callback;	}
 
 	/** Sets the vector with additional parameters to make tuples unique in database.
 	 *
@@ -84,7 +89,7 @@ struct DatabaseManager
 	Database &database;
 
 	//!> callback to use when parameters table is created
-	const addAdditionalParameters_t &add_param_callback;
+	const addAdditionalParameters_t add_param_callback;
 
 	//!> additional parameter, value pairs that are added to each submitted tuple
 	const std::vector<std::string> tuple_params;

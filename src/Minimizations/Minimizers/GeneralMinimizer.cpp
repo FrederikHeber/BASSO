@@ -44,7 +44,7 @@ GeneralMinimizer::GeneralMinimizer(
 		const InverseProblem_ptr_t &_inverseproblem,
 		Database &_database
 		) :
-	dbcontainer(_database, add_params_callback),
+	dbcontainer(_database),
 	Delta(_opts.delta),
 	MaxOuterIterations(_opts.maxiter),
 	MaxInnerIterations(_opts.maxinneriter),
@@ -59,11 +59,6 @@ GeneralMinimizer::GeneralMinimizer(
 			_inverseproblem->x->getSpace(),
 			NormFactory::args_t(1, boost::any(2.))))
 {
-	// initialize callback here, before "this" is not fully constructed
-	add_params_callback =
-			boost::bind(&GeneralMinimizer::addAdditionalParametersToTuple,
-					boost::cref(*this), _1, _2);
-
 	// set tolerances values
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->setTolerance(TolX);
@@ -79,6 +74,12 @@ GeneralMinimizer::GeneralMinimizer(
 	StoppingCriteriaFactory stop_factory;
 	const_cast<StoppingCriterion::ptr_t &>(stopping_criteria) =
 			stop_factory.create(_opts.stopping_criteria, _opts.stopping_args);
+
+	// set NoOp additional parameters
+	// don't do this in initializer list as class not fully constructed
+	dbcontainer.setAddParamsCallback(
+			boost::bind(&GeneralMinimizer::addAdditionalParametersToTuple,
+					boost::cref(*this), _1, _2));
 }
 
 GeneralMinimizer::~GeneralMinimizer()

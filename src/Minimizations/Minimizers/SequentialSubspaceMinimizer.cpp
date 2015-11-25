@@ -54,7 +54,13 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	constant_interpolation(0.6),
 	DoCalculateAngles(false),
 	OrthogonalizationType(_opts.orthogonalization_type)
-{}
+{
+	// override callback in dbcontainer to add more parameter columns
+	// don't do this in initializer list as class not fully constructed
+	dbcontainer.setAddParamsCallback(
+			boost::bind(&SequentialSubspaceMinimizer::addAdditionalParametersToTuple,
+					boost::cref(*this), _1, _2));
+}
 
 void SequentialSubspaceMinimizer::setN(
 		const unsigned int _N
