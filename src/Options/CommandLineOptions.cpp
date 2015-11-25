@@ -51,6 +51,8 @@ CommandLineOptions::CommandLineOptions() :
 					SearchspaceFactory::LastNDirections)),
 	stepwidth_type(DetermineStepWidthFactory::MinimizingResidual),
 	tau(1.),
+	tolerance_linesearch(1e-12),
+	tolerance_spacex(1e-6),
 	updatetype(LastNSearchDirections::RoundRobin),
 	type(MinimizerFactory::MAX_InstanceType)
 {}
@@ -72,19 +74,23 @@ void CommandLineOptions::init()
 			("algorithm", po::value<std::string>(),
 					"set the used iteration algorithm")
 			("delta", po::value<double>(),
-	        		"set the amount of noise")
+					"set (optionally) the tolerance value for performing dual mapping of elements in space Y.")
 			("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
 			("minimization-library", po::value<std::string>(),
 					"set which minimization library to use (gsl,nlopt)")
-			("stopping-criteria", po::value< std::string >(),
-					"set (optionally) the desired stopping criteria, boolean operators allowed. This overrules any set stopping parameters such as maxiter, max-walltime, and delta.")
 			("max-inner-iterations", po::value<unsigned int>(),
 					"set the maximum amount of inner iterations")
 			("maxiter", po::value<unsigned int>(),
 					"set the maximum amount of iterations")
 			("max-walltime", po::value<double>(),
 					"set the maximum time the algorithm may use")
+			("stopping-criteria", po::value< std::string >(),
+					"set (optionally) the desired stopping criteria, boolean operators allowed. This overrules any set stopping parameters such as maxiter, max-walltime, and delta.")
+			("tolerance-space-x", po::value< double >(),
+					"set (optionally) the tolerance value for performing dual mapping of elements in space X.")
+			("tolerance-linesearch", po::value< double >(),
+					"set (optionally) the tolerance value for line searches.")
 			;
 	desc_banachspace.add_options()
 			("type-space-x", po::value<std::string>(),
@@ -352,6 +358,24 @@ void CommandLineOptions::parse(int argc, char **argv)
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "tau set to default value of " << tau;
+	}
+
+	if (vm.count("tolerance-linesearch")) {
+		tolerance_linesearch = vm["tolerance-linesearch"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Tolerance for linesearches was set to " << tolerance_linesearch;
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Tolerance for linesearches set to default value of " << tolerance_linesearch;
+	}
+
+	if (vm.count("tolerance-space-x")) {
+		tolerance_spacex = vm["tolerance-space-x"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Tolerance for space x mappings was set to " << tolerance_spacex;
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Tolerance for space x mappings set to default value of " << tolerance_spacex;
 	}
 
 	if (vm.count("tuple-parameters")) {

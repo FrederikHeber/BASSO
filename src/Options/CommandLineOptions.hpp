@@ -136,6 +136,8 @@ public:
 	unsigned int stepwidth_type;
 	std::string stopping_criteria;
 	double tau;
+	double tolerance_linesearch;
+	double tolerance_spacex;
 	std::vector<std::string> tuple_parameters;
 	enum LastNSearchDirections::UpdateAlgorithmType updatetype;
 	unsigned int verbose;
@@ -179,6 +181,8 @@ private:
 		ar & stepwidth_type;
 		ar & stopping_criteria;
 		ar & tau;
+		ar & tolerance_linesearch;
+		ar & tolerance_spacex;
 		ar & tuple_parameters;
 		ar & updatetype;
 		ar & wolfe_constants;
@@ -216,6 +220,8 @@ private:
 		ar & stepwidth_type;
 		ar & stopping_criteria;
 		ar & tau;
+		ar & tolerance_linesearch;
+		ar & tolerance_spacex;
 		ar & tuple_parameters;
 		ar & updatetype;
 		ar & wolfe_constants;
