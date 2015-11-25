@@ -26,6 +26,7 @@
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 
 using namespace boost::assign;
 

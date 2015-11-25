@@ -19,6 +19,7 @@
 #include "Solvers/FeasibilityProblem.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
+#include "Solvers/SplitFeasibilitySolver.hpp"
 
 InRangeSolver::InRangeSolver(
 		const CommandLineOptions &_opts,
@@ -36,7 +37,8 @@ bool InRangeSolver::operator()(
 		const Eigen::VectorXd &_rhs,
 		const Eigen::VectorXd &_solution_start,
 		Eigen::VectorXd &_solution,
-		const unsigned int _dim
+		const unsigned int _dim,
+		const AuxiliaryConstraints::ptr_t &_auxiliary_constraints
 		)
 {
 	Eigen::VectorXd projected_rhs;
@@ -85,7 +87,20 @@ bool InRangeSolver::operator()(
 					opts, _matrix, projected_rhs);
 
 	FeasibilityProblem::ptr_t solver;
-	{
+	if (_auxiliary_constraints) {
+		SplitFeasibilitySolver *SFP =
+				new SplitFeasibilitySolver(opts);
+		FeasibilityProblem::ptr_t IP(
+				new InverseProblemSolver(
+						inverseproblem,
+						solver_db,
+						opts,
+						false /* true solution calculation */)
+				);
+		SFP->registerFeasibilityProblem(IP);
+		SFP->registerAuxiliaryConstraints(_auxiliary_constraints);
+		solver.reset(SFP);
+	} else {
 		solver.reset(
 				new InverseProblemSolver(
 						inverseproblem,

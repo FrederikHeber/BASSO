@@ -14,6 +14,7 @@
 
 #include "MatrixFactorizer/Database/InnerProblemDatabase.hpp"
 #include "Minimizations/types.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 
 class CommandLineOptions;
 class InnerProblemDatabase;
@@ -42,6 +43,7 @@ struct InRangeSolver
 	 * @param _solution_start initial value for solution
 	 * @param _solution on return containing solution
 	 * @param _dim unique index (for output statements only)
+	 * @param _auxiliary_constraints auxiliary constraints to fulfill
 	 * @return true - success
 	 */
 	bool operator()(
@@ -49,7 +51,8 @@ struct InRangeSolver
 			const Eigen::VectorXd &_rhs,
 			const Eigen::VectorXd &_solution_start,
 			Eigen::VectorXd &_solution,
-			const unsigned int _dim
+			const unsigned int _dim,
+			const AuxiliaryConstraints::ptr_t&_auxiliary_constraints = AuxiliaryConstraints::ptr_t()
 			);
 
 	/** Insert accumulated values from projector problem into given \a _table.
