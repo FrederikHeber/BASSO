@@ -15,8 +15,8 @@ add_test (MatrixFactorizer_SymmetricRank1
 		--solution-second-factor second-factor.m)
 set_tests_properties (MatrixFactorizer_SymmetricRank1
 	PROPERTIES WILL_FAIL false)
-#set_tests_properties (MatrixFactorizer_SymmetricRank1
-#	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*2.32")
+set_tests_properties (MatrixFactorizer_SymmetricRank1
+	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*e-08")
 
 # test 1b: checking results
 add_test (MatrixFactorizer_SymmetricRank1_check_first
