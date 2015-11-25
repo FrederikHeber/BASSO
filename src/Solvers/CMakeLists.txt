@@ -16,6 +16,7 @@ install (FILES AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp DESTINATION 
 install (FILES AuxiliaryConstraints/NonnegativeConstraint.hpp DESTINATION include)
 install (FILES AuxiliaryConstraints/NonpositiveConstraint.hpp DESTINATION include)
 install (FILES AuxiliaryConstraints/UnityConstraint.hpp DESTINATION include)
+install (FILES AuxiliaryConstraintsProblem.hpp DESTINATION include)
 install (FILES FeasibilityProblem.hpp DESTINATION include)
 install (FILES InverseProblemSolver.hpp DESTINATION include)
 install (FILES SolverFactory/SolverFactory.hpp DESTINATION include)

@@ -15,6 +15,7 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 
 class AuxiliaryConstraints;
+class AuxiliaryConstraintsProblem;
 class Backprojection;
 class DiscretizedRadon;
 class InRangeSolver;
@@ -40,6 +41,7 @@ class RepresentationAdvocate
 {
 private:
 	friend class AuxiliaryConstraints;
+	friend class AuxiliaryConstraintsProblem;
 	friend class Backprojection;
 	friend class DiscretizedRadon;
 	friend class InRangeSolver;
