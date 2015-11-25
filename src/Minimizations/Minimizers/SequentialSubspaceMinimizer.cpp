@@ -407,9 +407,11 @@ SequentialSubspaceMinimizer::operator()(
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple();
+	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
+			data_per_iteration_table, parameter_key);
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t& overall_tuple = prepareOverallTuple();
+	Table::Tuple_t& overall_tuple = prepareOverallTuple(
+			data_overall_table, parameter_key);
 	Table& data_angle_table = database.addTable("data_angles");
 	Table::Tuple_t& angle_tuple = prepareAngleTuple(
 			data_angle_table,

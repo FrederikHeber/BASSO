@@ -113,8 +113,10 @@ LandweberMinimizer::operator()(
 			1,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple();
-	Table::Tuple_t& overall_tuple = prepareOverallTuple();
+	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
+			data_per_iteration_table, parameter_key);
+	Table::Tuple_t& overall_tuple = prepareOverallTuple(
+			data_overall_table, parameter_key);
 //	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
 //	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
 	// due to Eigen's lazy evaluation runtime is not measured accurately

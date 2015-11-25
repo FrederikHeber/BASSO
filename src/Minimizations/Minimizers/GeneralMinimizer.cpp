@@ -361,12 +361,14 @@ void GeneralMinimizer::setParameterKey(
 	const_cast<size_t &>(parameter_key) = rowid;
 }
 
-Table::Tuple_t & GeneralMinimizer::preparePerIterationTuple() const
+Table::Tuple_t & GeneralMinimizer::preparePerIterationTuple(
+		Table &_data_per_iteration_table,
+		const int _parameter_key)
 {
-	assert(parameter_key != 0);
+//	assert(parameter_key != 0);
 
-	Table::Tuple_t &per_iteration_tuple = data_per_iteration_table.getTuple();
-	per_iteration_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
+	Table::Tuple_t &per_iteration_tuple = _data_per_iteration_table.getTuple();
+	per_iteration_tuple.insert( std::make_pair("parameters_fk", _parameter_key), Table::Parameter);
 	per_iteration_tuple.insert( std::make_pair("iteration", (int)0), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("stepwidth", 0.), Table::Data);
 	per_iteration_tuple.insert( std::make_pair("residual", 0.), Table::Data);
@@ -377,12 +379,14 @@ Table::Tuple_t & GeneralMinimizer::preparePerIterationTuple() const
 	return per_iteration_tuple;
 }
 
-Table::Tuple_t & GeneralMinimizer::prepareOverallTuple() const
+Table::Tuple_t & GeneralMinimizer::prepareOverallTuple(
+		Table &_data_overall_table,
+		const int _parameter_key)
 {
-	assert(parameter_key != 0);
+//	assert(parameter_key != 0);
 
-	Table::Tuple_t &overall_tuple = data_overall_table.getTuple();
-	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
+	Table::Tuple_t &overall_tuple = _data_overall_table.getTuple();
+	overall_tuple.insert( std::make_pair("parameters_fk", _parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
 	overall_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	overall_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);

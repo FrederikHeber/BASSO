@@ -310,9 +310,13 @@ protected:
 			const unsigned int _dim,
 			const int _MaxOuterIterations) const;
 
-	Table::Tuple_t & preparePerIterationTuple() const;
+	static Table::Tuple_t & preparePerIterationTuple(
+			Table &_data_per_iteration_table,
+			const int _parameter_key);
 
-	Table::Tuple_t & prepareOverallTuple() const;
+	static Table::Tuple_t & prepareOverallTuple(
+			Table &_data_overall_table,
+			const int _parameter_key);
 
 	void finalizeOverallTuple(
 			Table::Tuple_t &_overall_tuple,
