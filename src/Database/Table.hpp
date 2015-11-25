@@ -21,6 +21,7 @@
 #include "Database/DefaultValue.hpp"
 #include "Database/types.hpp"
 
+class IterationInformation;
 class SQLDatabase;
 class TableDirectory;
 
@@ -35,6 +36,9 @@ protected:
 
 	//!> grant TableDirectory access to private functions
 	friend class TableDirectory;
+
+	//!> grant IterationInformation access to dummy cstor
+	friend class IterationInformation;
 
 	//!> typedef for this instance wrapped in a shared_ptr
 	typedef boost::shared_ptr<Table> ptr;

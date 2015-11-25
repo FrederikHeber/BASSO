@@ -12,9 +12,11 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "Database/Table.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 #include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
+#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 IterationInformation::IterationInformation(
@@ -37,10 +39,29 @@ IterationInformation::IterationInformation(
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	loop_tuple.insert( std::make_pair("scaling_change", 0.), Table::Data);
-	for (std::vector<std::string>::const_iterator iter = _opts.overall_keys.begin();
-			iter != _opts.overall_keys.end(); ++iter)
-		TableDataAccumulator::prepareTableForAccumulatedValues(
-				loop_table, Database_types::doubletype, (*iter));
+	// we need to get the type of the desired accumulate values. This
+	// type is hidden deep in GeneralMinimizer. We simply use its static
+	// functions on a dummy table to obtain a tuple who knows the type.
+	{
+		const int parameter_key = 1;
+		Table dummytable("overall");
+		Table::Tuple_t overall_tuple =
+				GeneralMinimizer::prepareOverallTuple(dummytable, parameter_key);
+		for (std::vector<std::string>::const_iterator iter = _opts.overall_keys.begin();
+				iter != _opts.overall_keys.end(); ++iter) {
+			Table::Tuple_t::const_iterator tupleiter = overall_tuple.find(*iter);
+			if (tupleiter == overall_tuple.end())
+				BOOST_LOG_TRIVIAL(error)
+						<< "Cannot find key " << *iter
+						<< " in columns of overall table,  skipping";
+			else {
+				TableDataAccumulator::prepareTableForAccumulatedValues(
+						loop_table,
+						Table::getVariantsType(tupleiter->second),
+						(*iter));
+			}
+		}
+	}
 
 	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);

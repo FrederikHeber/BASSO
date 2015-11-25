@@ -19,6 +19,7 @@
 
 class BregmanDistance;
 class Database;
+class IterationInformation;
 class Mapping;
 class QuickAccessReferences;
 
@@ -309,6 +310,9 @@ protected:
 			const unsigned int _N,
 			const unsigned int _dim,
 			const int _MaxOuterIterations) const;
+
+	//!> grant IterationInformation access to static functions.
+	friend class IterationInformation;
 
 	static Table::Tuple_t & preparePerIterationTuple(
 			Table &_data_per_iteration_table,
