@@ -62,17 +62,21 @@ public:
 	 * given \a _table.
 	 *
 	 * @param _table table to insert values to
+	 * @param _suffix suffix to database column key for distinction
 	 */
 	void insertAccumulatedProjectorValues(
-			Table &_table) const;
+			Table &_table,
+			const std::string &_suffix) const;
 
 	/** Insert accumulated and gathered values from solver problem into
 	 * given \a _table.
 	 *
 	 * @param _table table to insert values to
+	 * @param _suffix suffix to database column key for distinction
 	 */
 	void insertAccumulatedSolverValues(
-			Table &_table) const;
+			Table &_table,
+			const std::string &_suffix) const;
 
 	/** Resets the internal databases for projector problem
 	 *

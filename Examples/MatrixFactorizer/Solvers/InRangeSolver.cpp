@@ -88,15 +88,17 @@ bool InRangeSolver::operator()(
 }
 
 void InRangeSolver::insertAccumulatedProjectorValues(
-		Table &_table) const
+		Table &_table,
+		const std::string &_suffix) const
 {
-	projectorDB.insertAccumulatedValues(_table);
+	projectorDB.insertAccumulatedValues(_table, _suffix);
 }
 
 void InRangeSolver::insertAccumulatedSolverValues(
-		Table &_table) const
+		Table &_table,
+		const std::string &_suffix) const
 {
-	solverDB.insertAccumulatedValues(_table);
+	solverDB.insertAccumulatedValues(_table, _suffix);
 }
 
 

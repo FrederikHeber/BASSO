@@ -96,7 +96,8 @@ TableDataOperator::extractValues() const
 }
 
 void TableDataOperator::insertValues(
-		Table &_table) const
+		Table &_table,
+		const std::string &_suffix) const
 {
 	// do nothing on empty keys
 	if (accumulated_keys.empty())
@@ -109,7 +110,7 @@ void TableDataOperator::insertValues(
 	for (Table::TokenTypeMap_t::const_iterator iter = accumulatedData.begin();
 			iter != accumulatedData.end();
 			++iter) {
-		tuple.replace( iter->first, iter->second);
+		tuple.replace( iter->first+_suffix, iter->second);
 	}
 }
 

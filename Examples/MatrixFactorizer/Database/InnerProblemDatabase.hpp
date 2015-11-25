@@ -146,9 +146,11 @@ public:
 	/** Adds the accumulated information to the (hopefully) prepared \a _table.
 	 *
 	 * @param _table table to add accumulated information to
+	 * @param _suffix suffix to database column key for distinction
 	 */
 	void insertAccumulatedValues(
-			Table &_table
+			Table &_table,
+			const std::string &_suffix
 			) const;
 
 	/** Getter for the accumulated (temporary) values.

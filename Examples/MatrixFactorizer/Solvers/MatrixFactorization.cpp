@@ -150,7 +150,8 @@ void MatrixFactorization::operator()(
 					pixel_matrix.col(dim) = solution;
 				}
 				// place accumulated values in loop table
-				solver.insertAccumulatedSolverValues(info.getLoopTable());
+				solver.insertAccumulatedSolverValues(
+						info.getLoopTable(), "");
 			}
 #ifdef MPI_FOUND
 			else {
@@ -162,7 +163,8 @@ void MatrixFactorization::operator()(
 								pixel_matrix
 								);
 				// place accumulated values in loop table
-				master.insertAccumulatedSolverValues(info.getLoopTable());
+				master.insertAccumulatedSolverValues(
+						info.getLoopTable(), "");
 				master.resetAccumulatedSolverValues();
 			}
 #endif
@@ -223,7 +225,8 @@ void MatrixFactorization::operator()(
 					spectral_matrix.col(dim) = solution;
 				}
 				// place accumulated values in loop table
-				solver.insertAccumulatedSolverValues(info.getLoopTable());
+				solver.insertAccumulatedSolverValues(
+						info.getLoopTable(), "");
 			}
 #ifdef MPI_FOUND
 			else {
@@ -235,7 +238,8 @@ void MatrixFactorization::operator()(
 								spectral_matrix
 								);
 				// place accumulated values in loop table
-				master.insertAccumulatedSolverValues(info.getLoopTable());
+				master.insertAccumulatedSolverValues(
+						info.getLoopTable(), "");
 				master.resetAccumulatedSolverValues();
 			}
 #endif

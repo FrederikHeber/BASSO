@@ -205,17 +205,19 @@ bool Master::solve(
 }
 
 void Master::insertAccumulatedProjectorValues(
-		Table &_table) const
+		Table &_table,
+		const std::string &_suffix) const
 {
 	static_cast<InnerProblemDatabase &>(*projector_db.get()).
-			insertAccumulatedValues(_table);
+			insertAccumulatedValues(_table, _suffix);
 }
 
 void Master::insertAccumulatedSolverValues(
-		Table &_table) const
+		Table &_table,
+		const std::string &_suffix) const
 {
 	static_cast<InnerProblemDatabase &>(*solver_db.get()).
-			insertAccumulatedValues(_table);
+			insertAccumulatedValues(_table, _suffix);
 }
 
 void Master::resetAccumulatedProjectorValues()

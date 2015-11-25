@@ -56,11 +56,12 @@ void InnerProblemDatabase::finish()
 }
 
 void InnerProblemDatabase::insertAccumulatedValues(
-		Table &_table
+		Table &_table,
+		const std::string &_suffix
 		) const
 {
 	overall_table_accumulator.insertValues(
-			_table);
+			_table, _suffix);
 }
 
 void InnerProblemDatabase::insertValues(
