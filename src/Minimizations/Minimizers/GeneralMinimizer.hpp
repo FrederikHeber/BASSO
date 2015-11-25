@@ -11,7 +11,6 @@
 #include "BassoConfig.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/chrono.hpp>
 
 #include "Database/Table.hpp"
 #include "Minimizations/types.hpp"
@@ -235,8 +234,6 @@ private:
 public:
 	//!> magnitude of noise
 	const double Delta;
-	//!> maximum time algorithm may spend on optimization
-	boost::chrono::duration<double> MaxWalltime;
 	//!> maximum number of iterations in outer loop
 	const int MaxOuterIterations;
 	//!> maximum number of iterations in inner loop

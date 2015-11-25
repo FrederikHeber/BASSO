@@ -236,8 +236,6 @@ int main (int argc, char *argv[])
 				<< "Minimizer could not be constructed, exiting.";
 		return 255;
 	}
-	minimizer->MaxWalltime =
-			static_cast<boost::chrono::duration<double> >(opts.maxwalltime);
 
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =

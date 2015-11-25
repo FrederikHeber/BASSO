@@ -48,7 +48,6 @@ GeneralMinimizer::GeneralMinimizer(
 		Database &_database
 		) :
 	Delta(_opts.delta),
-	MaxWalltime(0.),
 	MaxOuterIterations(_opts.maxiter),
 	MaxInnerIterations(_opts.maxinneriter),
 	TolX(1e-6),
