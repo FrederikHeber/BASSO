@@ -15,6 +15,7 @@
 
 #include <boost/assign.hpp>
 
+#include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "RangeProjector/Options/RangeProjectorOptions.hpp"
 #include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 
@@ -101,11 +102,19 @@ int main (int argc, char *argv[])
 			SolverFactory::createDatabase(opts);
 
 	// create projector instance
-	RangeProjectionSolver projector(database,opts);
+	RangeProjectionSolver projector(matrix, rhs, database, opts);
 
-	// and project
-	Eigen::VectorXd solution;
-	projector(matrix, rhs, solution);
+	// solve
+	SpaceElement_ptr_t dualy0 = projector.getZeroStartvalue();
+	GeneralMinimizer::ReturnValues result =
+			projector(dualy0);
+
+	// get projected rhs
+	if (result.status != GeneralMinimizer::ReturnValues::finished) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Projection onto range failed.";
+		return 255;
+	}
 
 	// writing solution
 	{
@@ -114,7 +123,8 @@ int main (int argc, char *argv[])
 			std::ofstream ost(opts.solution_file.string().c_str());
 			if (ost.good())
 				try {
-					ost << std::setprecision(10) << solution;
+					ost << std::setprecision(10);
+					SpaceElementWriter::output(ost, result.m_dual_solution);
 				} catch (MatrixIOStreamEnded_exception &e) {
 					std::cerr << "Failed to fully write solution to file.\n";
 				}

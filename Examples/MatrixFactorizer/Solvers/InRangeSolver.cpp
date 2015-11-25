@@ -36,25 +36,35 @@ bool InRangeSolver::operator()(
 		const unsigned int _dim
 		)
 {
-	Eigen::VectorXd projected_rhs(_rhs);
+	Eigen::VectorXd projected_rhs;
 	BOOST_LOG_TRIVIAL(debug)
 		<< "------------------------ n=" << _dim << " ------------------";
 	// project right-hand side onto range of matrix
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Initial y_" << _dim << " is "
-			<< projected_rhs.transpose();
+			<< _rhs.transpose();
 	{
-		// project y onto image of K
 		RangeProjectionSolver projector(
+				_matrix,
+				_rhs,
 				projector_db,
 				opts
 				);
-		if (!projector(
-				_matrix,
-				_rhs,
-				projected_rhs))
-			return false;
+
+		// zero start value
+		SpaceElement_ptr_t dualy0 = projector.getZeroStartvalue();
+
+		// solve
 		projector_db->clear();
+		GeneralMinimizer::ReturnValues result =
+				projector(dualy0);
+		projector_db->finish();
+
+		// get projected rhs
+		if (result.status == GeneralMinimizer::ReturnValues::finished)
+			projected_rhs = RepresentationAdvocate::get(result.m_dual_solution);
+		else
+			return false;
 	}
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Projected y_" << _dim << " is "

@@ -16,6 +16,7 @@
 
 class Backprojection;
 class DiscretizedRadon;
+class InRangeSolver;
 class InverseProblemSolver;
 class L1DualityMapping;
 class LpDualityMapping;
@@ -39,6 +40,7 @@ class RepresentationAdvocate
 private:
 	friend class Backprojection;
 	friend class DiscretizedRadon;
+	friend class InRangeSolver;
 	friend class InverseProblemSolver;
 	friend class L1DualityMapping;
 	friend class LpDualityMapping;

@@ -12,6 +12,7 @@
 
 #include "RangeProjectionSolver.hpp"
 
+#include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
@@ -21,35 +22,29 @@
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
-#include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
-#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 using namespace boost::assign;
 
 RangeProjectionSolver::RangeProjectionSolver(
+		const Eigen::MatrixXd &_matrix,
+		const Eigen::VectorXd &_rhs,
 		Database_ptr_t &_database,
 		const CommandLineOptions &_opts
 		) :
 		database(_database),
-		opts(_opts)
+		opts(_opts),
+		name("RangeProjection")
 {
 	// use smaller delta for the projection and SESOP
 	const_cast<CommandLineOptions &>(opts).delta = 1e-8;
 	const_cast<CommandLineOptions &>(opts).algorithm_name =
 			MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
-}
 
-bool RangeProjectionSolver::operator()(
-		const Eigen::MatrixXd &_matrix,
-		const Eigen::VectorXd &_rhs,
-		Eigen::VectorXd &_resultingvalue
-		)
-{
-	// prepare right-hand side
+	// prepare spaces
 	NormedSpace_ptr_t Y;
 	NormedSpace_ptr_t Ys;
 	{
@@ -68,27 +63,38 @@ bool RangeProjectionSolver::operator()(
 				_matrix.outerSize(), opts.type_spacex, args);
 		Xs = X->getDualSpace();
 	}
-	// and the LinearMapping
-	Mapping_ptr_t As =
-			LinearMappingFactory::createInstance(Ys,Xs,_matrix.transpose());
 
-	SpaceElement_ptr_t rhs = ElementCreator::create(Y, _rhs);
-	SpaceElement_ptr_t dualrhs =
-			(*Y->getDualityMapping())((-1.)*rhs);
+	// prepare LinearMapping
+	Mapping_ptr_t As =
+			LinearMappingFactory::createInstance(
+					Ys,Xs,_matrix.transpose());
+
+	// prepare right-hand side
+	rhs = ElementCreator::create(Y, _rhs);
+	dualrhs = (*Y->getDualityMapping())((-1.)*rhs);
 	SpaceElement_ptr_t dualmappedrhs = (-1.)*((*As)(dualrhs));
 
 	// prepare inverse problem: Y^\ast \rightarrow X^\ast
-	InverseProblem_ptr_t inverseproblem(
-			new InverseProblem(As,Ys,Xs,dualmappedrhs) );
+	inverseproblem.reset(
+			new InverseProblem(As,Ys,Xs,dualmappedrhs));
 
 	// prepare minimizer
-	MinimizerFactory::instance_ptr_t minimizer =
-			SolverFactory::createMinimizer(
+	minimizer = SolverFactory::createMinimizer(
 					opts, inverseproblem, database);
+}
+
+
+GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
+		const SpaceElement_ptr_t &_startingvalue)
+{
+	GeneralMinimizer::ReturnValues result;
+	result.residuum = 0.;
+
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Minimizer could not be constructed, exiting.";
-		return false;
+		result.status = GeneralMinimizer::ReturnValues::error;
+		return result;
 	}
 
 	// empty true solution
@@ -96,47 +102,66 @@ bool RangeProjectionSolver::operator()(
 			inverseproblem->x->getSpace()->createElement();
 	truesolution->setZero();
 
-	// prepare start value and dual solution
-	SpaceElement_ptr_t dualy0 =
-			inverseproblem->x->getSpace()->createElement();
-	dualy0->setZero();
-	*inverseproblem->x = dualy0;
-	if (dualy0->getSpace()->getDimension() < 10)
+	// init starting value for this loop
+	result.m_solution = _startingvalue->getSpace()->createElement();
+	*result.m_solution = _startingvalue;
+	*inverseproblem->x = result.m_solution;
+	if (result.m_solution->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Starting at dualy0 = " << dualy0;
-	SpaceElement_ptr_t y0;
+			<< "Starting at dualy0 = " << result.m_solution;
+
 	// only for smooth spaces we may use the duality mapping
 	if (inverseproblem->x->getSpace()->getNorm()->isSmooth()) {
-		y0 = (*inverseproblem->x->getSpace()->getDualityMapping())(dualy0);
+		result.m_dual_solution =
+				(*inverseproblem->x->getSpace()->getDualityMapping())(result.m_solution);
 	} else {
-		y0 = inverseproblem->x->getSpace()->getDualSpace()->createElement();
-		y0->setZero();
+		result.m_dual_solution =
+				inverseproblem->x->getSpace()->getDualSpace()->createElement();
+		result.m_dual_solution->setZero();
 	}
 
 	// and minimize
 	{
-		GeneralMinimizer::ReturnValues result;
 		try{
 			result = (*minimizer)(
 							inverseproblem,
-							dualy0,
-							y0,
+							result.m_solution,
+							result.m_dual_solution,
 							truesolution);
 			minimizer->resetState();
 		} catch (MinimizationIllegalValue_exception &e) {
 			std::cerr << "Illegal value for "
 					<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
 					<< std::endl;
-			return false;
+			result.status = GeneralMinimizer::ReturnValues::error;
+			return result;
 		}
 		*result.m_solution += dualrhs;
 		SpaceElement_ptr_t projected_solution =
 				rhs +
 				(*inverseproblem->x->getSpace()->getDualityMapping())
 					(result.m_solution);
-		_resultingvalue = RepresentationAdvocate::get(projected_solution);
+		*result.m_dual_solution = projected_solution;
 	}
 
-	return true;
+	return result;
 }
 
+SpaceElement_ptr_t RangeProjectionSolver::getZeroStartvalue() const
+{
+	SpaceElement_ptr_t x0 =
+			inverseproblem->x->getSpace()->createElement();
+	x0->setZero();
+	return x0;
+}
+
+
+void RangeProjectionSolver::clear()
+{
+	database->clear();
+}
+
+void RangeProjectionSolver::finish()
+{
+	database->finish();
+}
