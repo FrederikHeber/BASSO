@@ -27,7 +27,7 @@ using namespace boost::assign;
 // static entities
 std::vector<std::string> SQLDatabase::TypeNames(Database_types::MAX_TYPES);
 
-#define BASSO_MAXKEYS 18
+#define BASSO_MAXKEYS 24
 
 SQLDatabase::SQLDatabase() :
 		DatabaseFileGiven(false),
