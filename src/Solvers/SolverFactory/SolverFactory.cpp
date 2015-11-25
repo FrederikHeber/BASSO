@@ -12,7 +12,6 @@
 
 #include <boost/assign.hpp>
 
-#include "Options/CommandLineOptions.hpp"
 #include "Database/SQLDatabase.hpp"
 #include "Log/Logging.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
@@ -23,6 +22,7 @@
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 using namespace boost::assign;
 
@@ -85,16 +85,10 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 	// set regularization parameter in case of regularizedl1norm
 	minimizer =
 		factory.createInstance(
-			_opts.type,
+			_opts,
 			_inverseproblem,
-			_opts.delta,
-			_opts.maxiter,
-			_opts.maxinneriter,
 			*_database,
-			_stopping_criteria,
-			(const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type,
-			_opts.outputsteps,
-			_opts.orthogonalization_type);
+			_stopping_criteria);
 	minimizer->setMinLib(_opts.minlib);
 	// hand over additional parameters to add to submitted tuples
 	minimizer->setAdditionalTupleParameters(_opts.tuple_parameters);

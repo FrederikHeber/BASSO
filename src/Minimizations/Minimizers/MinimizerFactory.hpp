@@ -18,6 +18,7 @@
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
+class CommandLineOptions;
 class Database;
 class DualityMappingsContainer;
 class GeneralMinimizer;
@@ -45,30 +46,17 @@ public:
 
 	/** Produces the desired instance.
 	 *
-	 * @param _type type of instance
+	 * @param _opts CommandLineOptions struct containing all information
 	 * @param _inverseproblem inverse problem to solve
-	 * @param _Delta noise level
-	 * @param _maxiter maximum number of iterations
-	 * @param _maxinneriter maximum number of inner iterations
 	 * @param _database database to store iteration information to
 	 * @param _stopping_criteria the stopping criteria
-	 * @param _stepwidth_type which step width procedure to use (landweber)
-	 * @param _outputsteps write temporary solution each .. steps
-	 * @param _orthogonal_directions orthogonalize new search direction?
 	 * @return wrapped instance of desired \a _type
 	 */
 	instance_ptr_t createInstance(
-			const enum InstanceType &_type,
+			const CommandLineOptions &_opts,
 			const InverseProblem_ptr_t &_inverseproblem,
-			const double _Delta,
-			const unsigned int _maxiter,
-			const unsigned int _maxinneriter,
 			Database &_database,
-			const StoppingCriterion::ptr_t &_stopping_criteria,
-			const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
-			const unsigned int _outputsteps=0,
-			const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
-				= LastNSearchDirections::NoOrthogonalization
+			const StoppingCriterion::ptr_t &_stopping_criteria
 			);
 
 	/** Helper function to check whether the given \a _name designates a

@@ -15,6 +15,7 @@
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 // static entities
 const std::string MinimizerFactory::TypeNames[] = {
@@ -25,55 +26,49 @@ const std::string MinimizerFactory::TypeNames[] = {
 
 MinimizerFactory::instance_ptr_t
 MinimizerFactory::createInstance(
-		const enum InstanceType &_type,
+		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		const double _Delta,
-		const unsigned int _maxiter,
-		const unsigned int _maxinneriter,
 		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria,
-		const enum DetermineStepWidthFactory::stepwidth_enumeration _stepwidth_type,
-		const unsigned int _outputsteps,
-		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
+		const StoppingCriterion::ptr_t &_stopping_criteria
 		)
 {
 	// create the instance depending on the type
 	GeneralMinimizer *instance = NULL;
-	switch(_type) {
+	switch(_opts.type) {
 	case landweber:
 		instance = new LandweberMinimizer(
 				_inverseproblem,
-				_Delta,
-				_maxiter,
-				_maxinneriter,
+				_opts.delta,
+				_opts.maxiter,
+				_opts.maxinneriter,
 				_database,
 				_stopping_criteria,
-				_stepwidth_type,
-				_outputsteps
+				(const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type,
+				_opts.outputsteps
 				);
 		break;
 	case sequentialsubspace:
 			instance = new SequentialSubspaceMinimizer(
 					_inverseproblem,
-					_Delta,
-					_maxiter,
-					_maxinneriter,
+					_opts.delta,
+					_opts.maxiter,
+					_opts.maxinneriter,
 					_database,
 					_stopping_criteria,
-					_outputsteps,
-					_orthogonalization_type
+					_opts.outputsteps,
+					_opts.orthogonalization_type
 					);
 			break;
 	case sequentialsubspace_noise:
 			instance = new SequentialSubspaceMinimizerNoise(
 					_inverseproblem,
-					_Delta,
-					_maxiter,
-					_maxinneriter,
+					_opts.delta,
+					_opts.maxiter,
+					_opts.maxinneriter,
 					_database,
 					_stopping_criteria,
-					_outputsteps,
-					_orthogonalization_type
+					_opts.outputsteps,
+					_opts.orthogonalization_type
 					);
 			break;
 	default:
