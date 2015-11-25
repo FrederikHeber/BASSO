@@ -7,6 +7,7 @@ add_library (Solvers
 	AuxiliaryConstraints/AuxiliaryConstraintsFactory.cpp
 	InverseProblemSolver.cpp
 	SolverFactory/SolverFactory.cpp
+	SplitFeasibilitySolver.cpp
 	)
 
 install (FILES AuxiliaryConstraints/AuxiliaryConstraints.hpp DESTINATION include)
@@ -20,3 +21,4 @@ install (FILES AuxiliaryConstraintsProblem.hpp DESTINATION include)
 install (FILES FeasibilityProblem.hpp DESTINATION include)
 install (FILES InverseProblemSolver.hpp DESTINATION include)
 install (FILES SolverFactory/SolverFactory.hpp DESTINATION include)
+install (FILES SplitFeasibilitySolver.hpp DESTINATION include)

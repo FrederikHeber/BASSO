@@ -30,6 +30,7 @@ class RelativeShrinkageMapping;
 struct SingularValueDecomposition;
 struct SpaceElementWriter;
 struct SpaceElementReader;
+class SplitFeasibilitySolver;
 
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
@@ -56,6 +57,7 @@ private:
 	friend struct SingularValueDecomposition;
 	friend struct SpaceElementWriter;
 	friend struct SpaceElementReader;
+	friend class SplitFeasibilitySolver;
 	template <class vector_type> friend struct VectorSetter;
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)
