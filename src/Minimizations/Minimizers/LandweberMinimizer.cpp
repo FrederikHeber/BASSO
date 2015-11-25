@@ -39,14 +39,12 @@
 LandweberMinimizer::LandweberMinimizer(
 		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database &_database
 		) :
 	GeneralMinimizer(
 			_opts,
 			_inverseproblem,
-			_database,
-			_stopping_criteria
+			_database
 			),
 	C(0.9),
 	stepwidth_type((const enum DetermineStepWidthFactory::stepwidth_enumeration)_opts.stepwidth_type)

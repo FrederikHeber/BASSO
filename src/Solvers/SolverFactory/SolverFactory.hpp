@@ -14,7 +14,6 @@
 
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/types.hpp"
-#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 class CommandLineOptions;
 
@@ -57,7 +56,6 @@ struct SolverFactory
 	 * @param _opts CommandLineOptions struct containing all information
 	 * @param _inverseproblem inverse problem to be solved/minimized
 	 * @param _database database to write iteration data to
-	 * @param _stopping_criteria the stopping criteria
 	 * @return NULL - something went wrong,
 	 * 		   else - constructed minimizer instance, ready to go
 	 *
@@ -65,8 +63,7 @@ struct SolverFactory
 	static MinimizerFactory::instance_ptr_t createMinimizer(
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
-		Database_ptr_t &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database_ptr_t &_database
 		);
 };
 

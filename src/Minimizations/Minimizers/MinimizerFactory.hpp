@@ -16,7 +16,6 @@
 #include "Minimizations/types.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
-#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 
 class CommandLineOptions;
 class Database;
@@ -49,14 +48,12 @@ public:
 	 * @param _opts CommandLineOptions struct containing all information
 	 * @param _inverseproblem inverse problem to solve
 	 * @param _database database to store iteration information to
-	 * @param _stopping_criteria the stopping criteria
 	 * @return wrapped instance of desired \a _type
 	 */
 	instance_ptr_t createInstance(
 			const CommandLineOptions &_opts,
 			const InverseProblem_ptr_t &_inverseproblem,
-			Database &_database,
-			const StoppingCriterion::ptr_t &_stopping_criteria
+			Database &_database
 			);
 
 	/** Helper function to check whether the given \a _name designates a

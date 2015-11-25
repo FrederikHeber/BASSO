@@ -35,14 +35,12 @@
 SequentialSubspaceMinimizerNoise::SequentialSubspaceMinimizerNoise(
 		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database &_database
 		) :
 	SequentialSubspaceMinimizer(
 		_opts,
 		_inverseproblem,
-		_database,
-		_stopping_criteria
+		_database
 		)
 {}
 

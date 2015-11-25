@@ -62,14 +62,9 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 {
 	GeneralMinimizer::ReturnValues result;
 
-	// create stopping criterion
-	StoppingCriteriaFactory stop_factory;
-	StoppingCriterion::ptr_t stopping_criterion =
-			stop_factory.create(opts.stopping_criteria, opts.stopping_args);
-
 	MinimizerFactory::instance_ptr_t minimizer =
 			SolverFactory::createMinimizer(
-					opts, _inverseproblem, database, stopping_criterion);
+					opts, _inverseproblem, database);
 
 	if (minimizer == NULL) {
 		BOOST_LOG_TRIVIAL(error)

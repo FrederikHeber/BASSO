@@ -27,6 +27,7 @@
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormFactory.hpp"
@@ -44,8 +45,7 @@ GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
 GeneralMinimizer::GeneralMinimizer(
 		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database &_database
 		) :
 	Delta(_opts.delta),
 	MaxWalltime(0.),
@@ -61,7 +61,6 @@ GeneralMinimizer::GeneralMinimizer(
 			"lp",
 			_inverseproblem->x->getSpace(),
 			NormFactory::args_t(1, boost::any(2.)))),
-	stopping_criteria(_stopping_criteria),
 	parameter_key(0),
 	database(_database),
 	parameters_table(database.addTable("parameters")),
@@ -78,6 +77,11 @@ GeneralMinimizer::GeneralMinimizer(
 		MinLib_names +=
 			std::make_pair( "gsl", gnuscientificlibrary),
 			std::make_pair( "nlopt", nonlinearoptimization);
+
+	// create stopping criterion
+	StoppingCriteriaFactory stop_factory;
+	const_cast<StoppingCriterion::ptr_t &>(stopping_criteria) =
+			stop_factory.create(_opts.stopping_criteria, _opts.stopping_args);
 }
 
 GeneralMinimizer::~GeneralMinimizer()

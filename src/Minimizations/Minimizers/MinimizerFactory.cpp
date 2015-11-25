@@ -14,7 +14,6 @@
 #include "Minimizations/Minimizers/LandweberMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizer.hpp"
 #include "Minimizations/Minimizers/SequentialSubspaceMinimizerNoise.hpp"
-#include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
 #include "Options/CommandLineOptions.hpp"
 
 // static entities
@@ -28,8 +27,7 @@ MinimizerFactory::instance_ptr_t
 MinimizerFactory::createInstance(
 		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
-		Database &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database &_database
 		)
 {
 	// create the instance depending on the type
@@ -39,24 +37,21 @@ MinimizerFactory::createInstance(
 		instance = new LandweberMinimizer(
 				_opts,
 				_inverseproblem,
-				_database,
-				_stopping_criteria
+				_database
 				);
 		break;
 	case sequentialsubspace:
 			instance = new SequentialSubspaceMinimizer(
 					_opts,
 					_inverseproblem,
-					_database,
-					_stopping_criteria
+					_database
 					);
 			break;
 	case sequentialsubspace_noise:
 			instance = new SequentialSubspaceMinimizerNoise(
 					_opts,
 					_inverseproblem,
-					_database,
-					_stopping_criteria
+					_database
 					);
 			break;
 	default:

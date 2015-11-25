@@ -76,8 +76,7 @@ Database_ptr_t SolverFactory::createDatabase(
 MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 		const CommandLineOptions &_opts,
 		InverseProblem_ptr_t &_inverseproblem,
-		Database_ptr_t &_database,
-		const StoppingCriterion::ptr_t &_stopping_criteria
+		Database_ptr_t &_database
 		)
 {
 	MinimizerFactory factory;
@@ -87,8 +86,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 		factory.createInstance(
 			_opts,
 			_inverseproblem,
-			*_database,
-			_stopping_criteria);
+			*_database);
 	minimizer->setMinLib(_opts.minlib);
 	// hand over additional parameters to add to submitted tuples
 	minimizer->setAdditionalTupleParameters(_opts.tuple_parameters);
