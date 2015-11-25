@@ -16,6 +16,7 @@
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Options/CommandLineOptions.hpp"
 #include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
+#include "Solvers/FeasibilityProblem.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
@@ -83,7 +84,7 @@ bool InRangeSolver::operator()(
 			SolverFactory::createInverseProblem(
 					opts, _matrix, projected_rhs);
 
-	boost::shared_ptr<InverseProblemSolver> solver;
+	FeasibilityProblem::ptr_t solver;
 	{
 		solver.reset(
 				new InverseProblemSolver(

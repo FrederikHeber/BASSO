@@ -17,11 +17,12 @@
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Options/CommandLineOptions.hpp"
+#include "Solvers/FeasibilityProblem.hpp"
 
 /** This class contains all code for projecting a give vector onto the
  * range of a given matrix.
  */
-struct RangeProjectionSolver
+struct RangeProjectionSolver : public FeasibilityProblem
 {
 	/** Constructor for class RangeProjectionSolver.
 	 *

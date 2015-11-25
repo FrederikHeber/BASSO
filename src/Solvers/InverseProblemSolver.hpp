@@ -13,13 +13,14 @@
 #include "Minimizations/types.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
+#include "Solvers/FeasibilityProblem.hpp"
 
 class CommandLineOptions;
 
 /** Functor for solving inverse problems
  *
  */
-struct InverseProblemSolver
+struct InverseProblemSolver : public FeasibilityProblem
 {
 	/** Constructor for class InverseProblemSolver.
 	 *

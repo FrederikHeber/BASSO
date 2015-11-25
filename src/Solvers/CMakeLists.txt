@@ -7,5 +7,6 @@ add_library (Solvers
 	SolverFactory/SolverFactory.cpp
 	)
 
+install (FILES FeasibilityProblem.hpp DESTINATION include)
 install (FILES InverseProblemSolver.hpp DESTINATION include)
 install (FILES SolverFactory/SolverFactory.hpp DESTINATION include)
