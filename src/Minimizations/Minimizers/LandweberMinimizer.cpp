@@ -101,16 +101,14 @@ LandweberMinimizer::operator()(
 	}
 
 	/// build data tuple for iteration and overall information
-	setParameterKey(
+	dbcontainer.setParameterKey(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			1,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
-			data_per_iteration_table, parameter_key);
-	Table::Tuple_t& overall_tuple = prepareOverallTuple(
-			data_overall_table, parameter_key);
+	Table::Tuple_t& per_iteration_tuple = dbcontainer.preparePerIterationTuple();
+	Table::Tuple_t& overall_tuple = dbcontainer.prepareOverallTuple();
 //	overall_tuple.insert( std::make_pair("runtime_matrix_vector_products", (int)0), Table::Data );
 //	overall_tuple.insert( std::make_pair("runtime_vector_vector_products", (int)0), Table::Data );
 	// due to Eigen's lazy evaluation runtime is not measured accurately
@@ -210,7 +208,7 @@ LandweberMinimizer::operator()(
 				returnvalues.m_solution, refs.A, returnvalues.NumberOuterIterations);
 
 		/// submit current tuple to database
-		data_per_iteration_table.addTuple(per_iteration_tuple);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
@@ -222,8 +220,8 @@ LandweberMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", returnvalues.residuum/ynorm );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
-	finalizeOverallTuple(overall_tuple, refs);
-	data_overall_table.addTuple(overall_tuple);
+	dbcontainer.finalizeOverallTuple(overall_tuple, refs);
+	dbcontainer.data_overall_table.addTuple(overall_tuple);
 
 	returnvalues.status = ReturnValues::finished;
 

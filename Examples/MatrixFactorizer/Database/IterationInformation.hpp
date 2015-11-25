@@ -119,6 +119,17 @@ private:
 	 */
 	bool createViews();
 
+	/** Prepares a dummy "overall" table used for the inner optimization
+	 * values.
+	 *
+	 * @param _dummytable table to use
+	 * @param _parameter_key parameter key
+	 * @return tuple for this table
+	 */
+	static Table::Tuple_t & prepareOverallTuple(
+			Table &_dummytable,
+			const int _parameter_key);
+
 private:
 	//!> database connection
 	Database_ptr_t database;

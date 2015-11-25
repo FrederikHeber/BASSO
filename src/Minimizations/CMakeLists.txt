@@ -30,6 +30,7 @@ add_library (Minimizations
 	Mappings/Specifics/LInfinityDualityMapping.cpp
 	Mappings/Specifics/RelativeShrinkageMapping.cpp
 	Minimizers/GeneralMinimizer.cpp
+	Minimizers/GeneralMinimizer_DatabaseManager.cpp
 	Minimizers/LandweberMinimizer.cpp
 	Minimizers/MinimizerFactory.cpp
 	Minimizers/SequentialSubspaceMinimizer.cpp

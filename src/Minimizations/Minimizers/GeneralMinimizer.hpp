@@ -10,6 +10,7 @@
 
 #include "BassoConfig.h"
 
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "Database/Table.hpp"
@@ -160,13 +161,6 @@ public:
 	 */
 	void setMinLib(const std::string &_name);
 
-	/** Sets the vector with additional parameters to make tuples unique in database.
-	 *
-	 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
-	 */
-	void setAdditionalTupleParameters(
-			const std::vector<std::string> &_tuple_params);
-
 	/** Checks whether \a _name represents a valid name for a
 	 * minimization library.
 	 *
@@ -189,6 +183,14 @@ public:
 			const int _current_outeriterations,
 			const double _residuum,
 			const double _ynorm) const;
+
+	/** Sets the vector with additional parameters to make tuples unique in database.
+	 *
+	 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
+	 */
+	void setAdditionalTupleParameters(
+			const std::vector<std::string> &_tuple_params)
+	{ dbcontainer.setAdditionalTupleParameters(_tuple_params); }
 
 protected:
 	/** Internal function called after GeneralMinimizer state has been
@@ -216,7 +218,6 @@ protected:
 			unsigned int _NumberOuterIterations
 			) const;
 
-
 	/** Allows to add more parameters to the current parameter tuple before
 	 * it is inserted into the sqlite database.
 	 *
@@ -226,12 +227,92 @@ protected:
 			Table::Tuple_t &_tuple,
 			const bool _do_replace) const {}
 
-private:
-	/** Create (deprecated) overall and per_iteration tables as views.
-	 *
-	 * \return true - views created, false - statements failed
-	 */
-	bool createViews() const;
+protected:
+	//!> IterationInformation needs access to DatabaseContainer
+	friend class IterationInformation;
+
+	//!> typedef for callback function
+	typedef boost::function<
+			void (Table::Tuple_t &, const bool)> addAdditionalParameters_t;
+
+	//!> callback used by DatabaseManager needed in cstor
+	addAdditionalParameters_t add_params_callback;
+
+	struct DatabaseManager
+	{
+		/** Cstor of struct DatabaseManager.
+		 *
+		 * @param _database database to manage
+		 * @param _add_param_callback callback function to add additional
+		 * 		columns to parameters table
+		 */
+		DatabaseManager(
+				Database &_database,
+				const addAdditionalParameters_t &_add_param_callback);
+
+		/** Returns the number of tables in the database.
+		 *
+		 * @return number of tables
+		 */
+		size_t size() const;
+
+		/** Create (deprecated) overall and per_iteration tables as views.
+		 *
+		 * \return true - views created, false - statements failed
+		 */
+		bool createViews() const;
+
+		/** Sets the vector with additional parameters to make tuples unique in database.
+		 *
+		 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
+		 */
+		void setAdditionalTupleParameters(
+				const std::vector<std::string> &_tuple_params);
+
+		/** Sets the parameter key by supplying a given tuple of values
+		 *
+		 * @param _val_NormX norm of space X
+		 * @param _val_NormY norm of space Y
+		 * @param _N number of search directions
+		 * @param _dim dimension of solution vector
+		 * @param _MaxOuterIterations maximum number of outer iterations
+		 */
+		void setParameterKey(
+				double _val_NormX,
+				double _val_NormY,
+				const unsigned int _N,
+				const unsigned int _dim,
+				const int _MaxOuterIterations) const;
+
+		Table::Tuple_t & preparePerIterationTuple() const;
+
+		Table::Tuple_t & prepareOverallTuple() const;
+
+		void finalizeOverallTuple(
+				Table::Tuple_t &_overall_tuple,
+				QuickAccessReferences &_refs) const;
+
+		/** reference to an external database where we store infomation
+		 * about the behavior of the iteration procedure.
+		 */
+		Database &database;
+
+		//!> callback to use when parameters table is created
+		const addAdditionalParameters_t &add_param_callback;
+
+		//!> additional parameter, value pairs that are added to each submitted tuple
+		const std::vector<std::string> tuple_params;
+		//!> contains the primary key of the current parameter set
+		const size_t parameter_key;
+
+		//!> table with parameter information
+		Table& parameters_table;
+		//!> table with per iteration step information
+		Table& data_per_iteration_table;
+		//!> table with overall iteration information
+		Table& data_overall_table;
+
+	} dbcontainer;
 
 public:
 	//!> magnitude of noise
@@ -271,56 +352,8 @@ private:
 	const Norm_ptr_t l2norm;
 
 protected:
-
 	//!> stopping criteria
 	const StoppingCriterion::ptr_t stopping_criteria;
-
-	//!> additional parameter, value pairs that are added to each submitted tuple
-	const std::vector<std::string> tuple_params;
-	//!> contains the primary key of the current parameter set
-	const size_t parameter_key;
-
-	/** reference to an external database where we store infomation
-	 * about the behavior of the iteration procedure.
-	 */
-	Database &database;
-
-	//!> table with parameter information
-	Table& parameters_table;
-	//!> table with per iteration step information
-	Table& data_per_iteration_table;
-	//!> table with overall iteration information
-	Table& data_overall_table;
-
-	/** Sets the parameter key by supplying a given tuple of values
-	 *
-	 * @param _val_NormX norm of space X
-	 * @param _val_NormY norm of space Y
-	 * @param _N number of search directions
-	 * @param _dim dimension of solution vector
-	 * @param _MaxOuterIterations maximum number of outer iterations
-	 */
-	void setParameterKey(
-			double _val_NormX,
-			double _val_NormY,
-			const unsigned int _N,
-			const unsigned int _dim,
-			const int _MaxOuterIterations) const;
-
-	//!> grant IterationInformation access to static functions.
-	friend class IterationInformation;
-
-	static Table::Tuple_t & preparePerIterationTuple(
-			Table &_data_per_iteration_table,
-			const int _parameter_key);
-
-	static Table::Tuple_t & prepareOverallTuple(
-			Table &_data_overall_table,
-			const int _parameter_key);
-
-	void finalizeOverallTuple(
-			Table::Tuple_t &_overall_tuple,
-			QuickAccessReferences &_refs) const;
 };
 
 

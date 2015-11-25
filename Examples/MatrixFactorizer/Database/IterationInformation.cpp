@@ -46,7 +46,7 @@ IterationInformation::IterationInformation(
 		const int parameter_key = 1;
 		Table dummytable("overall");
 		Table::Tuple_t overall_tuple =
-				GeneralMinimizer::prepareOverallTuple(dummytable, parameter_key);
+				prepareOverallTuple(dummytable, parameter_key);
 		for (std::vector<std::string>::const_iterator iter = _opts.overall_keys.begin();
 				iter != _opts.overall_keys.end(); ++iter) {
 			Table::Tuple_t::const_iterator tupleiter = overall_tuple.find(*iter);
@@ -96,6 +96,28 @@ void IterationInformation::addTuple(
 		BOOST_LOG_TRIVIAL(error)
 			<< "Unknown table in IterationInformation::addTuple()";
 	}
+}
+
+Table::Tuple_t & IterationInformation::prepareOverallTuple(
+		Table &_dummytable,
+		const int _parameter_key
+		)
+{
+	assert(_parameter_key != 0);
+
+	Table::Tuple_t &dummy_tuple = _dummytable.getTuple();
+	dummy_tuple.insert( std::make_pair("parameters_fk", (int)_parameter_key), Table::Parameter);
+	dummy_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("element_creation_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("linear_time_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("quadratic_time_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("element_creation_runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("linear_time_runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("quadratic_time_runtime", 0.), Table::Data);
+	return dummy_tuple;
 }
 
 bool IterationInformation::createViews()
