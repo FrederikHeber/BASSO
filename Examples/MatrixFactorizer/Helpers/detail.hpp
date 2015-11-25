@@ -60,17 +60,34 @@ namespace detail
 			const std::string &_filename,
 			Eigen::MatrixXd &_data);
 
-	/** Constructs suitable starting matrices of either factor for the
-	 * matrix factorization problem.
+	/** Parses the matrix factors from a file as starting point
 	 *
-	 * @param _spectral_matrix first factor
-	 * @param _pixel_matrix second factor
+	 * @param _filename filename of matrix file
+	 * @param _data on return parsed matrix
+	 * @param _name name of factor
+	 * @return returncode (0 - success)
+	 */
+	int parseFactorFile(
+			const std::string &_filename,
+			Eigen::MatrixXd &_data,
+			const std::string &_name);
+
+	/** Constructs random starting matrices.
+	 *
+	 * @param _matrix matrix to construct
 	 * @param _nonnegative whether to construct non-negative starting matrices
 	 */
-	void constructStartingMatrices(
-			Eigen::MatrixXd &_spectral_matrix,
-			Eigen::MatrixXd &_pixel_matrix,
+	void constructRandomMatrix(
+			Eigen::MatrixXd &_matrix,
 			const bool _nonnegative
+			);
+
+	/** Constructs zero starting matrices.
+	 *
+	 * @param _matrix matrix to construct
+	 */
+	void constructZeroMatrix(
+			Eigen::MatrixXd &_matrix
 			);
 
 #ifdef MPI_FOUND

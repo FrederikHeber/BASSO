@@ -79,13 +79,49 @@ void MatrixFactorization::operator()(
 
 		unsigned int loop_nr = 0;
 
+		/// parse in factors
+		bool parse_status = true;
+		if (opts.DoParseFactors) {
+			const int result_parse_spectralmatrix = detail::parseFactorFile(
+					opts.solution_factor_one_file.string(), spectral_matrix, "first factor");
+			parse_status &= (result_parse_spectralmatrix == 0);
+			const int result_parse_pixelmatrix = detail::parseFactorFile(
+					opts.solution_factor_two_file.string(), pixel_matrix, "second factor");
+			parse_status &= (result_parse_pixelmatrix == 0);
+
+			// check whether parsing was successful, break otherwise
+			if (!parse_status) {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Parsing of either or both factors failed, aborting.";
+				_returnstatus = 255;
+#ifdef MPI_FOUND
+				master.sendTerminate();
+#endif
+				return;
+			}
+		} else
+			parse_status = false;
+
 		/// construct solution starting points
-		spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
-		pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
-		detail::constructStartingMatrices(
-				spectral_matrix,
-				pixel_matrix,
-				opts.type_spacex.find("nonnegative") != std::string::npos);
+		if (!parse_status) {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Setting spectral matrix to random starting values.";
+			spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
+			detail::constructRandomMatrix(
+					spectral_matrix,
+					opts.type_spacex.find("nonnegative") != std::string::npos);
+		} else
+			BOOST_LOG_TRIVIAL(info)
+					<< "Using spectral matrix parsed from file.";
+		if (!parse_status) {
+			BOOST_LOG_TRIVIAL(info)
+					<< "Setting pixel matrix to zero.";
+			pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
+			detail::constructZeroMatrix(
+					pixel_matrix);
+		} else
+			BOOST_LOG_TRIVIAL(info)
+					<< "Using pixel matrix parsed from file.";
 
 		/// iterate over the two factors
 		double residual =

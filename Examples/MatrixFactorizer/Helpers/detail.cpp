@@ -42,6 +42,30 @@ int detail::parseOptions(
 	return 0;
 }
 
+int detail::parseFactorFile(
+		const std::string &_filename,
+		Eigen::MatrixXd &_data,
+		const std::string &_name)
+{
+	using namespace MatrixIO;
+
+	if (!MatrixIO::parse(_filename, _name, _data))
+		return 255;
+
+	// print parsed matrix and vector if small or high verbosity requested
+	if ((_data.innerSize() > 10) || (_data.outerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+			<< _name << " is "
+			<< _data << "." << std::endl;
+	} else {
+		BOOST_LOG_TRIVIAL(info)
+					<< _name << " is "
+					<< _data << "." << std::endl;
+	}
+
+	return 0;
+}
+
 int detail::parseDataFile(
 		const std::string &_filename,
 		Eigen::MatrixXd &_data)
@@ -65,29 +89,42 @@ int detail::parseDataFile(
 	return 0;
 }
 
-void detail::constructStartingMatrices(
-		Eigen::MatrixXd &_spectral_matrix,
-		Eigen::MatrixXd &_pixel_matrix,
+void detail::constructRandomMatrix(
+		Eigen::MatrixXd &_matrix,
 		const bool _nonnegative
 		)
 {
 	TraceRenormalizer renormalizer;
 	// generate random matrix drawn from [-1,1]
-	_spectral_matrix.setRandom();
+	_matrix.setRandom();
 	// push to [0,1] if non-negativity desired
 	if (_nonnegative) {
-		_spectral_matrix += Eigen::MatrixXd::Ones(_spectral_matrix.rows(), _spectral_matrix.cols());
-		_spectral_matrix *= .5;
+		_matrix += Eigen::MatrixXd::Ones(_matrix.rows(), _matrix.cols());
+		_matrix *= .5;
 	}
-	renormalizer.renormalize(_spectral_matrix);
-	if ((_spectral_matrix.innerSize() > 10) || (_spectral_matrix.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Initial spectral matrix is\n" << _spectral_matrix;
+	renormalizer.renormalize(_matrix);
+	if ((_matrix.innerSize() > 10) || (_matrix.outerSize() > 10)) {
+		if (_matrix.innerSize() > _matrix.outerSize())
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Initial transposed matrix is\n" << _matrix.transpose();
+		else
+			BOOST_LOG_TRIVIAL(trace)
+					<< "Initial matrix is\n" << _matrix;
 	} else {
-		BOOST_LOG_TRIVIAL(info)
-				<< "Initial spectral matrix is\n" << _spectral_matrix;
+		if (_matrix.innerSize() > _matrix.outerSize())
+			BOOST_LOG_TRIVIAL(info)
+					<< "Initial transposed matrix is\n" << _matrix.transpose();
+		else
+			BOOST_LOG_TRIVIAL(info)
+					<< "Initial matrix is\n" << _matrix;
 	}
-	// set second matrix to zero
-	_pixel_matrix.setZero();
+
+}
+
+void detail::constructZeroMatrix(
+		Eigen::MatrixXd &_matrix
+		)
+{
+	_matrix.setZero();
 }
 
