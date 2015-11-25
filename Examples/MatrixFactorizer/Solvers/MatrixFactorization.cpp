@@ -10,6 +10,7 @@
 
 #include "MatrixFactorization.hpp"
 
+#include <boost/assign.hpp>
 #include <fstream>
 #include <string>
 
@@ -25,6 +26,8 @@
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriterion.hpp"
+
+using namespace boost::assign;
 
 MatrixFactorization::MatrixFactorization(
 		const MatrixFactorizerOptions &_opts,
@@ -60,7 +63,7 @@ void MatrixFactorization::operator()(
 		)
 {
 #ifdef MPI_FOUND
-	Master master(world);
+	Master master(world, opts.overall_keys);
 
 	// So far, Slaves are present and expect initial go (or not full_terminate
 	// signal). Hence, if something has gone wrong, then we need at least to
@@ -132,7 +135,9 @@ void MatrixFactorization::operator()(
 			if (world.size() == 1)
 #endif
 			{
-				InRangeSolver solver(spectral_opts);
+				InRangeSolver solver(
+						spectral_opts,
+						opts.overall_keys);
 				for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
 					Eigen::VectorXd solution;
 					stop_condition &=
@@ -144,6 +149,8 @@ void MatrixFactorization::operator()(
 									);
 					pixel_matrix.col(dim) = solution;
 				}
+				// place accumulated values in loop table
+				solver.insertAccumulatedSolverValues(info.getLoopTable());
 			}
 #ifdef MPI_FOUND
 			else {
@@ -198,7 +205,9 @@ void MatrixFactorization::operator()(
 			if (world.size() == 1)
 # endif
 			{
-				InRangeSolver solver(pixel_opts);
+				InRangeSolver solver(
+						pixel_opts,
+						opts.overall_keys);
 				for (unsigned int dim = 0; dim < _data.rows(); ++dim) {
 					Eigen::VectorXd solution;
 					stop_condition &=
@@ -210,6 +219,8 @@ void MatrixFactorization::operator()(
 									);
 					spectral_matrix.col(dim) = solution;
 				}
+				// place accumulated values in loop table
+				solver.insertAccumulatedSolverValues(info.getLoopTable());
 			}
 #ifdef MPI_FOUND
 			else {

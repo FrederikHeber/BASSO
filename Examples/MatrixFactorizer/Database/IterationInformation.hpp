@@ -98,6 +98,20 @@ struct IterationInformation
 			const MatrixFactorizerOptions &_opts
 			);
 
+	/** Getter to \a loop_table.
+	 *
+	 * @return ref to loop_table
+	 */
+	Table& getLoopTable()
+	{ return loop_table; }
+
+	/** Getter to \a loop_overall_table.
+	 *
+	 * @return ref to loop_overall_table
+	 */
+	Table& getOverallTable()
+	{ return loop_overall_table; }
+
 private:
 	/** Creates views to maintain compatibility with earlier database design.
 	 *

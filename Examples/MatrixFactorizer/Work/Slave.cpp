@@ -48,7 +48,9 @@ void Slave::operator()()
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting options.";
 		CommandLineOptions opts;
+		std::vector<std::string> overall_keys;
 		mpi::broadcast(world, opts, 0);
+		mpi::broadcast(world, overall_keys, 0);
 
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting matrix.";
@@ -65,7 +67,7 @@ void Slave::operator()()
 					<< matrix;
 		}
 
-		InRangeSolver solver(opts);
+		InRangeSolver solver(opts, overall_keys);
 
 		// we stop working only when we get the termination signal
 		// from the master

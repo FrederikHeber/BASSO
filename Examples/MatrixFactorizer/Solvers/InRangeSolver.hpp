@@ -12,9 +12,11 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixFactorizer/Database/InnerProblemDatabase.hpp"
 #include "Minimizations/types.hpp"
 
 class CommandLineOptions;
+class InnerProblemDatabase;
 
 /** Solver combines projection onto range and inverse problem solving with
  * SESOP that requires right-hand side to be in range.
@@ -25,17 +27,13 @@ struct InRangeSolver
 	/** Constructor for class Solver.
 	 *
 	 * @param _opts options defining the manner of solving.
-	 */
-	InRangeSolver(const CommandLineOptions &_opts);
-
-	/** Constructor for class Solver.
-	 *
-	 * @param _opts options defining the manner of solving.
-	 * @param _db database to store iteration information
+	 * @param _overall_keys set of keys to accumulate from solver's overall
+	 * 			table
 	 */
 	InRangeSolver(
 			const CommandLineOptions &_opts,
-			Database_ptr_t &_db);
+			const InnerProblemDatabase::keys_t &_overall_keys
+			);
 
 	/** Functor that projects onto range and solves.
 	 *
@@ -54,11 +52,29 @@ struct InRangeSolver
 			const unsigned int _dim
 			);
 
-private:
+	/** Insert accumulated values from projector problem into given \a _table.
+	 *
+	 * @param _table table to insert values to
+	 */
+	void insertAccumulatedProjectorValues(
+			Table &_table) const;
 
+	/** Insert accumulated values from solver problem into given \a _table.
+	 *
+	 * @param _table table to insert values to
+	 */
+	void insertAccumulatedSolverValues(
+			Table &_table) const;
+
+private:
 	const CommandLineOptions &opts;
-	//!> mock database as projector and solver require them
-	Database_ptr_t mock_db;
+	//!> table database for projector iteration information
+	Database_ptr_t projector_db;
+	//!> table database for solver iteration information
+	Database_ptr_t solver_db;
+
+	InnerProblemDatabase &projectorDB;
+	InnerProblemDatabase &solverDB;
 };
 
 

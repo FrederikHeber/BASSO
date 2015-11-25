@@ -12,22 +12,20 @@
 
 #include "Log/Logging.hpp"
 
-#include "Database/Database_mock.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Options/CommandLineOptions.hpp"
 #include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
-InRangeSolver::InRangeSolver(const CommandLineOptions &_opts) :
-	opts(_opts),
-	mock_db(new Database_mock)
-{}
-
 InRangeSolver::InRangeSolver(
 		const CommandLineOptions &_opts,
-		Database_ptr_t &_db) :
+		const InnerProblemDatabase::keys_t &_overall_keys
+		) :
 	opts(_opts),
-	mock_db(_db)
+	projector_db(new InnerProblemDatabase),
+	solver_db(new InnerProblemDatabase(_overall_keys)),
+	projectorDB(static_cast<InnerProblemDatabase &>(*projector_db.get())),
+	solverDB(static_cast<InnerProblemDatabase &>(*solver_db.get()))
 {}
 
 bool InRangeSolver::operator()(
@@ -48,15 +46,15 @@ bool InRangeSolver::operator()(
 	{
 		// project y onto image of K
 		RangeProjectionSolver projector(
-				mock_db,
+				projector_db,
 				opts
 				);
-		mock_db->clear();
 		if (!projector(
 				_matrix,
 				_rhs,
 				projected_rhs))
 			return false;
+		projector_db->clear();
 	}
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Projected y_" << _dim << " is "
@@ -71,10 +69,9 @@ bool InRangeSolver::operator()(
 	// solve inverse problem for projected right-hand side
 	_solution = _solution_start;
 	InverseProblemSolver solver(
-			mock_db,
+			solver_db,
 			opts,
 			false /* true solution calculation */);
-	mock_db->clear();
 	if (!solver(
 			_matrix,
 			projected_rhs,
@@ -84,10 +81,22 @@ bool InRangeSolver::operator()(
 			<< "Resulting vector is " << _solution.transpose();
 		return false;
 	}
+	solver_db->clear();
 
 
 	return true;
 }
 
+void InRangeSolver::insertAccumulatedProjectorValues(
+		Table &_table) const
+{
+	projectorDB.insertAccumulatedValues(_table);
+}
+
+void InRangeSolver::insertAccumulatedSolverValues(
+		Table &_table) const
+{
+	solverDB.insertAccumulatedValues(_table);
+}
 
 

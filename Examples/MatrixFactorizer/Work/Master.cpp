@@ -29,8 +29,11 @@ namespace mpi = boost::mpi;
 
 using namespace detail;
 
-Master::Master(mpi::communicator &_world) :
-	world(_world)
+Master::Master(
+		mpi::communicator &_world,
+		const InnerProblemDatabase::keys_t &_overall_keys) :
+	world(_world),
+	overall_keys(_overall_keys)
 {
 	// only master should use this class directly, others use Slave
 	assert( world.rank() == 0);
@@ -65,6 +68,7 @@ bool Master::solve(
 	BOOST_LOG_TRIVIAL(debug)
 			<< "#0 - broadcasting options.";
 	mpi::broadcast(world, const_cast<CommandLineOptions &>(_opts), 0);
+	mpi::broadcast(world, const_cast<InnerProblemDatabase::keys_t &>(overall_keys), 0);
 	BOOST_LOG_TRIVIAL(debug)
 			<< "#0 - broadcasting matrix.";
 	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);

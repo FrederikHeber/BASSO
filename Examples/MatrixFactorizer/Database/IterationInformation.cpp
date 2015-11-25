@@ -13,6 +13,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "Log/Logging.hpp"
+#include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 #include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
@@ -36,6 +37,10 @@ IterationInformation::IterationInformation(
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	loop_tuple.insert( std::make_pair("scaling_change", 0.), Table::Data);
+	for (std::vector<std::string>::const_iterator iter = _opts.overall_keys.begin();
+			iter != _opts.overall_keys.end(); ++iter)
+		TableDataAccumulator::prepareTableForAccumulatedValues(
+				loop_table, Database_types::doubletype, (*iter));
 
 	overall_tuple.insert( std::make_pair("parameters_fk", (int)parameter_key), Table::Parameter);
 	overall_tuple.insert( std::make_pair("loops", (int)0), Table::Data);

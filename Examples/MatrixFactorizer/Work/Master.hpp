@@ -17,6 +17,7 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixFactorizer/Database/InnerProblemDatabase.hpp"
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 
 class CommandLineOptions;
@@ -30,8 +31,12 @@ public:
 	/** Constructor for class Master.
 	 *
 	 * @param _world world communicator, stored as ref in class.
+	 * @param _overall_keys set of keys to accumulate from solver's overall
+	 * 			table
 	 */
-	Master(boost::mpi::communicator &_world);
+	Master(
+			boost::mpi::communicator &_world,
+			const InnerProblemDatabase::keys_t &_overall_keys);
 
 	/** Solve function of Master that essentially just distributes the
 	 * data to the Slaves.
@@ -72,6 +77,8 @@ private:
 private:
 	//!> reference to world communicator
 	boost::mpi::communicator &world;
+	//!> ref to overall keys to broadcast to clients
+	const InnerProblemDatabase::keys_t &overall_keys;
 };
 
 #endif /* MPI_FOUND */
