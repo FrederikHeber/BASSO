@@ -111,6 +111,7 @@ private:
 public:
 	// primary options: set by command-line
 	std::string algorithm_name;
+	std::string auxiliary_constraints;
 	double C;
 	bool calculateAngles;
 	bool database_replace;
@@ -120,6 +121,7 @@ public:
 	boost::filesystem::path iteration_file;
 	unsigned int maxinneriter;
 	unsigned int maxiter;
+	unsigned int max_sfp_loops;
 	double maxwalltime;
 	std::string minlib;
 	std::string type_spacex;
@@ -156,6 +158,7 @@ private:
 		ar & boost::serialization::base_object<const Options>(*this);
 
 		ar & algorithm_name;
+		ar & auxiliary_constraints;
 		ar & C;
 		ar & calculateAngles;
 		ar & database_replace;
@@ -165,6 +168,7 @@ private:
 		ar & iteration_file;
 		ar & maxinneriter;
 		ar & maxiter;
+		ar & max_sfp_loops;
 		ar & maxwalltime;
 		ar & minlib;
 		ar & type_spacex;
@@ -195,6 +199,7 @@ private:
 		ar & boost::serialization::base_object<Options>(*this);
 
 		ar & algorithm_name;
+		ar & auxiliary_constraints;
 		ar & C;
 		ar & calculateAngles;
 		ar & database_replace;
@@ -204,6 +209,7 @@ private:
 		ar & iteration_file;
 		ar & maxinneriter;
 		ar & maxiter;
+		ar & max_sfp_loops;
 		ar & maxwalltime;
 		ar & minlib;
 		ar & type_spacex;

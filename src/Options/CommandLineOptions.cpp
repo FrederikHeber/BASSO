@@ -26,6 +26,7 @@ namespace po = boost::program_options;
 CommandLineOptions::CommandLineOptions() :
 	algorithm_name(
 			MinimizerFactory::TypeNames[MinimizerFactory::landweber]),
+	auxiliary_constraints(""),
 	C(.9),
 	calculateAngles(false),
 	database_replace(false),
@@ -34,6 +35,7 @@ CommandLineOptions::CommandLineOptions() :
 	inexactLinesearch(false),
 	maxinneriter(0),
 	maxiter(50),
+	max_sfp_loops(1),
 	maxwalltime(0.),
 	minlib("gsl"),
 	type_spacex("lp"),
@@ -69,6 +71,7 @@ void CommandLineOptions::init()
 	boost::program_options::options_description desc_general("General options");
 	boost::program_options::options_description desc_landweber("Landweber options");
 	boost::program_options::options_description desc_sesop("SESOP options");
+	boost::program_options::options_description desc_sfp("Split feasibility options");
 
 	desc_algorithm.add_options()
 			("algorithm", po::value<std::string>(),
@@ -145,13 +148,20 @@ void CommandLineOptions::init()
 			("wolfe-constants", po::value< std::vector<double> >()->multitoken(),
 					"set the two wolfe conditions for positivity and stronger than linear (inexact line search)")
 			;
+	desc_sfp.add_options()
+			("auxiliary-constraints", po::value<std::string>(),
+					"set any auxiliary constraints")
+			("max-sfp-loops", po::value<unsigned int>(),
+					"set the maximum number of loops for Split Feasibility Problems")
+			;
 
 	desc_all
 		.add(desc_general)
 		.add(desc_banachspace)
 		.add(desc_algorithm)
 		.add(desc_landweber)
-		.add(desc_sesop);
+		.add(desc_sesop)
+		.add(desc_sfp);
 
 	internal_init();
 }
@@ -165,6 +175,16 @@ void CommandLineOptions::parse(int argc, char **argv)
 		algorithm_name = vm["algorithm"].as<std::string>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "algorithm was set to " << algorithm_name;
+	}
+
+	if (vm.count("auxiliary-constraints")) {
+		auxiliary_constraints = vm["auxiliary-constraints"].as<std::string>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Auxiliary constraints are "
+			<< (auxiliary_constraints.empty() ? "None" : auxiliary_constraints);
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Auxiliary constraints are None";
 	}
 
 	if (vm.count("C")) {
@@ -230,6 +250,15 @@ void CommandLineOptions::parse(int argc, char **argv)
 		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum number of inner iterations was set to " << maxinneriter;
+	}
+
+	if (vm.count("max-sfp-loops")) {
+		max_sfp_loops = vm["max-sfp-loops"].as<unsigned int>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum number of SFP loops was set to " << max_sfp_loops;
+	} else {
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Maximum of SFP loops set to default value of " << max_sfp_loops;
 	}
 
 	if (vm.count("max-walltime")) {
@@ -694,6 +723,10 @@ void CommandLineOptions::store(std::ostream &_output) const
 				iter != values.end();)
 			_output << "\twolfe-constants = " << *(iter++) << std::endl;
 	}
+
+	_output << "# [Split Feasibility Problem]" << std::endl;
+	writeValue<std::string>(_output, vm,  "auxiliary-constraints");
+	writeValue<unsigned int>(_output, vm,  "max-sfp-loops");
 
 	internal_store(_output);
 }
