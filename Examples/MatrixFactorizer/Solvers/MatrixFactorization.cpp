@@ -168,45 +168,58 @@ void MatrixFactorization::operator()(
 			}
 
 #ifdef MPI_FOUND
-			if (world.size() == 1)
+			if (world.size() == 1) {
 #endif
-			{
-				InRangeSolver solver(
-						spectral_opts,
-						opts.overall_keys);
-				for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
-					Eigen::VectorXd solution;
-					stop_condition &=
-							!solver(spectral_matrix,
-									_data.col(dim),
-									pixel_matrix.col(dim),
-									solution,
-									dim
-									);
-					pixel_matrix.col(dim) = solution;
+				if (!stop_condition) {
+					InRangeSolver solver(
+							spectral_opts,
+							opts.overall_keys);
+					for (unsigned int dim = 0;
+							(!stop_condition) && (dim < _data.cols());
+							++dim) {
+						Eigen::VectorXd solution;
+						const bool solver_ok =
+								solver(spectral_matrix,
+										_data.col(dim),
+										pixel_matrix.col(dim),
+										solution,
+										dim
+										);
+						if (solver_ok)
+							pixel_matrix.col(dim) = solution;
+						else
+							BOOST_LOG_TRIVIAL(error)
+								<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
+						stop_condition |= !solver_ok;
+					}
+					// place accumulated values in loop table
+					solver.insertAccumulatedProjectorValues(
+							info.getLoopTable(), "_projection");
+					solver.insertAccumulatedSolverValues(
+							info.getLoopTable(), "_minimization");
 				}
-				// place accumulated values in loop table
-				solver.insertAccumulatedProjectorValues(
-						info.getLoopTable(), "_projection");
-				solver.insertAccumulatedSolverValues(
-						info.getLoopTable(), "_minimization");
-			}
 #ifdef MPI_FOUND
-			else {
-				stop_condition &=
-						!master.solve(
-								spectral_opts,
-								spectral_matrix,
-								_data,
-								pixel_matrix
-								);
-				// place accumulated values in loop table
-				master.insertAccumulatedProjectorValues(
-						info.getLoopTable(), "_projection");
-				master.resetAccumulatedProjectorValues();
-				master.insertAccumulatedSolverValues(
-						info.getLoopTable(), "_minimization");
-				master.resetAccumulatedSolverValues();
+			} else {
+				if (!stop_condition) {
+					const bool solver_ok =
+							master.solve(
+									spectral_opts,
+									spectral_matrix,
+									_data,
+									pixel_matrix
+									);
+					// place accumulated values in loop table
+					master.insertAccumulatedProjectorValues(
+							info.getLoopTable(), "_projection");
+					master.resetAccumulatedProjectorValues();
+					master.insertAccumulatedSolverValues(
+							info.getLoopTable(), "_minimization");
+					master.resetAccumulatedSolverValues();
+					if (!solver_ok)
+						BOOST_LOG_TRIVIAL(error)
+							<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
+					stop_condition |= !solver_ok;
+				}
 			}
 #endif
 
@@ -248,45 +261,58 @@ void MatrixFactorization::operator()(
 			// must transpose in place, as spectral_matrix.transpose() is const
 			spectral_matrix.transposeInPlace();
 #ifdef MPI_FOUND
-			if (world.size() == 1)
+			if (world.size() == 1) {
 # endif
-			{
-				InRangeSolver solver(
-						pixel_opts,
-						opts.overall_keys);
-				for (unsigned int dim = 0; dim < _data.rows(); ++dim) {
-					Eigen::VectorXd solution;
-					stop_condition &=
-							solver(pixel_matrix.transpose(),
-									_data.row(dim).transpose(),
-									spectral_matrix.col(dim),
-									solution,
-									dim
-									);
-					spectral_matrix.col(dim) = solution;
+				if (!stop_condition) {
+					InRangeSolver solver(
+							pixel_opts,
+							opts.overall_keys);
+					for (unsigned int dim = 0;
+							(!stop_condition) && (dim < _data.rows());
+							++dim) {
+						Eigen::VectorXd solution;
+						const bool solver_ok =
+								solver(pixel_matrix.transpose(),
+										_data.row(dim).transpose(),
+										spectral_matrix.col(dim),
+										solution,
+										dim
+										);
+						if (solver_ok)
+							spectral_matrix.col(dim) = solution;
+						else
+							BOOST_LOG_TRIVIAL(error)
+								<< "The minimizer for InRangeSolver on pixelmatrix could not finish.";
+						stop_condition |= !solver_ok;
+					}
+					// place accumulated values in loop table
+					solver.insertAccumulatedProjectorValues(
+							info.getLoopTable(), "_projection");
+					solver.insertAccumulatedSolverValues(
+							info.getLoopTable(), "_minimization");
 				}
-				// place accumulated values in loop table
-				solver.insertAccumulatedProjectorValues(
-						info.getLoopTable(), "_projection");
-				solver.insertAccumulatedSolverValues(
-						info.getLoopTable(), "_minimization");
-			}
 #ifdef MPI_FOUND
-			else {
-				stop_condition &=
-						!master.solve(
-								pixel_opts,
-								pixel_matrix.transpose(),
-								_data.transpose(),
-								spectral_matrix
-								);
-				// place accumulated values in loop table
-				master.insertAccumulatedProjectorValues(
-						info.getLoopTable(), "_projection");
-				master.resetAccumulatedProjectorValues();
-				master.insertAccumulatedSolverValues(
-						info.getLoopTable(), "_minimization");
-				master.resetAccumulatedSolverValues();
+			} else {
+				if (!stop_condition) {
+					const bool solver_ok =
+							master.solve(
+									pixel_opts,
+									pixel_matrix.transpose(),
+									_data.transpose(),
+									spectral_matrix
+									);
+					// place accumulated values in loop table
+					master.insertAccumulatedProjectorValues(
+							info.getLoopTable(), "_projection");
+					master.resetAccumulatedProjectorValues();
+					master.insertAccumulatedSolverValues(
+							info.getLoopTable(), "_minimization");
+					master.resetAccumulatedSolverValues();
+					if (!solver_ok)
+						BOOST_LOG_TRIVIAL(error)
+							<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
+					stop_condition |= !solver_ok;
+				}
 			}
 #endif
 			spectral_matrix.transposeInPlace();
@@ -324,7 +350,7 @@ void MatrixFactorization::operator()(
 				BOOST_LOG_TRIVIAL(info)
 					<< "#" << loop_nr << ", residual is " << residual;
 				info.replace(IterationInformation::LoopTable, "residual", residual);
-				stop_condition = (*stopping_criterion)(
+				stop_condition |= (*stopping_criterion)(
 						boost::chrono::duration<double>(0),
 						loop_nr,
 						residual,

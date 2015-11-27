@@ -107,9 +107,9 @@ bool Master::solve(
 	std::deque<mpi::request> uncompleted_requests;
 
 	// go through all columns of rhs
-	bool continue_condition = true;
+	bool solver_ok = true;
 	for (int col = 0;
-			(continue_condition) && (col < _rhs.cols());
+			(solver_ok) && (col < _rhs.cols());
 			++col) {
 		// send current column of rhs as work package
 		const size_t freeworker = AvailableWorkers.front();
@@ -151,7 +151,7 @@ bool Master::solve(
 			// place worker back into available deque
 			AvailableWorkers.push_back(result.first.source());
 			// store solution
-			continue_condition &=
+			solver_ok &=
 					handleResult(result.first, results, _solution);
 		}
 	}
@@ -168,7 +168,7 @@ bool Master::solve(
 		for (std::vector<mpi::status>::const_iterator iter = completed_requests.begin();
 				iter != completed_requests.end(); ++iter) {
 			// store solution
-			continue_condition &=
+			solver_ok &=
 					handleResult(*iter, results, _solution);
 		}
 	}
@@ -201,7 +201,7 @@ bool Master::solve(
 				insertValues(++out_values.begin(), out_values.end());
 	}
 
-	return continue_condition;
+	return solver_ok;
 }
 
 void Master::insertAccumulatedProjectorValues(
@@ -251,8 +251,12 @@ bool Master::handleResult(
 					<< "Got solution for col #" << _results[id-1].col
 					<< "\n" << _results[id-1].solution.transpose();
 		}
-	} else
+	} else {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Could not open solution for column "
+				<< _results[_result.source()-1].col;
 		solve_ok = false;
+	}
 
 	return solve_ok;
 }
