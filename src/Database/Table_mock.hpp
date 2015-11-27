@@ -48,6 +48,12 @@ public:
 	void clear()
 	{ }
 
+	/** Resets the table to initial status.
+	 *
+	 */
+	void reset()
+	{ }
+
 	/** Returns whether table is empty.
 	 *
 	 * @return true - no tuples present, false - else

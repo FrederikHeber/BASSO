@@ -148,6 +148,12 @@ std::vector<Table::values_t> Table::convertTuplesToValueVector(
 
 void Table::clear()
 {
+	reset();
+}
+
+void Table::reset()
+{
 	internal_table.clear();
 	internal_tuple.clear();
+	uptodate = true;
 }

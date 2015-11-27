@@ -35,6 +35,17 @@ bool TableDirectory::removeTable(const std::string &_name)
 	return status;
 }
 
+void TableDirectory::clear()
+{
+	for(tables_t::iterator iter = tables.begin();
+		iter != tables.end(); ++iter) {
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Clearing table " << iter->second->getName();
+		iter->second->clear();
+	}
+}
+
+
 bool TableDirectory::clearTable(const std::string &_name)
 {
 	tables_t::iterator iter = tables.find(_name);

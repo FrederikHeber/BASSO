@@ -68,10 +68,22 @@ public:
 	const size_t size() const
 	{ return 1; }
 
-	/** Clears the whole database.
+	/** Resets the whole database to initial status.
+	 *
+	 */
+	void reset()
+	{}
+
+	/** Clears the information contained in the database.
 	 *
 	 */
 	void clear()
+	{}
+
+	/** Finalize the data in the database.
+	 *
+	 */
+	void finish()
 	{}
 
 	/** Setter for whether tuples are replaced (with respect to their parameter

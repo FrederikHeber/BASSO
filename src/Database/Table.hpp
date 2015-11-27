@@ -100,12 +100,13 @@ public:
 
 		virtual bool isParameter(const std::string &_name) const;
 
+	private:
 		/** Clears the internal map and the TypeMap.
 		 *
+		 * This is only to be used by Table.
 		 */
 		void clear();
 
-	private:
 		void insert(
 				const std::pair<
 						std::string,
@@ -149,6 +150,13 @@ public:
 	 */
 	virtual const bool isUptodate() const
 	{ return uptodate; }
+
+	/** Resets the table to initial status.
+	 *
+	 * \note ... except for table's name.
+	 *
+	 */
+	virtual void reset();
 
 	/** Removes all tuples contained in a table.
 	 *

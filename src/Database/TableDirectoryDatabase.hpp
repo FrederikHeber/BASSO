@@ -79,11 +79,23 @@ public:
 	const size_t size() const
 	{ return directory.size(); }
 
-	/** Clears the whole database.
+	/** Resets the whole database to initial status.
+	 *
+	 */
+	virtual void reset()
+	{ directory.reset(); }
+
+	/** Clears all tables in the database.
 	 *
 	 */
 	void clear()
 	{ directory.clear(); }
+
+	/** Finalize the data in the database.
+	 *
+	 */
+	virtual void finish()
+	{}
 
 protected:
 	//!> internal directory for all tables

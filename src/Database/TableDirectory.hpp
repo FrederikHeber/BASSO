@@ -63,11 +63,16 @@ struct TableDirectory
 	const size_t size() const
 	{ return tables.size(); }
 
-	/** Clears the whole directory.
+	/** Resets the whole directory to initial status.
 	 *
 	 */
-	void clear()
+	void reset()
 	{ tables.clear(); }
+
+	/** Clears all values over all tables in the whole directory.
+	 *
+	 */
+	void clear();
 
 private:
 	//!> typedef for the set of tables

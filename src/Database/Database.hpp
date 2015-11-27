@@ -118,10 +118,20 @@ public:
 	 */
 	virtual const size_t size() const = 0;
 
-	/** Clears the whole database.
+	/** Resets the whole database to initial status.
+	 *
+	 */
+	virtual void reset() = 0;
+
+	/** Clears the information contained in the database.
 	 *
 	 */
 	virtual void clear() = 0;
+
+	/** Finalize the data in the database.
+	 *
+	 */
+	virtual void finish() = 0;
 
 	/** Setter for whether tuples are replaced (with respect to their parameter
 	 * part or we just add new ones regardless of same-parametered present ones.
