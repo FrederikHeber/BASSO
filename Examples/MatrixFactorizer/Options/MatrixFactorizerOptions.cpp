@@ -18,6 +18,7 @@ namespace po = boost::program_options;
 
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
 		max_loops(100),
+		DoParseFactors(false),
 		residual_threshold(0.),
 		sparse_dim(1)
 {}
@@ -33,14 +34,16 @@ void MatrixFactorizerOptions::internal_init()
 					"set the maximum number of loops iterating over each factor")
 			("overall-keys", po::value< std::vector<std::string> >()->multitoken(),
 					"set the columns to pass from inner problem's overall tables")
+			("parse-factors", po::value< bool >(),
+					"set whether to also parse initial factors from specified files")
 			("residual-threshold", po::value<double>(),
 					"set the threshold of the matrix residual when to stop the iteration")
 			("solution-product", po::value< boost::filesystem::path >(),
 					"set the file name to write the product of the two solution factors to")
 			("solution-first-factor", po::value< boost::filesystem::path >(),
-					"set the file name to write the first matrix factor")
+					"set the file name to write the first matrix factor (or also read in case of parse-factors)")
 			("solution-second-factor", po::value< boost::filesystem::path >(),
-					"set the file name to write the second matrix factor")
+					"set the file name to write the second matrix factor (or also read in case of parse-factors)")
 			("sparse-dimension", po::value<unsigned int>(), "set the inner dimension of the matrix product")
 			;
 
@@ -72,6 +75,12 @@ void MatrixFactorizerOptions::internal_parse()
 		overall_keys.clear();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "We don't accumulate any iteration keys from solver's overall table.";
+	}
+	if (vm.count("parse-factors")) {
+		DoParseFactors = vm["parse-factors"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "For the starting matrices, we "
+			<< (DoParseFactors ? "do": "do not") << " parse the factors from given files.";
 	}
 
 	if (vm.count("residual-threshold")) {
@@ -120,6 +129,22 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 		return false;
 	}
 
+	if (vm.count("parse-factors") && DoParseFactors) {
+		// check files are given and exist
+		if (!vm.count("solution-first-factor")
+				|| !boost::filesystem::exists(solution_factor_one_file)) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "First factor file not specified or non-existent.";
+			return false;
+		}
+		if (!vm.count("solution-second-factor")
+				|| !boost::filesystem::exists(solution_factor_two_file)) {
+			BOOST_LOG_TRIVIAL(error)
+					<< "Second factor file not specified or non-existent.";
+			return false;
+		}
+	}
+
 	// We have to check N+1 directions for linear independence. This should
 	// be possible at least judging from the the dimensionality of the
 	// space, hence this requirement. Otherwise, one of the offsets to
@@ -161,6 +186,7 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 				iter != overall_keys.end();)
 			_output << "\toverall-keys = " << *(iter++) << std::endl;
 	}
+	writeValue<bool>(_output, vm,  "parse-factors");
 	writeValue<double>(_output, vm,  "residual-threshold");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");

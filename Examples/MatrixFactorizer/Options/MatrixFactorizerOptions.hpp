@@ -55,6 +55,7 @@ public:
 	boost::filesystem::path data_file;
 	unsigned int max_loops;
 	std::vector<std::string> overall_keys;
+	bool DoParseFactors;
 	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
@@ -73,6 +74,7 @@ private:
 		ar & data_file;
 		ar & max_loops;
 		ar & overall_keys;
+		ar & DoParseFactors;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
@@ -90,6 +92,7 @@ private:
 		ar & data_file;
 		ar & max_loops;
 		ar & overall_keys;
+		ar & DoParseFactors;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
