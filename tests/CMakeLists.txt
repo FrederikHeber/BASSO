@@ -26,6 +26,9 @@ add_subdirectory (NoiseAdder)
 # tests for Gravity program
 add_subdirectory (Gravity)
 
+# tests for NonnegativeMatrixFactors program
+add_subdirectory (NonnegativeMatrixFactors)
+
 # test n${DIFFCMD} ${NDIFF_OPTIONS}only when desired
 if (USE_NDIFF)
 	add_subdirectory (ndiff)
