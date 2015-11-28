@@ -1,7 +1,7 @@
 /*
  * \file NonnegativeMatrixFactors.cpp
  *
- * This will follow [Boutsidis, Gallopoulos, '08].
+ * This follows [Boutsidis, Gallopoulos, '08].
  *
  *  Created on: Nov 28, 2015
  *      Author: heber
@@ -24,6 +24,21 @@
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
 
+static Eigen::VectorXd getPositiveSection(const Eigen::VectorXd &_vector)
+{
+	Eigen::VectorXd returnvector = _vector.array().abs();
+	returnvector += _vector;
+	returnvector *= .5;
+	return returnvector;
+}
+
+static Eigen::VectorXd getNegativeSection(const Eigen::VectorXd &_vector)
+{
+	Eigen::VectorXd returnvector = (-1.*_vector).array().abs();
+	returnvector -= _vector;
+	returnvector *= -.5;
+	return returnvector;
+}
 
 int main (int argc, char *argv[])
 {
@@ -67,10 +82,44 @@ int main (int argc, char *argv[])
 				<< "Matrix dimensions of both factors do not match";
 		return 255;
 	}
+	const size_t inner_dimension = spectralmatrix.cols();
 
 	/// apply method
-	Eigen::MatrixXd nonnegative_spectralmatrix = spectralmatrix;
-	Eigen::MatrixXd nonnegative_pixelmatrix = pixelmatrix;
+	// create destination matrices
+	Eigen::MatrixXd nonnegative_spectralmatrix =
+			Eigen::MatrixXd(spectralmatrix.rows(), spectralmatrix.cols());
+	Eigen::MatrixXd nonnegative_pixelmatrix =
+			Eigen::MatrixXd(pixelmatrix.rows(), pixelmatrix.cols());
+
+	// loop through other columns/row and extract positive factor in rank-2 decomp.
+	for (size_t index = 0; index < inner_dimension; ++index) {
+		Eigen::VectorXd x = spectralmatrix.col(index);
+		Eigen::VectorXd y = pixelmatrix.row(index);
+		Eigen::VectorXd xp = getPositiveSection(x);
+		Eigen::VectorXd xn = getNegativeSection(x);
+		Eigen::VectorXd yp = getPositiveSection(y);
+		Eigen::VectorXd yn = getNegativeSection(y);
+		const double xp_norm = xp.stableNorm();
+		const double xn_norm = xn.stableNorm();
+		const double yp_norm = yp.stableNorm();
+		const double yn_norm = yn.stableNorm();
+		const double mp = xp_norm * yp_norm;
+		const double mn = xn_norm * yn_norm;
+		assert( mp >= 0. );
+		assert( mn >= 0. );
+		if ((fabs(mp) > BASSOTOLERANCE) || (fabs(mn) > BASSOTOLERANCE)) {
+			if (mp > mn) {
+				nonnegative_spectralmatrix.col(index) = (mp/xp_norm)*xp;
+				nonnegative_pixelmatrix.row(index) = (mp/yp_norm)*yp;
+			} else {
+				nonnegative_spectralmatrix.col(index) = (-mn/xn_norm)*xn;
+				nonnegative_pixelmatrix.row(index) = (-mn/yn_norm)*yn;
+			}
+		} else {
+			nonnegative_spectralmatrix.col(index).setZero();
+			nonnegative_pixelmatrix.row(index).setZero();
+		}
+	}
 
 	/// store destination matrix factors
 	if (!MatrixIO::store(
