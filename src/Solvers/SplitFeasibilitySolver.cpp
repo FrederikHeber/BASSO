@@ -67,7 +67,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 	result.residuum = std::numeric_limits<double>::max();
 	result.status = GeneralMinimizer::ReturnValues::notbegun;
 
-	BOOST_LOG_TRIVIAL(info)
+	BOOST_LOG_TRIVIAL(debug)
 			<< "Starting SplitFeasibilityProblem ...";
 
 	const std::string bar = createBar(30);
@@ -75,7 +75,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 			(result.residuum > opts.delta)
 			&& (SplitFeasibilityProblem_loops < opts.max_sfp_loops);
 			++SplitFeasibilityProblem_loops) {
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 				<< bar << " SFP #" << SplitFeasibilityProblem_loops
 				<< " " << bar;
 
@@ -86,7 +86,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 			(*iter)->clear();
 			result = (**iter)(result.m_solution);
 			(*iter)->finish();
-			BOOST_LOG_TRIVIAL(info)
+			BOOST_LOG_TRIVIAL(debug)
 					<< "Residual after problem " << (*iter)->getName()
 					<< " is " << result.residuum;
 			if (result.status != GeneralMinimizer::ReturnValues::finished) {
@@ -95,13 +95,13 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 				break;
 			}
 		}
-		BOOST_LOG_TRIVIAL(info)
+		BOOST_LOG_TRIVIAL(debug)
 				<< bar
 				<< createBar(6+ceil(SplitFeasibilityProblem_loops/10))
 				<< bar;
 	}
 
-	BOOST_LOG_TRIVIAL(info)
+	BOOST_LOG_TRIVIAL(debug)
 			<< "Finishing SplitFeasibilityProblem ...";
 
 	return result;
