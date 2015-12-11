@@ -137,27 +137,6 @@ public:
 
 protected:
 
-	/** Getter for the value of the current optimum argument.
-	 *
-	 * @return optimum value
-	 */
-	const double getCurrentOptimumValue() const
-	{ return minimizer->getCurrentOptimumValue(); }
-
-	/** Getter for the current optimum argument.
-	 *
-	 * @return current optimum argument
-	 */
-	const FunctionMinimizer::array_type &getCurrentOptimum() const
-	{ return minimizer->getCurrentOptimum(); }
-
-	/** Getter for the gradient at the current optimum argument.
-	 *
-	 * @return gradient at current optimum argument
-	 */
-	const FunctionMinimizer::array_type &getCurrentGradient() const
-	{ return minimizer->getCurrentGradient(); }
-
 	//!> instance of the minimization functional
 	const MinimizationFunctional<S> &functional;
 	//!> instance of the minimizer

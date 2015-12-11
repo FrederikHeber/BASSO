@@ -10,8 +10,14 @@
 
 #include "BassoConfig.h"
 
+#include <vector>
+
+#include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
+
 struct FunctionMinimizer
 {
+
 	FunctionMinimizer(const unsigned int _N) :
 		maxiterations(100),
 		optimum(0),

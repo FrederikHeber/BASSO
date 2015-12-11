@@ -117,10 +117,10 @@ FunctionalMinimizer_inexactLinesearch<S>::operator()(
 		S &_startvalue) const
 {
 	std::vector<double> zeroposition(_N, 0.);
-	const double functionzero = FunctionCaller(
-			zeroposition);
+	const double functionzero =
+			FunctionalMinimizer<S>::FunctionCaller(zeroposition);
 	const std::vector<double> zerogradient =
-			GradientCaller(zeroposition);
+			FunctionalMinimizer<S>::GradientCaller(zeroposition);
 
 	// use Wolfe conditions to stop line search
 	typedef boost::function<
@@ -130,7 +130,7 @@ FunctionalMinimizer_inexactLinesearch<S>::operator()(
 					boost::cref(*this),
 					functionzero,
 					boost::cref(zerogradient),
-					boost::cref(_Wolfe_indexset),
+					boost::cref(Wolfe_indexset),
 					_1);
 
 	array_type functionargument(_N, 0.);

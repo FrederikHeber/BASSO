@@ -11,6 +11,7 @@ add_library (Minimizations
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/MetricProjectionFunctional.cpp 
+	Functions/Minimizers/FunctionalMinimizerFactory.cpp
 	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/Minimizers/Minimizer_nlopt.cpp
 	Functions/ResidualFunctional.cpp
@@ -67,6 +68,8 @@ install (FILES Functions/BregmanProjectionFunctional.hpp DESTINATION include)
 install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
 install (FILES Functions/MetricProjectionFunctional.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionMinimizer.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizerFactory.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizerFactory_impl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer_impl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer_exactLinesearch.hpp DESTINATION include)
