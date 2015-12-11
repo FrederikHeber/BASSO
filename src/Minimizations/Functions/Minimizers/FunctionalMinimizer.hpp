@@ -10,7 +10,6 @@
 
 #include "BassoConfig.h"
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 
@@ -98,7 +97,7 @@ public:
 
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;
 
 	/** Minimizes the given \a functional.
 	 *
@@ -171,7 +170,7 @@ private:
 	 * @param _Tol tolerance *unused*
 	 * @return GradientStatus
 	 */
-	enum Minimization::GradientStatus checkWolfeConditions(
+	enum FunctionMinimizer::GradientStatus checkWolfeConditions(
 			const double _startvalue,
 			const array_type & _startgradient,
 			const Wolfe_indexset_t &_Wolfe_indexset,

@@ -42,7 +42,7 @@ FunctionalMinimizer<S,T>::FunctionalMinimizer(
 }
 
 template <class S, class T>
-enum Minimization::GradientStatus
+enum FunctionMinimizer::GradientStatus
 FunctionalMinimizer<S,T>::checkWolfeConditions(
 		const double _startvalue,
 		const array_type & _startgradient,
@@ -112,9 +112,9 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 //			<< " < " << linearinterpolate;
 //		conditions_fulfilled &= (currentvalue < linearinterpolate);
 	if (conditions_fulfilled)
-		return Minimization::gradient_success;
+		return FunctionMinimizer::gradient_success;
 	else
-		return Minimization::gradient_continue;
+		return FunctionMinimizer::gradient_continue;
 }
 
 template <class S, class T>

@@ -39,7 +39,7 @@ Minimizer<gsl_vector>::~Minimizer()
 	gsl_multimin_fdfminimizer_free (s);
 }
 
-enum Minimization::GradientStatus
+enum FunctionMinimizer::GradientStatus
 Minimizer<gsl_vector>::checkGradient(
 		const double _Tol) const
 {
@@ -48,14 +48,14 @@ Minimizer<gsl_vector>::checkGradient(
 			_Tol);
 	switch (status) {
 		case GSL_SUCCESS:
-			return Minimization::gradient_success;
+			return FunctionMinimizer::gradient_success;
 			break;
 		default:
 		case GSL_CONTINUE:
-			return Minimization::gradient_continue;
+			return FunctionMinimizer::gradient_continue;
 			break;
 		case GSL_ENOPROG:
-			return Minimization::error_noprogress;
+			return FunctionMinimizer::error_noprogress;
 			break;
 	}
 }
@@ -78,7 +78,7 @@ Minimizer<gsl_vector>::minimize(
 		)
 {
 	unsigned int iter = 0;
-	enum Minimization::GradientStatus status;
+	enum FunctionMinimizer::GradientStatus status;
 
 	/* Starting point, x = (0,0) */
 	gsl_vector *x;
@@ -135,7 +135,7 @@ Minimizer<gsl_vector>::minimize(
 		status = _checkfunction(_Tol);
 
 	}
-	while ((status == Minimization::gradient_continue) && iter < maxiterations);
+	while ((status == FunctionMinimizer::gradient_continue) && iter < maxiterations);
 
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Inner iteration took " << iter << " steps";

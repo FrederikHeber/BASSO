@@ -13,10 +13,10 @@
 #include <boost/function.hpp>
 #include <vector>
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionMinimizer.hpp"
 
 template <class T>
-class Minimizer
+class Minimizer : public FunctionMinimizer
 {
 	typedef std::vector<double> array_type;
 
@@ -25,12 +25,12 @@ public:
 	~Minimizer();
 
 
-	enum Minimization::GradientStatus
+	enum FunctionMinimizer::GradientStatus
 	checkGradient(const double _tol) const;
 
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;
 
 	const unsigned int operator()(
 			const double _Tol,

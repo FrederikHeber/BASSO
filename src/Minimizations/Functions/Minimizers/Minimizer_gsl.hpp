@@ -18,10 +18,10 @@
 
 #include <vector>
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionMinimizer.hpp"
 
 template <>
-class Minimizer<gsl_vector>
+class Minimizer<gsl_vector> : public FunctionMinimizer
 {
 	typedef std::vector<double> array_type;
 
@@ -47,7 +47,7 @@ public:
 	 * @param _tol tolerance threshold
 	 * @return status code
 	 */
-	enum Minimization::GradientStatus checkGradient(const double _tol) const;
+	enum FunctionMinimizer::GradientStatus checkGradient(const double _tol) const;
 
 	typedef boost::function<double (
 					const array_type &x)> function_evaluator_t;
@@ -80,7 +80,7 @@ public:
 
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;
 
 	/** Minimizes the specific functions with its gradients.
 	 *

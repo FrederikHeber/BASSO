@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionMinimizer.hpp"
 
 #ifdef NLOPT_FOUND
 #include <nlopt.hpp>
@@ -25,10 +25,8 @@
 typedef std::vector<double> NLopt_vector;
 
 template <>
-class Minimizer<NLopt_vector>
+class Minimizer<NLopt_vector> : public FunctionMinimizer
 {
-	typedef std::vector<double> array_type;
-
 public:
 	/** Constructor for class Minimizer.
 	 *
@@ -87,11 +85,7 @@ public:
 	 * @param _tol tolerance threshold
 	 * @return status code
 	 */
-	enum Minimization::GradientStatus checkGradient(const double _tol) const;
-
-	//!> typedef for the function to check when to stop the iteration
-	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+	enum FunctionMinimizer::GradientStatus checkGradient(const double _tol) const;
 
 	/** Minimizes the specific functions with its gradients.
 	 *

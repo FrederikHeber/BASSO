@@ -37,15 +37,15 @@ Minimizer<NLopt_vector>::Minimizer(
 #endif /* NLOPT_FOUND */
 }
 
-enum Minimization::GradientStatus
+enum FunctionMinimizer::GradientStatus
 Minimizer<NLopt_vector>::checkGradient(
 		const double _Tol) const
 {
 	// we do nothing as nlopt::opt::set_xtol_rel does all the work instead
 	if (iter >= maxiterations)
-		return Minimization::gradient_success;
+		return FunctionMinimizer::gradient_success;
 	else
-		return Minimization::gradient_continue;
+		return FunctionMinimizer::gradient_continue;
 }
 
 const unsigned int
@@ -82,7 +82,7 @@ Minimizer<NLopt_vector>::minimize(
 		BOOST_LOG_TRIVIAL(debug)
 				<< "NLopt stopped forcedly by checkfunction, "
 				<< "checkfunction says: "
-				<< (_checkfunction(_Tol) == Minimization::gradient_success ?
+				<< (_checkfunction(_Tol) == FunctionMinimizer::gradient_success ?
 						"valid" : "INVALID");
 	}
 	if (isnan(optimum) || isinf(optimum))
@@ -126,7 +126,7 @@ Minimizer<NLopt_vector>::FunctionGradientCaller(
 	if (minimizer->iter >= minimizer->maxiterations)
 		throw nlopt::forced_stop();
 	if (minimizer->checkfunction(minimizer->tolerance)
-			!= Minimization::gradient_continue)
+			!= FunctionMinimizer::gradient_continue)
 		throw nlopt::forced_stop();
 #endif /* NLOPT_FOUND */
 
