@@ -13,7 +13,7 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
 
 VectorProjection::VectorProjection(
@@ -52,16 +52,15 @@ VectorProjection::operator()(
 				_projectedonto,
 				_tobeprojected,
 				p);
-		Minimizer<gsl_vector> minimizer(dim);
-
-		FunctionalMinimizer_deprecated<double, gsl_vector> functionminimizer(
-				distancefunctional,
-				minimizer,
-				tmin);
+		FunctionalMinimizer<double>::ptr_t functionminimizer =
+				FunctionalMinimizerFactory::create<double>(
+						dim,
+						distancefunctional,
+						tmin);
 
 //		const unsigned int inner_iterations =
-				functionminimizer(dim, _Tol, tmin);
-		result = minimizer.getCurrentOptimumValue();
+				(*functionminimizer)(dim, _Tol, tmin);
+		result = functionminimizer->getCurrentOptimumValue();
 
 		BOOST_LOG_TRIVIAL(trace)
 			<< "tmin is " << tmin;
