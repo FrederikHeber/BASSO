@@ -19,7 +19,7 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/MetricProjectionFunctional.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
@@ -64,33 +64,15 @@ const unsigned int calculateMetricProjection(
 	const HyperplaneProjection<MetricProjectionFunctional> functional(
 			metric, dual_solution);
 
-	// due to templation we need to instantiate both, as user
-	// decides during runtime which we need
-	Minimizer<gsl_vector> minimizer_gsl(Ndirs);
-//	Minimizer<NLopt_vector> minimizer_nlopt(Ndirs);
-//	if (MinLib == gnuscientificlibrary) {
-		minimizer_gsl.setMaxIterations(MaxInnerIterations);
-//	} else if (MinLib == nonlinearoptimization) {
-//		minimizer_nlopt.setMaxIterations(MaxInnerIterations);
-//	}
+	FunctionalMinimizer< std::vector<double> >::ptr_t functionminimizer =
+			FunctionalMinimizerFactory::create< std::vector<double> >(
+				Ndirs,
+				functional,
+				tmin);
+	functionminimizer->setMaxIterations(MaxInnerIterations);
 
-	unsigned int inner_iterations = 0;
-	FunctionalMinimizer_deprecated<std::vector<double>, gsl_vector> fmin_gsl(
-			functional, minimizer_gsl, tmin);
-//	FunctionalMinimizer_deprecated<std::vector<double>, NLopt_vector> fmin_nlopt(
-//			functional, minimizer_nlopt, tmin);
-//	switch (MinLib) {
-//	case gnuscientificlibrary:
-		inner_iterations = fmin_gsl(Ndirs, TolY, tmin);
-//		break;
-//	case nonlinearoptimization:
-//		inner_iterations = fmin_nlopt(Ndirs, TolY, tmin);
-//		break;
-//	default:
-//		throw MinimizationIllegalValue_exception()
-//				<< MinimizationIllegalValue_name("MinLib");
-//		break;
-//	}
+	unsigned int inner_iterations = (*functionminimizer)(
+			Ndirs, TolY, tmin);
 	std::stringstream output_stepwidth;
 	std::copy(tmin.begin(), tmin.end(),
 			std::ostream_iterator<double>(output_stepwidth, " "));
