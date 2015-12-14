@@ -25,9 +25,8 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
-#include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
@@ -210,59 +209,29 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	const HyperplaneProjection<BregmanProjectionFunctional> functional(
 			bregman, dual_solution);
 
-	// due to templation we need to instantiate both, as user
-	// decides during runtime which we need
-	Minimizer<gsl_vector> minimizer_gsl(Ndirs);
-	Minimizer<NLopt_vector> minimizer_nlopt(Ndirs);
-	const unsigned int current_index = istate.searchspace->getIndex();
-	Wolfe_indexset_t Wolfe_indexset(1, current_index);
-	if (MinLib == gnuscientificlibrary) {
-		minimizer_gsl.setMaxIterations(MaxInnerIterations);
-	} else if (MinLib == nonlinearoptimization) {
-		// hand index set to minimizer
-		minimizer_nlopt.setConstantPositivity(constant_positivity);
-		minimizer_nlopt.setPositivityBoundIndices(Wolfe_indexset);
-		minimizer_nlopt.setMaxIterations(MaxInnerIterations);
-	}
-
-	unsigned int inner_iterations = 0;
+	FunctionalMinimizer< std::vector<double> >::ptr_t functionminimizer;
 	if (inexactLinesearch) {
-		FunctionalMinimizer_deprecated<std::vector<double>, gsl_vector> fmin_gsl(
-				functional, minimizer_gsl, tmin, constant_positivity,
-				constant_interpolation);
-		FunctionalMinimizer_deprecated<std::vector<double>, NLopt_vector> fmin_nlopt(
-				functional, minimizer_nlopt, tmin, constant_positivity,
-				constant_interpolation);
-		switch (MinLib) {
-		case gnuscientificlibrary:
-			inner_iterations = fmin_gsl(Ndirs, TolFun, Wolfe_indexset, tmin);
-			break;
-		case nonlinearoptimization:
-			inner_iterations = fmin_nlopt(Ndirs, TolFun, Wolfe_indexset, tmin);
-			break;
-		default:
-			throw MinimizationIllegalValue_exception()
-					<< MinimizationIllegalValue_name("MinLib");
-			break;
-		}
+		const unsigned int current_index = istate.searchspace->getIndex();
+		Wolfe_indexset_t Wolfe_indexset(1, current_index);
+		functionminimizer =
+				FunctionalMinimizerFactory::create< std::vector<double> >(
+					Ndirs,
+					functional,
+					tmin,
+					constant_positivity,
+					Wolfe_indexset,
+					constant_interpolation);
 	} else {
-		FunctionalMinimizer_deprecated<std::vector<double>, gsl_vector> fmin_gsl(
-				functional, minimizer_gsl, tmin);
-		FunctionalMinimizer_deprecated<std::vector<double>, NLopt_vector> fmin_nlopt(
-				functional, minimizer_nlopt, tmin);
-		switch (MinLib) {
-		case gnuscientificlibrary:
-			inner_iterations = fmin_gsl(Ndirs, TolFun, tmin);
-			break;
-		case nonlinearoptimization:
-			inner_iterations = fmin_nlopt(Ndirs, TolFun, tmin);
-			break;
-		default:
-			throw MinimizationIllegalValue_exception()
-					<< MinimizationIllegalValue_name("MinLib");
-			break;
-		}
+		functionminimizer =
+				FunctionalMinimizerFactory::create< std::vector<double> >(
+					Ndirs,
+					functional,
+					tmin);
 	}
+	functionminimizer->setMaxIterations(MaxInnerIterations);
+	unsigned int inner_iterations = (*functionminimizer)(
+		Ndirs, TolFun, tmin);
+
 	std::stringstream output_stepwidth;
 	std::copy(tmin.begin(), tmin.end(),
 			std::ostream_iterator<double>(output_stepwidth, " "));
