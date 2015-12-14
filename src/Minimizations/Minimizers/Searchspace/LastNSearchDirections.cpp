@@ -21,7 +21,7 @@
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
 #include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
-#include "Minimizations/Functions/Minimizers/Minimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 #include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
