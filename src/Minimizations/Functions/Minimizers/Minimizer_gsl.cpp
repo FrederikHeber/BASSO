@@ -18,11 +18,8 @@
 Minimizer<gsl_vector>::Minimizer(
 		const unsigned int _N
 		) :
-		N(_N),
-		maxiterations(100),
-		optimum(0),
-		tempoptimum(N),
-		tempgradient(N)
+		FunctionMinimizer(_N),
+		N(_N)
 {
 	my_func.n = N;
 	my_func.f = &Minimizer<gsl_vector>::FunctionCaller;

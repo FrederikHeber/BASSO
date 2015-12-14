@@ -18,17 +18,14 @@
 Minimizer<NLopt_vector>::Minimizer(
 		const unsigned int _N
 		) :
+		FunctionMinimizer(_N),
 #ifdef NLOPT_FOUND
 		opt(nlopt::LD_MMA, _N),
 #endif /* NLOPT_FOUND */
 		N(_N),
 		iter(0),
-		maxiterations(100),
 		constant_positivity(0.),
-		tolerance(1e-4),
-		optimum(0.),
-		tempoptimum(N),
-		tempgradient(N)
+		tolerance(1e-4)
 {
 	// prepare objective function
 #ifdef NLOPT_FOUND
