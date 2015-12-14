@@ -154,26 +154,12 @@ public:
 			const SpaceElement_ptr_t &_truesolution) const;
 
 
-	/** Setter for MinLib via \a _name as string.
-	 *
-	 * @param _name name of library to use for minimization
-	 */
-	void setMinLib(const std::string &_name);
-
 	/** Sets the vector with additional parameters to make tuples unique in database.
 	 *
 	 * @param _tuple_params vector of strings in pairs of two ("key" and "value")
 	 */
 	void setAdditionalTupleParameters(
 			const std::vector<std::string> &_tuple_params);
-
-	/** Checks whether \a _name represents a valid name for a
-	 * minimization library.
-	 *
-	 * @param _name name of library to check
-	 * @return true - valid name, false - library name unknown
-	 */
-	bool isValidMinLibName(const std::string &_name);
 
 	/** Checks the stopping condition whether the iteration should stop
 	 * or not.
@@ -248,19 +234,6 @@ public:
 	const double TolFun;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
-
-	//!> enumeration of all available minimization libraries (for line search)
-	enum MinimizationLibraries {
-		gnuscientificlibrary=0,
-		nonlinearoptimization=1,
-		MAX_MinimizationLibraries
-	};
-	//!> stores which minimization library to use
-	enum MinimizationLibraries MinLib;
-
-	typedef std::map<std::string, enum MinimizationLibraries> MinLib_names_t;
-	//!> name for each minimization library
-	static MinLib_names_t MinLib_names;
 
 private:
 
