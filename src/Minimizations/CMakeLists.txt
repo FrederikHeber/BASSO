@@ -51,6 +51,8 @@ add_library (Minimizations
 	Spaces/NormedSpaceFactory.cpp
 	Spaces/NormedSpace.cpp
 	)
+	
+target_link_libraries(Minimizations ${NLOPT_LIBRARIES})
 
 install (TARGETS Minimizations DESTINATION bin)
 
