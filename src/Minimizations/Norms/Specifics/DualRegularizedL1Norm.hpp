@@ -17,8 +17,8 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 /** This class implements the dual of the regularized l1 norm of the form
- * \f$ \sqrt{ \tfrac 1 2 ||.||^2_1 + \tfrac \lambda 2 ||.||^2_2 } \f$ which is
- * \f$ || \sqrt{ c_{\lambda}^2(.) + \tfrac 1 {\lambda} || S_{\lambda} (.) ||^2_2 } \f$ .
+ * \f$ \sqrt{ \frac 1 2 ||.||^2_1 + \frac \lambda 2 ||.||^2_2 } \f$ which is
+ * \f$ || \sqrt{ c_{\lambda}^2(.) + \frac 1 {\lambda} || S_{\lambda} (.) ||^2_2 } \f$ .
  *
  * see [Schoepfer, 2012].
  */

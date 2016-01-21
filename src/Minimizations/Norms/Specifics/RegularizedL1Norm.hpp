@@ -16,7 +16,7 @@
 #include "Minimizations/Norms/Norm.hpp"
 
 /** This class implements a regularized l1 norm of the form
- * \f$ \sqrt{ \tfrac 1 2 ||.||^2_1 + \tfrac \lambda 2 ||.||^2_2 } \f$.
+ * \f$ \sqrt{ \frac 1 2 ||.||^2_1 + \frac \lambda 2 ||.||^2_2 } \f$.
  *
  */
 class RegularizedL1Norm : public L1Norm

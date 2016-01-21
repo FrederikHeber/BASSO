@@ -45,7 +45,7 @@ public:
 	/** Calculate the Bregman distance between \a _x and \a _y.
 	 *
 	 * The Bregman distance reads as
-	 * \f$ \Delta_p(x,y) = \tfrac 1 q ||x||^p + \tfrac 1 p ||y||^p - \langle J_{p}(x), y \rangle \f$
+	 * \f$ \Delta_p(x,y) = \frac 1 q ||x||^p + \frac 1 p ||y||^p - \langle J_{p}(x), y \rangle \f$
 	 *
 	 * Note that the argument \a p (and \a q with it) is ambigious because
 	 * the lp-norm also has an argument p. For clarification, the p and q
@@ -69,7 +69,7 @@ public:
 	/** Calculate the Bregman distance between \a _x and \a _y with dual \a _xdual.
 	 *
 	 * The Bregman distance reads as
-	 * \f$ \Delta_p(x,y) = \tfrac 1 q ||x||^p + \tfrac 1 p ||y||^p - \langle x^\ast, y \rangle \f$
+	 * \f$ \Delta_p(x,y) = \frac 1 q ||x||^p + \frac 1 p ||y||^p - \langle x^\ast, y \rangle \f$
 	 *
 	 * Note that the argument \a p (and \a q with it) is ambigious because
 	 * the lp-norm also has an argument p. For clarification, the p and q

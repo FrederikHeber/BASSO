@@ -11,7 +11,7 @@
 #include <vector>
 
 /** This class defines the interface for a function
- * \f$ f: T \rightarrow \reel \f$ to be minimized.
+ * \f$ f: T \rightarrow \mathbb{R} \f$ to be minimized.
  *
  * Here, T is some multi-dimensional object that must be convertible
  * into a array_type.
