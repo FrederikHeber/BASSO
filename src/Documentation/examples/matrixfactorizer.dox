@@ -6,7 +6,7 @@
  */
 
 /**
- * \page matrixfactorizer Matrix Factorizer
+ * \page examples-matrixfactorizer Matrix Factorizer
  *
  * The problem of Matrix factorization has become very popular. Especially
  * since an article by Lee and Seung appeared in Nature where the so-called
@@ -63,5 +63,5 @@
  * Master sends out and accumulates the data and the slaves do nothing else
  * but solve inverse problems.
  *
- * \date 2015-07-15
+ * \date 2016-01-21
  */

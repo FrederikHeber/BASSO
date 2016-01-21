@@ -6,7 +6,7 @@
  */
 
 /**
- * \page computertomography Computer Tomography
+ * \page examples-computertomography Computer Tomography
  *
  * \section computertomography-general General concept
  *
@@ -45,5 +45,5 @@
  * need to be vectorized.
  *
  *
- * \date 2015-07-15
+ * \date 2016-01-21
  */

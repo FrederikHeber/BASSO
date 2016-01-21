@@ -65,12 +65,12 @@
  *
  * \section libbasso-sesop-orthogonal Orthogonal Sequential Subspace Optimization (OrthoSESOP)
  *
- * SESOP can also use Bregman projections to orthogonalize search directions
- * among one another. In l2 spaces this then reduces to the well-known
+ * SESOP can also use metric projections to semi-orthogonalize search
+ * directions among one another. In l2 spaces this then reduces to the well-known
  * Conjugate Gradient method which OrthoSESOP generalizes.
  *
- * The additional orthogonalization causes little overhead but sees mostly
- * reduce iteration steps for a wide range of lp spaces.
+ * The additional orthogonalization causes little overhead but sees strong
+ * reduce in iteration steps for a wide range of lp spaces.
  *
- * \date 2015-07-15
+ * \date 2016-01-21
  */

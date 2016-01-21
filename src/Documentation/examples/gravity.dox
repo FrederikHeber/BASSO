@@ -1,0 +1,19 @@
+/*
+ * gravity.dox
+ *
+ *  Created on: Jul 21, 2016
+ *      Author: heber
+ */
+
+/**
+ * \page examples-gravity Gravity
+ *
+ * Gravity implements inverts the following forward problem: Given a
+ * 1-dimensional mass distribution at depth d what is the gravity field
+ * encountered at the surface.
+ *
+ * This examples is taken from the book of
+ * [Hansen, "Discrete Inverse Problems", 2010].
+ *
+ * \date 2016-01-21
+ */

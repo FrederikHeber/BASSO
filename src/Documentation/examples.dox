@@ -1,0 +1,25 @@
+/*
+ * examples.dox
+ *
+ *  Created on: Jul 21, 2016
+ *      Author: heber
+ */
+
+/**
+ * \page examples Example inverse problem solvers
+ *
+ * \section examples-contents Contents
+ *
+ * The following examples are provided with this library:
+ * \li \ref examples-basso BASSO
+ * \li \ref examples-computertomography 2D Computer Tomography based in inverting the
+ * 		 Radon transform/backprojection operator
+ * \li \ref examples-gravity 1D Gravity example from [Hansen, 2010]
+ * \li \ref examples-matrixfactorizer Matrix Factorizer with additional constraints
+ * \li \ref examples-matrixtopng helper program to convert matrices to images
+ * \li \ref examples-noiseadder Adding noise to a computer tomography sinogram
+ * \li \ref examples-rangeprojector projects a given vector onto the range of a matrix
+ *
+ *
+ * \date 2016-01-21
+ */

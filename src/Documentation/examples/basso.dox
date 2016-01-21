@@ -6,7 +6,7 @@
  */
 
 /**
- * \page basso BASSO
+ * \page examples-basso BASSO
  *
  * BASSO is our test code for the implementation of the generalized Landweber
  * and Sequential Subspace Optimization (SESOP) methods for solving inverse

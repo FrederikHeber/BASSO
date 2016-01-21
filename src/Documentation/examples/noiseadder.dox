@@ -1,0 +1,15 @@
+/*
+ * noiseadder.dox
+ *
+ *  Created on: Jul 21, 2016
+ *      Author: heber
+ */
+
+/**
+ * \page examples-noiseadder Noise Adder
+ *
+ * NoiseAdder can be used to add a certain amount of noise to the sinogram
+ * matrix used in \ref examples-computertomograpgy ComputerTomography.
+ *
+ * \date 2016-01-21
+ */

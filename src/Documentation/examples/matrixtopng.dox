@@ -1,0 +1,17 @@
+/*
+ * matrixtopng.dox
+ *
+ *  Created on: Jul 21, 2016
+ *      Author: heber
+ */
+
+/**
+ * \page examples-matrixtopng MatrixToPNG
+ *
+ * MatrixToPNG implements a small helper program to convert libBASSO's
+ * matrices to PNG files via libpng. This can used in conjunction with the
+ * \ref examples-computertomograpgy ComputerTomography in order to visualize
+ * the reconstructed images.
+ *
+ * \date 2016-01-21
+ */
