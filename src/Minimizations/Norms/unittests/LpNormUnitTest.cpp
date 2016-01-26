@@ -55,13 +55,24 @@ void LpNormUnitTest::otherNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.54787,1.54111,0.94243,0.60454,0.23918,1.00005,0.92045,1.62903,0.51839,0.72887;
+		expected <<
+				0.5478745260841271,
+				1.541107636450696,
+				0.9424331396506981,
+				0.6045384472552063,
+				0.2391841275896053,
+				1.000046882477412,
+				0.9204524054224361,
+				1.629028269105949,
+				0.5183939146105486,
+				0.7288677395775812;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -73,13 +84,24 @@ void LpNormUnitTest::otherNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52787,1.30455,0.84915,0.52703,0.20456,0.93607,0.89030,1.38333,0.44386,0.64248;
+		expected <<
+				0.5278650127819026,
+				1.304548400199131,
+				0.8491539867770614,
+				0.5270252446811835,
+				0.2045598746557526,
+				0.9360718117533751,
+				0.8902991206445896,
+				1.383326740562306,
+				0.4438595082991083,
+				0.6424765422467946;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -91,13 +113,24 @@ void LpNormUnitTest::otherNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52088,0.94207,0.78015,0.44718,0.15949,0.90374,0.88042,1.02691,0.34837,0.56325;
+		expected <<
+				0.5208780383182567,
+				0.9420680723484283,
+				0.780144945860734,
+				0.4471827896676158,
+				0.1594871240480309,
+				0.9037437271937642,
+				0.8804180330299162,
+				1.026914689852702,
+				0.3483657964429822,
+				0.5632508552077028;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 }
@@ -116,13 +149,23 @@ void LpNormUnitTest::twoNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52231,1.16423,0.80682,0.48610,0.18481,0.91295,0.88232,1.23931,0.40154,0.59899;
+		expected <<
+				0.5223076852249064,
+				1.164233679492652,
+				0.8068206901939241,
+				0.4861045919408702,
+				0.1848128563601569,
+				0.9129487046411753,
+				0.8823223801111474,
+				1.239313726626555,
+				0.401540038941324,
+				0.5989906666551659;
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -139,13 +182,24 @@ void LpNormUnitTest::twoNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.37920,1.76281,1.44992,0.46312,1.53036,1.04393,0.83235,1.67412,0.81953,1.18368;
+		expected <<
+				1.379204618735429,
+				1.762807446234149,
+				1.449916341854767,
+				0.4631167945397467,
+				1.530356674825692,
+				1.043928877980617,
+				0.8323476379124169,
+				1.674116849265731,
+				0.8195304746886963,
+				1.183676001026054;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -167,13 +221,24 @@ void LpNormUnitTest::twoNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.8976,2.1367,1.5462,1.5680,1.9220,1.4261,1.7324,1.3633,2.1328,1.9007;
+		expected <<
+				1.897584096427657,
+				2.136648110246748,
+				1.546168795024981,
+				1.568028070746475,
+				1.922045574180019,
+				1.426097313171861,
+				1.732441689374854,
+				1.363296056247872,
+				2.132786287926899,
+				1.90067685274299;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 }
@@ -192,13 +257,24 @@ void LpNormUnitTest::threeNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52095,1.04077,0.78483,0.45807,0.16893,0.90462,0.88050,1.11608,0.36782,0.57181;
+		expected <<
+				0.5209487539672338,
+				1.040770548963172,
+				0.7848319642513533,
+				0.4580712862990062,
+				0.1689258944084371,
+				0.9046230945798833,
+				0.8805016320324537,
+				1.116078030524289,
+				0.3678248372808625,
+				0.5718058616779829;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -215,13 +291,24 @@ void LpNormUnitTest::threeNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.15693,1.38059,1.19075,0.38624,1.24021,0.87234,0.68551,1.31649,0.70255,1.00754;
+		expected <<
+				1.156925308143252,
+				1.380591110982202,
+				1.190750108539649,
+				0.3862377363534127,
+				1.240214316762886,
+				0.872336461239226,
+				0.685505044725172,
+				1.316485337885209,
+				0.7025531281504473,
+				1.007544317069905;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -243,13 +330,24 @@ void LpNormUnitTest::threeNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.4083,1.5656,1.1609,1.2653,1.4480,1.1109,1.2758,1.0529,1.5636,1.3869;
+		expected <<
+				1.408278528885601,
+				1.565617155958245,
+				1.16091195702887,
+				1.26525692537547,
+				1.448039621498664,
+				1.110886445079814,
+				1.275803356441185,
+				1.05287465727844,
+				1.563611976113804,
+				1.386910628509519;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 }
@@ -268,13 +366,24 @@ void LpNormUnitTest::fourNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52088,0.98566,0.78102,0.45029,0.16300,0.90384,0.88042,1.06415,0.35549,0.56537;
+		expected <<
+				0.5208819348767975,
+				0.9856564499812991,
+				0.7810173538555848,
+				0.4502902356827378,
+				0.1630029514643971,
+				0.9038357554111797,
+				0.8804221281378948,
+				1.064151591495952,
+				0.3554898803089913,
+				0.5653675324332494;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -291,13 +400,24 @@ void LpNormUnitTest::fourNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.07302,1.22887,1.08603,0.35743,1.12795,0.80535,0.63236,1.17996,0.66087,0.94930;
+		expected <<
+				1.073015242795003,
+				1.228870112521734,
+				1.086030516798965,
+				0.3574294629077092,
+				1.127952682305419,
+				0.8053536407350824,
+				0.6323609050903276,
+				1.179960009295014,
+				0.6608732054435563,
+				0.949295881450161;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -319,13 +439,24 @@ void LpNormUnitTest::fourNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.23144,1.35409,1.03648,1.15041,1.27653,0.99849,1.11154,0.93939,1.35471,1.20136;
+		expected <<
+				1.231436302119236,
+				1.354087159309278,
+				1.036482455736694,
+				1.150415961989,
+				1.276534889888392,
+				0.9984955580940865,
+				1.111543552178988,
+				0.9393945992257847,
+				1.354710889299011,
+				1.201354126192843;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 }
@@ -344,13 +475,24 @@ void LpNormUnitTest::elevenNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.52088,0.90084,0.78007,0.44651,0.15789,0.90374,0.88042,1.00051,0.34531,0.56292;
+		expected <<
+				0.5208780000000176,
+				0.9008391471410394,
+				0.7800700309472804,
+				0.4465128080603014,
+				0.157887505566148,
+				0.9037410000423686,
+				0.880418000000008,
+				1.000509317084285,
+				0.3453051005190296,
+				0.5629227529945779;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -367,13 +509,24 @@ void LpNormUnitTest::elevenNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 0.97934,1.00896,0.92778,0.32149,0.97366,0.71448,0.58498,1.00956,0.62118,0.90113;
+		expected <<
+				0.9793351851895178,
+				1.0089615415637,
+				0.9277769799143303,
+				0.3214918161871571,
+				0.9736647972208938,
+				0.7144815677208166,
+				0.5849836575175007,
+				1.009564053265138,
+				0.6211794508429107,
+				0.9011251293104742;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 	{
@@ -395,13 +548,24 @@ void LpNormUnitTest::elevenNorm()
 						X.innerSize(), "lp", args);
 		const Norm &norm = *SpaceX->getNorm();
 		Eigen::VectorXd expected(10);
-		expected << 1.01326,1.05338,0.92628,1.00312,1.04300,0.85687,0.90262,0.79006,1.07209,0.98618;
+		expected <<
+				1.013255386054021,
+				1.053374394701754,
+				0.9262779376510162,
+				1.00311790343948,
+				1.043004453896559,
+				0.8568774326775785,
+				0.9026249276205977,
+				0.7900631268082297,
+				1.072090314459995,
+				0.9861739728219595;
+
 		for (size_t i=0; i<10; ++i) {
 			SpaceElement_ptr_t x = ElementCreator::create(SpaceX, X.col(i));
 			const double compare = norm(x);
-//			std::cout << "# " << i << ": Expecting " << expected.row(i)
+//			std::cout << std::setprecision(16) << "# " << i << ": Expecting " << expected.row(i)
 //					<< " and got " << compare << ".\n";
-			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < 1e-4  );
+			CPPUNIT_ASSERT( fabs( expected(i,0) - compare) < BASSOTOLERANCE  );
 		}
 	}
 }
