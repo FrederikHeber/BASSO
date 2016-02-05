@@ -35,6 +35,8 @@ void Options::init()
 					"produce help message")
 			("verbose", po::value<unsigned int>(),
 					"set the amount of verbosity")
+			("version",
+					"show version information")
 					;
 
 	desc_all
@@ -68,10 +70,9 @@ void Options::parse(int argc, char **argv)
 
 bool Options::showHelpConditions(const char * const program_name) const
 {
-	if (vm.count("help") || vm.count("version")) {
-		std::cout << program_name << " version "
-				<< Basso_VERSION_MAJOR << "."
-				<< Basso_VERSION_MINOR << std::endl;
+	if (vm.count("version"))
+		return true;
+	if (vm.count("help")) {
 	    std::cout << desc_all << "\n";
 	    return true;
 	} else {
