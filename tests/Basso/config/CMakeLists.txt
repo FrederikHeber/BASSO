@@ -3,6 +3,15 @@ add_test (BassoConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/Basso/BassoConfi
 set_tests_properties (BassoConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
+# does the version show
+add_test (BassoConfiguratorVersion 
+	${PROJECT_BINARY_DIR}/Examples/Basso/BassoConfigurator
+		--version)
+set_tests_properties (BassoConfiguratorVersion
+	PROPERTIES WILL_FAIL false)
+set_tests_properties (BassoConfiguratorVersion
+	PROPERTIES PASS_REGULAR_EXPRESSION "version")
+
 # does the application run
 add_test (BassoConfiguratorFails2 
 	${PROJECT_BINARY_DIR}/Examples/Basso/BassoConfigurator

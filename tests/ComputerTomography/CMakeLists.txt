@@ -12,6 +12,10 @@ add_test (ComputerTomographyUsage ${PROJECT_BINARY_DIR}/Examples/ComputerTomogra
 set_tests_properties (ComputerTomographyUsage
 	PROPERTIES WILL_FAIL true)	# return code 1
 	
+add_test (ComputerTomographyVersionMessage ${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomography --version)
+set_tests_properties (ComputerTomographyVersionMessage
+	PROPERTIES PASS_REGULAR_EXPRESSION "version")
+
 add_test (ComputerTomographyUsageMessage ${PROJECT_BINARY_DIR}/Examples/ComputerTomography/ComputerTomography --help)
 set_tests_properties (ComputerTomographyUsageMessage
 	PROPERTIES PASS_REGULAR_EXPRESSION "General options:")

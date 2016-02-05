@@ -19,6 +19,10 @@
 
 int main (int argc, char *argv[])
 {
+	// show program information
+	showVersion(std::string(argv[0]));
+	showCopyright();
+
 	GravityOptions opts;
 	opts.init();
 

@@ -3,6 +3,15 @@ add_test (MatrixFactorizerConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/Matri
 set_tests_properties (MatrixFactorizerConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
+# does the version show
+add_test (MatrixFactorizerConfiguratorVersion
+	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizerConfigurator
+		--version)
+set_tests_properties (MatrixFactorizerConfiguratorVersion
+	PROPERTIES WILL_FAIL false)
+set_tests_properties (MatrixFactorizerConfiguratorVersion
+	PROPERTIES PASS_REGULAR_EXPRESSION "version")
+
 # does the application run
 add_test (MatrixFactorizerConfiguratorFails2 
 	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizerConfigurator

@@ -15,6 +15,10 @@ add_test (MatrixFactorizerUsage
 set_tests_properties (MatrixFactorizerUsage
 	PROPERTIES WILL_FAIL true)	# return code 1
 	
+add_test (MatrixFactorizerVersionMessage ${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizer --version)
+set_tests_properties (MatrixFactorizerVersionMessage
+	PROPERTIES PASS_REGULAR_EXPRESSION "version")
+
 add_test (MatrixFactorizerUsageMessage 
 	${PROJECT_BINARY_DIR}/Examples/MatrixFactorizer/MatrixFactorizer --help)
 set_tests_properties (MatrixFactorizerUsageMessage

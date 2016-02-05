@@ -34,9 +34,9 @@ using namespace boost::assign;
 
 int main (int argc, char *argv[])
 {
-	// starting timing
-	boost::chrono::high_resolution_clock::time_point timing_start =
-			boost::chrono::high_resolution_clock::now();
+	// show program information
+	showVersion(std::string(argv[0]));
+	showCopyright();
 
 	BassoOptions opts;
 	opts.init();
@@ -61,6 +61,10 @@ int main (int argc, char *argv[])
 	if (!opts.checkSensibility())
 		return 255;
 	opts.setSecondaryValues();
+
+	// starting timing
+	boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
 
 	// parse matrix and vector files into instances
 	Eigen::MatrixXd matrix;

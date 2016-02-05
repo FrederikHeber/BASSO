@@ -93,6 +93,15 @@ int main(int argc, char **argv)
 	  mpi::communicator world;
 #endif
 
+#ifdef MPI_FOUND
+	if (world.rank() == 0) {
+		// show program information
+		showVersion(std::string(argv[0]));
+		showCopyright();
+
+	}
+#endif
+
 	int returnstatus = 0;
 #ifdef MPI_FOUND
 	if (world.rank() == 0) {
@@ -103,6 +112,10 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info)
 			<< "A single process solves the problem.";
 #endif
+		/// starting timing
+		boost::chrono::high_resolution_clock::time_point timing_start =
+				boost::chrono::high_resolution_clock::now();
+
 		/// some required parameters
 		MatrixFactorizerOptions opts;
 		if (returnstatus == 0)

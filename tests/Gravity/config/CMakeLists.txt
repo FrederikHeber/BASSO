@@ -3,6 +3,15 @@ add_test (GravityConfiguratorFails ${PROJECT_BINARY_DIR}/Examples/Gravity/Gravit
 set_tests_properties (GravityConfiguratorFails
 	PROPERTIES WILL_FAIL true)	# return code 255
 
+# does the version show
+add_test (GravityConfiguratorVersion
+	${PROJECT_BINARY_DIR}/Examples/Gravity/GravityConfigurator
+		--version)
+set_tests_properties (GravityConfiguratorVersion
+	PROPERTIES WILL_FAIL false)
+set_tests_properties (GravityConfiguratorVersion
+	PROPERTIES PASS_REGULAR_EXPRESSION "version")
+
 # does the application write config files
 add_test (GravityConfiguratorWritesConfig 
 	${PROJECT_BINARY_DIR}/Examples/Gravity/GravityConfigurator
