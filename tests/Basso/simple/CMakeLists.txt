@@ -35,6 +35,7 @@ set_tests_properties (BassoSimple_NonExistantMatrix
 # tuple params working
 add_test (BassoSimple_TupleParameters 
 	${PROJECT_BINARY_DIR}/Examples/Basso/Basso
+		--verbose 2
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

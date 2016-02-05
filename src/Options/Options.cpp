@@ -40,6 +40,8 @@ void Options::init()
 	desc_all
 		.add(desc_config)
 		.add(desc_run);
+
+	setVerbosity();
 }
 
 void Options::parse(int argc, char **argv)
@@ -60,6 +62,7 @@ void Options::parse(int argc, char **argv)
 		verbose = vm["verbose"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Verbose set to " << verbose;
+		setVerbosity();
 	}
 }
 

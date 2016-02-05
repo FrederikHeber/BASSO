@@ -2,7 +2,7 @@
 add_test (RangeProjectorConfiguratorSimple_Vector 
 	${PROJECT_BINARY_DIR}/Examples/RangeProjector/RangeProjectorConfigurator
 		--config RangeProjector.cfg
-		--verbose 1
+		--verbose 2
 		--type-space-x "lp" 
 		--px 2 
 		--type-space-y "lp" 

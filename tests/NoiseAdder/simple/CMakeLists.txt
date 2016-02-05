@@ -1,6 +1,7 @@
 # does simple call to configurator work?
 add_test (NoiseAdderConfiguratorSimple_Vector 
 	${PROJECT_BINARY_DIR}/Examples/NoiseAdder/NoiseAdderConfigurator
+		--verbose 2
 		--config NoiseAdder.cfg
 		--input ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m
 		--output solution_vector.mat
@@ -21,6 +22,7 @@ set_tests_properties (NoiseAdderConfiguratorSimple_Vector_check
 # does simple test call work?
 add_test (NoiseAdderSimple_Vector 
 	${PROJECT_BINARY_DIR}/Examples/NoiseAdder/NoiseAdder
+		--verbose 2
 		--config NoiseAdder.cfg)
 set_tests_properties (NoiseAdderSimple_Vector
 	PROPERTIES PASS_REGULAR_EXPRESSION "Noise level.*.1")
@@ -30,6 +32,7 @@ set_tests_properties (NoiseAdderSimple_Vector
 # does simple test call work?
 add_test (NoiseAdderSimple_Matrix
 	${PROJECT_BINARY_DIR}/Examples/NoiseAdder/NoiseAdder 
+		--verbose 2
 		--input ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m
 		--output solution_matrix.mat
 		--noise-level 0.2)
