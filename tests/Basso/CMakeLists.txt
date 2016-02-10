@@ -25,6 +25,9 @@ add_subdirectory (simple)
 # configuration file tests
 add_subdirectory (config)
 
+# SQLite database file tests
+add_subdirectory (SQLDatabase)
+
 # tests for Landweber algorithm
 add_subdirectory (Landweber)
 
