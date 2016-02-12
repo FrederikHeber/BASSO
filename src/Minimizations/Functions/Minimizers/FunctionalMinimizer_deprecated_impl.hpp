@@ -1,24 +1,24 @@
 /*
- * FunctionalMinimizer_impl.hpp
+ * FunctionalMinimizer_deprecated_impl.hpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
  */
 
-#ifndef FUNCTIONALMINIMIZER_IMPL_HPP_
-#define FUNCTIONALMINIMIZER_IMPL_HPP_
+#ifndef FUNCTIONALMINIMIZER_DEPRECATED_IMPL_HPP_
+#define FUNCTIONALMINIMIZER_DEPRECATED_IMPL_HPP_
 
 #include "BassoConfig.h"
 
 #include "Math/Helpers.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
 
 #include <boost/bind.hpp>
 
 #include <boost/log/trivial.hpp>
 
 template <class S, class T>
-FunctionalMinimizer<S,T>::FunctionalMinimizer(
+FunctionalMinimizer_deprecated<S,T>::FunctionalMinimizer_deprecated(
 		const MinimizationFunctional<S> &_functional,
 		Minimizer<T> &_minimizer,
 		S &_value,
@@ -32,18 +32,18 @@ FunctionalMinimizer<S,T>::FunctionalMinimizer(
 	constant_interpolation(_constant_interpolation)
 {
 	minimizer.setFunctionEvaluator(
-			boost::bind(&FunctionalMinimizer<S,T>::FunctionCaller,
+			boost::bind(&FunctionalMinimizer_deprecated<S,T>::FunctionCaller,
 					boost::ref(*this),
 					_1));
 	minimizer.setGradientEvaluator(
-			boost::bind(&FunctionalMinimizer<S,T>::GradientCaller,
+			boost::bind(&FunctionalMinimizer_deprecated<S,T>::GradientCaller,
 					boost::ref(*this),
 					_1));
 }
 
 template <class S, class T>
 enum FunctionMinimizer::GradientStatus
-FunctionalMinimizer<S,T>::checkWolfeConditions(
+FunctionalMinimizer_deprecated<S,T>::checkWolfeConditions(
 		const double _startvalue,
 		const array_type & _startgradient,
 		const Wolfe_indexset_t &_Wolfe_indexset,
@@ -77,9 +77,9 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 				* ::pow(_startgradient[*iter],2);
 		realgradient += componentgradient * _startgradient[*iter];
 	}
-	// 1. sufficent decrease
+	// 1. sufficient decrease
 	BOOST_LOG_TRIVIAL(debug)
-			<< "1. sufficent decrease: " << currentvalue << " <= "
+			<< "1. sufficient decrease: " << currentvalue << " <= "
 			<< linearinterpolate;
 	conditions_fulfilled &=
 			(currentvalue <= linearinterpolate);
@@ -119,7 +119,7 @@ FunctionalMinimizer<S,T>::checkWolfeConditions(
 
 template <class S, class T>
 const unsigned int
-FunctionalMinimizer<S,T>::operator()(
+FunctionalMinimizer_deprecated<S,T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
 		S &_startvalue) const
@@ -139,7 +139,7 @@ FunctionalMinimizer<S,T>::operator()(
 
 template <class S, class T>
 const unsigned int
-FunctionalMinimizer<S,T>::operator()(
+FunctionalMinimizer_deprecated<S,T>::operator()(
 		const unsigned int _N,
 		const double _Tol,
 		const Wolfe_indexset_t &_Wolfe_indexset,
@@ -153,7 +153,7 @@ FunctionalMinimizer<S,T>::operator()(
 
 	// use Wolfe conditions to stop line search
 	check_function_t checkfunction =
-			boost::bind(&FunctionalMinimizer<S,T>::checkWolfeConditions,
+			boost::bind(&FunctionalMinimizer_deprecated<S,T>::checkWolfeConditions,
 					boost::cref(*this),
 					functionzero,
 					boost::cref(zerogradient),
@@ -166,7 +166,7 @@ FunctionalMinimizer<S,T>::operator()(
 }
 
 template <class S, class T>
-double FunctionalMinimizer<S,T>::FunctionCaller(
+double FunctionalMinimizer_deprecated<S,T>::FunctionCaller(
 		const array_type &x) const
 {
 	functional.convertArrayTypeToInternalType(x, value);
@@ -174,8 +174,8 @@ double FunctionalMinimizer<S,T>::FunctionCaller(
 }
 
 template <class S, class T>
-typename FunctionalMinimizer<S,T>::array_type
-FunctionalMinimizer<S,T>::GradientCaller(
+typename FunctionalMinimizer_deprecated<S,T>::array_type
+FunctionalMinimizer_deprecated<S,T>::GradientCaller(
 		const array_type &x) const
 {
 	functional.convertArrayTypeToInternalType(x, value);
@@ -186,4 +186,4 @@ FunctionalMinimizer<S,T>::GradientCaller(
 }
 
 
-#endif /* FUNCTIONALMINIMIZER_IMPL_HPP_ */
+#endif /* FUNCTIONALMINIMIZER_DEPRECATED_IMPL_HPP_ */

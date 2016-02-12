@@ -13,7 +13,7 @@
 
 #include "Log/Logging.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
 #include "Minimizations/Functions/VectorProjection_BregmanDistanceToLine.hpp"
 
 VectorProjection::VectorProjection(
@@ -54,7 +54,7 @@ VectorProjection::operator()(
 				p);
 		Minimizer<gsl_vector> minimizer(dim);
 
-		FunctionalMinimizer<double, gsl_vector> functionminimizer(
+		FunctionalMinimizer_deprecated<double, gsl_vector> functionminimizer(
 				distancefunctional,
 				minimizer,
 				tmin);

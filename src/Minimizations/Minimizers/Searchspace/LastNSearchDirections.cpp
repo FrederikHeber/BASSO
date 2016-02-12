@@ -19,7 +19,7 @@
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/MetricProjectionFunctional.hpp"
 #include "Minimizations/Functions/HyperplaneProjection.hpp"
-#include "Minimizations/Functions/Minimizers/FunctionalMinimizer.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizer_deprecated.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizationFunctional.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
@@ -75,9 +75,9 @@ const unsigned int calculateMetricProjection(
 //	}
 
 	unsigned int inner_iterations = 0;
-	FunctionalMinimizer<std::vector<double>, gsl_vector> fmin_gsl(
+	FunctionalMinimizer_deprecated<std::vector<double>, gsl_vector> fmin_gsl(
 			functional, minimizer_gsl, tmin);
-//	FunctionalMinimizer<std::vector<double>, NLopt_vector> fmin_nlopt(
+//	FunctionalMinimizer_deprecated<std::vector<double>, NLopt_vector> fmin_nlopt(
 //			functional, minimizer_nlopt, tmin);
 //	switch (MinLib) {
 //	case gnuscientificlibrary:

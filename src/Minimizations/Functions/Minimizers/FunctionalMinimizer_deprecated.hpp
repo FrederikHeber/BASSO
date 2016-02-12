@@ -1,5 +1,5 @@
 /*
- * FunctionalMinimizer.hpp
+ * FunctionalMinimizer_deprecated.hpp
  *
  *  Created on: Sep 4, 2014
  *      Author: heber
@@ -29,7 +29,7 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * Minimizer<gsl_vector> using GSL routines.
  *
  * \code
- * #include "FunctionalMinimizer.hpp"
+ * #include "FunctionalMinimizer_deprecated.hpp"
  * #include "MinimizationFunctional.hpp"
  * #include "Minimizer.hpp"
  *
@@ -49,7 +49,7 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * // a temporary value for the minizer to work on with parameter dim to init
  * MyType temp(dim);
  * //initializing the minimizer with the functional and temporary
- * FunctionalMinimizer<MyType> fmin(functional, minimizer, temp);
+ * FunctionalMinimizer_deprecated<MyType> fmin(functional, minimizer, temp);
  * \endcode
  *
  * Then, you may finally call the minimizer to do its work:
@@ -74,11 +74,11 @@ typedef std::vector<unsigned int> Wolfe_indexset_t;
  * descent than the linear interpolation -- must hold.
  */
 template <class S, class T>
-class FunctionalMinimizer
+class FunctionalMinimizer_deprecated
 {
 	typedef typename MinimizationFunctional<S>::array_type array_type;
 public:
-	/** Constructor of functor FunctionalMinimizer.
+	/** Constructor of functor FunctionalMinimizer_deprecated.
 	 *
 	 * \note we use default values for Newton methods as suggested by
 	 * [Nocedal, Wright, '99].
@@ -88,7 +88,7 @@ public:
 	 * @param _constant_positivity Wolfe constant for positivity
 	 * @param _constant_interpolation Wolfe constant for stronger than linear
 	 */
-	FunctionalMinimizer(
+	FunctionalMinimizer_deprecated(
 			const MinimizationFunctional<S> &_functional,
 			Minimizer<T> &_minimizer,
 			S &_value,
@@ -211,7 +211,7 @@ private:
 	const double constant_interpolation;
 };
 
-#include "FunctionalMinimizer_impl.hpp"
+#include "FunctionalMinimizer_deprecated_impl.hpp"
 
 
 #endif /* FUNCTIONALMINIMIZER_HPP_ */
