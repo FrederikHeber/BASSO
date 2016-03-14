@@ -116,18 +116,46 @@ void MatrixFactorization::operator()(
 					<< "Setting spectral matrix K to random starting values.";
 			spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
 			detail::constructRandomMatrix(spectral_matrix);
-		} else
-			BOOST_LOG_TRIVIAL(info)
-					<< "Using spectral matrix K parsed from file.";
+		} else {
+			if ((spectral_matrix.rows() == _data.rows())
+					&& (spectral_matrix.cols() == opts.sparse_dim)) {
+				BOOST_LOG_TRIVIAL(info)
+						<< "Using spectral matrix K parsed from file.";
+			} else {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Parsed spectral matrix has dimensions "
+						<< spectral_matrix.rows() << "," << spectral_matrix.cols()
+						<< ", while expecting " << _data.rows() << "," << opts.sparse_dim;
+				_returnstatus = 255;
+#ifdef MPI_FOUND
+				master.sendTerminate();
+#endif
+				return;
+			}
+		}
 		if (!parse_status) {
 			BOOST_LOG_TRIVIAL(info)
 					<< "Setting pixel matrix X to zero.";
 			pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
 			detail::constructZeroMatrix(
 					pixel_matrix);
-		} else
-			BOOST_LOG_TRIVIAL(info)
-					<< "Using pixel matrix X parsed from file.";
+		} else {
+			if ((pixel_matrix.rows() == opts.sparse_dim)
+					&& (pixel_matrix.cols() == _data.cols())) {
+				BOOST_LOG_TRIVIAL(info)
+						<< "Using pixel matrix X parsed from file.";
+			} else {
+				BOOST_LOG_TRIVIAL(error)
+						<< "Parsed pixel matrix has dimensions "
+						<< pixel_matrix.rows() << "," << pixel_matrix.cols()
+						<< ", while expecting " << opts.sparse_dim << "," <<  _data.cols();
+				_returnstatus = 255;
+#ifdef MPI_FOUND
+				master.sendTerminate();
+#endif
+				return;
+			}
+		}
 
 		// create outer ("loop") stopping criteria
 		StoppingArguments stopping_args;
