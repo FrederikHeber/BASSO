@@ -8,6 +8,8 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank1
 		--powery 2 
 		--delta 1e-6 
 		--maxiter 50
+		--max-loops 11
+		--orthogonal-directions 1
 		--number-directions 1
 		--sparse-dim 1
 		--residual-threshold 1e-4
@@ -44,6 +46,8 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank1_fail
 		--py 2 
 		--powery 2 
 		--delta 1e-6
+		--max-loops 11
+		--orthogonal-directions 1
 		--number-directions 2
 		--sparse-dim 1
 		--residual-threshold 1e-4
@@ -65,6 +69,7 @@ if (MPI_FOUND)
 			--delta 1e-6
 			--maxiter 50
 			--max-loops 11
+			--orthogonal-directions 1
 			--number-directions 1
 			--sparse-dim 1
 			--residual-threshold 1e-4
