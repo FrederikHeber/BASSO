@@ -11,7 +11,7 @@ add_test (
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-8
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
@@ -53,7 +53,7 @@ add_test (
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-8
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
@@ -66,4 +66,4 @@ add_test (
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_noparse
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_noparse
-	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*e-08")
+	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*e-09")

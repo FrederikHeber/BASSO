@@ -6,10 +6,11 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank1
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-6 
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
+		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 		--solution-first-factor first-factor.m
 		--solution-second-factor second-factor.m)
@@ -42,9 +43,10 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank1_fail
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-6
 		--number-directions 2
 		--sparse-dim 1
+		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank1_fail
 	PROPERTIES WILL_FAIL true)
@@ -60,11 +62,12 @@ if (MPI_FOUND)
 			--type-space-y "lp" 
 			--py 2 
 			--powery 2 
-			--delta 0.01 
+			--delta 1e-6
 			--maxiter 50
 			--max-loops 11
 			--number-directions 1
 			--sparse-dim 1
+			--residual-threshold 1e-4
 			--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 			--solution-first-factor first-factor_mpi.m
 			--solution-second-factor second-factor_mpi.m)

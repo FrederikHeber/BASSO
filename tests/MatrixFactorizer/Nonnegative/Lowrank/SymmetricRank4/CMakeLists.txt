@@ -6,10 +6,11 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank4
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-6
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
+		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 		--solution-first-factor first-factor.m
 		--solution-second-factor second-factor.m)
@@ -44,10 +45,11 @@ if (MPI_FOUND)
 			--type-space-y "lp" 
 			--py 2 
 			--powery 2 
-			--delta 0.01 
+			--delta 1e-6 
 			--maxiter 50
 			--number-directions 1
 			--sparse-dim 1
+			--residual-threshold 1e-4
 			--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 			--solution-first-factor first-factor_mpi.m
 			--solution-second-factor second-factor_mpi.m)

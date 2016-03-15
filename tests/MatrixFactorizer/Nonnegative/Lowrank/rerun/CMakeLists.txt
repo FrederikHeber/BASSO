@@ -11,10 +11,11 @@ add_test (
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-6
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
+		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m
 		--parse-factors 1 
 		--solution-first-factor first-factor.m
@@ -52,10 +53,11 @@ add_test (
 		--type-space-y "lp" 
 		--py 2 
 		--powery 2 
-		--delta 0.01 
+		--delta 1e-6
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
+		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m
 		--parse-factors 0
 		--solution-first-factor first-factor.m
@@ -63,6 +65,5 @@ add_test (
 		)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_noparse
 	PROPERTIES WILL_FAIL false)
-# we only get 1e-6 due to limited output precision in written files
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_noparse
 	PROPERTIES PASS_REGULAR_EXPRESSION "Norm of .*e-08")
