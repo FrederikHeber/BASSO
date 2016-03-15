@@ -8,6 +8,7 @@ add_test (MatrixFactorizer_Indefinite_SymmetricRank3
 		--powery 2 
 		--delta 1e-6 
 		--maxiter 50
+		--max-loops 11
 		--orthogonal-directions 1
 		--number-directions 1
 		--sparse-dim 3
@@ -48,6 +49,7 @@ if (MPI_FOUND)
 			--powery 2 
 			--delta 1e-6 
 			--maxiter 50
+			--max-loops 11
 			--orthogonal-directions 1
 			--number-directions 1
 			--sparse-dim 3
