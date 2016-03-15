@@ -27,6 +27,9 @@ set_tests_properties (MatrixFactorizerUsageMessage
 # configuration file tests
 add_subdirectory (config)
 
+# SQLite database file tests
+add_subdirectory (SQLDatabase)
+
 # indefinite matrices
 add_subdirectory (Indefinite)
 

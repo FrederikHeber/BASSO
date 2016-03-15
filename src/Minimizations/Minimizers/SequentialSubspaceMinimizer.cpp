@@ -54,7 +54,13 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	constant_interpolation(0.6),
 	DoCalculateAngles(false),
 	OrthogonalizationType(_opts.orthogonalization_type)
-{}
+{
+	// override callback in dbcontainer to add more parameter columns
+	// don't do this in initializer list as class not fully constructed
+	dbcontainer.setAddParamsCallback(
+			boost::bind(&SequentialSubspaceMinimizer::addAdditionalParametersToTuple,
+					boost::cref(*this), _1, _2));
+}
 
 void SequentialSubspaceMinimizer::setN(
 		const unsigned int _N
@@ -170,7 +176,7 @@ void SequentialSubspaceMinimizer::fillPerIterationTable(
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 
 		// submit current tuples
-		data_per_iteration_table.addTuple(per_iteration_tuple);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
 	}
 }
 
@@ -377,21 +383,19 @@ SequentialSubspaceMinimizer::operator()(
 				refs.NormX, refs.J_p, refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	setParameterKey(
+	dbcontainer.setParameterKey(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
-			data_per_iteration_table, parameter_key);
+	Table::Tuple_t& per_iteration_tuple = dbcontainer.preparePerIterationTuple();
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t& overall_tuple = prepareOverallTuple(
-			data_overall_table, parameter_key);
-	Table& data_angle_table = database.addTable("data_angles");
+	Table::Tuple_t& overall_tuple = dbcontainer.prepareOverallTuple();
+	Table& data_angle_table = dbcontainer.database.addTable("data_angles");
 	Table::Tuple_t& angle_tuple = prepareAngleTuple(
 			data_angle_table,
-			parameter_key,
+			dbcontainer.parameter_key,
 			N);
 
 	/// -# check initial stopping criterion
@@ -471,7 +475,7 @@ SequentialSubspaceMinimizer::operator()(
 				(int) (inner_iterations));
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 		// submit current tuples
-		data_per_iteration_table.addTuple(per_iteration_tuple);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
 		if (DoCalculateAngles)
 			data_angle_table.addTuple(angle_tuple);
 
@@ -515,11 +519,11 @@ SequentialSubspaceMinimizer::operator()(
 	overall_tuple.replace( "relative_residual", istate.residuum/ynorm );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
-	finalizeOverallTuple(overall_tuple, refs);
-	data_overall_table.addTuple(overall_tuple);
+	dbcontainer.finalizeOverallTuple(overall_tuple, refs);
+	dbcontainer.data_overall_table.addTuple(overall_tuple);
 
 	// create angles view if desired
-	if ((DoCalculateAngles) && (!createAnglesViews(database)))
+	if ((DoCalculateAngles) && (!createAnglesViews(dbcontainer.database)))
 		BOOST_LOG_TRIVIAL(warning)
 			<< "Could not create angles view in SQLite database.";
 

@@ -10,13 +10,14 @@
 
 #include "IterationInformation.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "Database/Table.hpp"
+#include "Database/TableDirectoryDatabase_mock.hpp"
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Database/TableDataAccumulator.hpp"
 #include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
-#include "Minimizations/Minimizers/GeneralMinimizer.hpp"
+#include "Minimizations/Minimizers/DatabaseManager.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
 IterationInformation::IterationInformation(
@@ -29,7 +30,7 @@ IterationInformation::IterationInformation(
 			loop_tuple(loop_table.getTuple()),
 			overall_tuple(loop_overall_table.getTuple())
 {
-	// install parameter set and get its key
+	/// install parameter set and get its key
 	const size_t parameter_key = prepareParametersTable(
 			_innersize,
 			_outersize,
@@ -39,21 +40,25 @@ IterationInformation::IterationInformation(
 	loop_tuple.insert( std::make_pair("loop_nr", (int)0), Table::Data);
 	loop_tuple.insert( std::make_pair("residual", 0.), Table::Data);
 	loop_tuple.insert( std::make_pair("scaling_change", 0.), Table::Data);
-	// we need to get the type of the desired accumulate values. This
-	// type is hidden deep in GeneralMinimizer. We simply use its static
-	// functions on a dummy table to obtain a tuple who knows the type.
+
+	/// now added columns for accumulate values
 	{
-		const int parameter_key = 1;
-		Table dummytable("overall");
-		Table::Tuple_t overall_tuple =
-				GeneralMinimizer::prepareOverallTuple(dummytable, parameter_key);
+		// we need to get at the correct type for each desired accumulate
+		// value. The type is contained in Minimizer's DatabaseManager
+		// class. Hence, we instantiate it here, get the types and drop it.
+		// in order to get each columns type, we instantiate a GeneralMinimizer
+		Database_ptr_t tmpdatabase(new TableDirectoryDatabase_mock);
+		DatabaseManager manager(*tmpdatabase);
+		manager.setParameterKey(2.,2.,1,1,0);
+		Table::Tuple_t &overall_tuple = manager.prepareOverallTuple();
 		for (std::vector<std::string>::const_iterator iter = _opts.overall_keys.begin();
 				iter != _opts.overall_keys.end(); ++iter) {
-			Table::Tuple_t::const_iterator tupleiter = overall_tuple.find(*iter);
+			// find key in overall_tuple
+			Table::TokenTypeMap_t::const_iterator tupleiter =
+					overall_tuple.find(*iter);
 			if (tupleiter == overall_tuple.end())
 				BOOST_LOG_TRIVIAL(error)
-						<< "Cannot find key " << *iter
-						<< " in columns of overall table,  skipping";
+						<< "Cannot find key " << *iter << "for accumulated values in overall table columns.";
 			else {
 				TableDataAccumulator::prepareTableForAccumulatedValues(
 						loop_table,
@@ -96,6 +101,28 @@ void IterationInformation::addTuple(
 		BOOST_LOG_TRIVIAL(error)
 			<< "Unknown table in IterationInformation::addTuple()";
 	}
+}
+
+Table::Tuple_t & IterationInformation::prepareOverallTuple(
+		Table &_dummytable,
+		const int _parameter_key
+		)
+{
+	assert(_parameter_key != 0);
+
+	Table::Tuple_t &dummy_tuple = _dummytable.getTuple();
+	dummy_tuple.insert( std::make_pair("parameters_fk", (int)_parameter_key), Table::Parameter);
+	dummy_tuple.insert( std::make_pair("iterations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("residual", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("relative_residual", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("element_creation_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("linear_time_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("quadratic_time_operations", (int)0), Table::Data);
+	dummy_tuple.insert( std::make_pair("element_creation_runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("linear_time_runtime", 0.), Table::Data);
+	dummy_tuple.insert( std::make_pair("quadratic_time_runtime", 0.), Table::Data);
+	return dummy_tuple;
 }
 
 bool IterationInformation::createViews()

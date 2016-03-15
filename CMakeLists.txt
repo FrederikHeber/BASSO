@@ -167,6 +167,17 @@ else (USE_NDIFF)
 	set (DIFFCMD diff CACHE STRING "command to compare result files")
 endif (USE_NDIFF)
 
+###################### CHECK given SQLite ################################
+
+# sqlite is only used in tests which are skipped of not found
+FIND_PROGRAM(SQLITE NAME sqlite sqlite3 PATHS /usr/bin/ /bin ENV PATH NO_DEFAULT_PATH)
+if (NOT SQLITE EQUAL SQLITE-NOTFOUND)
+	set (SQLITECMD ${SQLITE} CACHE STRING "command to extract values from sqlite database")
+	set (SQLITE_FOUND TRUE CACHE BOOL "whether sqlite was found or not")
+else (NOT SQLITE EQUAL SQLITE-NOTFOUND)
+	set (SQLITE_FOUND FALSE CACHE BOOL "whether sqlite was found or not")
+endif (NOT SQLITE EQUAL SQLITE-NOTFOUND)
+
 ######################## BassoConfig.hpp #################################
 
 # configure a header file to pass some CMake settings

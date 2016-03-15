@@ -92,17 +92,15 @@ SequentialSubspaceMinimizerNoise::operator()(
 				refs.NormX, refs.J_p, refs.J_p.getPower()));
 
 	/// build data tuple for iteration, overall, and angles information
-	setParameterKey(
+	dbcontainer.setParameterKey(
 			refs.NormX.getPvalue(),
 			refs.NormY.getPvalue(),
 			N,
 			refs.SpaceX.getDimension(),
 			MaxOuterIterations);
-	Table::Tuple_t& per_iteration_tuple = preparePerIterationTuple(
-			data_per_iteration_table, parameter_key);
+	Table::Tuple_t& per_iteration_tuple = dbcontainer.preparePerIterationTuple();
 	per_iteration_tuple.insert( std::make_pair("inner_iterations", (int)0), Table::Data);
-	Table::Tuple_t& overall_tuple = prepareOverallTuple(
-			data_overall_table, parameter_key);
+	Table::Tuple_t& overall_tuple = dbcontainer.prepareOverallTuple();
 
 	/// -# check stopping criterion
 	const double ynorm = refs.NormY(refs.y);
@@ -262,7 +260,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 
 		/// submit current tuples
-		data_per_iteration_table.addTuple(per_iteration_tuple);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
 
 		/// update residual
 		istate.residuum = calculateResidual(_problem,istate.m_residual);
@@ -299,8 +297,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	overall_tuple.replace( "relative_residual", istate.residuum/ynorm );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
-	finalizeOverallTuple(overall_tuple, refs);
-	data_overall_table.addTuple(overall_tuple);
+	dbcontainer.finalizeOverallTuple(overall_tuple, refs);
+	dbcontainer.data_overall_table.addTuple(overall_tuple);
 
 	// and return solution
 	istate.status = ReturnValues::finished;
