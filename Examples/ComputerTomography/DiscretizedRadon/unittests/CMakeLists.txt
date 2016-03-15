@@ -5,7 +5,7 @@ add_executable (BackprojectionMatrixUnitTest
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
 	BackprojectionMatrixUnitTest.cpp) 
 target_link_libraries (BackprojectionMatrixUnitTest 
-	ComputerTomographyBase
+	DiscretizedRadonBase
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
@@ -20,7 +20,7 @@ add_executable (DiscretizedRadonMatrixUnitTest
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
 	DiscretizedRadonMatrixUnitTest.cpp) 
 target_link_libraries (DiscretizedRadonMatrixUnitTest 
-	ComputerTomographyBase
+	DiscretizedRadonBase
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
@@ -35,7 +35,7 @@ add_executable (point_tUnitTest
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
 	point_tUnitTest.cpp) 
 target_link_libraries (point_tUnitTest 
-	ComputerTomographyBase
+	DiscretizedRadonBase
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
