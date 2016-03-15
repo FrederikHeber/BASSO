@@ -29,6 +29,9 @@ add_subdirectory (Gravity)
 # tests for NonnegativeMatrixFactors program
 add_subdirectory (NonnegativeMatrixFactors)
 
+# tests for RadonMatrixWriter program
+add_subdirectory (RadonMatrixWriter)
+
 # test n${DIFFCMD} ${NDIFF_OPTIONS}only when desired
 if (USE_NDIFF)
 	add_subdirectory (ndiff)
