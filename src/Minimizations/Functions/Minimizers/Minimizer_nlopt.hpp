@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionMinimizer.hpp"
 
 #ifdef NLOPT_FOUND
 #include <nlopt.hpp>
@@ -25,10 +25,8 @@
 typedef std::vector<double> NLopt_vector;
 
 template <>
-class Minimizer<NLopt_vector>
+class Minimizer<NLopt_vector> : public FunctionMinimizer
 {
-	typedef std::vector<double> array_type;
-
 public:
 	/** Constructor for class Minimizer.
 	 *
@@ -44,9 +42,6 @@ public:
 			void *my_func_data
 			)> functiongradient_evaluator_t;
 
-	typedef boost::function<double (
-					const array_type &x)> function_evaluator_t;
-
 	/** Setter for the external function to minimize.
 	 *
 	 * @param _fct function pointer
@@ -54,9 +49,6 @@ public:
 	void setFunctionEvaluator(const function_evaluator_t _fct) {
 		function_evaluator = _fct;
 	}
-
-	typedef boost::function<array_type (
-					const array_type &x)> gradient_evaluator_t;
 
 	/** Setter for the gradient of the external funciton to minimize.
 	 *
@@ -87,11 +79,7 @@ public:
 	 * @param _tol tolerance threshold
 	 * @return status code
 	 */
-	enum Minimization::GradientStatus checkGradient(const double _tol) const;
-
-	//!> typedef for the function to check when to stop the iteration
-	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+	enum FunctionMinimizer::GradientStatus checkGradient(const double _tol) const;
 
 	/** Minimizes the specific functions with its gradients.
 	 *
@@ -105,27 +93,6 @@ public:
 			array_type &_startvalue,
 			const check_function_t &_checkfunction
 			);
-
-	/** Getter for the value of the current optimum argument.
-	 *
-	 * @return optimum value
-	 */
-	const double getCurrentOptimumValue() const
-	{ return optimum; }
-
-	/** Getter for the current optimum argument.
-	 *
-	 * @return current optimum argument
-	 */
-	const array_type &getCurrentOptimum() const
-	{ return tempoptimum; }
-
-	/** Getter for the gradient at the current optimum argument.
-	 *
-	 * @return gradient at current optimum argument
-	 */
-	const array_type &getCurrentGradient() const
-	{ return tempgradient; }
 
 private:
 	/** Converter for array type to the minimizer's internal type.
@@ -169,19 +136,12 @@ private:
 #endif /* NLOPT_FOUND */
 	const unsigned int N;
 	unsigned int iter;
-	unsigned int maxiterations;
 
 	std::vector<unsigned int> PositivityBoundIndices;
 	double constant_positivity;
 
 	mutable check_function_t checkfunction;
 	mutable double tolerance;
-	mutable double optimum;
-	mutable std::vector<double> tempoptimum;
-	mutable std::vector<double> tempgradient;
-
-	function_evaluator_t function_evaluator;
-	gradient_evaluator_t gradient_evaluator;
 };
 
 #endif /* MINIMIZER_NLOPT_HPP_ */

@@ -87,7 +87,6 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 			_opts,
 			_inverseproblem,
 			*_database);
-	minimizer->setMinLib(_opts.minlib);
 	// hand over additional parameters to add to submitted tuples
 	minimizer->setAdditionalTupleParameters(_opts.tuple_parameters);
 

@@ -36,9 +36,6 @@
 
 using namespace boost::assign;
 
-// static entities
-GeneralMinimizer::MinLib_names_t GeneralMinimizer::MinLib_names;
-
 GeneralMinimizer::GeneralMinimizer(
 		const CommandLineOptions &_opts,
 		const InverseProblem_ptr_t &_inverseproblem,
@@ -52,7 +49,6 @@ GeneralMinimizer::GeneralMinimizer(
 	TolY(Delta),
 	TolFun(_opts.tolerance_linesearch),
 	outputsteps(_opts.outputsteps),
-	MinLib(gnuscientificlibrary),
 	OldBregmanDistance(0.),
 	l2norm(NormFactory::getInstance().create(
 			"lp",
@@ -63,12 +59,6 @@ GeneralMinimizer::GeneralMinimizer(
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->y->getSpace()->getDualityMapping()->setTolerance(TolY);
-
-	// initalize list with static names
-	if (MinLib_names.empty())
-		MinLib_names +=
-			std::make_pair( "gsl", gnuscientificlibrary),
-			std::make_pair( "nlopt", nonlinearoptimization);
 
 	// create stopping criterion
 	StoppingCriteriaFactory stop_factory;
@@ -212,19 +202,6 @@ const double GeneralMinimizer::calculateError(
 	return new_error;
 }
 
-
-bool GeneralMinimizer::isValidMinLibName(const std::string &_name)
-{
-	MinLib_names_t::const_iterator iter =
-			MinLib_names.find(_name);
-	return (iter != MinLib_names.end());
-}
-
-void GeneralMinimizer::setMinLib(const std::string &_name)
-{
-	assert( isValidMinLibName(_name) );
-	MinLib = MinLib_names[_name];
-}
 
 void GeneralMinimizer::printIntermediateSolution(
 		const SpaceElement_ptr_t &_solution,

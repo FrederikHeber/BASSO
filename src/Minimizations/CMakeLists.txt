@@ -11,6 +11,7 @@ add_library (Minimizations
 	Functions/BregmanDistance.cpp
 	Functions/BregmanProjectionFunctional.cpp 
 	Functions/MetricProjectionFunctional.cpp 
+	Functions/Minimizers/FunctionalMinimizerFactory.cpp
 	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/Minimizers/Minimizer_nlopt.cpp
 	Functions/ResidualFunctional.cpp
@@ -51,6 +52,8 @@ add_library (Minimizations
 	Spaces/NormedSpaceFactory.cpp
 	Spaces/NormedSpace.cpp
 	)
+	
+target_link_libraries(Minimizations ${NLOPT_LIBRARIES})
 
 install (TARGETS Minimizations DESTINATION bin)
 
@@ -67,8 +70,17 @@ install (FILES Functions/BregmanDistance.hpp DESTINATION include)
 install (FILES Functions/BregmanProjectionFunctional.hpp DESTINATION include)
 install (FILES Functions/HyperplaneProjection.hpp DESTINATION include)
 install (FILES Functions/MetricProjectionFunctional.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionMinimizer.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizerFactory.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizerFactory_impl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/FunctionalMinimizer_impl.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_exactLinesearch.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_exactLinesearch_impl.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_inexactLinesearch.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_inexactLinesearch_impl.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_deprecated.hpp DESTINATION include)
+install (FILES Functions/Minimizers/FunctionalMinimizer_deprecated_impl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/MinimizationFunctional.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer_gsl.hpp DESTINATION include)

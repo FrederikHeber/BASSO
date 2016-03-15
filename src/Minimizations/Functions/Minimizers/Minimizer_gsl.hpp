@@ -18,10 +18,10 @@
 
 #include <vector>
 
-#include "Minimizations/Functions/Minimizers/Minimization_common.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionMinimizer.hpp"
 
 template <>
-class Minimizer<gsl_vector>
+class Minimizer<gsl_vector> : public FunctionMinimizer
 {
 	typedef std::vector<double> array_type;
 
@@ -47,10 +47,7 @@ public:
 	 * @param _tol tolerance threshold
 	 * @return status code
 	 */
-	enum Minimization::GradientStatus checkGradient(const double _tol) const;
-
-	typedef boost::function<double (
-					const array_type &x)> function_evaluator_t;
+	enum FunctionMinimizer::GradientStatus checkGradient(const double _tol) const;
 
 	/** Setter for the external function to minimize.
 	 *
@@ -59,9 +56,6 @@ public:
 	void setFunctionEvaluator(const function_evaluator_t _fct) {
 		function_evaluator = _fct;
 	}
-
-	typedef boost::function<array_type (
-					const array_type &x)> gradient_evaluator_t;
 
 	/** Setter for the gradient of the external funciton to minimize.
 	 *
@@ -80,7 +74,7 @@ public:
 
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
-			enum Minimization::GradientStatus (const double) > check_function_t;
+			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;
 
 	/** Minimizes the specific functions with its gradients.
 	 *
@@ -94,27 +88,6 @@ public:
 			array_type &_startvalue,
 			const check_function_t &_checkfunction
 			);
-
-	/** Getter for the value of the current optimum argument.
-	 *
-	 * @return optimum value
-	 */
-	const double getCurrentOptimumValue() const
-	{ return optimum; }
-
-	/** Getter for the current optimum argument.
-	 *
-	 * @return current optimum argument
-	 */
-	const array_type &getCurrentOptimum() const
-	{ return tempoptimum; }
-
-	/** Getter for the gradient at the current optimum argument.
-	 *
-	 * @return gradient at current optimum argument
-	 */
-	const array_type &getCurrentGradient() const
-	{ return tempgradient; }
 
 private:
 	/** Converter for array type to the minimizer's internal type.
@@ -186,14 +159,6 @@ private:
 	gsl_multimin_fdfminimizer *s;
 	gsl_multimin_function_fdf my_func;
 	const unsigned int N;
-	unsigned int maxiterations;
-
-	mutable double optimum;
-	mutable std::vector<double> tempoptimum;
-	mutable std::vector<double> tempgradient;
-
-	function_evaluator_t function_evaluator;
-	gradient_evaluator_t gradient_evaluator;
 };
 
 #endif /* MINIMIZER_GSL_HPP_ */

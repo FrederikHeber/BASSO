@@ -16,6 +16,7 @@
 #include <boost/filesystem.hpp>
 
 #include "Log/Logging.hpp"
+#include "Minimizations/Functions/Minimizers/FunctionalMinimizerFactory.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Minimizers/Searchspace/SearchspaceFactory.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
@@ -355,13 +356,8 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("searchspace")) {
 		searchspace_type = vm["searchspace"].as<std::string>();
-		if (SearchspaceFactory::isValidName(searchspace_type)) {
-			SearchspaceFactory::setCurrentType(
-					SearchspaceFactory::getType(searchspace_type)
-			);
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Setting search space type to " << searchspace_type;
-		}
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting search space type to " << searchspace_type;
 	}
 
 	if (vm.count("stepwidth-algorithm")) {
@@ -593,6 +589,13 @@ bool CommandLineOptions::checkSensibility_searchspace() const
 					<< " is unknown to factory.";
 		return false;
 	}
+
+	if (!FunctionalMinimizerFactory::isValidName(minlib)) {
+		BOOST_LOG_TRIVIAL(error)
+					<< "Minimization library " << minlib
+					<< " is unknown to factory.";
+		return false;
+	}
 	return true;
 }
 
@@ -650,6 +653,12 @@ bool CommandLineOptions::checkSensibility() const
 void CommandLineOptions::setSecondaryValues()
 {
 	Options::setSecondaryValues();
+
+	// set search space related stuff
+	SearchspaceFactory::setCurrentType(
+			SearchspaceFactory::getType(searchspace_type)
+	);
+	FunctionalMinimizerFactory::setMinLib(minlib);
 
 	type = MinimizerFactory::getTypeForName(algorithm_name);
 
