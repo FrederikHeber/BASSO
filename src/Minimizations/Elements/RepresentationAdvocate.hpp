@@ -31,6 +31,7 @@ struct SingularValueDecomposition;
 struct SpaceElementWriter;
 struct SpaceElementReader;
 class SplitFeasibilitySolver;
+class TwoFactorLinearMapping;
 
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
@@ -58,6 +59,7 @@ private:
 	friend struct SpaceElementWriter;
 	friend struct SpaceElementReader;
 	friend class SplitFeasibilitySolver;
+	friend class TwoFactorLinearMapping;
 	friend struct VectorSetter;
 	static const Eigen::VectorXd get(
 			const SpaceElement_ptr_t & _element)

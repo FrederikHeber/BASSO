@@ -39,6 +39,23 @@ struct LinearMappingFactory
 			const Eigen::MatrixXd & _matrix,
 			const bool _isAdjoint = false);
 
+	/** Factory function creating a linear mapping consisting of two matrix
+	 * factors whose product is the the linear mapping.
+	 *
+	 * @param _SourceSpaceRef reference to source space
+	 * @param _TargetSpaceRef reference to target space
+	 * @param _first_factor first factor of this linear mapping
+	 * @param _second_factor second factor of this linear mapping
+	 * @param _isAdjoint states whether matrix is to be applied as transposed or not
+	 * @return
+	 */
+	static const Mapping_ptr_t createTwoFactorInstance(
+			const NormedSpace_weakptr_t _SourceSpaceRef,
+			const NormedSpace_weakptr_t _TargetSpaceRef,
+			const Eigen::MatrixXd & _first_factor,
+			const Eigen::MatrixXd & _second_factor,
+			const bool _isAdjoint = false);
+
 	/** Factory function creating a linear mapping, i.e. a matrix
 	 * associated to a specific space.
 	 *

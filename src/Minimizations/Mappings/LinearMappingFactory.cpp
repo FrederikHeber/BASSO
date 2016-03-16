@@ -14,6 +14,7 @@
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/TwoFactorLinearMapping.hpp"
 
 const Mapping_ptr_t
 LinearMappingFactory::createInstance(
@@ -29,6 +30,25 @@ LinearMappingFactory::createInstance(
 					_matrix,
 					_isAdjoint));
 	static_cast<LinearMapping *>(mapping.get())->setSelfRef(mapping);
+	return mapping;
+}
+
+const Mapping_ptr_t
+LinearMappingFactory::createTwoFactorInstance(
+		const NormedSpace_weakptr_t _SourceSpaceRef,
+		const NormedSpace_weakptr_t _TargetSpaceRef,
+		const Eigen::MatrixXd & _first_factor,
+		const Eigen::MatrixXd & _second_factor,
+		const bool _isAdjoint)
+{
+	Mapping_ptr_t mapping(
+			new TwoFactorLinearMapping(
+					_SourceSpaceRef,
+					_TargetSpaceRef,
+					_first_factor,
+					_second_factor,
+					_isAdjoint));
+	static_cast<TwoFactorLinearMapping *>(mapping.get())->setSelfRef(mapping);
 	return mapping;
 }
 
