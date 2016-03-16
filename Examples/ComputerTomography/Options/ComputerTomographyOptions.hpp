@@ -55,7 +55,6 @@ public:
 	unsigned int num_pixel_y;
 	unsigned int num_angles;
 	unsigned int num_offsets;
-	boost::filesystem::path radon_matrix;
 	boost::filesystem::path rhs_file;
 	int seed;
 	boost::filesystem::path solution_file;

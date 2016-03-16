@@ -208,33 +208,6 @@ int main (int argc, char *argv[])
 		inverseproblem.reset(new InverseProblem(A,X,Y,y));
 	}
 
-	// store matrix to file if desired
-	{
-		DiscretizedRadon &radon =
-				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
-		MatrixIO::store(
-				opts.radon_matrix.string(),
-				"radon matrix",
-				radon.get().getMatrix());
-	}
-
-	// print parsed matrix and vector if small or high verbosity requested
-	{
-		DiscretizedRadon &radon =
-				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
-		if ((radon.get().getMatrix().innerSize() > 10) || (radon.get().getMatrix().outerSize() > 10)) {
-			BOOST_LOG_TRIVIAL(trace)
-				<< "We solve for Ax = y with A = "
-				<< radon.get().getMatrix() << " and y = "
-				<< rhs.transpose() << std::endl;
-		} else {
-			BOOST_LOG_TRIVIAL(info)
-				<< "We solve for Ax = y with A = "
-				<< radon.get().getMatrix() << " and y = "
-				<< rhs.transpose() << std::endl;
-		}
-	}
-
 	// create database
 	Database_ptr_t database =
 			SolverFactory::createDatabase(opts);
