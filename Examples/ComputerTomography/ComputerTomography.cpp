@@ -252,9 +252,7 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		DiscretizedRadon &radon =
-				dynamic_cast<DiscretizedRadon &>(*inverseproblem->A);
-		if ((radon.get().getMatrix().innerSize() > 10) || (radon.get().getMatrix().outerSize() > 10)) {
+		if ((inverseproblem->x->getSpace()->getDimension() > 10)) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
 					<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
