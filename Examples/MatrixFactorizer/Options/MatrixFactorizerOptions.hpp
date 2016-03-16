@@ -60,6 +60,7 @@ public:
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
 	boost::filesystem::path solution_product_file;
+	bool sparse;
 	unsigned int sparse_dim;
 
 private:
@@ -79,6 +80,7 @@ private:
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
+		ar & sparse;
 		ar & sparse_dim;
 	}
 
@@ -97,6 +99,7 @@ private:
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
+		ar & sparse;
 		ar & sparse_dim;
 
 		// set secondary values

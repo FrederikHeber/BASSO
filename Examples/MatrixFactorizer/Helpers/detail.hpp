@@ -12,6 +12,7 @@
 
 #include <Eigen/Dense>
 
+#include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -56,9 +57,17 @@ namespace detail
 	 * @param _data on return parsed matrix
 	 * @return returncode (0 - success)
 	 */
+	template <class T>
 	int parseDataFile(
 			const std::string &_filename,
-			Eigen::MatrixXd &_data);
+			T &_data)
+	{
+		using namespace MatrixIO;
+
+		if (!MatrixIO::parse(_filename, "data matrix", _data))
+			return 255;
+		return 0;
+	}
 
 	/** Parses the matrix factors from a file as starting point
 	 *

@@ -44,6 +44,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the file name to write the first matrix factor (or also read in case of parse-factors)")
 			("solution-second-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the second matrix factor (or also read in case of parse-factors)")
+			("sparse", po::value< bool >(),
+					"set whether data matrix is parsed in sparse format")
 			("sparse-dimension", po::value<unsigned int>(), "set the inner dimension of the matrix product")
 			;
 
@@ -191,5 +193,6 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-second-factor");
+	writeValue<bool>(_output, vm,  "sparse");
 	writeValue<unsigned int>(_output, vm,  "sparse-dimension");
 }

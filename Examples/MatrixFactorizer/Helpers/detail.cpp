@@ -73,29 +73,6 @@ int detail::parseFactorFile(
 	return 0;
 }
 
-int detail::parseDataFile(
-		const std::string &_filename,
-		Eigen::MatrixXd &_data)
-{
-	using namespace MatrixIO;
-
-	if (!MatrixIO::parse(_filename, "data matrix", _data))
-		return 255;
-
-	// print parsed matrix and vector if small or high verbosity requested
-	if ((_data.innerSize() > 10) || (_data.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Y=K*X with Y =\n"
-			<< _data << "." << std::endl;
-	} else {
-		BOOST_LOG_TRIVIAL(info)
-					<< "We solve for Y=K*X with Y =\n"
-					<< _data << "." << std::endl;
-	}
-
-	return 0;
-}
-
 void detail::constructRandomMatrix(
 		Eigen::MatrixXd &_matrix
 		)

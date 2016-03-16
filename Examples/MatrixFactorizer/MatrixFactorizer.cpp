@@ -122,9 +122,32 @@ int main(int argc, char **argv)
 			returnstatus = detail::parseOptions(argc, argv, opts);
 
 		/// parse the matrices
+
 		Eigen::MatrixXd data;
-		if (returnstatus == 0)
-			returnstatus = detail::parseDataFile(opts.data_file.string(), data);
+		if (returnstatus == 0) {
+			if (opts.sparse) {
+				Eigen::SparseMatrix<double, Eigen::RowMajor> sparse_data;
+				returnstatus =
+						detail::parseDataFile< Eigen::SparseMatrix<double, Eigen::RowMajor> >(
+								opts.data_file.string(),
+								sparse_data);
+				data = sparse_data;
+			} else
+				returnstatus =
+						detail::parseDataFile<Eigen::MatrixXd>(
+								opts.data_file.string(),
+								data);
+		}
+		// print parsed matrix and vector if small or high verbosity requested
+		if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
+			BOOST_LOG_TRIVIAL(trace)
+				<< "We solve for Y=K*X with Y =\n"
+				<< data << "." << std::endl;
+		} else {
+			BOOST_LOG_TRIVIAL(info)
+						<< "We solve for Y=K*X with Y =\n"
+						<< data << "." << std::endl;
+		}
 
 		/// create Database
 		IterationInformation info(opts, data.innerSize(), data.outerSize());
