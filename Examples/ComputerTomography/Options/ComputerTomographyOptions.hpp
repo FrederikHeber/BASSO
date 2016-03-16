@@ -45,6 +45,13 @@ private:
 	 */
 	void internal_store(std::ostream &_output) const;
 
+private:
+
+	/** Helper function to check validity of radon matrix file parameters.
+	 *
+	 */
+	bool internal_checkSensibility_radonfactors() const;
+
 public:
 
 	// primary values
@@ -55,6 +62,8 @@ public:
 	unsigned int num_pixel_y;
 	unsigned int num_angles;
 	unsigned int num_offsets;
+	boost::filesystem::path radon_matrix_first_factor;
+	boost::filesystem::path radon_matrix_second_factor;
 	boost::filesystem::path rhs_file;
 	int seed;
 	boost::filesystem::path solution_file;

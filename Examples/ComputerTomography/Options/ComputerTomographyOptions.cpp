@@ -43,6 +43,10 @@ void ComputerTomographyOptions::internal_init()
 					"set the desired number of angle discretization steps")
 			("num-offsets", po::value< unsigned int >(),
 					"set the desired number of lateral offsets of detector")
+			("radon-matrix-first-factor", po::value< boost::filesystem::path >(),
+					"set the file name to parse the first factor of the discretized Radon transformation matrix from")
+			("radon-matrix-second-factor", po::value< boost::filesystem::path >(),
+					"set the file name to parse the second factor of the discretized Radon transformation matrix from")
 			("seed", po::value< int >(),
 					"set the random number generator seed")
 	        ("sinogram", po::value< boost::filesystem::path >(),
@@ -98,6 +102,18 @@ void ComputerTomographyOptions::internal_parse()
 		num_offsets = vm["num-offsets"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Number of offsets steps was set to " << num_offsets;
+	}
+
+	if (vm.count("radon-matrix-first-factor")) {
+		radon_matrix_first_factor = vm["radon-matrix-first-factor"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of first radon matrix factor was set to " << radon_matrix_first_factor;
+	}
+
+	if (vm.count("radon-matrix-second-factor")) {
+		radon_matrix_second_factor = vm["radon-matrix-second-factor"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Filename of second radon matrix factor was set to " << radon_matrix_second_factor;
 	}
 
 	if (vm.count("seed")) {
@@ -165,6 +181,38 @@ bool ComputerTomographyOptions::internal_checkSensibility() const
 		return false;
 	}
 
+	if (!internal_checkSensibility_radonfactors())
+		return false;
+
+	return true;
+}
+
+bool ComputerTomographyOptions::internal_checkSensibility_radonfactors() const
+{
+	// check whether both or none are given
+	const bool first_exists = vm.count("radon-matrix-first-factor");
+	const bool second_exists = vm.count("radon-matrix-second-factor");
+	if ((first_exists && !second_exists)
+			|| (!first_exists && second_exists)) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Both (or none) of the radon matrix factors have to be specified.";
+		return false;
+	}
+
+
+	// check whether file exists
+	if (first_exists && (!boost::filesystem::exists(radon_matrix_first_factor))) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "File of first radon matrix factor does not exist.";
+		return false;
+	}
+
+	if (second_exists && (!boost::filesystem::exists(radon_matrix_second_factor))) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "File of second radon matrix factor does not exist.";
+		return false;
+	}
+
 	return true;
 }
 
@@ -181,6 +229,8 @@ void ComputerTomographyOptions::internal_store(std::ostream &_output) const
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
 	writeValue<unsigned int>(_output, vm,  "num-angles");
 	writeValue<unsigned int>(_output, vm,  "num-offsets");
+	writeValue<boost::filesystem::path>(_output, vm,  "radon-matrix-first-factor");
+	writeValue<boost::filesystem::path>(_output, vm,  "radon-matrix-second-factor");
 	writeValue<int>(_output, vm,  "seed");
 	writeValue<boost::filesystem::path>(_output, vm,  "sinogram");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution");

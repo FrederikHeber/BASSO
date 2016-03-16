@@ -31,6 +31,7 @@
 #include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
@@ -134,25 +135,46 @@ int main (int argc, char *argv[])
 		NormedSpace_ptr_t Y = NormedSpaceFactory::create(
 				num_measurements, opts.type_spacey, args_SpaceY);
 
-		// and the discretized radon transform and backprojection
-		Mapping_ptr_t A(new DiscretizedRadon(
-				X,Y,
-				opts.num_pixel_x,
-				opts.num_pixel_y,
-				opts.num_angles,
-				opts.num_offsets));
-		Mapping_ptr_t A_t(new Backprojection(
-				Y->getDualSpace(),X->getDualSpace(),
-				opts.num_pixel_x,
-				opts.num_pixel_y,
-				opts.num_angles,
-				opts.num_offsets));
-		// make each the adjoint of the other
-		dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
-		dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
-		// use transpose of Backprojection as adjoint
-		dynamic_cast<DiscretizedRadon &>(*A).get().setMatrix(
-				dynamic_cast<Backprojection &>(*A_t).get().getMatrix().transpose());
+		Mapping_ptr_t A;
+		Mapping_ptr_t A_t;
+		if ((!opts.radon_matrix_first_factor.empty())
+				&& (!opts.radon_matrix_second_factor.empty())) {
+			// parse radon matrix as two factors
+			Eigen::MatrixXd first_factor;
+			Eigen::MatrixXd second_factor;
+			if (!MatrixIO::parse(
+					opts.radon_matrix_first_factor.string(),
+					"data matrix", first_factor))
+				return 255;
+			if (!MatrixIO::parse(
+					opts.radon_matrix_second_factor.string(),
+					"data matrix", second_factor))
+				return 255;
+			// and create a TwoFactorLinearMapping through the factory
+			A = LinearMappingFactory::createTwoFactorInstance(
+					X, Y, first_factor, second_factor, false);
+			A_t = A->getAdjointMapping();
+		} else {
+			// the discretized radon transform and backprojection
+			A.reset(new DiscretizedRadon(
+					X,Y,
+					opts.num_pixel_x,
+					opts.num_pixel_y,
+					opts.num_angles,
+					opts.num_offsets));
+			A_t.reset(new Backprojection(
+					Y->getDualSpace(),X->getDualSpace(),
+					opts.num_pixel_x,
+					opts.num_pixel_y,
+					opts.num_angles,
+					opts.num_offsets));
+			// make each the adjoint of the other
+			dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
+			dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
+			// use transpose of Backprojection as adjoint
+			dynamic_cast<DiscretizedRadon &>(*A).get().setMatrix(
+					dynamic_cast<Backprojection &>(*A_t).get().getMatrix().transpose());
+		}
 
 		// prepare true solution
 		truesolution = ElementCreator::create(X, solution);
