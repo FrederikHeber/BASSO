@@ -66,35 +66,34 @@ int main (int argc, char *argv[])
 	boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
-	/// parse in source matrix factors
-	using namespace MatrixIO;
+	/// parse in source matrix
+	Eigen::MatrixXd matrix;
+	{
+		using namespace MatrixIO;
 
-	Eigen::MatrixXd spectralmatrix;
-	if (!MatrixIO::parse(opts.source_first_factor.string(), "first matrix factor", spectralmatrix))
-		return 255;
-	Eigen::MatrixXd pixelmatrix;
-	if (!MatrixIO::parse(opts.source_second_factor.string(), "second matrix factor", pixelmatrix))
-		return 255;
-
-	// check dimensionality
-	if (spectralmatrix.cols() != pixelmatrix.rows()) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Matrix dimensions of both factors do not match";
-		return 255;
+		if (!MatrixIO::parse(opts.matrix.string(), "matrix factor", matrix))
+			return 255;
 	}
-	const size_t inner_dimension = spectralmatrix.cols();
+
+	const unsigned int inner_dimension =
+			std::min(opts.truncation_dimension,
+					(unsigned int)std::min(matrix.rows(), matrix.cols()));
+	if (inner_dimension != opts.truncation_dimension) {
+		BOOST_LOG_TRIVIAL(warning)
+				<< "Reduced truncation dimension to "
+				<< inner_dimension << " because of maximum rank consideration.";
+	}
 
 	/// apply method
 	// create destination matrices
-	Eigen::MatrixXd nonnegative_spectralmatrix =
-			Eigen::MatrixXd(spectralmatrix.rows(), spectralmatrix.cols());
-	Eigen::MatrixXd nonnegative_pixelmatrix =
-			Eigen::MatrixXd(pixelmatrix.rows(), pixelmatrix.cols());
+	Eigen::MatrixXd nonnegative_spectralmatrix(matrix.rows(), inner_dimension);
+	Eigen::MatrixXd nonnegative_pixelmatrix(inner_dimension, matrix.cols());
+	assert (nonnegative_spectralmatrix.cols() == nonnegative_pixelmatrix.rows());
 
 	// loop through other columns/row and extract positive factor in rank-2 decomp.
 	for (size_t index = 0; index < inner_dimension; ++index) {
-		Eigen::VectorXd x = spectralmatrix.col(index);
-		Eigen::VectorXd y = pixelmatrix.row(index);
+		Eigen::VectorXd x = matrix.col(index);
+		Eigen::VectorXd y = matrix.row(index);
 		Eigen::VectorXd xp = getPositiveSection(x);
 		Eigen::VectorXd xn = getNegativeSection(x);
 		Eigen::VectorXd yp = getPositiveSection(y);

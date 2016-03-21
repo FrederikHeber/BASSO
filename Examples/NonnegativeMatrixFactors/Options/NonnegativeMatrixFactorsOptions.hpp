@@ -55,8 +55,8 @@ public:
 	// primary values
 	boost::filesystem::path destination_first_factor;
 	boost::filesystem::path destination_second_factor;
-	boost::filesystem::path source_first_factor;
-	boost::filesystem::path source_second_factor;
+	boost::filesystem::path matrix;
+	unsigned int truncation_dimension;
 
 	// secondary values
 };

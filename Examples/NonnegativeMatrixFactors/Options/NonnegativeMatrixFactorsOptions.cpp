@@ -25,10 +25,10 @@ void NonnegativeMatrixFactorsOptions::init()
 	boost::program_options::options_description desc_nonnegative("NonnegativeMatrixFactors options");
 
 	desc_nonnegative.add_options()
-			("source-first-factor", po::value< boost::filesystem::path >(),
-					"set the file name to parse the first matrix factor")
-			("source-second-factor", po::value< boost::filesystem::path >(),
-					"set the file name to parse the second matrix factor")
+			("matrix", po::value< boost::filesystem::path >(),
+					"set the file name to parse the matrix")
+			("truncation-dimension", po::value< unsigned int >(),
+					"set the truncation dimension")
 			("destination-first-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the first nonnegative matrix factor")
 			("destination-second-factor", po::value< boost::filesystem::path >(),
@@ -42,16 +42,16 @@ void NonnegativeMatrixFactorsOptions::parse(int argc, char **argv)
 {
 	Options::parse(argc,argv);
 
-	if (vm.count("source-first-factor")) {
-		source_first_factor = vm["source-first-factor"].as<boost::filesystem::path>();
+	if (vm.count("matrix")) {
+		matrix = vm["matrix"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing first matrix factor file from " << source_first_factor.string();
+			<< "Parsing matrix file from " << matrix.string();
 	}
 
-	if (vm.count("source-second-factor")) {
-		source_second_factor = vm["source-second-factor"].as<boost::filesystem::path>();
+	if (vm.count("truncation-dimension")) {
+		truncation_dimension = vm["truncation-dimension"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing second matrix factor file from " << source_second_factor.string();
+			<< "Truncation dimension is " << truncation_dimension;
 	}
 
 	if (vm.count("destination-first-factor")) {
@@ -69,16 +69,15 @@ void NonnegativeMatrixFactorsOptions::parse(int argc, char **argv)
 
 bool NonnegativeMatrixFactorsOptions::internal_checkSensibility() const
 {
-	if (!vm.count("source-first-factor")
-			|| !boost::filesystem::exists(source_first_factor)) {
+	if (!vm.count("matrix")
+			|| !boost::filesystem::exists(matrix)) {
 		BOOST_LOG_TRIVIAL(error)
-				<< "First matrix factor file not specified or non-existent.";
+				<< "Matrix file not specified or non-existent.";
 		return false;
 	}
-	if (!vm.count("source-second-factor")
-			|| !boost::filesystem::exists(source_second_factor)) {
+	if (!vm.count("truncation-dimension")) {
 		BOOST_LOG_TRIVIAL(error)
-				<< "Second matrix factor file not specified or non-existent.";
+				<< "Truncation_dimension not specified.";
 		return false;
 	}
 
@@ -108,6 +107,6 @@ void NonnegativeMatrixFactorsOptions::store(std::ostream &_output) const
 	_output << "# [NonnegativeMatrixFactors]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "destination-first-factor");
 	writeValue<boost::filesystem::path>(_output, vm,  "destination-second-factor");
-	writeValue<boost::filesystem::path>(_output, vm,  "source-first-factor");
-	writeValue<boost::filesystem::path>(_output, vm,  "source-second-factor");
+	writeValue<boost::filesystem::path>(_output, vm,  "matrix");
+	writeValue<unsigned int>(_output, vm,  "truncation_dimension");
 }
