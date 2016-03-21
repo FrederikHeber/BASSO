@@ -145,6 +145,13 @@ if (PNG_FOUND)
 	endif (png++_FOUND)
 endif (PNG_FOUND)
 
+# find libarpack
+find_package(ARPACK)
+if (ARPACK_FOUND)
+	set (ARPACK_LIBRARIES ${ARPACK_LIBRARIES})
+	set( ARPACK_FOUND ${ARPACK_FOUND})
+endif (ARPACK_FOUND)
+
 ####################### CHECK given DIFF #################################
 
 # should ndiff be used instead of diff

@@ -4,9 +4,11 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 # add the executable for matrix factorization
 add_library (NonnegativeMatrixFactorsBase 
-	Options/NonnegativeMatrixFactorsOptions.cpp)
+	Options/NonnegativeMatrixFactorsOptions.cpp
+	TruncatedSVD.cpp)
 
 install (FILES Options/NonnegativeMatrixFactorsOptions.hpp DESTINATION include)
+install (FILES TruncatedSVD.hpp DESTINATION include)
 
 # add the executable
 add_executable (NonnegativeMatrixFactors
@@ -14,6 +16,7 @@ add_executable (NonnegativeMatrixFactors
 target_link_libraries ( NonnegativeMatrixFactors
 	NonnegativeMatrixFactorsBase
 	${EXTRA_LIBS}
+	${ARPACK_LIBRARIES}
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
