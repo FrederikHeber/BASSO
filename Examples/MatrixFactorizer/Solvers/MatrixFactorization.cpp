@@ -190,7 +190,7 @@ void MatrixFactorization::operator()(
 					NormedSpaceFactory::create(
 							opts.sparse_dim, "lp", args_SpaceL2);
 			spectral_matrix.transposeInPlace();
-			for (int i=0;i<_data.cols();++i) {
+			for (int i=0;i<spectral_matrix.cols();++i) {
 				SpaceElement_ptr_t tempvector = ElementCreator::create(
 						L2,
 						spectral_matrix.col(i));
