@@ -20,6 +20,38 @@
 #include "Minimizations/Minimizers/DatabaseManager.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 
+void addTupleParametersToTuple(
+		const std::vector<std::string> &_tuple_parameters,
+		Table::Tuple_t& _parameter_tuple
+		)
+{
+	for (std::vector<std::string>::const_iterator iter = _tuple_parameters.begin();
+			iter != _tuple_parameters.end(); ) {
+		const std::string &token = (*iter++);
+		const std::string &value = (*iter++);
+		try {
+			const int int_value = boost::lexical_cast<int>(value);
+			_parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
+			BOOST_LOG_TRIVIAL(debug)
+					<< " Adding additional integer parameter ("
+					<< token << "," << int_value << ") to loop tuple.";
+		} catch(const boost::bad_lexical_cast &) {
+			try {
+				const double double_value = boost::lexical_cast<double>(value);
+				_parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
+				BOOST_LOG_TRIVIAL(debug)
+						<< " Adding additional double parameter ("
+						<< token << "," << double_value << ") to loop tuple.";
+			} catch(const boost::bad_lexical_cast &) {
+				_parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
+				BOOST_LOG_TRIVIAL(debug)
+						<< " Adding additional string parameter ("
+						<< token << "," << value << ") to loop tuple.";
+			}
+		}
+	}
+}
+
 IterationInformation::IterationInformation(
 		const MatrixFactorizerOptions &_opts,
 		const unsigned int _innersize,
@@ -172,31 +204,7 @@ size_t IterationInformation::prepareParametersTable(
 	parameter_tuple.insert( std::make_pair("p", _opts.px), Table::Parameter);
 	parameter_tuple.insert( std::make_pair("r", _opts.py), Table::Parameter);
 	parameter_tuple.insert( std::make_pair("sparse_dim", (int)_opts.sparse_dim), Table::Parameter);
-	for (std::vector<std::string>::const_iterator iter = _opts.tuple_parameters.begin();
-			iter != _opts.tuple_parameters.end(); ) {
-		const std::string &token = (*iter++);
-		const std::string &value = (*iter++);
-		try {
-			const int int_value = boost::lexical_cast<int>(value);
-			parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
-			BOOST_LOG_TRIVIAL(debug)
-					<< " Adding additional integer parameter ("
-					<< token << "," << int_value << ") to loop tuple.";
-		} catch(const boost::bad_lexical_cast &) {
-			try {
-				const double double_value = boost::lexical_cast<double>(value);
-				parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
-				BOOST_LOG_TRIVIAL(debug)
-						<< " Adding additional double parameter ("
-						<< token << "," << double_value << ") to loop tuple.";
-			} catch(const boost::bad_lexical_cast &) {
-				parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
-				BOOST_LOG_TRIVIAL(debug)
-						<< " Adding additional string parameter ("
-						<< token << "," << value << ") to loop tuple.";
-			}
-		}
-	}
+	addTupleParametersToTuple(_opts.tuple_parameters, parameter_tuple);
 	// we need to add it, otherwise we cannot use checks for presence
 	// as they rely on complete table info
 	parameter_table.addTuple(parameter_tuple);
