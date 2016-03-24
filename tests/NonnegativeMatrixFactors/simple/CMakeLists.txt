@@ -13,7 +13,7 @@ set_tests_properties (NonnegativeMatrixFactorsSimple
 add_test (NonnegativeMatrixFactorsSimple_check_first
 	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.mat spectralmatrix.mat)
 set_tests_properties (NonnegativeMatrixFactorsSimple_check_first
-	PROPERTIES WILL_FAIL true)
+	PROPERTIES WILL_FAIL false)
 set_tests_properties (NonnegativeMatrixFactorsSimple_check_first
 	PROPERTIES DEPENDS NonnegativeMatrixFactorsSimple)
 
@@ -21,7 +21,7 @@ set_tests_properties (NonnegativeMatrixFactorsSimple_check_first
 add_test (NonnegativeMatrixFactorsSimple_check_second
 	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.mat pixelmatrix.mat)
 set_tests_properties (NonnegativeMatrixFactorsSimple_check_second
-	PROPERTIES WILL_FAIL true)
+	PROPERTIES WILL_FAIL false)
 set_tests_properties (NonnegativeMatrixFactorsSimple_check_second
 	PROPERTIES DEPENDS NonnegativeMatrixFactorsSimple)
 	
