@@ -14,6 +14,7 @@
 //#include <iterator>
 #include <sstream>
 
+#include "Database_impl.hpp"
 #include "Log/Logging.hpp"
 #include "Poco/Data/Common.h"
 #include "Poco/Data/SQLite/Connector.h"
@@ -203,9 +204,6 @@ bool SQLDatabase::updateTable(
 	Session ses("SQLite", filename.c_str());
 	ses << "BEGIN", now;
 
-	// then, add all new ones
-	// note that due to use(..) this cannot be debugged into
-	// a printable string
 	{
 		switch (valuevector.size()) {
 		case 0:
@@ -214,7 +212,6 @@ bool SQLDatabase::updateTable(
 			break;
 		// use preprocessor magic to create the range of cases
 #include <boost/preprocessor/iteration/local.hpp>
-#include "Database_impl.hpp"
 #define BASSO_ARGUMENTLIST (ses)(_table.getName())(valuevector)
 #define BOOST_PP_LOCAL_MACRO(n) CasePrinter(~, n, BASSO_ARGUMENTLIST)
 #define BOOST_PP_LOCAL_LIMITS (1, BASSO_MAXKEYS)

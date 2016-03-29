@@ -14,6 +14,8 @@
 #undef QuestionmarksPrinter
 #undef ComponentPrinter
 #undef ComponentsPrinter
+#undef StringizedComponentPrinter
+#undef StringizedComponentsPrinter
 #undef CasePrinter
 
 #endif /* DATABASE_DATABASE_UNDEF_HPP_ */
