@@ -53,6 +53,7 @@ public:
 public:
 
 	// primary values
+	boost::filesystem::path database_file;
 	boost::filesystem::path destination_first_factor;
 	boost::filesystem::path destination_second_factor;
 	boost::filesystem::path matrix;

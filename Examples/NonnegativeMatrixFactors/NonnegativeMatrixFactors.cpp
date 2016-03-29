@@ -18,7 +18,7 @@
 #include <Eigen/Sparse>
 #include <vector>
 
-#include "Database/Database.hpp"
+#include "Database/SQLDatabase.hpp"
 #include "Log/Logging.hpp"
 #include "Options/NonnegativeMatrixFactorsOptions.hpp"
 #include "MatrixIO/MatrixIO.hpp"
@@ -86,10 +86,6 @@ int main (int argc, char *argv[])
 		return 255;
 	opts.setSecondaryValues();
 
-	// starting timing
-	boost::chrono::high_resolution_clock::time_point timing_start =
-			boost::chrono::high_resolution_clock::now();
-
 	/// parse in source matrix
 	Eigen::MatrixXd matrix;
 	{
@@ -98,6 +94,46 @@ int main (int argc, char *argv[])
 		if (!MatrixIO::parse(opts.matrix.string(), "matrix factor", matrix))
 			return 255;
 	}
+
+	// prepare database and parameter and data tables
+	SQLDatabase database;
+	if (!opts.database_file.string().empty()) {
+		database.setDatabaseFile(opts.database_file.string());
+		Table& paramtable = database.addTable("parameters");
+		Table::Tuple_t &paramtuple = paramtable.getTuple();
+		paramtuple.insert( std::make_pair("truncation_dimension",
+				(int)opts.truncation_dimension), Table::Parameter);
+
+		paramtuple.insert( std::make_pair("cols", (int)matrix.cols()), Table::Parameter);
+		paramtuple.insert( std::make_pair("rows", (int)matrix.rows()), Table::Parameter);
+		paramtable.addTuple(paramtuple);
+
+		size_t rowid = 1;
+		if (database.isDatabaseFileGiven()) {
+			// check for presence
+			if (!database.isTuplePresentInTable(paramtable, paramtuple)) {
+				BOOST_LOG_TRIVIAL(debug)
+						<< "Parameter tuple not present, adding to table.";
+				database.writeTable(paramtable);
+			}
+			// and store rowid
+			rowid = database.getIdOfTuplePresentInTable(
+					paramtable, paramtuple);
+			// clear table such that present tuple is not stored again
+			database.clearTable(paramtable.getName());
+			BOOST_LOG_TRIVIAL(debug)
+				<< "Setting parameter_key to " << rowid;
+		}
+
+		Table& datatable = database.addTable("data_overall");
+		Table::Tuple_t &datatuple = datatable.getTuple();
+		datatuple.insert( std::make_pair("parameters_fk", (int)rowid),
+				Table::Parameter);
+	}
+
+	// starting timing
+	boost::chrono::high_resolution_clock::time_point timing_start =
+			boost::chrono::high_resolution_clock::now();
 
 	const unsigned int inner_dimension =
 			std::min(opts.truncation_dimension,
@@ -214,6 +250,19 @@ int main (int argc, char *argv[])
 				<< "|A - W*H|_2 " << (matrix-W*H).norm();
 	}
 
+	boost::chrono::high_resolution_clock::time_point timing_end =
+			boost::chrono::high_resolution_clock::now();
+	const boost::chrono::duration<double> runtime =
+			boost::chrono::duration<double>(timing_end - timing_start);
+	BOOST_LOG_TRIVIAL(info) << "The operation took "
+			<< runtime << ".";
+	if (!opts.database_file.string().empty()) {
+		Table& datatable = database.getTable("data_overall");
+		Table::Tuple_t &datatuple = datatable.getTuple();
+		datatuple.insert( std::make_pair("runtime", (double)runtime.count()), Table::Data);
+		datatable.addTuple(datatuple);
+	}
+
 	/// store destination matrix factors
 	if (!MatrixIO::store(
 			opts.destination_first_factor.string(),
@@ -225,12 +274,6 @@ int main (int argc, char *argv[])
 			"second matrix factor",
 			H))
 		return 255;
-
-	boost::chrono::high_resolution_clock::time_point timing_end =
-			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
 
 	// exit
 	return 0;
