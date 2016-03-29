@@ -103,7 +103,6 @@ int main (int argc, char *argv[])
 		Table::Tuple_t &paramtuple = paramtable.getTuple();
 		paramtuple.insert( std::make_pair("truncation_dimension",
 				(int)opts.truncation_dimension), Table::Parameter);
-
 		paramtuple.insert( std::make_pair("cols", (int)matrix.cols()), Table::Parameter);
 		paramtuple.insert( std::make_pair("rows", (int)matrix.rows()), Table::Parameter);
 		paramtable.addTuple(paramtuple);
@@ -261,6 +260,17 @@ int main (int argc, char *argv[])
 		Table::Tuple_t &datatuple = datatable.getTuple();
 		datatuple.insert( std::make_pair("runtime", (double)runtime.count()), Table::Data);
 		datatable.addTuple(datatuple);
+
+		// write tables beforehand
+		database.writeAllTables();
+
+		std::stringstream sql;
+		sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
+		BOOST_LOG_TRIVIAL(trace)
+			<< "SQL: " << sql.str();
+		if (!database.executeSQLStatement(sql.str()))
+			BOOST_LOG_TRIVIAL(error)
+					<< "Failed to create view.";
 	}
 
 	/// store destination matrix factors
