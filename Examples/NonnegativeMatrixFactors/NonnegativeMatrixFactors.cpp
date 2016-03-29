@@ -64,6 +64,57 @@ Eigen::SparseMatrix<double> getSparseMatrix(const Eigen::MatrixXd& _matrix)
 	return sparse_matrix;
 }
 
+size_t prepareDatabase(
+		Database &_database,
+		const NonnegativeMatrixFactorsOptions &_opts,
+		const int _rows,
+		const int _cols)
+{
+	_database.setDatabaseFile(_opts.database_file.string());
+	Table& paramtable = _database.addTable("parameters");
+	Table::Tuple_t &paramtuple = paramtable.getTuple();
+	paramtuple.insert( std::make_pair("truncation_dimension",
+			(int)_opts.truncation_dimension), Table::Parameter);
+	paramtuple.insert( std::make_pair("cols", (int)_cols), Table::Parameter);
+	paramtuple.insert( std::make_pair("rows", (int)_rows), Table::Parameter);
+	paramtable.addTuple(paramtuple);
+
+	size_t rowid = 1;
+	if (_database.isDatabaseFileGiven()) {
+		// check for presence
+		if (!_database.isTuplePresentInTable(paramtable, paramtuple)) {
+			BOOST_LOG_TRIVIAL(debug)
+					<< "Parameter tuple not present, adding to table.";
+			_database.writeTable(paramtable);
+		}
+		// and store rowid
+		rowid = _database.getIdOfTuplePresentInTable(
+				paramtable, paramtuple);
+		// clear table such that present tuple is not stored again
+		_database.clearTable(paramtable.getName());
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting parameter_key to " << rowid;
+	}
+
+	return rowid;
+}
+
+void finalizeDatabase(
+		Database &_database,
+		const NonnegativeMatrixFactorsOptions &_opts)
+{
+	// write tables beforehand
+	_database.writeAllTables();
+
+	std::stringstream sql;
+	sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
+	BOOST_LOG_TRIVIAL(trace)
+		<< "SQL: " << sql.str();
+	if (!_database.executeSQLStatement(sql.str()))
+		BOOST_LOG_TRIVIAL(error)
+				<< "Failed to create view.";
+}
+
 int main (int argc, char *argv[])
 {
 	// show program information
@@ -97,38 +148,13 @@ int main (int argc, char *argv[])
 
 	// prepare database and parameter and data tables
 	SQLDatabase database;
-	if (!opts.database_file.string().empty()) {
-		database.setDatabaseFile(opts.database_file.string());
-		Table& paramtable = database.addTable("parameters");
-		Table::Tuple_t &paramtuple = paramtable.getTuple();
-		paramtuple.insert( std::make_pair("truncation_dimension",
-				(int)opts.truncation_dimension), Table::Parameter);
-		paramtuple.insert( std::make_pair("cols", (int)matrix.cols()), Table::Parameter);
-		paramtuple.insert( std::make_pair("rows", (int)matrix.rows()), Table::Parameter);
-		paramtable.addTuple(paramtuple);
-
-		size_t rowid = 1;
-		if (database.isDatabaseFileGiven()) {
-			// check for presence
-			if (!database.isTuplePresentInTable(paramtable, paramtuple)) {
-				BOOST_LOG_TRIVIAL(debug)
-						<< "Parameter tuple not present, adding to table.";
-				database.writeTable(paramtable);
-			}
-			// and store rowid
-			rowid = database.getIdOfTuplePresentInTable(
-					paramtable, paramtuple);
-			// clear table such that present tuple is not stored again
-			database.clearTable(paramtable.getName());
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Setting parameter_key to " << rowid;
-		}
-
-		Table& datatable = database.addTable("data_overall");
-		Table::Tuple_t &datatuple = datatable.getTuple();
-		datatuple.insert( std::make_pair("parameters_fk", (int)rowid),
-				Table::Parameter);
-	}
+	size_t rowid = 0;
+	if (!opts.database_file.string().empty())
+		rowid = prepareDatabase(database, opts, matrix.cols(), matrix.rows());
+	Table& datatable = database.addTable("data_overall");
+	Table::Tuple_t &datatuple = datatable.getTuple();
+	datatuple.insert( std::make_pair("parameters_fk", (int)rowid),
+			Table::Parameter);
 
 	// starting timing
 	boost::chrono::high_resolution_clock::time_point timing_start =
@@ -255,22 +281,15 @@ int main (int argc, char *argv[])
 			boost::chrono::duration<double>(timing_end - timing_start);
 	BOOST_LOG_TRIVIAL(info) << "The operation took "
 			<< runtime << ".";
+
+	// write runtime to database
 	if (!opts.database_file.string().empty()) {
 		Table& datatable = database.getTable("data_overall");
 		Table::Tuple_t &datatuple = datatable.getTuple();
 		datatuple.insert( std::make_pair("runtime", (double)runtime.count()), Table::Data);
 		datatable.addTuple(datatuple);
 
-		// write tables beforehand
-		database.writeAllTables();
-
-		std::stringstream sql;
-		sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
-		if (!database.executeSQLStatement(sql.str()))
-			BOOST_LOG_TRIVIAL(error)
-					<< "Failed to create view.";
+		finalizeDatabase(database, opts);
 	}
 
 	/// store destination matrix factors
