@@ -26,6 +26,31 @@
 
 using namespace boost::assign;
 
+static void getArgs(
+		InverseProblemFactory::args_t &_args_SpaceX,
+		InverseProblemFactory::args_t &_args_SpaceY,
+		const CommandLineOptions &_opts)
+{
+	// starts with "lp.."
+	if (_opts.type_spacex.find("lp") == 0) {
+		_args_SpaceX +=
+				boost::any(_opts.px),
+				boost::any(_opts.powerx);
+	} else if (_opts.type_spacex == "regularized_l1") {
+		_args_SpaceX +=
+				boost::any(_opts.regularization_parameter),
+				boost::any(_opts.powerx);
+	}
+	// starts with "lp.."
+	if (_opts.type_spacey.find("lp") == 0) {
+		_args_SpaceY +=
+				boost::any(_opts.py),
+				boost::any(_opts.powery);
+	}
+	assert(!_args_SpaceX.empty());
+	assert(!_args_SpaceY.empty());
+}
+
 InverseProblem_ptr_t SolverFactory::createInverseProblem(
 		const CommandLineOptions &_opts,
 		const Eigen::MatrixXd &_matrix,
@@ -34,28 +59,35 @@ InverseProblem_ptr_t SolverFactory::createInverseProblem(
 	InverseProblem_ptr_t inverseproblem;
 	InverseProblemFactory::args_t args_SpaceX;
 	InverseProblemFactory::args_t args_SpaceY;
-	// starts with "lp.."
-	if (_opts.type_spacex.find("lp") == 0) {
-		args_SpaceX +=
-				boost::any(_opts.px),
-				boost::any(_opts.powerx);
-	} else if (_opts.type_spacex == "regularized_l1") {
-		args_SpaceX +=
-				boost::any(_opts.regularization_parameter),
-				boost::any(_opts.powerx);
-	}
-	// starts with "lp.."
-	if (_opts.type_spacey.find("lp") == 0) {
-		args_SpaceY +=
-				boost::any(_opts.py),
-				boost::any(_opts.powery);
-	}
+	getArgs(args_SpaceX, args_SpaceY, _opts);
 	inverseproblem = InverseProblemFactory::create(
 			_opts.type_spacex,
 			args_SpaceX,
 			_opts.type_spacey,
 			args_SpaceY,
 			_matrix,
+			_rhs);
+
+	return inverseproblem;
+}
+
+InverseProblem_ptr_t SolverFactory::createInverseProblemFromFactors(
+		const CommandLineOptions &_opts,
+		const Eigen::MatrixXd &_matrix_first_factor,
+		const Eigen::MatrixXd &_matrix_second_factor,
+		const Eigen::VectorXd &_rhs)
+{
+	InverseProblem_ptr_t inverseproblem;
+	InverseProblemFactory::args_t args_SpaceX;
+	InverseProblemFactory::args_t args_SpaceY;
+	getArgs(args_SpaceX, args_SpaceY, _opts);
+	inverseproblem = InverseProblemFactory::createFromTwoFactors(
+			_opts.type_spacex,
+			args_SpaceX,
+			_opts.type_spacey,
+			args_SpaceY,
+			_matrix_first_factor,
+			_matrix_second_factor,
 			_rhs);
 
 	return inverseproblem;

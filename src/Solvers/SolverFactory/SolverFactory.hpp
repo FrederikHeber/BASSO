@@ -43,6 +43,20 @@ struct SolverFactory
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::VectorXd &_rhs);
 
+	/** Creates the inverse problem given the information in \a _opts.
+	 *
+	 * \param _opts CommandLineOptions struct containing all information
+	 * \param _matrix_first_factor first factor of matrix of the inverse problem
+	 * \param _matrix_second_factor second factor of matrix of the inverse problem
+	 * \param _rhs right-hand side of the problem
+	 * \return constructed inverse problem instance
+	 */
+	static InverseProblem_ptr_t createInverseProblemFromFactors(
+			const CommandLineOptions &_opts,
+			const Eigen::MatrixXd &_matrix_first_factor,
+			const Eigen::MatrixXd &_matrix_second_factor,
+			const Eigen::VectorXd &_rhs);
+
 	/** Creates a database instance from the information contained in \a _opts.
 	 *
 	 * @param _opts CommandLineOptions struct containing all information
