@@ -137,43 +137,72 @@ int main (int argc, char *argv[])
 
 		Mapping_ptr_t A;
 		Mapping_ptr_t A_t;
-		if ((!opts.radon_matrix_first_factor.empty())
-				&& (!opts.radon_matrix_second_factor.empty())) {
-			// parse radon matrix as two factors
-			Eigen::MatrixXd first_factor;
-			Eigen::MatrixXd second_factor;
-			if (!MatrixIO::parse(
-					opts.radon_matrix_first_factor.string(),
-					"data matrix", first_factor))
-				return 255;
-			if (!MatrixIO::parse(
-					opts.radon_matrix_second_factor.string(),
-					"data matrix", second_factor))
-				return 255;
-			// and create a TwoFactorLinearMapping through the factory
-			A = LinearMappingFactory::createTwoFactorInstance(
-					X, Y, first_factor, second_factor, false);
-			A_t = A->getAdjointMapping();
-		} else {
-			// the discretized radon transform and backprojection
-			A.reset(new DiscretizedRadon(
-					X,Y,
-					opts.num_pixel_x,
-					opts.num_pixel_y,
-					opts.num_angles,
-					opts.num_offsets));
-			A_t.reset(new Backprojection(
-					Y->getDualSpace(),X->getDualSpace(),
-					opts.num_pixel_x,
-					opts.num_pixel_y,
-					opts.num_angles,
-					opts.num_offsets));
-			// make each the adjoint of the other
-			dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
-			dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
-			// use transpose of Backprojection as adjoint
-			dynamic_cast<DiscretizedRadon &>(*A).get().setMatrix(
-					dynamic_cast<Backprojection &>(*A_t).get().getMatrix().transpose());
+		switch (opts.radon_matrix.size())
+		{
+		case 0:
+			// internal matrix
+			{
+				// the discretized radon transform and backprojection
+				A.reset(new DiscretizedRadon(
+						X,Y,
+						opts.num_pixel_x,
+						opts.num_pixel_y,
+						opts.num_angles,
+						opts.num_offsets));
+				A_t.reset(new Backprojection(
+						Y->getDualSpace(),X->getDualSpace(),
+						opts.num_pixel_x,
+						opts.num_pixel_y,
+						opts.num_angles,
+						opts.num_offsets));
+				// make each the adjoint of the other
+				dynamic_cast<DiscretizedRadon &>(*A).setAdjointMapping(A_t);
+				dynamic_cast<Backprojection &>(*A_t).setAdjointMapping(A);
+				// use transpose of Backprojection as adjoint
+				dynamic_cast<DiscretizedRadon &>(*A).get().setMatrix(
+						dynamic_cast<Backprojection &>(*A_t).get().getMatrix().transpose());
+			}
+			break;
+		case 1:
+			// single matrix
+			{
+				// parse radon matrix
+				Eigen::MatrixXd radon;
+				if (!MatrixIO::parse(
+						opts.radon_matrix[0].string(),
+						"data matrix", radon))
+					return 255;
+				// and create a LinearMapping through the factory
+				A = LinearMappingFactory::createInstance(
+						X, Y, radon, false);
+				A_t = A->getAdjointMapping();
+			}
+			break;
+		case 2:
+			// two matrix factors
+			{
+				// parse radon matrix as two factors
+				Eigen::MatrixXd first_factor;
+				Eigen::MatrixXd second_factor;
+				if (!MatrixIO::parse(
+						opts.radon_matrix[0].string(),
+						"first factor of matrix", first_factor))
+					return 255;
+				if (!MatrixIO::parse(
+						opts.radon_matrix[1].string(),
+						"second factor of matrix", second_factor))
+					return 255;
+				// and create a TwoFactorLinearMapping through the factory
+				A = LinearMappingFactory::createTwoFactorInstance(
+						X, Y, first_factor, second_factor, false);
+				A_t = A->getAdjointMapping();
+			}
+			break;
+		default:
+			BOOST_LOG_TRIVIAL(error)
+					<< "Wrong number of matrix files given.";
+			return 255;
+			break;
 		}
 
 		// prepare true solution

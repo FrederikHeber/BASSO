@@ -38,6 +38,14 @@
  * may use SESOP to solve for the density given the so-called sinogram,
  * i.e. the measurement vectors.
  *
+ * \section computertomography-matrix-factors Using Matrix Factors
+ * 
+ * The radon matrix may either be parsed from file or or an internal
+ * discretization is used. If files are parsed, then either one or two files
+ * may be given: If two matrix files are given, these are considered as matrix
+ * factors whose product is the discretized Radon transform. If just a single
+ * file is given, this is parsed as the discretized operator.
+ *
  * \section computertomography-warning Warnings
  *
  * The tricky part is that both measurements and density distributions
