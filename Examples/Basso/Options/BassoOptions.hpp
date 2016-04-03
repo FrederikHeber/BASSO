@@ -12,6 +12,8 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <vector>
+
 #include "Options/CommandLineOptions.hpp"
 
 class BassoOptions : public CommandLineOptions
@@ -50,7 +52,7 @@ public:
 
 	// primary values
 	boost::filesystem::path comparison_file;
-	boost::filesystem::path matrix_file;
+	std::vector<boost::filesystem::path> matrix_file;
 	boost::filesystem::path rhs_file;
 	boost::filesystem::path solution_file;
 	boost::filesystem::path solution_image_file;

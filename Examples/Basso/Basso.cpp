@@ -67,35 +67,80 @@ int main (int argc, char *argv[])
 			boost::chrono::high_resolution_clock::now();
 
 	// parse matrix and vector files into instances
-	Eigen::MatrixXd matrix;
 	Eigen::VectorXd rhs;
 	Eigen::VectorXd solution;
-	if (!MatrixIO::parse(opts.matrix_file.string(), "matrix", matrix))
-		return 255;
 	if (!MatrixIO::parse(opts.rhs_file.string(), "rhs", rhs))
 		return 255;
-	if (!MatrixIO::parse(opts.comparison_file.string(), "solution", solution)) {
-		solution = Eigen::VectorXd(matrix.outerSize());
+	const bool solution_parsed =
+			MatrixIO::parse(opts.comparison_file.string(), "solution", solution);
+	InverseProblem_ptr_t inverseproblem;
+	switch (opts.matrix_file.size()) {
+	case 1:
+		{
+			Eigen::MatrixXd matrix;
+			if (!MatrixIO::parse(
+					opts.matrix_file[0].string(),
+					"matrix", matrix))
+				return 255;
+
+			// print parsed matrix and vector if small or high verbosity requested
+			if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+				BOOST_LOG_TRIVIAL(trace)
+					<< "We solve for Ax = y with A = "
+					<< matrix << " and y = "
+					<< rhs.transpose() << std::endl;
+			} else {
+				BOOST_LOG_TRIVIAL(info)
+					<< "We solve for Ax = y with A = "
+					<< matrix << " and y = "
+					<< rhs.transpose() << std::endl;
+			}
+
+			// prepare inverse problem
+			inverseproblem = SolverFactory::createInverseProblem(
+							opts, matrix, rhs);
+		}
+		break;
+	case 2:
+		{
+			// parse matrix as two factors
+			Eigen::MatrixXd first_factor;
+			Eigen::MatrixXd second_factor;
+			if (!MatrixIO::parse(
+					opts.matrix_file[0].string(),
+					"first factor of matrix", first_factor))
+				return 255;
+			if (!MatrixIO::parse(
+					opts.matrix_file[1].string(),
+					"second factor of matrix", second_factor))
+				return 255;
+
+			// print parsed matrix and vector if small or high verbosity requested
+			if ((second_factor.innerSize() > 10) || (first_factor.outerSize() > 10)) {
+				BOOST_LOG_TRIVIAL(trace)
+					<< "We solve for Ax = y with A = "
+					<< first_factor*second_factor << " and y = "
+					<< rhs.transpose() << std::endl;
+			} else {
+				BOOST_LOG_TRIVIAL(info)
+					<< "We solve for Ax = y with A = "
+					<< first_factor*second_factor << " and y = "
+					<< rhs.transpose() << std::endl;
+			}
+
+			// prepare inverse problem
+			inverseproblem = SolverFactory::createInverseProblemFromFactors(
+							opts, first_factor, second_factor, rhs);
+		}
+		break;
+	}
+
+	// set solution to zero with now known matrix dimensions
+	if (!solution_parsed) {
+		const unsigned int dimension = inverseproblem->A->getSourceSpace()->getDimension();
+		solution = Eigen::VectorXd(dimension);
 		solution.setZero();
 	}
-
-	// print parsed matrix and vector if small or high verbosity requested
-	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
-			<< rhs.transpose() << std::endl;
-	} else {
-		BOOST_LOG_TRIVIAL(info)
-			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
-			<< rhs.transpose() << std::endl;
-	}
-
-	// prepare inverse problem
-	InverseProblem_ptr_t inverseproblem =
-			SolverFactory::createInverseProblem(
-					opts, matrix, rhs);
 
 	// prepare true solution
 	SpaceElement_ptr_t truesolution =
@@ -148,7 +193,7 @@ int main (int argc, char *argv[])
 
 	// give result
 	{
-		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
+		if (inverseproblem->x->getSpace()->getDimension() > 10) {
 			std::cout << "Solution after "
 					<< result.NumberOuterIterations
 					<< " with relative residual of " << result.residuum/inverseproblem->y->Norm()
