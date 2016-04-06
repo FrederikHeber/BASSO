@@ -87,6 +87,13 @@ void MatrixFactorization::operator()(
 
 		unsigned int loop_nr = 0;
 
+		// calculate an initial residual prior to the starting factors
+		double residual = _data.norm();
+		BOOST_LOG_TRIVIAL(info)
+			<< "#" << loop_nr << " starting residual is " << residual;
+		info.replace(IterationInformation::LoopTable, "residual", residual);
+		info.addTuple(IterationInformation::LoopTable);
+
 		/// parse in factors
 		bool parse_status = true;
 		if (opts.DoParseFactors) {
@@ -213,22 +220,15 @@ void MatrixFactorization::operator()(
 			}
 		}
 
-		/// iterate over the two factors
-		double residual =
-				detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-		BOOST_LOG_TRIVIAL(info)
-			<< "#" << loop_nr << " 1/2, residual is " << residual;
-		info.replace(IterationInformation::LoopTable, "residual", residual);
-
-		// submit loop tuple
-		info.addTuple(IterationInformation::LoopTable);
-
+		// evaluate stop condition
+		residual = detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
 		bool stop_condition = (*stopping_criterion)(
 				boost::chrono::duration<double>(0),
 				loop_nr,
 				residual,
 				1.);
 
+		/// iterate over the two factors
 		while (!stop_condition) {
 			// update loop count
 			++loop_nr;
