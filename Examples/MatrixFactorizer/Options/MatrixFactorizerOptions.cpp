@@ -19,6 +19,7 @@ namespace po = boost::program_options;
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
 		max_loops(100),
 		DoParseFactors(false),
+		projection_delta(1e-8),
 		residual_threshold(0.),
 		sparse_dim(1)
 {}
@@ -36,6 +37,8 @@ void MatrixFactorizerOptions::internal_init()
 					"set the columns to pass from inner problem's overall tables")
 			("parse-factors", po::value< bool >(),
 					"set whether to also parse initial factors from specified files")
+			("projection-delta", po::value< double >(),
+					"set the tolerance threshold for the projection of the variable column onto the range of the fixed matrix factor")
 			("residual-threshold", po::value<double>(),
 					"set the threshold of the matrix residual when to stop the iteration")
 			("solution-product", po::value< boost::filesystem::path >(),
@@ -84,6 +87,13 @@ void MatrixFactorizerOptions::internal_parse()
 			<< "For the starting matrices, we "
 			<< (DoParseFactors ? "do": "do not") << " parse the factors from given files.";
 	}
+	if (vm.count("projection-delta")) {
+		projection_delta = vm["projection-delta"].as<double>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting projection's delta to " << projection_delta;
+	} else
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Setting projection's delta to default value of " << projection_delta;
 
 	if (vm.count("residual-threshold")) {
 		residual_threshold = vm["residual-threshold"].as<double>();
@@ -189,6 +199,7 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 			_output << "\toverall-keys = " << *(iter++) << std::endl;
 	}
 	writeValue<bool>(_output, vm,  "parse-factors");
+	writeValue<double>(_output, vm, "projection-delta");
 	writeValue<double>(_output, vm,  "residual-threshold");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");

@@ -253,7 +253,8 @@ void MatrixFactorization::operator()(
 				if (!stop_condition) {
 					InRangeSolver solver(
 							spectral_opts,
-							opts.overall_keys);
+							opts.overall_keys,
+							opts.projection_delta);
 					for (unsigned int dim = 0;
 							(!stop_condition) && (dim < _data.cols());
 							++dim) {
@@ -348,7 +349,8 @@ void MatrixFactorization::operator()(
 				if (!stop_condition) {
 					InRangeSolver solver(
 							pixel_opts,
-							opts.overall_keys);
+							opts.overall_keys,
+							opts.projection_delta);
 					for (unsigned int dim = 0;
 							(!stop_condition) && (dim < _data.rows());
 							++dim) {

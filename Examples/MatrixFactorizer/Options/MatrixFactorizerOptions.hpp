@@ -56,6 +56,7 @@ public:
 	unsigned int max_loops;
 	std::vector<std::string> overall_keys;
 	bool DoParseFactors;
+	double projection_delta;
 	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
@@ -76,6 +77,7 @@ private:
 		ar & max_loops;
 		ar & overall_keys;
 		ar & DoParseFactors;
+		ar & projection_delta;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
@@ -95,6 +97,7 @@ private:
 		ar & max_loops;
 		ar & overall_keys;
 		ar & DoParseFactors;
+		ar & projection_delta;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
