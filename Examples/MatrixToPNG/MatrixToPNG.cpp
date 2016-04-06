@@ -8,6 +8,8 @@
 
 #include "BassoConfig.h"
 
+#include <fstream>
+
 #include <boost/chrono.hpp>
 #include <png++/png.hpp>
 
@@ -121,7 +123,9 @@ int main (int argc, char *argv[])
 			 // non-checking equivalent of image->set_pixel(x, y, ...);
 		 }
 		}
-		image->write(opts.image_file.string());
+		std::ofstream output(opts.image_file.string().c_str());
+		image->write_stream(output);
+		output.close();
 		if (image != NULL)
 			delete image;
 	} else {
