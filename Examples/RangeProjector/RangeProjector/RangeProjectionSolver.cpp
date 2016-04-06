@@ -39,11 +39,6 @@ RangeProjectionSolver::RangeProjectionSolver(
 		opts(_opts),
 		name("RangeProjection")
 {
-	// use smaller delta for the projection and SESOP
-	const_cast<CommandLineOptions &>(opts).delta = 1e-8;
-	const_cast<CommandLineOptions &>(opts).algorithm_name =
-			MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
-
 	// prepare spaces
 	NormedSpace_ptr_t Y;
 	NormedSpace_ptr_t Ys;

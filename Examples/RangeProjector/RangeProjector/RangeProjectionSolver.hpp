@@ -73,7 +73,7 @@ private:
 	//!> database reference for storing iteration information
 	Database_ptr_t database;
 	//!> storing options on the manner of solving
-	const CommandLineOptions opts;
+	const CommandLineOptions &opts;
 
 private:
 	// stuff constructed prior to operator()

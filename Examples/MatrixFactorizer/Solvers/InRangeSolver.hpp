@@ -30,10 +30,15 @@ struct InRangeSolver
 	 * @param _opts options defining the manner of solving.
 	 * @param _overall_keys set of keys to accumulate from solver's overall
 	 * 			table
+	 * @param _projection_delta delta for projection the right-hand side (i.e.
+	 * 		  the current column/row of the matrix factor that is modified)
+	 * 		  onto the range of the operator (i.e. the respective fixed matrix
+	 * 		   factor), e.g. 1e-8
 	 */
 	InRangeSolver(
 			const CommandLineOptions &_opts,
-			const InnerProblemDatabase::keys_t &_overall_keys
+			const InnerProblemDatabase::keys_t &_overall_keys,
+			const double _projection_delta = 1e-8
 			);
 
 	/** Functor that projects onto range and solves.
@@ -102,6 +107,9 @@ private:
 
 	InnerProblemDatabase &projectorDB;
 	InnerProblemDatabase &solverDB;
+
+	//!> replacement to use as delta when performing projection onto range
+	const double projection_delta;
 };
 
 

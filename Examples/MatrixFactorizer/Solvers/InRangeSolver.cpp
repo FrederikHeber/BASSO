@@ -23,13 +23,15 @@
 
 InRangeSolver::InRangeSolver(
 		const CommandLineOptions &_opts,
-		const InnerProblemDatabase::keys_t &_overall_keys
+		const InnerProblemDatabase::keys_t &_overall_keys,
+		const double _projection_delta
 		) :
 	opts(_opts),
 	projector_db(new InnerProblemDatabase(_overall_keys)),
 	solver_db(new InnerProblemDatabase(_overall_keys)),
 	projectorDB(static_cast<InnerProblemDatabase &>(*projector_db.get())),
-	solverDB(static_cast<InnerProblemDatabase &>(*solver_db.get()))
+	solverDB(static_cast<InnerProblemDatabase &>(*solver_db.get())),
+	projection_delta(_projection_delta)
 {}
 
 bool InRangeSolver::operator()(
@@ -49,11 +51,17 @@ bool InRangeSolver::operator()(
 			<< "Initial y_" << _dim << " is "
 			<< _rhs.transpose();
 	{
+		// use smaller delta for the projection and SESOP
+		CommandLineOptions projection_opts(opts);
+		projection_opts.delta = projection_delta;
+		projection_opts.algorithm_name =
+				MinimizerFactory::TypeNames[MinimizerFactory::sequentialsubspace];
+
 		RangeProjectionSolver projector(
 				_matrix,
 				_rhs,
 				projector_db,
-				opts
+				projection_opts
 				);
 
 		// zero start value
