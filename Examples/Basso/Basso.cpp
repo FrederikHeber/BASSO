@@ -28,7 +28,12 @@
 #include "Minimizations/Spaces/VectorSpaceOperationCounts.hpp"
 #include "Minimizations/Spaces/OperationCountMap.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
+#include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
+#include "Solvers/FeasibilityProblem.hpp"
+#include "Solvers/InverseProblemSolver.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
+#include "Solvers/SplitFeasibilitySolver.hpp"
 
 using namespace boost::assign;
 
@@ -152,16 +157,6 @@ int main (int argc, char *argv[])
 	Database_ptr_t database =
 			SolverFactory::createDatabase(opts);
 
-	// create minimizer
-	MinimizerFactory::instance_ptr_t minimizer =
-			SolverFactory::createMinimizer(
-					opts, inverseproblem, database);
-	if (minimizer == NULL) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Minimizer could not be constructed, exiting.";
-		return 255;
-	}
-
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
@@ -169,27 +164,40 @@ int main (int argc, char *argv[])
 	if (x0->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;
-	// only for smooth spaces we may use the duality mapping
-	SpaceElement_ptr_t dualx0 =
-			(inverseproblem->x->getSpace()->getNorm()->isSmooth()) ?
-			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
-			inverseproblem->x->getSpace()->getDualSpace()->createElement();
+
+	// create auxiliary constraints
+	AuxiliaryConstraintsFactory constraint_factory;
+	AuxiliaryConstraints::ptr_t auxiliary_constraints =
+			constraint_factory.create(opts.auxiliary_constraints);
+
+	FeasibilityProblem::ptr_t solver;
+	if (auxiliary_constraints) {
+		SplitFeasibilitySolver *SFP =
+				new SplitFeasibilitySolver(opts);
+		FeasibilityProblem::ptr_t IP(
+				new InverseProblemSolver(
+						inverseproblem,
+						database,
+						opts,
+						false /* true solution calculation */)
+				);
+		SFP->registerFeasibilityProblem(IP);
+		SFP->registerAuxiliaryConstraints(auxiliary_constraints);
+		solver.reset(SFP);
+	} else {
+		solver.reset(
+				new InverseProblemSolver(
+						inverseproblem,
+						database,
+						opts,
+						true)
+				);
+	}
 
 	// and minimize
-	GeneralMinimizer::ReturnValues result;
-	try{
-		result = (*minimizer)(
-						inverseproblem,
-						x0,
-						dualx0,
-						truesolution);
-		minimizer->resetState();
-	} catch (MinimizationIllegalValue_exception &e) {
-		std::cerr << "Illegal value for "
-				<< *boost::get_error_info<MinimizationIllegalValue_name>(e)
-				<< std::endl;
+	GeneralMinimizer::ReturnValues result = (*solver)(x0, truesolution);
+	if (result.status == GeneralMinimizer::ReturnValues::error)
 		return 255;
-	}
 
 	// give result
 	{
