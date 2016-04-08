@@ -80,7 +80,8 @@ RangeProjectionSolver::RangeProjectionSolver(
 
 
 GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
-		const SpaceElement_ptr_t &_startingvalue)
+		const SpaceElement_ptr_t &_startingvalue,
+		const SpaceElement_ptr_t)
 {
 	GeneralMinimizer::ReturnValues result;
 	result.residuum = 0.;

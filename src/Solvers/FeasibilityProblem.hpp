@@ -31,6 +31,17 @@ struct FeasibilityProblem
 	virtual GeneralMinimizer::ReturnValues operator()(
 			const SpaceElement_ptr_t &_startingvalue) = 0;
 
+	/** Operator to solve this specific feasibility problem while
+	 * comparing to a true solution.
+	 *
+	 * @param _startingvalue start value or zero
+	 * @param _truesolution true solution for true error calculation
+	 * @return result container with success state and solutions
+	 */
+	virtual GeneralMinimizer::ReturnValues operator()(
+			const SpaceElement_ptr_t &_startingvalue,
+			const SpaceElement_ptr_t _truesolution) = 0;
+
 	/** Returns specific name of the problem for output.
 	 *
 	 * @return name of the problem

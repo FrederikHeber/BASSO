@@ -30,6 +30,8 @@ public:
 		name("AuxiliaryConstraints")
 	{}
 
+	virtual ~AuxiliaryConstraintsProblem() {};
+
 	/** Operator to solve this specific feasibility problem.
 	 *
 	 * @param _startingvalue start value or zero
@@ -37,19 +39,19 @@ public:
 	 */
 	GeneralMinimizer::ReturnValues operator()(
 			const SpaceElement_ptr_t &_startingvalue)
-	{
-		GeneralMinimizer::ReturnValues result;
+	{ return work(_startingvalue); }
 
-		result.m_solution = _startingvalue->getSpace()->createElement();
-		*result.m_solution = _startingvalue;
-		result.m_dual_solution =
-				_startingvalue->getSpace()->getDualSpace()->createElement();
-		result.m_dual_solution->setZero();
-		(*ac)(result.m_solution);
-		result.residuum = (_startingvalue - result.m_solution)->Norm();
-
-		return result;
-	}
+	/** Operator to solve this specific feasibility problem while
+	 * comparing to a true solution.
+	 *
+	 * @param _startingvalue start value or zero
+	 * @param _truesolution true solution for true error calculation
+	 * @return result container with success state and solutions
+	 */
+	GeneralMinimizer::ReturnValues operator()(
+			const SpaceElement_ptr_t &_startingvalue,
+			const SpaceElement_ptr_t _truesolution)
+	{ return work(_startingvalue); }
 
 	/** Returns specific name of the problem for output.
 	 *
@@ -69,6 +71,29 @@ public:
 	 */
 	void finish()
 	{}
+
+private:
+	/** Helper function cause I don't know how to properly handle overloaded
+	 * virtual functions with default arguments.
+	 *
+	 * @param _startingvalue start value or zero
+	 * @return result container with success state and solutions
+	 */
+	GeneralMinimizer::ReturnValues work(
+			const SpaceElement_ptr_t &_startingvalue)
+	{
+		GeneralMinimizer::ReturnValues result;
+
+		result.m_solution = _startingvalue->getSpace()->createElement();
+		*result.m_solution = _startingvalue;
+		result.m_dual_solution =
+				_startingvalue->getSpace()->getDualSpace()->createElement();
+		result.m_dual_solution->setZero();
+		(*ac)(result.m_solution);
+		result.residuum = (_startingvalue - result.m_solution)->Norm();
+
+		return result;
+	}
 
 private:
 	//!> auxiliary constraints which this problem fulfills.

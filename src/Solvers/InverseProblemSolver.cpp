@@ -42,7 +42,8 @@ InverseProblemSolver::InverseProblemSolver(
 }
 
 GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
-		const SpaceElement_ptr_t &_startingvalue)
+		const SpaceElement_ptr_t &_startingvalue,
+		const SpaceElement_ptr_t _truesolution)
 {
 	GeneralMinimizer::ReturnValues result;
 	result.residuum = 0.;
@@ -56,16 +57,20 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 
 	SpaceElement_ptr_t truesolution;
 	if (checkTrueSolution) {
-		const LinearMapping &A = static_cast<LinearMapping&>(*inverseproblem->A);
-		const SpaceElement_ptr_t &rhs = inverseproblem->y;
-		SingularValueDecomposition svd = A.getSVD();
-		const SpaceElement_ptr_t truesolution = svd.solve(rhs);
+		if (_truesolution) {
+			truesolution = _truesolution;
+		} else {
+			const LinearMapping &A = static_cast<LinearMapping&>(*inverseproblem->A);
+			const SpaceElement_ptr_t &rhs = inverseproblem->y;
+			SingularValueDecomposition svd = A.getSVD();
+			const SpaceElement_ptr_t truesolution = svd.solve(rhs);
 
-		// empty or true solution from diagonalization
-		BOOST_LOG_TRIVIAL(trace)
-				<< "True solution is " << *truesolution
-				<< " with norm "
-				<< (A(truesolution) - rhs)->Norm()/rhs->Norm();
+			// empty or true solution from diagonalization
+			BOOST_LOG_TRIVIAL(trace)
+					<< "True solution is " << *truesolution
+					<< " with norm "
+					<< (A(truesolution) - rhs)->Norm()/rhs->Norm();
+		}
 	} else {
 		truesolution =
 				inverseproblem->x->getSpace()->createElement();

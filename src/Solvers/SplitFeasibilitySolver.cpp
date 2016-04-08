@@ -56,7 +56,8 @@ static std::string createBar(const unsigned int _length)
 }
 
 GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
-		const SpaceElement_ptr_t &_startingvalue)
+		const SpaceElement_ptr_t &_startingvalue,
+		const SpaceElement_ptr_t)
 {
 	GeneralMinimizer::ReturnValues result;
 	result.m_solution = _startingvalue->getSpace()->createElement();

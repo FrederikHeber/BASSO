@@ -36,6 +36,8 @@ public:
 	SplitFeasibilitySolver(
 			const CommandLineOptions &_opts);
 
+	virtual ~SplitFeasibilitySolver() {};
+
 	/** Register a FeasibilityProblem into the qeue of this
 	 * solver.
 	 *
@@ -58,7 +60,19 @@ public:
 	 * @return result container with success state and solutions
 	 */
 	GeneralMinimizer::ReturnValues operator()(
-			const SpaceElement_ptr_t &_startingvalue);
+			const SpaceElement_ptr_t &_startingvalue)
+	{ return operator()(_startingvalue, SpaceElement_ptr_t()); }
+
+	/** Operator to solve this specific feasibility problem while
+	 * comparing to a true solution.
+	 *
+	 * @param _startingvalue start value or zero
+	 * @param _truesolution true solution for true error calculation
+	 * @return result container with success state and solutions
+	 */
+	GeneralMinimizer::ReturnValues operator()(
+			const SpaceElement_ptr_t &_startingvalue,
+			const SpaceElement_ptr_t _truesolution);
 
 	/** Returns specific name of the problem for output.
 	 *
