@@ -64,6 +64,8 @@ int main (int argc, char *argv[])
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
 		const double length = fabs(max - min);
+		BOOST_LOG_TRIVIAL(info)
+				<< "Data range is [" << min << ":" << max << "]";
 
 		png::image< png::rgb_pixel > *image = NULL;
 		switch(opts.Rotate) {
