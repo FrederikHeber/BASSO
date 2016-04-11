@@ -25,6 +25,7 @@
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 #include "Solvers/RangeProjectionSolver.hpp"
+#include "Solvers/SplitFeasibilitySolver.hpp"
 
 using namespace boost::assign;
 
@@ -120,17 +121,38 @@ int main (int argc, char *argv[])
 	AuxiliaryConstraints::ptr_t auxiliary_constraints =
 			constraint_factory.create(opts.auxiliary_constraints);
 
-	// create projector instance
-	RangeProjectionSolver projector(
-					matrix,
-					rhs,
-					database,
-					opts);
-	SpaceElement_ptr_t dualy0 = projector.getZeroStartvalue();
+
+	FeasibilityProblem::ptr_t solver;
+	SpaceElement_ptr_t dualy0;
+	if (auxiliary_constraints) {
+		SplitFeasibilitySolver *SFP =
+				new SplitFeasibilitySolver(opts);
+		RangeProjectionSolver *RPS =
+				new RangeProjectionSolver(
+						matrix,
+						rhs,
+						database,
+						opts);
+		dualy0 = RPS->getZeroStartvalue();
+		FeasibilityProblem::ptr_t IP(RPS);
+		SFP->registerFeasibilityProblem(IP);
+		SFP->registerAuxiliaryConstraints(auxiliary_constraints);
+		solver.reset(SFP);
+	} else {
+		// create projector instance
+		RangeProjectionSolver *RPS =
+				new RangeProjectionSolver(
+						matrix,
+						rhs,
+						database,
+						opts);
+		dualy0 = RPS->getZeroStartvalue();
+		solver.reset(RPS);
+	}
 
 	// solve
 	GeneralMinimizer::ReturnValues result =
-			projector(dualy0);
+			(*solver)(dualy0);
 
 	// get projected rhs
 	if (result.status != GeneralMinimizer::ReturnValues::finished) {
