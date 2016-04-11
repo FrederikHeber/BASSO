@@ -19,6 +19,7 @@ namespace po = boost::program_options;
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
 		max_loops(100),
 		DoParseFactors(false),
+		fix_factor(0),
 		projection_delta(1e-8),
 		residual_threshold(0.),
 		sparse_dim(1)
@@ -31,6 +32,8 @@ void MatrixFactorizerOptions::internal_init()
 	desc_matrixfactorizer.add_options()
 			("data", po::value<boost::filesystem::path>(),
 					"set the file name of the data matrix")
+			("fix-factor", po::value< unsigned int >(),
+					"set whether to fix one of the factors during minimization")
 			("max-loops", po::value<unsigned int>(),
 					"set the maximum number of loops iterating over each factor")
 			("overall-keys", po::value< std::vector<std::string> >()->multitoken(),
@@ -61,6 +64,15 @@ void MatrixFactorizerOptions::internal_parse()
 		data_file = vm["data"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Data file name is " << data_file.string();
+	}
+	if (vm.count("fix-factor")) {
+		fix_factor = vm["fix-factor"].as<unsigned int>();
+		if (fix_factor > 0)
+			BOOST_LOG_TRIVIAL(debug)
+				<< "We fix factor #" << fix_factor;
+		else
+			BOOST_LOG_TRIVIAL(debug)
+				<< "None of the factors are fixed.";
 	}
 
 	if (vm.count("max-loops")) {
@@ -124,7 +136,6 @@ void MatrixFactorizerOptions::internal_parse()
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Sparse dimension set to " << sparse_dim;
 	}
-
 }
 
 bool MatrixFactorizerOptions::internal_checkSensibility() const
@@ -133,8 +144,15 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 		BOOST_LOG_TRIVIAL(error)
 				<< "Data file not set or not present.";
 		return false;
-
 	}
+
+	if ((vm.count("fix-factor"))
+			&& (fix_factor > 2)) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "Either first(1), second(2), or no (0) factors can be fixed.";
+		return false;
+	}
+
 	if (!vm.count("sparse-dimension")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "Sparse dimensionality not set";
@@ -192,6 +210,7 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 {
 	_output << "# [MatrixFactorizer]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "data");
+	writeValue<unsigned int>(_output, vm,  "fix-factor");
 	writeValue<unsigned int>(_output, vm,  "max-loops");
 	if (overall_keys.size() != 0) {
 		for (std::vector<std::string>::const_iterator iter = overall_keys.begin();

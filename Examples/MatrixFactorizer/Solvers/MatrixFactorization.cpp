@@ -232,187 +232,191 @@ void MatrixFactorization::operator()(
 		while (!stop_condition) {
 			// update loop count
 			++loop_nr;
-			info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr-1)+1);
 
-			BOOST_LOG_TRIVIAL(debug)
-				<< "======================== #" << loop_nr << "/1 ==================";
+			if (opts.fix_factor != 1) {
+				info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr-1)+1);
+				BOOST_LOG_TRIVIAL(debug)
+					<< "======================== #" << loop_nr << "/1 ==================";
 
-	//		renormalizeMatrixByTrace(spectral_matrix);
+		//		renormalizeMatrixByTrace(spectral_matrix);
 
-			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-						<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
-			} else {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
-			}
+				if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
+				} else {
+					BOOST_LOG_TRIVIAL(info)
+							<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
+				}
 
 #ifdef MPI_FOUND
-			if (world.size() == 1) {
+				if (world.size() == 1) {
 #endif
-				if (!stop_condition) {
-					InRangeSolver solver(
-							spectral_opts,
-							opts.overall_keys,
-							opts.projection_delta);
-					for (unsigned int dim = 0;
-							(!stop_condition) && (dim < _data.cols());
-							++dim) {
-						Eigen::VectorXd solution;
+					if (!stop_condition) {
+						InRangeSolver solver(
+								spectral_opts,
+								opts.overall_keys,
+								opts.projection_delta);
+						for (unsigned int dim = 0;
+								(!stop_condition) && (dim < _data.cols());
+								++dim) {
+							Eigen::VectorXd solution;
+							const bool solver_ok =
+									solver(spectral_matrix,
+											_data.col(dim),
+											pixel_matrix.col(dim),
+											solution,
+											dim,
+											auxiliary_constraints
+											);
+							if (solver_ok)
+								pixel_matrix.col(dim) = solution;
+							else
+								BOOST_LOG_TRIVIAL(error)
+									<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
+							stop_condition |= !solver_ok;
+						}
+						// place accumulated values in loop table
+						solver.insertAccumulatedProjectorValues(
+								info.getLoopTable(), "_projection");
+						solver.insertAccumulatedSolverValues(
+								info.getLoopTable(), "_minimization");
+					}
+#ifdef MPI_FOUND
+				} else {
+					if (!stop_condition) {
 						const bool solver_ok =
-								solver(spectral_matrix,
-										_data.col(dim),
-										pixel_matrix.col(dim),
-										solution,
-										dim,
-										auxiliary_constraints
+								master.solve(
+										spectral_opts,
+										spectral_matrix,
+										_data,
+										pixel_matrix,
+										opts.auxiliary_constraints
 										);
-						if (solver_ok)
-							pixel_matrix.col(dim) = solution;
-						else
+						// place accumulated values in loop table
+						master.insertAccumulatedProjectorValues(
+								info.getLoopTable(), "_projection");
+						master.resetAccumulatedProjectorValues();
+						master.insertAccumulatedSolverValues(
+								info.getLoopTable(), "_minimization");
+						master.resetAccumulatedSolverValues();
+						if (!solver_ok)
 							BOOST_LOG_TRIVIAL(error)
 								<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
 						stop_condition |= !solver_ok;
 					}
-					// place accumulated values in loop table
-					solver.insertAccumulatedProjectorValues(
-							info.getLoopTable(), "_projection");
-					solver.insertAccumulatedSolverValues(
-							info.getLoopTable(), "_minimization");
 				}
-#ifdef MPI_FOUND
-			} else {
-				if (!stop_condition) {
-					const bool solver_ok =
-							master.solve(
-									spectral_opts,
-									spectral_matrix,
-									_data,
-									pixel_matrix,
-									opts.auxiliary_constraints
-									);
-					// place accumulated values in loop table
-					master.insertAccumulatedProjectorValues(
-							info.getLoopTable(), "_projection");
-					master.resetAccumulatedProjectorValues();
-					master.insertAccumulatedSolverValues(
-							info.getLoopTable(), "_minimization");
-					master.resetAccumulatedSolverValues();
-					if (!solver_ok)
-						BOOST_LOG_TRIVIAL(error)
-							<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
-					stop_condition |= !solver_ok;
-				}
-			}
 #endif
 
-			if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-						<< "Resulting pixel matrix X is\n" << pixel_matrix;
-			} else {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Resulting pixel matrix X is\n" << pixel_matrix;
+				if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "Resulting pixel matrix X is\n" << pixel_matrix;
+				} else {
+					BOOST_LOG_TRIVIAL(info)
+							<< "Resulting pixel matrix X is\n" << pixel_matrix;
+				}
+
+				// check criterion
+				{
+					residual =
+							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+					info.replace(IterationInformation::LoopTable, "residual", residual);
+					BOOST_LOG_TRIVIAL(info)
+						<< "#" << loop_nr << " 1/2, residual is " << residual;
+				}
+
+				// submit loop tuple
+				info.addTuple(IterationInformation::LoopTable);
 			}
 
-			// check criterion
-			{
-				residual =
-						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-				info.replace(IterationInformation::LoopTable, "residual", residual);
-				BOOST_LOG_TRIVIAL(info)
-					<< "#" << loop_nr << " 1/2, residual is " << residual;
-			}
+			if (opts.fix_factor != 2) {
+				BOOST_LOG_TRIVIAL(debug)
+					<< "======================== #" << loop_nr << "/2 ==================";
 
-			// submit loop tuple
-			info.addTuple(IterationInformation::LoopTable);
+				info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr));
 
-			BOOST_LOG_TRIVIAL(debug)
-				<< "======================== #" << loop_nr << "/2 ==================";
+		//		renormalizeMatrixByTrace(pixel_matrix);
 
-			info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr));
+				if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "Current pixel matrix X is\n" << pixel_matrix;
+				} else {
+					BOOST_LOG_TRIVIAL(info)
+							<< "Current pixel matrix X is\n" << pixel_matrix;
+				}
 
-	//		renormalizeMatrixByTrace(pixel_matrix);
-
-			if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-						<< "Current pixel matrix X is\n" << pixel_matrix;
-			} else {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Current pixel matrix X is\n" << pixel_matrix;
-			}
-
-			// must transpose in place, as spectral_matrix.transpose() is const
-			spectral_matrix.transposeInPlace();
+				// must transpose in place, as spectral_matrix.transpose() is const
+				spectral_matrix.transposeInPlace();
 #ifdef MPI_FOUND
-			if (world.size() == 1) {
+				if (world.size() == 1) {
 # endif
-				if (!stop_condition) {
-					InRangeSolver solver(
-							pixel_opts,
-							opts.overall_keys,
-							opts.projection_delta);
-					for (unsigned int dim = 0;
-							(!stop_condition) && (dim < _data.rows());
-							++dim) {
-						Eigen::VectorXd solution;
+					if (!stop_condition) {
+						InRangeSolver solver(
+								pixel_opts,
+								opts.overall_keys,
+								opts.projection_delta);
+						for (unsigned int dim = 0;
+								(!stop_condition) && (dim < _data.rows());
+								++dim) {
+							Eigen::VectorXd solution;
+							const bool solver_ok =
+									solver(pixel_matrix.transpose(),
+											_data.row(dim).transpose(),
+											spectral_matrix.col(dim),
+											solution,
+											dim,
+											auxiliary_constraints
+											);
+							if (solver_ok)
+								spectral_matrix.col(dim) = solution;
+							else
+								BOOST_LOG_TRIVIAL(error)
+									<< "The minimizer for InRangeSolver on pixelmatrix could not finish.";
+							stop_condition |= !solver_ok;
+						}
+						// place accumulated values in loop table
+						solver.insertAccumulatedProjectorValues(
+								info.getLoopTable(), "_projection");
+						solver.insertAccumulatedSolverValues(
+								info.getLoopTable(), "_minimization");
+					}
+#ifdef MPI_FOUND
+				} else {
+					if (!stop_condition) {
 						const bool solver_ok =
-								solver(pixel_matrix.transpose(),
-										_data.row(dim).transpose(),
-										spectral_matrix.col(dim),
-										solution,
-										dim,
-										auxiliary_constraints
+								master.solve(
+										pixel_opts,
+										pixel_matrix.transpose(),
+										_data.transpose(),
+										spectral_matrix,
+										opts.auxiliary_constraints
 										);
-						if (solver_ok)
-							spectral_matrix.col(dim) = solution;
-						else
+						// place accumulated values in loop table
+						master.insertAccumulatedProjectorValues(
+								info.getLoopTable(), "_projection");
+						master.resetAccumulatedProjectorValues();
+						master.insertAccumulatedSolverValues(
+								info.getLoopTable(), "_minimization");
+						master.resetAccumulatedSolverValues();
+						if (!solver_ok)
 							BOOST_LOG_TRIVIAL(error)
-								<< "The minimizer for InRangeSolver on pixelmatrix could not finish.";
+								<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
 						stop_condition |= !solver_ok;
 					}
-					// place accumulated values in loop table
-					solver.insertAccumulatedProjectorValues(
-							info.getLoopTable(), "_projection");
-					solver.insertAccumulatedSolverValues(
-							info.getLoopTable(), "_minimization");
 				}
-#ifdef MPI_FOUND
-			} else {
-				if (!stop_condition) {
-					const bool solver_ok =
-							master.solve(
-									pixel_opts,
-									pixel_matrix.transpose(),
-									_data.transpose(),
-									spectral_matrix,
-									opts.auxiliary_constraints
-									);
-					// place accumulated values in loop table
-					master.insertAccumulatedProjectorValues(
-							info.getLoopTable(), "_projection");
-					master.resetAccumulatedProjectorValues();
-					master.insertAccumulatedSolverValues(
-							info.getLoopTable(), "_minimization");
-					master.resetAccumulatedSolverValues();
-					if (!solver_ok)
-						BOOST_LOG_TRIVIAL(error)
-							<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
-					stop_condition |= !solver_ok;
-				}
-			}
 #endif
-			spectral_matrix.transposeInPlace();
+				spectral_matrix.transposeInPlace();
 
-			// check criterion
-			{
-				residual =
-						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-				BOOST_LOG_TRIVIAL(info)
-					<< "#" << loop_nr << " 2/2, residual is " << residual;
+				// check criterion
+				{
+					residual =
+							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+					BOOST_LOG_TRIVIAL(info)
+						<< "#" << loop_nr << " 2/2, residual is " << residual;
+				}
 			}
 
 			// remove ambiguity
-			{
+			if (opts.fix_factor == 0) {
 				MatrixProductEqualizer equalizer;
 				const double scaling_change =
 						equalizer(spectral_matrix, pixel_matrix);
@@ -421,30 +425,33 @@ void MatrixFactorization::operator()(
 					<< "Scaling factor is " << scaling_change;
 			}
 
-			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-						<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
-			} else {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
+			if (opts.fix_factor != 2) {
+				if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
+					BOOST_LOG_TRIVIAL(trace)
+							<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
+				} else {
+					BOOST_LOG_TRIVIAL(info)
+							<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
+				}
+
+				// check criterion
+				{
+					residual =
+							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+					BOOST_LOG_TRIVIAL(info)
+						<< "#" << loop_nr << ", residual is " << residual;
+					info.replace(IterationInformation::LoopTable, "residual", residual);
+				}
+
+				// submit loop tuple
+				info.addTuple(IterationInformation::LoopTable);
 			}
 
-			// check criterion
-			{
-				residual =
-						detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-				BOOST_LOG_TRIVIAL(info)
-					<< "#" << loop_nr << ", residual is " << residual;
-				info.replace(IterationInformation::LoopTable, "residual", residual);
-				stop_condition |= (*stopping_criterion)(
-						boost::chrono::duration<double>(0),
-						loop_nr,
-						residual,
-						1.);
-			}
-
-			// submit loop tuple
-			info.addTuple(IterationInformation::LoopTable);
+			stop_condition |= (*stopping_criterion)(
+					boost::chrono::duration<double>(0),
+					loop_nr,
+					residual,
+					1.);
 		}
 		if (loop_nr > opts.max_loops)
 			BOOST_LOG_TRIVIAL(error)

@@ -56,6 +56,7 @@ public:
 	unsigned int max_loops;
 	std::vector<std::string> overall_keys;
 	bool DoParseFactors;
+	unsigned int fix_factor;
 	double projection_delta;
 	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
@@ -74,9 +75,10 @@ private:
 
 		// MatrixFactorizerOptions
 		ar & data_file;
+		ar & DoParseFactors;
+		ar & fix_factor;
 		ar & max_loops;
 		ar & overall_keys;
-		ar & DoParseFactors;
 		ar & projection_delta;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
@@ -94,9 +96,10 @@ private:
 
 		// MatrixFactorizerOptions
 		ar & data_file;
+		ar & DoParseFactors;
+		ar & fix_factor;
 		ar & max_loops;
 		ar & overall_keys;
-		ar & DoParseFactors;
 		ar & projection_delta;
 		ar & residual_threshold;
 		ar & solution_factor_one_file;
