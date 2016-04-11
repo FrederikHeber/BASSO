@@ -17,7 +17,6 @@
 
 #include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "RangeProjector/Options/RangeProjectorOptions.hpp"
-#include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
@@ -25,6 +24,7 @@
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
+#include "Solvers/RangeProjectionSolver.hpp"
 
 using namespace boost::assign;
 
@@ -121,10 +121,14 @@ int main (int argc, char *argv[])
 			constraint_factory.create(opts.auxiliary_constraints);
 
 	// create projector instance
-	RangeProjectionSolver projector(matrix, rhs, database, opts);
+	RangeProjectionSolver projector(
+					matrix,
+					rhs,
+					database,
+					opts);
+	SpaceElement_ptr_t dualy0 = projector.getZeroStartvalue();
 
 	// solve
-	SpaceElement_ptr_t dualy0 = projector.getZeroStartvalue();
 	GeneralMinimizer::ReturnValues result =
 			projector(dualy0);
 

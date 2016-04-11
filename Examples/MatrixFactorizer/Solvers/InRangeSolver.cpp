@@ -15,9 +15,9 @@
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Options/CommandLineOptions.hpp"
-#include "RangeProjector/RangeProjector/RangeProjectionSolver.hpp"
 #include "Solvers/FeasibilityProblem.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
+#include "Solvers/RangeProjectionSolver.hpp"
 #include "Solvers/SolverFactory/SolverFactory.hpp"
 #include "Solvers/SplitFeasibilitySolver.hpp"
 
