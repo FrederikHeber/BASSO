@@ -55,14 +55,25 @@ int outputSolution(
 			BOOST_LOG_TRIVIAL(error) <<
 					"Failed to write second solution factor file.";
 		}
+	const Eigen::MatrixXd product_matrix = _spectral_matrix * _pixel_matrix;
 	if (!_opts.solution_product_file.string().empty())
 		if (!MatrixIO::store(
 				_opts.solution_product_file.string(),
 				"solution product",
-				_spectral_matrix * _pixel_matrix)) {
+				product_matrix)) {
 			returnstatus = 255;
 			BOOST_LOG_TRIVIAL(error) <<
 					"Failed to write solution product file.";
+ 		}
+	const Eigen::MatrixXd difference_matrix = _data - product_matrix;
+	if (!_opts.solution_difference_file.string().empty())
+		if (!MatrixIO::store(
+				_opts.solution_difference_file.string(),
+				"solution difference",
+				difference_matrix)) {
+			returnstatus = 255;
+			BOOST_LOG_TRIVIAL(error) <<
+					"Failed to write solution difference file.";
  		}
 
 	BOOST_LOG_TRIVIAL(debug)
@@ -70,14 +81,13 @@ int outputSolution(
 	BOOST_LOG_TRIVIAL(debug)
 		<< "Resulting second factor is\n" << _pixel_matrix;
 
-	const Eigen::MatrixXd product_matrix = _spectral_matrix * _pixel_matrix;
 	if ((_data.innerSize() <= 10) && (_data.outerSize() <= 10)) {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Data matrix was\n" << _data;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Product matrix is\n" << product_matrix;
 		BOOST_LOG_TRIVIAL(info)
-			<< "Difference matrix is\n" << _data - product_matrix;
+			<< "Difference matrix is\n" << difference_matrix;
 	}
 	BOOST_LOG_TRIVIAL(info)
 		<< "Norm of difference is " << (_data - product_matrix).norm();

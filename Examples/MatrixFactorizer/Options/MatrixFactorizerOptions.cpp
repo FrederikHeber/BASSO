@@ -44,10 +44,12 @@ void MatrixFactorizerOptions::internal_init()
 					"set the tolerance threshold for the projection of the variable column onto the range of the fixed matrix factor")
 			("residual-threshold", po::value<double>(),
 					"set the threshold of the matrix residual when to stop the iteration")
-			("solution-product", po::value< boost::filesystem::path >(),
-					"set the file name to write the product of the two solution factors to")
+			("solution-difference", po::value< boost::filesystem::path >(),
+					"set the file name to write the difference of the data matrix and the product of the two solution factors to")
 			("solution-first-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the first matrix factor (or also read in case of parse-factors)")
+			("solution-product", po::value< boost::filesystem::path >(),
+					"set the file name to write the product of the two solution factors to")
 			("solution-second-factor", po::value< boost::filesystem::path >(),
 					"set the file name to write the second matrix factor (or also read in case of parse-factors)")
 			("sparse", po::value< bool >(),
@@ -113,16 +115,22 @@ void MatrixFactorizerOptions::internal_parse()
 			<< "Stopping when matrix residual is less than " << residual_threshold << ".";
 	}
 
-	if (vm.count("solution-product")) {
-		solution_product_file = vm["solution-product"].as<boost::filesystem::path>();
+	if (vm.count("solution-difference")) {
+		solution_difference_file = vm["solution-difference"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Solution product file name is " << solution_product_file.string();
+			<< "Solution difference file name is " << solution_difference_file.string();
 	}
 
 	if (vm.count("solution-first-factor")) {
 		solution_factor_one_file = vm["solution-first-factor"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "First Solution factor file name is " << solution_factor_one_file.string();
+	}
+
+	if (vm.count("solution-product")) {
+		solution_product_file = vm["solution-product"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Solution product file name is " << solution_product_file.string();
 	}
 
 	if (vm.count("solution-second-factor")) {
@@ -220,8 +228,9 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 	writeValue<bool>(_output, vm,  "parse-factors");
 	writeValue<double>(_output, vm, "projection-delta");
 	writeValue<double>(_output, vm,  "residual-threshold");
-	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-difference");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-first-factor");
+	writeValue<boost::filesystem::path>(_output, vm,  "solution-product");
 	writeValue<boost::filesystem::path>(_output, vm,  "solution-second-factor");
 	writeValue<bool>(_output, vm,  "sparse");
 	writeValue<unsigned int>(_output, vm,  "sparse-dimension");

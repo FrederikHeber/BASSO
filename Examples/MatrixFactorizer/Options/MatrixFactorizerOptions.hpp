@@ -61,6 +61,7 @@ public:
 	double residual_threshold;
 	boost::filesystem::path solution_factor_one_file;
 	boost::filesystem::path solution_factor_two_file;
+	boost::filesystem::path solution_difference_file;
 	boost::filesystem::path solution_product_file;
 	bool sparse;
 	unsigned int sparse_dim;
@@ -81,6 +82,7 @@ private:
 		ar & overall_keys;
 		ar & projection_delta;
 		ar & residual_threshold;
+		ar & solution_difference_file;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
@@ -102,6 +104,7 @@ private:
 		ar & overall_keys;
 		ar & projection_delta;
 		ar & residual_threshold;
+		ar & solution_difference_file;
 		ar & solution_factor_one_file;
 		ar & solution_factor_two_file;
 		ar & solution_product_file;
