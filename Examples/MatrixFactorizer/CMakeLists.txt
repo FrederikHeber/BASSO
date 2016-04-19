@@ -48,6 +48,13 @@ target_link_libraries ( MatrixFactorizer
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}
 	${MPI_LIBRARIES})
+# MatrixFactorizer is parallelized with OpenMP
+if (USE_OPENMP)
+	set_target_properties(MatrixFactorizerBase PROPERTIES
+		COMPILE_FLAGS "${OpenMP_CXX_FLAGS}")
+	set_target_properties(MatrixFactorizer PROPERTIES
+		LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+endif  (USE_OPENMP)
 install (TARGETS MatrixFactorizer DESTINATION bin)
 
 add_executable (MatrixFactorizerConfigurator 

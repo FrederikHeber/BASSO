@@ -12,6 +12,7 @@
 
 #include <boost/assign.hpp>
 #include <fstream>
+#include <numeric>
 #include <string>
 
 #include <boost/assign.hpp>
@@ -42,7 +43,7 @@ MatrixFactorization::MatrixFactorization(
 		IterationInformation &_info
 #ifdef MPI_FOUND
 		,boost::mpi::communicator &_world
-#endif
+#endif /* MPI_FOUND */
 		) :
 		pixel_opts(_opts),
 		spectral_opts(_opts),
@@ -50,7 +51,7 @@ MatrixFactorization::MatrixFactorization(
 		info(_info)
 #ifdef MPI_FOUND
 		, world(_world)
-#endif
+#endif /* MPI_FOUND */
 {
 	// an operator between two lp spaces always factors through a
 	// Hilbert space. Hence, we use an l_2 space between the two
@@ -65,6 +66,138 @@ MatrixFactorization::MatrixFactorization(
 	const_cast<CommandLineOptions &>(spectral_opts).powerx = 2.;
 }
 
+#ifdef MPI_FOUND
+static void solveOneLoop_MPI(
+		const Eigen::MatrixXd &_data,
+		const Eigen::MatrixXd &fixed_factor,
+		Eigen::MatrixXd &variable_factor,
+		Master &master,
+		const CommandLineOptions &solver_opts,
+		const MatrixFactorizerOptions &opts,
+		bool &stop_condition,
+		IterationInformation &info
+		)
+{
+	const bool solver_ok =
+			master.solve(
+					solver_opts,
+					fixed_factor,
+					_data,
+					variable_factor,
+					opts.auxiliary_constraints
+					);
+	// place accumulated values in loop table
+	master.insertAccumulatedProjectorValues(
+			info.getLoopTable(), "_projection");
+	master.resetAccumulatedProjectorValues();
+	master.insertAccumulatedSolverValues(
+			info.getLoopTable(), "_minimization");
+	master.resetAccumulatedSolverValues();
+	if (!solver_ok)
+		BOOST_LOG_TRIVIAL(error)
+			<< "The minimizer for InRangeSolver could not finish.";
+	stop_condition |= !solver_ok;
+}
+
+#endif /* MPI_FOUND */
+
+#ifdef OPENMP_FOUND
+static void solveOneLoop_OpenMP(
+		const Eigen::MatrixXd &_data,
+		const Eigen::MatrixXd &fixed_factor,
+		Eigen::MatrixXd &variable_factor,
+		const CommandLineOptions &solver_opts,
+		const MatrixFactorizerOptions &opts,
+		bool &stop_condition,
+		const AuxiliaryConstraints::ptr_t &auxiliary_constraints,
+		IterationInformation &info
+		)
+{
+	std::vector<double> returnvalues(_data.cols(), false);
+	if (!stop_condition) {
+#pragma omp parallel shared(returnvalues)
+		{
+			InRangeSolver solver(
+					solver_opts,
+					opts.overall_keys,
+					opts.projection_delta);
+#pragma omp for
+			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
+				Eigen::VectorXd solution;
+				returnvalues[dim] =
+					solver(fixed_factor,
+							_data.col(dim),
+							variable_factor.col(dim),
+							solution,
+							dim,
+							auxiliary_constraints
+							);
+				if (returnvalues[dim]) {
+					#pragma omp critical (solution)
+					variable_factor.col(dim) = solution;
+				} else {
+					BOOST_LOG_TRIVIAL(error)
+						<< "The minimizer for InRangeSolver could not finish on column "
+						<< dim << ".";
+				}
+			}
+			// place accumulated values in loop table
+#pragma omp single nowait
+			{
+				solver.insertAccumulatedProjectorValues(
+						info.getLoopTable(), "_projection");
+				solver.insertAccumulatedSolverValues(
+						info.getLoopTable(), "_minimization");
+			}
+		}
+		stop_condition |=
+				std::find(returnvalues.begin(), returnvalues.end(), false) != returnvalues.end();
+	}
+}
+#else /* OPENMP_FOUND */
+static void solveOneLoop_sequentially(
+		const Eigen::MatrixXd &_data,
+		const Eigen::MatrixXd &fixed_factor,
+		Eigen::MatrixXd &variable_factor,
+		const CommandLineOptions &solver_opts,
+		const MatrixFactorizerOptions &opts,
+		bool &stop_condition,
+		const AuxiliaryConstraints::ptr_t &auxiliary_constraints,
+		IterationInformation &info
+		)
+{
+	InRangeSolver solver(
+			solver_opts,
+			opts.overall_keys,
+			opts.projection_delta);
+	for (unsigned int dim = 0;
+			(!stop_condition) && (dim < _data.cols());
+			++dim) {
+		Eigen::VectorXd solution;
+		const bool solver_ok =
+		solver(fixed_factor,
+				_data.col(dim),
+				variable_factor.col(dim),
+				solution,
+				dim,
+				auxiliary_constraints
+				);
+		if (solver_ok)
+			variable_factor.col(dim) = solution;
+		else
+			BOOST_LOG_TRIVIAL(error)
+				<< "The minimizer for InRangeSolver could not finish on column "
+				<< dim << ".";
+		stop_condition |= !solver_ok;
+	}
+	// place accumulated values in loop table
+	solver.insertAccumulatedProjectorValues(
+			info.getLoopTable(), "_projection");
+	solver.insertAccumulatedSolverValues(
+			info.getLoopTable(), "_minimization");
+}
+#endif /* OPENMP_FOUND */
+
 void MatrixFactorization::operator()(
 		const Eigen::MatrixXd &_data,
 		int &_returnstatus
@@ -72,14 +205,7 @@ void MatrixFactorization::operator()(
 {
 #ifdef MPI_FOUND
 	Master master(world, opts.overall_keys);
-
-	// So far, Slaves are present and expect initial go (or not full_terminate
-	// signal). Hence, if something has gone wrong, then we need at least to
-	// tell them here before the actual solver loop
-	if (_returnstatus != 0) {
-		master.sendTerminate();
-	} else
-#endif
+#endif /* MPI_FOUND */
 	{
 		/// start timing
 		boost::chrono::high_resolution_clock::time_point timing_start =
@@ -111,7 +237,7 @@ void MatrixFactorization::operator()(
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
-#endif
+#endif /* MPI_FOUND */
 				return;
 			}
 		} else
@@ -136,7 +262,7 @@ void MatrixFactorization::operator()(
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
-#endif
+#endif /* MPI_FOUND */
 				return;
 			}
 		}
@@ -159,7 +285,7 @@ void MatrixFactorization::operator()(
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
-#endif
+#endif /* MPI_FOUND */
 				return;
 			}
 		}
@@ -248,64 +374,37 @@ void MatrixFactorization::operator()(
 							<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
 				}
 
+				if (!stop_condition) {
 #ifdef MPI_FOUND
-				if (world.size() == 1) {
-#endif
-					if (!stop_condition) {
-						InRangeSolver solver(
+					if (world.size() != 1) {
+						solveOneLoop_MPI(
+								_data,
+								spectral_matrix,
+								pixel_matrix,
+								master,
 								spectral_opts,
-								opts.overall_keys,
-								opts.projection_delta);
-						for (unsigned int dim = 0;
-								(!stop_condition) && (dim < _data.cols());
-								++dim) {
-							Eigen::VectorXd solution;
-							const bool solver_ok =
-									solver(spectral_matrix,
-											_data.col(dim),
-											pixel_matrix.col(dim),
-											solution,
-											dim,
-											auxiliary_constraints
-											);
-							if (solver_ok)
-								pixel_matrix.col(dim) = solution;
-							else
-								BOOST_LOG_TRIVIAL(error)
-									<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
-							stop_condition |= !solver_ok;
-						}
-						// place accumulated values in loop table
-						solver.insertAccumulatedProjectorValues(
-								info.getLoopTable(), "_projection");
-						solver.insertAccumulatedSolverValues(
-								info.getLoopTable(), "_minimization");
-					}
-#ifdef MPI_FOUND
-				} else {
-					if (!stop_condition) {
-						const bool solver_ok =
-								master.solve(
-										spectral_opts,
-										spectral_matrix,
-										_data,
-										pixel_matrix,
-										opts.auxiliary_constraints
-										);
-						// place accumulated values in loop table
-						master.insertAccumulatedProjectorValues(
-								info.getLoopTable(), "_projection");
-						master.resetAccumulatedProjectorValues();
-						master.insertAccumulatedSolverValues(
-								info.getLoopTable(), "_minimization");
-						master.resetAccumulatedSolverValues();
-						if (!solver_ok)
-							BOOST_LOG_TRIVIAL(error)
-								<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
-						stop_condition |= !solver_ok;
+								opts,
+								stop_condition,
+								info);
+					} else {
+#else /* MPI_FOUND */
+					{
+#endif /* MPI_FOUND */
+#ifdef OPENMP_FOUND
+						solveOneLoop_OpenMP(
+#else /* OPENMP_FOUND */
+						solveOneLoop_sequentially(
+#endif /* OPENMP_FOUND */
+								_data,
+								spectral_matrix,
+								pixel_matrix,
+								spectral_opts,
+								opts,
+								stop_condition,
+								auxiliary_constraints,
+								info);
 					}
 				}
-#endif
 
 				if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
 					BOOST_LOG_TRIVIAL(trace)
@@ -344,74 +443,47 @@ void MatrixFactorization::operator()(
 							<< "Current pixel matrix X is\n" << pixel_matrix;
 				}
 
-				// must transpose in place, as spectral_matrix.transpose() is const
-				spectral_matrix.transposeInPlace();
+				if (!stop_condition) {
+					// must transpose in place, as spectral_matrix.transpose() is const
+					spectral_matrix.transposeInPlace();
 #ifdef MPI_FOUND
-				if (world.size() == 1) {
-# endif
-					if (!stop_condition) {
-						InRangeSolver solver(
+					if (world.size() != 1) {
+						solveOneLoop_MPI(
+								_data.transpose(),
+								pixel_matrix.transpose(),
+								spectral_matrix,
+								master,
 								pixel_opts,
-								opts.overall_keys,
-								opts.projection_delta);
-						for (unsigned int dim = 0;
-								(!stop_condition) && (dim < _data.rows());
-								++dim) {
-							Eigen::VectorXd solution;
-							const bool solver_ok =
-									solver(pixel_matrix.transpose(),
-											_data.row(dim).transpose(),
-											spectral_matrix.col(dim),
-											solution,
-											dim,
-											auxiliary_constraints
-											);
-							if (solver_ok)
-								spectral_matrix.col(dim) = solution;
-							else
-								BOOST_LOG_TRIVIAL(error)
-									<< "The minimizer for InRangeSolver on pixelmatrix could not finish.";
-							stop_condition |= !solver_ok;
-						}
-						// place accumulated values in loop table
-						solver.insertAccumulatedProjectorValues(
-								info.getLoopTable(), "_projection");
-						solver.insertAccumulatedSolverValues(
-								info.getLoopTable(), "_minimization");
+								opts,
+								stop_condition,
+								info);
+					} else {
+#else /* MPI_FOUND */
+					{
+#endif /* MPI_FOUND */
+#ifdef OPENMP_FOUND
+						solveOneLoop_OpenMP(
+#else /* OPENMP_FOUND */
+						solveOneLoop_sequentially(
+#endif /* OPENMP_FOUND */
+								_data.transpose(),
+								pixel_matrix.transpose(),
+								spectral_matrix,
+								pixel_opts,
+								opts,
+								stop_condition,
+								auxiliary_constraints,
+								info);
 					}
-#ifdef MPI_FOUND
-				} else {
-					if (!stop_condition) {
-						const bool solver_ok =
-								master.solve(
-										pixel_opts,
-										pixel_matrix.transpose(),
-										_data.transpose(),
-										spectral_matrix,
-										opts.auxiliary_constraints
-										);
-						// place accumulated values in loop table
-						master.insertAccumulatedProjectorValues(
-								info.getLoopTable(), "_projection");
-						master.resetAccumulatedProjectorValues();
-						master.insertAccumulatedSolverValues(
-								info.getLoopTable(), "_minimization");
-						master.resetAccumulatedSolverValues();
-						if (!solver_ok)
-							BOOST_LOG_TRIVIAL(error)
-								<< "The minimizer for InRangeSolver on spectralmatrix could not finish.";
-						stop_condition |= !solver_ok;
-					}
-				}
-#endif
-				spectral_matrix.transposeInPlace();
+					spectral_matrix.transposeInPlace();
 
-				// check criterion
-				{
-					residual =
-							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-					BOOST_LOG_TRIVIAL(info)
-						<< "#" << loop_nr << " 2/2, residual is " << residual;
+					// check criterion
+					{
+						residual =
+								detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
+						BOOST_LOG_TRIVIAL(info)
+							<< "#" << loop_nr << " 2/2, residual is " << residual;
+					}
 				}
 			}
 
@@ -478,11 +550,10 @@ void MatrixFactorization::operator()(
 
 #ifdef MPI_FOUND
 		master.sendTerminate();
-#endif
+#endif /* MPI_FOUND */
 
 		// renormalize both factors
 		MatrixProductRenormalizer renormalizer;
 		renormalizer(spectral_matrix, pixel_matrix);
-
 	}
 }

@@ -22,6 +22,21 @@ option (USE_TIMINGS
 option (FULLMATRIXNORM
 	"Use operator norm instead of matrix norm, requires SVD calculation" OFF)
 
+# use MPI or OpenMP
+option (USE_MPI
+	"Use MPI parallelization for MatrixFactorizer" OFF)
+option (USE_OPENMP
+	"Use OPENMP parallelization for MatrixFactorizer" OFF)
+if (USE_MPI)
+	if (USE_OPENMP)
+		error("Cannot activate both MPI and OpenMP parallelization.")
+	endif (USE_OPENMP)
+	set (USE_MPI $USE_MPI)
+endif (USE_MPI)
+if (USE_OPENMP)
+	set (USE_OPENMP $USE_OPENMP)
+endif (USE_OPENMP)
+
 ###################### GIT VERSION HEADER  ################################
 
 # create a version target which must be added to every executable
@@ -55,14 +70,22 @@ check_function_exists (log HAVE_LOG)
 check_function_exists (exp HAVE_EXP)
 
 # find MPI
-set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-FIND_PACKAGE(MPI REQUIRED)
-if (MPI_FOUND)
-	include_directories( ${MPI_CXX_INCLUDE_PATH})
-	FIND_PROGRAM(MPIRUN NAME mpirun PATHS usr/bin/ /bin ENV PATH NO_DEFAULT_PATH)
-	set (MPIRUN_FOUND ${MPIRUN_FOUND})
-	set (MPIRUN ${MPIRUN} CACHE STRING "command to launch multiple mpi jobs")
-endif (MPI_FOUND)
+if (USE_MPI)
+	set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+	FIND_PACKAGE(MPI REQUIRED)
+	if (MPI_FOUND)
+		include_directories( ${MPI_CXX_INCLUDE_PATH})
+		FIND_PROGRAM(MPIRUN NAME mpirun PATHS usr/bin/ /bin ENV PATH NO_DEFAULT_PATH)
+		set (MPIRUN_FOUND ${MPIRUN_FOUND})
+		set (MPIRUN ${MPIRUN} CACHE STRING "command to launch multiple mpi jobs")
+	endif (MPI_FOUND)
+endif (USE_MPI)
+
+# find OpenMP
+if (USE_OPENMP)
+	set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
+	FIND_PACKAGE(OpenMP REQUIRED)
+endif (USE_OPENMP)
 
 ####################### CHECK LIBRARIES  #################################
 
@@ -109,17 +132,30 @@ find_package (Librt)
 # find boost
 set ( Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.55" "1.55.0" )
 set ( Boost_USE_STATIC_LIBS ON )
-find_package ( Boost 1.54 COMPONENTS
-	chrono
-	log_setup 
-	log 
-	filesystem
-	mpi
-	program_options
-	serialization 
-	system 
-	thread
-	REQUIRED )
+if (MPI_FOUND)
+	find_package ( Boost 1.54 COMPONENTS
+		chrono
+		log_setup 
+		log 
+		filesystem
+		mpi
+		program_options
+		serialization 
+		system 
+		thread
+		REQUIRED )
+else (MPI_FOUND)
+	find_package ( Boost 1.54 COMPONENTS
+		chrono
+		log_setup 
+		log 
+		filesystem
+		program_options
+		serialization 
+		system 
+		thread
+		REQUIRED )
+endif (MPI_FOUND)
 include_directories( ${Boost_INCLUDE_DIR} )
 
 # find pocosqlite

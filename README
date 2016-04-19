@@ -55,6 +55,25 @@ Add
 to activate the timing measurements of each part of the algorithm.
 
 
+Parallelization
+---------------
+
+The example MatrixFactorizer has been implemented for parallel execution with
+both MPI and OpenMP. However, only one of the two can be activated during
+compilation.
+
+For MPI add
+
+-DUSE_MPI=True
+
+and for OpenMP add
+
+-DUSE_OPENMP=True
+
+to the cmake command line. Note that only one of them may be True at the same
+time (but both can be False in which case factorization is done sequentially.)
+
+
 Special purpose diff
 --------------------
 

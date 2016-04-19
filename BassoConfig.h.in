@@ -23,3 +23,6 @@
 
 // MPI is used
 #cmakedefine MPI_FOUND
+
+// OPENMP is used
+#cmakedefine OPENMP_FOUND

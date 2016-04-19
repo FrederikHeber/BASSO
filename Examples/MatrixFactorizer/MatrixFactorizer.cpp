@@ -101,16 +101,18 @@ int main(int argc, char **argv)
 #ifdef MPI_FOUND
 	  mpi::environment env(argc, argv);
 	  mpi::communicator world;
-#endif
+#endif /* MPI_FOUND */
 
 #ifdef MPI_FOUND
 	if (world.rank() == 0) {
+#endif /* MPI_FOUND */
 		// show program information
 		showVersion(std::string(argv[0]));
 		showCopyright();
 
+#ifdef MPI_FOUND
 	}
-#endif
+#endif /* MPI_FOUND */
 
 	int returnstatus = 0;
 #ifdef MPI_FOUND
@@ -118,10 +120,15 @@ int main(int argc, char **argv)
 		BOOST_LOG_TRIVIAL(info)
 				<< "We have one master to distribute and "
 				<< (world.size()-1) << " slaves to work on the problem.";
-#else
+#else /* MPI_FOUND */
+#ifdef OPENMP_FOUND
+		BOOST_LOG_TRIVIAL(info)
+			<< "Solving with parallel threads.";
+#else /* OPENMP_FOUND */
 		BOOST_LOG_TRIVIAL(info)
 			<< "A single process solves the problem.";
-#endif
+#endif /* OPENMP_FOUND */
+#endif /* MPI_FOUND */
 		/// starting timing
 		boost::chrono::high_resolution_clock::time_point timing_start =
 				boost::chrono::high_resolution_clock::now();
@@ -147,6 +154,9 @@ int main(int argc, char **argv)
 						detail::parseDataFile<Eigen::MatrixXd>(
 								opts.data_file.string(),
 								data);
+		} else {
+			BOOST_LOG_TRIVIAL(error)
+					<< "There was an error with the options, exiting.";
 		}
 		// print parsed matrix and vector if small or high verbosity requested
 		if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
@@ -159,29 +169,49 @@ int main(int argc, char **argv)
 						<< data << "." << std::endl;
 		}
 
-		/// create Database
-		IterationInformation info(opts, data.innerSize(), data.outerSize());
+		if (returnstatus == 0) {
 
-		/// perform factorization
-		MatrixFactorization factorizer(opts, info
+			/// create Database
+			IterationInformation info(opts, data.innerSize(), data.outerSize());
+
+			/// perform factorization
+			MatrixFactorization factorizer(opts, info
 #ifdef MPI_FOUND
 				, world
-#endif
+#endif /* MPI_FOUND */
 				);
-		factorizer(data, returnstatus);
+			factorizer(data, returnstatus);
 
 #ifdef MPI_FOUND
-		// exchange return status to tell clients whether everything is ok
-		// or whether we need to stop execution
-		mpi::broadcast(world, returnstatus, 0);
-#endif
+			// exchange return status to tell clients whether everything is ok
+			// or whether we need to stop execution
+			mpi::broadcast(world, returnstatus, 0);
+#endif /* MPI_FOUND */
 
-		if (returnstatus == 0)
 			returnstatus = outputSolution(
 					opts,
 					data,
 					factorizer.spectral_matrix,
 					factorizer.pixel_matrix);
+		} else {
+#ifdef MPI_FOUND
+			Master master(world, opts.overall_keys);
+
+			// So far, Slaves are present and expect initial go (or not full_terminate
+			// signal). Hence, if something has gone wrong, then we need at least to
+			// tell them here before the actual solver loop
+			master.sendTerminate();
+#else
+			BOOST_LOG_TRIVIAL(error)
+					<< "There was an error parsing data matrix, exiting.";
+#endif /* MPI_FOUND */
+		}
+
+		boost::chrono::high_resolution_clock::time_point timing_end =
+				boost::chrono::high_resolution_clock::now();
+		BOOST_LOG_TRIVIAL(info) << "The operation took "
+				<< boost::chrono::duration<double>(timing_end - timing_start)
+				<< ".";
 
 #ifdef MPI_FOUND
 	} else {
@@ -192,7 +222,12 @@ int main(int argc, char **argv)
 		// exchange return status
 		mpi::broadcast(world, returnstatus, 0);
 	}
-#endif
+#endif /* MPI_FOUND */
+
+	if (returnstatus != 0) {
+		BOOST_LOG_TRIVIAL(error)
+				<< "There was an error performing the factorization, exiting.";
+	}
 
 	/// exit
 	return returnstatus;
