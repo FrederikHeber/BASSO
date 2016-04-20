@@ -181,11 +181,11 @@ private:
 	//!> contains the filename of the database for storing
 	std::string filename;
 
-	//!> static vector with all type names
-	static std::vector<std::string> TypeNames;
-
 	//!> maximum number of keys per table
 	const unsigned int MaxKeys;
+
+	//!> vector with all type names
+	std::vector<std::string> TypeNames;
 };
 
 

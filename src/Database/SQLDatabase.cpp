@@ -25,15 +25,13 @@
 using namespace Poco::Data;
 using namespace boost::assign;
 
-// static entities
-std::vector<std::string> SQLDatabase::TypeNames(Database_types::MAX_TYPES);
-
 #define BASSO_MAXKEYS 24
 
 SQLDatabase::SQLDatabase() :
 		DatabaseFileGiven(false),
 		ReplacePresentParameterTuples(false),
-		MaxKeys(BASSO_MAXKEYS)
+		MaxKeys(BASSO_MAXKEYS),
+		TypeNames(Database_types::MAX_TYPES)
 {
 	TypeNames[Database_types::inttype] = "int";
 	TypeNames[Database_types::doubletype] = "double";

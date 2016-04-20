@@ -59,7 +59,7 @@ Minimizer<gsl_vector>::checkGradient(
 
 static void doWarnIterate()
 {
-	static bool repeating = false;
+	bool repeating = false;
 	if (!repeating) {
 		BOOST_LOG_TRIVIAL(warning)
 			<< "gsl_multimin could not improve iterate anymore, not warning any longer.";
