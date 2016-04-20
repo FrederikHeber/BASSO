@@ -105,6 +105,13 @@ static Norm_ptr_t createLpNorm(
 Norm_ptr_t NormFactory::createLpInstance(
 		const double _p)
 {
+	// give warning for very small or large lp norms
+	if ((_p < 1.01) || (_p > 100))
+		BOOST_LOG_TRIVIAL(warning)
+			<< "The specified p value of " << _p
+			<< " is very small and will most likely lead to numerical instabilities."
+			<< "It is suggested to use a regularized l1 or linf norm.";
+
 	return createLpNorm(NormedSpaceFactory::getDummySpace(), _p);
 }
 

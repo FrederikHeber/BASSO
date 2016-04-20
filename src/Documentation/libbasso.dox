@@ -72,5 +72,14 @@
  * The additional orthogonalization causes little overhead but sees strong
  * reduce in iteration steps for a wide range of lp spaces.
  *
- * \date 2016-01-21
+ * \section libbasso-warning-norms A word about the norms
+ * 
+ * Various norms can be chosen such as lp norms or regularized_l1 norms.
+ * If an "lp" norm is chosen, then it is advised to have a p value in range
+ * range of [1.01, 100] and not outside of that. Note that this p value occurs
+ * in the exponent in duality mappings and if very large may easily lead to
+ * "inf" when the resulting value exceeds the numerical range. If such small
+ * norms are required, then it is advised to resort to "regularized_l1".
+ * 
+ * \date 2016-04-2021
  */
