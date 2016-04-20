@@ -24,48 +24,30 @@
 #include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 #include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
 
-const DualityMappingFactory::TokenCreatorMap_t& DualityMappingFactory::getMap(
-		const DualityMappingFactory &_instance)
+const DualityMappingFactory::TokenCreatorMap_t DualityMappingFactory::getMap()
 {
-	static TokenCreatorMap_t TokenCreatorMap;
-	if (TokenCreatorMap.empty()) {
-		// construct TokenCreatorMap_t on constructing singleton instance
-		TokenCreatorMap["lp"] =
-				boost::bind(&DualityMappingFactory::createPowerTypeInstance,
-						boost::cref(_instance), _1, _2);
-		TokenCreatorMap["dual_lp"] =
-				boost::bind(&DualityMappingFactory::createDualPowerTypeInstance,
-						boost::cref(_instance), _1, _2);
-		// regularized_1 is not smooth, hence illegal mapping
-		TokenCreatorMap["regularized_l1"] =
-				boost::bind(&DualityMappingFactory::createIllegalInstance,
-						boost::cref(_instance), _1, _2);
-		// dual of regularized_1 is smooth, is relative shrinkage
-		TokenCreatorMap["dual_regularized_l1"] =
-				boost::bind(&DualityMappingFactory::createRelativeShrinkrageInstance,
-						boost::cref(_instance), _1, _2);
-	}
+	TokenCreatorMap_t TokenCreatorMap;
+	// construct TokenCreatorMap_t on constructing singleton instance
+	TokenCreatorMap["lp"] =
+			boost::bind(&DualityMappingFactory::createPowerTypeInstance, _1, _2);
+	TokenCreatorMap["dual_lp"] =
+			boost::bind(&DualityMappingFactory::createDualPowerTypeInstance, _1, _2);
+	// regularized_1 is not smooth, hence illegal mapping
+	TokenCreatorMap["regularized_l1"] =
+			boost::bind(&DualityMappingFactory::createIllegalInstance, _1, _2);
+	// dual of regularized_1 is smooth, is relative shrinkage
+	TokenCreatorMap["dual_regularized_l1"] =
+			boost::bind(&DualityMappingFactory::createRelativeShrinkrageInstance, _1, _2);
 	return TokenCreatorMap;
-}
-
-const DualityMappingFactory& DualityMappingFactory::getInstance()
-{
-	typedef boost::shared_ptr<DualityMappingFactory> ptr_t;
-
-	static ptr_t TheInstance;
-	if (TheInstance.get() == NULL) {
-		TheInstance.reset(new DualityMappingFactory);
-	}
-	return *TheInstance;
 }
 
 Mapping_ptr_t DualityMappingFactory::create(
 		const std::string &_token,
 		const NormedSpace_weakptr_t _space,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	assert( isValidType(_token) );
-	const TokenCreatorMap_t& creatormap = getMap(*this);
+	const TokenCreatorMap_t creatormap = DualityMappingFactory::getMap();
 	TokenCreatorMap_t::const_iterator iter =
 			creatormap.find(_token);
 	return (iter->second)(_space, _args);
@@ -73,9 +55,9 @@ Mapping_ptr_t DualityMappingFactory::create(
 
 bool DualityMappingFactory::isValidType(
 		const std::string &_token
-		) const
+		)
 {
-	const TokenCreatorMap_t& creatormap = getMap(*this);
+	const TokenCreatorMap_t creatormap = DualityMappingFactory::getMap();
 	TokenCreatorMap_t::const_iterator iter =
 			creatormap.find(_token);
 	return (iter != creatormap.end());
@@ -122,7 +104,7 @@ static PowerTypeDualityMapping* createPowerTypeDualityMapping(
 Mapping_ptr_t
 DualityMappingFactory::createPowerTypeInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double power = getNthArgumentAs<double>(_args, 0);
 	return Mapping_ptr_t(
@@ -132,7 +114,7 @@ DualityMappingFactory::createPowerTypeInstance(
 Mapping_ptr_t
 DualityMappingFactory::createDualPowerTypeInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double power = getNthArgumentAs<double>(_args, 0);
 	const double qpower = Helpers::ConjugateValue(power);
@@ -143,7 +125,7 @@ DualityMappingFactory::createDualPowerTypeInstance(
 Mapping_ptr_t
 DualityMappingFactory::createIllegalInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	DualityMapping *mapping = new IllegalDualityMapping;
 	return Mapping_ptr_t(mapping);
@@ -152,7 +134,7 @@ DualityMappingFactory::createIllegalInstance(
 Mapping_ptr_t
 DualityMappingFactory::createRelativeShrinkrageInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
 	DualityMapping *mapping = new RelativeShrinkageMapping(

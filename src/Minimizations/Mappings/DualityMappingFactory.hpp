@@ -44,27 +44,11 @@ private:
 	/** Static function to return the filled map of type <-> creator
 	 * associations.
 	 *
-	 * @param _instance instance of NormFactory for creator bindings
-	 * @return const ref to map instance
+	 * @return const map instance
 	 */
-	static const TokenCreatorMap_t& getMap(
-			const DualityMappingFactory &_instance);
-
-	/** Private default constructor for the class DualityMappingFactory.
-	 *
-	 * Instance should always be constructed via getInstance().
-	 *
-	 */
-	DualityMappingFactory()
-	{}
+	static const TokenCreatorMap_t getMap();
 
 public:
-
-	/** Returns the static instance to this singleton.
-	 *
-	 * @return static instance
-	 */
-	static const DualityMappingFactory& getInstance();
 
 	/** Creates the norm of the desired type \a _token using the given
 	 * arguments in \a _args.
@@ -74,10 +58,10 @@ public:
 	 * @param _args arguments for creating the norm
 	 * @return
 	 */
-	Mapping_ptr_t create(
+	static Mapping_ptr_t create(
 			const std::string &_token,
 			const NormedSpace_weakptr_t _space,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** States whether the given type \a _token is valid, i.e. a creator
 	 * for it is known.
@@ -85,9 +69,9 @@ public:
 	 * @param _token type to check
 	 * @return true - creator present, false - else
 	 */
-	bool isValidType(
+	static bool isValidType(
 			const std::string &_token
-			) const;
+			);
 
 private:
 	/** Creates the duality mapping to an lp space.
@@ -96,9 +80,9 @@ private:
 	 * @param _args vector of arguments
 	 * @return created instance
 	 */
-	Mapping_ptr_t createPowerTypeInstance(
+	static Mapping_ptr_t createPowerTypeInstance(
 			const NormedSpace_weakptr_t _NormedSpaceRef,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates the duality mapping to an lp space.
 	 *
@@ -106,9 +90,9 @@ private:
 	 * @param _args vector of arguments
 	 * @return created instance
 	 */
-	Mapping_ptr_t createDualPowerTypeInstance(
+	static Mapping_ptr_t createDualPowerTypeInstance(
 			const NormedSpace_weakptr_t _NormedSpaceRef,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates an illegal duality mapping.
 	 *
@@ -116,9 +100,9 @@ private:
 	 * @param _args vector of arguments
 	 * @return created instance
 	 */
-	Mapping_ptr_t createIllegalInstance(
+	static Mapping_ptr_t createIllegalInstance(
 			const NormedSpace_weakptr_t _NormedSpaceRef,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates a relative shrinkage mapping.
 	 *
@@ -126,9 +110,9 @@ private:
 	 * @param _args vector of arguments
 	 * @return created instance
 	 */
-	Mapping_ptr_t createRelativeShrinkrageInstance(
+	static Mapping_ptr_t createRelativeShrinkrageInstance(
 			const NormedSpace_weakptr_t _NormedSpaceRef,
-			const args_t &_args) const;
+			const args_t &_args);
 };
 
 

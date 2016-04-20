@@ -42,10 +42,8 @@ void DualityMappingFactoryUnitTest::equivalentTokensTest()
 			NormFactory_tokens.begin(),
 			bind( &NormFactory::TokenCreatorMap_t::value_type::first, _1) );
 
-	const DualityMappingFactory& DualityMappingFactory_instance =
-			DualityMappingFactory::getInstance();
-	const DualityMappingFactory::TokenCreatorMap_t& DualityMappingFactory_TokenCreatorMap =
-			DualityMappingFactory::getMap(DualityMappingFactory_instance);
+	const DualityMappingFactory::TokenCreatorMap_t DualityMappingFactory_TokenCreatorMap =
+			DualityMappingFactory::getMap();
 	tokens_t DualityMappingFactory_tokens(DualityMappingFactory_TokenCreatorMap.size());;
 	std::transform(
 			DualityMappingFactory_TokenCreatorMap.begin(), DualityMappingFactory_TokenCreatorMap.end(),

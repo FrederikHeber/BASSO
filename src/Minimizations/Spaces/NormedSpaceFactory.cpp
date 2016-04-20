@@ -74,7 +74,7 @@ NormedSpace_ptr_t NormedSpaceFactory::create(
 	// create duality mapping instance
 	{
 		Mapping_ptr_t mapping =
-				DualityMappingFactory::getInstance().create(
+				DualityMappingFactory::create(
 						_type,
 						NormedSpace_weakptr_t(instance),
 						DualityMappingFactory::args_t(1, _args[1]));
@@ -84,7 +84,7 @@ NormedSpace_ptr_t NormedSpaceFactory::create(
 	// create dual duality mapping instance
 	{
 		Mapping_ptr_t dualmapping =
-				DualityMappingFactory::getInstance().create(
+				DualityMappingFactory::create(
 						dualtype,
 						NormedSpace_weakptr_t(dualinstance),
 						DualityMappingFactory::args_t(1, _args[1]));
