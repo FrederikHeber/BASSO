@@ -25,48 +25,29 @@
 #include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
-const NormFactory::TokenCreatorMap_t& NormFactory::getMap(
-		const NormFactory &_instance)
+const NormFactory::TokenCreatorMap_t NormFactory::getMap()
 {
-	static TokenCreatorMap_t TokenCreatorMap;
-	if (TokenCreatorMap.empty()) {
-		// construct TokenCreatorMap_t on constructing singleton instance
-//		TokenCreatorMap["illegal"] =
-//				boost::bind(&NormFactory::createIllegalInstance,
-//						boost::cref(_instance), _1, _2);
-		TokenCreatorMap["lp"] =
-				boost::bind(&NormFactory::createLpInstance,
-						boost::cref(_instance), _1, _2);
-		TokenCreatorMap["dual_lp"] =
-				boost::bind(&NormFactory::createDualLpInstance,
-						boost::cref(_instance), _1, _2);
-		TokenCreatorMap["regularized_l1"] =
-				boost::bind(&NormFactory::createRegularizedL1Instance,
-						boost::cref(_instance), _1, _2);
-		TokenCreatorMap["dual_regularized_l1"] =
-				boost::bind(&NormFactory::createDualRegularizedL1Instance,
-						boost::cref(_instance), _1, _2);
-	}
+	TokenCreatorMap_t TokenCreatorMap;
+	// construct TokenCreatorMap_t on constructing singleton instance
+//	TokenCreatorMap["illegal"] =
+//			boost::bind(&NormFactory::createIllegalInstance, _1, _2);
+	TokenCreatorMap["lp"] =
+			boost::bind(&NormFactory::createLpInstance, _1, _2);
+	TokenCreatorMap["dual_lp"] =
+			boost::bind(&NormFactory::createDualLpInstance, _1, _2);
+	TokenCreatorMap["regularized_l1"] =
+			boost::bind(&NormFactory::createRegularizedL1Instance, _1, _2);
+	TokenCreatorMap["dual_regularized_l1"] =
+			boost::bind(&NormFactory::createDualRegularizedL1Instance, _1, _2);
 	return TokenCreatorMap;
-}
-
-const NormFactory& NormFactory::getInstance()
-{
-	typedef boost::shared_ptr<NormFactory> ptr_t;
-
-	static ptr_t TheInstance;
-	if (TheInstance.get() == NULL) {
-		TheInstance.reset(new NormFactory);
-	}
-	return *TheInstance;
 }
 
 Norm_ptr_t NormFactory::create(
 		const std::string &_token,
 		const NormedSpace_weakptr_t _space,
-		const args_t &_args) const
+		const args_t &_args)
 {
-	const TokenCreatorMap_t& creatormap = getMap(*this);
+	const TokenCreatorMap_t creatormap = NormFactory::getMap();
 	TokenCreatorMap_t::const_iterator iter =
 			creatormap.find(_token);
 	assert( iter != creatormap.end() );
@@ -75,9 +56,9 @@ Norm_ptr_t NormFactory::create(
 
 bool NormFactory::isValidType(
 		const std::string &_token
-		) const
+		)
 {
-	const TokenCreatorMap_t& creatormap = getMap(*this);
+	const TokenCreatorMap_t creatormap = NormFactory::getMap();
 	TokenCreatorMap_t::const_iterator iter =
 			creatormap.find(_token);
 	return (iter != creatormap.end());
@@ -122,14 +103,14 @@ static Norm_ptr_t createLpNorm(
 }
 
 Norm_ptr_t NormFactory::createLpInstance(
-		const double _p) const
+		const double _p)
 {
 	return createLpNorm(NormedSpaceFactory::getDummySpace(), _p);
 }
 
 Norm_ptr_t NormFactory::createLpInstance(
 		const NormedSpace_weakptr_t _ref,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double p = getNthArgumentAs<double>(_args, 0);
 	return createLpNorm(_ref, p);
@@ -137,7 +118,7 @@ Norm_ptr_t NormFactory::createLpInstance(
 
 Norm_ptr_t NormFactory::createDualLpInstance(
 		const NormedSpace_weakptr_t _ref,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double p = getNthArgumentAs<double>(_args, 0);
 	const double q = Helpers::ConjugateValue(p);
@@ -146,7 +127,7 @@ Norm_ptr_t NormFactory::createDualLpInstance(
 
 Norm_ptr_t NormFactory::createRegularizedL1Instance(
 		const NormedSpace_weakptr_t _ref,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
 	return Norm_ptr_t(new RegularizedL1Norm(_ref, lambda));
@@ -154,7 +135,7 @@ Norm_ptr_t NormFactory::createRegularizedL1Instance(
 
 Norm_ptr_t NormFactory::createDualRegularizedL1Instance(
 		const NormedSpace_weakptr_t _ref,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
 	return Norm_ptr_t(new DualRegularizedL1Norm(_ref, lambda));
@@ -162,7 +143,7 @@ Norm_ptr_t NormFactory::createDualRegularizedL1Instance(
 
 Norm_ptr_t NormFactory::createIllegalInstance(
 		const NormedSpace_weakptr_t _ref,
-		const args_t &_args) const
+		const args_t &_args)
 {
 	return Norm_ptr_t(new IllegalNorm(_ref));
 }

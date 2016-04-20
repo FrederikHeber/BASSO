@@ -57,34 +57,18 @@ private:
 	/** Static function to return the filled map of type <-> creator
 	 * associations.
 	 *
-	 * @param _instance instance of NormFactory for creator bindings
 	 * @return const ref to map instance
 	 */
-	static const TokenCreatorMap_t& getMap(
-			const NormFactory &_instance);
+	static const TokenCreatorMap_t getMap();
 
 	/** Creates an lp norm according to the given \a _p.
 	 *
 	 * @param _p p value of the lp norm
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createLpInstance(const double _p) const;
-
-	/** Private default constructor for the class NormFactory.
-	 *
-	 * Instance should always be constructed via getInstance().
-	 *
-	 */
-	NormFactory()
-	{}
+	static Norm_ptr_t createLpInstance(const double _p);
 
 public:
-
-	/** Returns the static instance to this singleton.
-	 *
-	 * @return static instance
-	 */
-	static const NormFactory& getInstance();
 
 	/** Creates the norm of the desired type \a _token using the given
 	 * arguments in \a _args.
@@ -94,10 +78,10 @@ public:
 	 * @param _args arguments for creating the norm
 	 * @return
 	 */
-	Norm_ptr_t create(
+	static Norm_ptr_t create(
 			const std::string &_token,
 			const NormedSpace_weakptr_t _space,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** States whether the given type \a _token is valid, i.e. a creator
 	 * for it is known.
@@ -105,9 +89,9 @@ public:
 	 * @param _token type to check
 	 * @return true - creator present, false - else
 	 */
-	bool isValidType(
+	static bool isValidType(
 			const std::string &_token
-			) const;
+			);
 
 private:
 	/** Creates an lp norm according to the given \a _args.
@@ -118,9 +102,9 @@ private:
 	 * @param _args arguments containing exactly one double defining p.
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createLpInstance(
+	static Norm_ptr_t createLpInstance(
 			const NormedSpace_weakptr_t _ref,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates the dual to an lp norm according to the given \a _args.
 	 *
@@ -134,9 +118,9 @@ private:
 	 * @param _args arguments containing exactly one double defining p.
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createDualLpInstance(
+	static Norm_ptr_t createDualLpInstance(
 			const NormedSpace_weakptr_t _ref,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates a regularized l1 norm.
 	 *
@@ -147,9 +131,9 @@ private:
 	 * 		  regularization parameter.
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createRegularizedL1Instance(
+	static Norm_ptr_t createRegularizedL1Instance(
 			const NormedSpace_weakptr_t _ref,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates a dual norm to regularized l1 norm.
 	 *
@@ -161,18 +145,18 @@ private:
 	 * 		  regularization parameter.
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createDualRegularizedL1Instance(
+	static Norm_ptr_t createDualRegularizedL1Instance(
 			const NormedSpace_weakptr_t _ref,
-			const args_t &_args) const;
+			const args_t &_args);
 
 	/** Creates an illegal norm.
 	 *
 	 * @param _ref reference to the space this norm is associated with
 	 * @return Norm instance
 	 */
-	Norm_ptr_t createIllegalInstance(
+	static Norm_ptr_t createIllegalInstance(
 			const NormedSpace_weakptr_t _ref,
-			const args_t &_args) const;
+			const args_t &_args);
 };
 
 

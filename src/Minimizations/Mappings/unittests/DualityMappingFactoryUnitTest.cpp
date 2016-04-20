@@ -33,9 +33,8 @@ void DualityMappingFactoryUnitTest::equivalentTokensTest()
 	// coincide
 	typedef std::vector<std::string> tokens_t;
 
-	const NormFactory& NormFactory_instance = NormFactory::getInstance();
-	const NormFactory::TokenCreatorMap_t& NormFactory_TokenCreatorMap =
-			NormFactory::getMap(NormFactory_instance);
+	const NormFactory::TokenCreatorMap_t NormFactory_TokenCreatorMap =
+			NormFactory::getMap();
 	tokens_t NormFactory_tokens(NormFactory_TokenCreatorMap.size());
 	std::transform(
 			NormFactory_TokenCreatorMap.begin(), NormFactory_TokenCreatorMap.end(),

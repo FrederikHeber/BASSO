@@ -555,8 +555,8 @@ bool CommandLineOptions::checkSensibility_minlib() const
 
 bool CommandLineOptions::checkSensibility_norms() const
 {
-	if ((!NormFactory::getInstance().isValidType(type_spacex))
-			|| (!NormFactory::getInstance().isValidType(type_spacey))) {
+	if ((!NormFactory::isValidType(type_spacex))
+			|| (!NormFactory::isValidType(type_spacey))) {
 		BOOST_LOG_TRIVIAL(error)
 			<< "Type of space of X or Y has invalid type.";
 		return false;

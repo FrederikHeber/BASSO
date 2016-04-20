@@ -50,7 +50,7 @@ GeneralMinimizer::GeneralMinimizer(
 	TolFun(_opts.tolerance_linesearch),
 	outputsteps(_opts.outputsteps),
 	OldBregmanDistance(0.),
-	l2norm(NormFactory::getInstance().create(
+	l2norm(NormFactory::create(
 			"lp",
 			_inverseproblem->x->getSpace(),
 			NormFactory::args_t(1, boost::any(2.))))

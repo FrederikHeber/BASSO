@@ -55,7 +55,7 @@ NormedSpace_ptr_t NormedSpaceFactory::create(
 
 	// create norm
 	{
-		Norm_ptr_t norm = NormFactory::getInstance().create(
+		Norm_ptr_t norm = NormFactory::create(
 				_type,
 				instance,
 				NormFactory::args_t(1, _args[0]));
@@ -64,7 +64,7 @@ NormedSpace_ptr_t NormedSpaceFactory::create(
 
 	// create dual norm
 	{
-		Norm_ptr_t dualnorm = NormFactory::getInstance().create(
+		Norm_ptr_t dualnorm = NormFactory::create(
 				dualtype,
 				dualinstance,
 				NormFactory::args_t(1, _args[0]));
