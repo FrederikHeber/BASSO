@@ -28,6 +28,9 @@ Searchspace::ptr_t SearchspaceFactory::create(
 		const unsigned int _N,
 		const LastNSearchDirections::OrthogonalizationType _orthogonalization_type
 		)
+#ifdef USE_OPENMP
+#pragma omp critical
+#endif /*USE_OPENMP */
 {
 	Searchspace::ptr_t returninstance;
 	switch (InstanceType) {
@@ -66,6 +69,9 @@ SearchspaceFactory::setCurrentType(const enum SearchspaceType _type)
 
 const std::string
 SearchspaceFactory::getName(const enum SearchspaceType _type)
+#ifdef USE_OPENMP
+#pragma omp critical
+#endif /*USE_OPENMP */
 {
 	fillNameTypeMap();
 	if (isValidType(_type))
@@ -76,6 +82,9 @@ SearchspaceFactory::getName(const enum SearchspaceType _type)
 
 const enum SearchspaceFactory::SearchspaceType
 SearchspaceFactory::getType(const std::string &_name)
+#ifdef USE_OPENMP
+#pragma omp critical
+#endif /*USE_OPENMP */
 {
 	fillNameTypeMap();
 	if (isValidName(_name))
@@ -96,6 +105,9 @@ SearchspaceFactory::isValidName(const std::string &_name)
 
 bool
 SearchspaceFactory::isValidType(const enum SearchspaceType _type)
+#ifdef USE_OPENMP
+#pragma omp critical
+#endif /*USE_OPENMP */
 {
 	fillNameTypeMap();
 	NameTypeMap_t::left_const_iterator iter =
@@ -106,6 +118,9 @@ SearchspaceFactory::isValidType(const enum SearchspaceType _type)
 
 void
 SearchspaceFactory::fillNameTypeMap()
+#ifdef USE_OPENMP
+#pragma omp critical
+#endif /*USE_OPENMP */
 {
 	if (NameTypeMap.empty()) {
 		NameTypeMap.insert(
