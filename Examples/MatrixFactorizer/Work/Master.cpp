@@ -123,7 +123,8 @@ bool Master::solve(
 				<< " to " << freeworker << ".";
 		// if we ever use isend again, then we also need to store the
 		// resulting mpi::requests for isend (and not only for irecv)
-		// and wait for \b both.
+		// and wait for \b both. We would also need extra send buffers
+		// similar to the results variable.
 		// See here http://stackoverflow.com/questions/4024940/boost-mpi-whats-received-isnt-what-was-sent
 		world.send(freeworker, ColumnWise, package);
 
@@ -239,25 +240,18 @@ bool Master::handleResult(
 		)
 {
 	bool solve_ok = true;
-	if (_result.error() != 0) {
-		// look at stop_condition and store solution
-		const int id = _result.source();
-		solve_ok &= _results[id-1].solve_ok;
-		_solution.col(_results[id-1].col) = _results[id-1].solution;
-		if ((_solution.innerSize() > 10) || (_solution.outerSize() > 10)) {
-			BOOST_LOG_TRIVIAL(trace)
-					<< "Got solution for col #" << _results[id-1].col
-					<< "\n" << _results[id-1].solution.transpose();
-		} else {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Got solution for col #" << _results[id-1].col
-					<< "\n" << _results[id-1].solution.transpose();
-		}
+	const int id = _result.source();
+	// look at stop_condition and store solution
+	solve_ok &= _results[id-1].solve_ok;
+	_solution.col(_results[id-1].col) = _results[id-1].solution;
+	if ((_solution.innerSize() > 10) || (_solution.outerSize() > 10)) {
+		BOOST_LOG_TRIVIAL(trace)
+				<< "Got solution for col #" << _results[id-1].col
+				<< "\n" << _results[id-1].solution.transpose();
 	} else {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Could not open solution for column "
-				<< _results[_result.source()-1].col;
-		solve_ok = false;
+		BOOST_LOG_TRIVIAL(debug)
+				<< "Got solution for col #" << _results[id-1].col
+				<< "\n" << _results[id-1].solution.transpose();
 	}
 
 	return solve_ok;
