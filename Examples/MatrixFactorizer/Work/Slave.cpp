@@ -20,11 +20,11 @@ namespace mpi = boost::mpi;
 
 #include "Log/Logging.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
+#include "MatrixFactorizer/Options/MatrixFactorizerOptions.hpp"
 #include "MatrixFactorizer/Solvers/InRangeSolver.hpp"
 #include "MatrixFactorizer/Work/WorkPackage.hpp"
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 #include "Minimizations/Elements/Eigen_matrix_serialization.hpp"
-#include "Options/CommandLineOptions.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraints.hpp"
 #include "Solvers/AuxiliaryConstraints/AuxiliaryConstraintsFactory.hpp"
 
@@ -49,10 +49,8 @@ void Slave::operator()()
 		// get global information
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting options.";
-		CommandLineOptions opts;
-		std::vector<std::string> overall_keys;
+		MatrixFactorizerOptions opts;
 		mpi::broadcast(world, opts, 0);
-		mpi::broadcast(world, overall_keys, 0);
 
 		BOOST_LOG_TRIVIAL(debug)
 				<< "#" << world.rank() << " - getting constraints.";
@@ -74,7 +72,7 @@ void Slave::operator()()
 					<< matrix;
 		}
 
-		InRangeSolver solver(opts, overall_keys);
+		InRangeSolver solver(opts, opts.overall_keys, opts.projection_delta);
 
 		// create auxiliary constraints
 		AuxiliaryConstraintsFactory constraint_factory;

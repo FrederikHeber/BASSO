@@ -56,11 +56,9 @@ struct MatrixFactorization
 	Eigen::MatrixXd pixel_matrix;
 private:
 	//!> options for solving inverse problems of the pixel matrix
-	const CommandLineOptions pixel_opts;
+	const MatrixFactorizerOptions pixel_opts;
 	//!> options for solving inverse problems of the spectral matrix
-	const CommandLineOptions spectral_opts;
-	//!> options for solving matrix factorization
-	const MatrixFactorizerOptions opts;
+	const MatrixFactorizerOptions spectral_opts;
 	//!> database connection
 	IterationInformation &info;
 #ifdef MPI_FOUND

@@ -47,7 +47,6 @@ MatrixFactorization::MatrixFactorization(
 		) :
 		pixel_opts(_opts),
 		spectral_opts(_opts),
-		opts(_opts),
 		info(_info)
 #ifdef MPI_FOUND
 		, world(_world)
@@ -56,14 +55,14 @@ MatrixFactorization::MatrixFactorization(
 	// an operator between two lp spaces always factors through a
 	// Hilbert space. Hence, we use an l_2 space between the two
 	// matrix factors
-	const_cast<CommandLineOptions &>(pixel_opts).type_spacey =
+	const_cast<MatrixFactorizerOptions &>(pixel_opts).type_spacey =
 			"lp";
-	const_cast<CommandLineOptions &>(pixel_opts).py = 2.;
-	const_cast<CommandLineOptions &>(pixel_opts).powery = 2.;
-	const_cast<CommandLineOptions &>(spectral_opts).type_spacex =
+	const_cast<MatrixFactorizerOptions &>(pixel_opts).py = 2.;
+	const_cast<MatrixFactorizerOptions &>(pixel_opts).powery = 2.;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).type_spacex =
 			"lp";
-	const_cast<CommandLineOptions &>(spectral_opts).px = 2.;
-	const_cast<CommandLineOptions &>(spectral_opts).powerx = 2.;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).px = 2.;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).powerx = 2.;
 }
 
 #ifdef MPI_FOUND
@@ -72,7 +71,6 @@ static void solveOneLoop_MPI(
 		const Eigen::MatrixXd &fixed_factor,
 		Eigen::MatrixXd &variable_factor,
 		Master &master,
-		const CommandLineOptions &solver_opts,
 		const MatrixFactorizerOptions &opts,
 		bool &stop_condition,
 		IterationInformation &info
@@ -80,11 +78,10 @@ static void solveOneLoop_MPI(
 {
 	const bool solver_ok =
 			master.solve(
-					solver_opts,
+					opts,
 					fixed_factor,
 					_data,
-					variable_factor,
-					opts.auxiliary_constraints
+					variable_factor
 					);
 	// place accumulated values in loop table
 	master.insertAccumulatedProjectorValues(
@@ -106,7 +103,6 @@ static void solveOneLoop_OpenMP(
 		const Eigen::MatrixXd &_data,
 		const Eigen::MatrixXd &fixed_factor,
 		Eigen::MatrixXd &variable_factor,
-		const CommandLineOptions &solver_opts,
 		const MatrixFactorizerOptions &opts,
 		bool &stop_condition,
 		const AuxiliaryConstraints::ptr_t &auxiliary_constraints,
@@ -118,7 +114,7 @@ static void solveOneLoop_OpenMP(
 #pragma omp parallel shared(returnvalues)
 		{
 			InRangeSolver solver(
-					solver_opts,
+					opts,
 					opts.overall_keys,
 					opts.projection_delta);
 #pragma omp for
@@ -159,7 +155,6 @@ static void solveOneLoop_sequentially(
 		const Eigen::MatrixXd &_data,
 		const Eigen::MatrixXd &fixed_factor,
 		Eigen::MatrixXd &variable_factor,
-		const CommandLineOptions &solver_opts,
 		const MatrixFactorizerOptions &opts,
 		bool &stop_condition,
 		const AuxiliaryConstraints::ptr_t &auxiliary_constraints,
@@ -167,7 +162,7 @@ static void solveOneLoop_sequentially(
 		)
 {
 	InRangeSolver solver(
-			solver_opts,
+			opts,
 			opts.overall_keys,
 			opts.projection_delta);
 	for (unsigned int dim = 0;
@@ -204,7 +199,7 @@ void MatrixFactorization::operator()(
 		)
 {
 #ifdef MPI_FOUND
-	Master master(world, opts.overall_keys);
+	Master master(world, spectral_opts.overall_keys);
 #endif /* MPI_FOUND */
 	{
 		/// start timing
@@ -222,12 +217,12 @@ void MatrixFactorization::operator()(
 
 		/// parse in factors
 		bool parse_status = true;
-		if (opts.DoParseFactors) {
+		if (spectral_opts.DoParseFactors) {
 			const int result_parse_spectralmatrix = detail::parseFactorFile(
-					opts.solution_factor_one_file.string(), spectral_matrix, "first factor");
+					spectral_opts.solution_factor_one_file.string(), spectral_matrix, "first factor");
 			parse_status &= (result_parse_spectralmatrix == 0);
 			const int result_parse_pixelmatrix = detail::parseFactorFile(
-					opts.solution_factor_two_file.string(), pixel_matrix, "second factor");
+					spectral_opts.solution_factor_two_file.string(), pixel_matrix, "second factor");
 			parse_status &= (result_parse_pixelmatrix == 0);
 
 			// check whether parsing was successful, break otherwise
@@ -247,18 +242,18 @@ void MatrixFactorization::operator()(
 		if (!parse_status) {
 			BOOST_LOG_TRIVIAL(info)
 					<< "Setting spectral matrix K to random starting values.";
-			spectral_matrix = Eigen::MatrixXd(_data.rows(), opts.sparse_dim);
+			spectral_matrix = Eigen::MatrixXd(_data.rows(), spectral_opts.sparse_dim);
 			detail::constructRandomMatrix(spectral_matrix);
 		} else {
 			if ((spectral_matrix.rows() == _data.rows())
-					&& (spectral_matrix.cols() == opts.sparse_dim)) {
+					&& (spectral_matrix.cols() == spectral_opts.sparse_dim)) {
 				BOOST_LOG_TRIVIAL(info)
 						<< "Using spectral matrix K parsed from file.";
 			} else {
 				BOOST_LOG_TRIVIAL(error)
 						<< "Parsed spectral matrix has dimensions "
 						<< spectral_matrix.rows() << "," << spectral_matrix.cols()
-						<< ", while expecting " << _data.rows() << "," << opts.sparse_dim;
+						<< ", while expecting " << _data.rows() << "," << spectral_opts.sparse_dim;
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
@@ -269,11 +264,11 @@ void MatrixFactorization::operator()(
 		if (!parse_status) {
 			BOOST_LOG_TRIVIAL(info)
 					<< "Setting pixel matrix X to zero.";
-			pixel_matrix = Eigen::MatrixXd(opts.sparse_dim, _data.cols());
+			pixel_matrix = Eigen::MatrixXd(spectral_opts.sparse_dim, _data.cols());
 			detail::constructZeroMatrix(
 					pixel_matrix);
 		} else {
-			if ((pixel_matrix.rows() == opts.sparse_dim)
+			if ((pixel_matrix.rows() == spectral_opts.sparse_dim)
 					&& (pixel_matrix.cols() == _data.cols())) {
 				BOOST_LOG_TRIVIAL(info)
 						<< "Using pixel matrix X parsed from file.";
@@ -281,7 +276,7 @@ void MatrixFactorization::operator()(
 				BOOST_LOG_TRIVIAL(error)
 						<< "Parsed pixel matrix has dimensions "
 						<< pixel_matrix.rows() << "," << pixel_matrix.cols()
-						<< ", while expecting " << opts.sparse_dim << "," <<  _data.cols();
+						<< ", while expecting " << spectral_opts.sparse_dim << "," <<  _data.cols();
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
@@ -292,8 +287,8 @@ void MatrixFactorization::operator()(
 
 		// create outer ("loop") stopping criteria
 		StoppingArguments stopping_args;
-		stopping_args.setTolerance(opts.residual_threshold);
-		stopping_args.setMaxIterations(opts.max_loops);
+		stopping_args.setTolerance(spectral_opts.residual_threshold);
+		stopping_args.setMaxIterations(spectral_opts.max_loops);
 		std::string stopping_criteria(
 				"MaxIterationCount || RelativeChangeResiduum || Residuum");
 		StoppingCriteriaFactory stop_factory;
@@ -303,7 +298,7 @@ void MatrixFactorization::operator()(
 		// create auxiliary constraints
 		AuxiliaryConstraintsFactory constraint_factory;
 		AuxiliaryConstraints::ptr_t auxiliary_constraints =
-				constraint_factory.create(opts.auxiliary_constraints);
+				constraint_factory.create(spectral_opts.auxiliary_constraints);
 
 		/// create feasible solution starting points
 		if (auxiliary_constraints) {
@@ -321,7 +316,7 @@ void MatrixFactorization::operator()(
 					boost::any(2.);
 			NormedSpace_ptr_t L2 =
 					NormedSpaceFactory::create(
-							opts.sparse_dim, "lp", args_SpaceL2);
+							spectral_opts.sparse_dim, "lp", args_SpaceL2);
 			spectral_matrix.transposeInPlace();
 			for (int i=0;i<spectral_matrix.cols();++i) {
 				SpaceElement_ptr_t tempvector = ElementCreator::create(
@@ -359,7 +354,7 @@ void MatrixFactorization::operator()(
 			// update loop count
 			++loop_nr;
 
-			if (opts.fix_factor != 1) {
+			if (spectral_opts.fix_factor != 1) {
 				info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr-1)+1);
 				BOOST_LOG_TRIVIAL(debug)
 					<< "======================== #" << loop_nr << "/1 ==================";
@@ -383,7 +378,6 @@ void MatrixFactorization::operator()(
 								pixel_matrix,
 								master,
 								spectral_opts,
-								opts,
 								stop_condition,
 								info);
 					} else {
@@ -399,7 +393,6 @@ void MatrixFactorization::operator()(
 								spectral_matrix,
 								pixel_matrix,
 								spectral_opts,
-								opts,
 								stop_condition,
 								auxiliary_constraints,
 								info);
@@ -427,7 +420,7 @@ void MatrixFactorization::operator()(
 				info.addTuple(IterationInformation::LoopTable);
 			}
 
-			if (opts.fix_factor != 2) {
+			if (pixel_opts.fix_factor != 2) {
 				BOOST_LOG_TRIVIAL(debug)
 					<< "======================== #" << loop_nr << "/2 ==================";
 
@@ -454,7 +447,6 @@ void MatrixFactorization::operator()(
 								spectral_matrix,
 								master,
 								pixel_opts,
-								opts,
 								stop_condition,
 								info);
 					} else {
@@ -470,7 +462,6 @@ void MatrixFactorization::operator()(
 								pixel_matrix.transpose(),
 								spectral_matrix,
 								pixel_opts,
-								opts,
 								stop_condition,
 								auxiliary_constraints,
 								info);
@@ -488,7 +479,7 @@ void MatrixFactorization::operator()(
 			}
 
 			// remove ambiguity
-			if (opts.fix_factor == 0) {
+			if (spectral_opts.fix_factor == 0) {
 				MatrixProductEqualizer equalizer;
 				const double scaling_change =
 						equalizer(spectral_matrix, pixel_matrix);
@@ -497,7 +488,7 @@ void MatrixFactorization::operator()(
 					<< "Scaling factor is " << scaling_change;
 			}
 
-			if (opts.fix_factor != 2) {
+			if (pixel_opts.fix_factor != 2) {
 				if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 					BOOST_LOG_TRIVIAL(trace)
 							<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
@@ -525,9 +516,9 @@ void MatrixFactorization::operator()(
 					residual,
 					1.);
 		}
-		if (loop_nr > opts.max_loops)
+		if (loop_nr > spectral_opts.max_loops)
 			BOOST_LOG_TRIVIAL(error)
-				<< "Maximum number of loops " << opts.max_loops
+				<< "Maximum number of loops " << spectral_opts.max_loops
 				<< " exceeded, stopping iteration.";
 		else
 			BOOST_LOG_TRIVIAL(info)

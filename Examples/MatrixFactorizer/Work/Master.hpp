@@ -20,7 +20,7 @@
 #include "MatrixFactorizer/Database/InnerProblemDatabase.hpp"
 #include "MatrixFactorizer/Work/WorkResult.hpp"
 
-class CommandLineOptions;
+class MatrixFactorizerOptions;
 class Table;
 
 /** This class contains all code related to the master in the master/slave
@@ -49,15 +49,13 @@ public:
 	 * @param _matrix inverse problem matrix
 	 * @param _rhs right-hand side matrix
 	 * @param _solution on return solution matrix
-	 * @param _auxiliary_constraints auxiliary constraints to fulfill
 	 * @return true - success
 	 */
 	bool solve(
-			const CommandLineOptions &_opts,
+			const MatrixFactorizerOptions &_opts,
 			const Eigen::MatrixXd &_matrix,
 			const Eigen::MatrixXd &_rhs,
-			Eigen::MatrixXd &_solution,
-			const std::string &_auxiliary_constraints
+			Eigen::MatrixXd &_solution
 			);
 
 	/** Insert accumulated and gathered values from projector problem into
