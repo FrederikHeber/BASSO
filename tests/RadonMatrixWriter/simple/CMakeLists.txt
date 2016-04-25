@@ -27,9 +27,9 @@ set_tests_properties (RadonMatrixWriterSimple_succeeds
 	PROPERTIES WILL_FAIL false)
 
 # test 1b: checking results
-add_test (RadonMatrixWriterSimple_succeedsRadonMatrixWriter_check
+add_test (RadonMatrixWriterSimple_succeeds_check
 	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/radon.mat radon.mat)
-set_tests_properties (RadonMatrixWriterSimple_succeedsRadonMatrixWriter_check
+set_tests_properties (RadonMatrixWriterSimple_succeeds_check
 	PROPERTIES WILL_FAIL false)
-set_tests_properties (RadonMatrixWriterSimple_succeedsRadonMatrixWriter_check
-	PROPERTIES DEPENDS RadonMatrixWriterSimple_succeedsRadonMatrixWriter)
+set_tests_properties (RadonMatrixWriterSimple_succeeds_check
+	PROPERTIES DEPENDS RadonMatrixWriterSimple_succeeds)
