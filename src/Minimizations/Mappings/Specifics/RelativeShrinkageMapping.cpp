@@ -48,10 +48,12 @@ RelativeShrinkageMapping::operator()(
 
 	const double coefficient = getRelativeShrinkage(_x);
 	SpaceElement_ptr_t result = getTargetSpace()->createElement();
-	for (unsigned int i=0;i<result->getSpace()->getDimension();++i)
-		(*result)[i] = fabs((*_x)[i]) < coefficient ?
+	for (unsigned int i=0;i<result->getSpace()->getDimension();++i) {
+		const double abs_value = fabs((*_x)[i]);
+		(*result)[i] = abs_value < coefficient ?
 				0. :
-				(fabs((*_x)[i])-coefficient)*Helpers::sign((*_x)[i]);
+				(abs_value-coefficient)*Helpers::sign((*_x)[i]);
+	}
 	*result *= 1./lambda;
 
 	// finish timing
