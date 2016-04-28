@@ -1,0 +1,95 @@
+v1.8:
+- rewrote NonnegativeMatrixFactors to use a truncated SVD on a single matrix.
+- several examples now may parse either a single matrix or two matrix factors.
+- several examples now allow for solving split feasibility problems, i.e. to
+  have additional constraints besides the minimum norm solution such as Basso
+  and RangeProjector.
+- MatrixFactorizer has an additional OpenMP parallelization.
+- several important fixes to MPI parallelization implementation in
+  MatrixFactorizer.
+- smaller convenience changes to MatrixToPNG.
+
+v1.7:
+- Database functionality is now completely extracted from GeneralMinimizer.
+- "untemplated" FunctionalMinimizer slightly modified and added 
+  FunctionalMinimizerFactory such that values controling functional 
+  minimization can be set globally.
+- added regression tests for written sqlite file.
+- Added NonnegativeMatrixFactors for generating good starting values for the
+  nonnegative matrix factorization.
+- fixed regression tests on nonnegative matrix factorization.
+
+v1.6:
+- enhanced Database functionality and abstraction to allow for sensible data
+  accumulation in multiple loops, e.g. MatrixFactorizer
+- MatrixFactorizer can parse initial factors from file
+- inner minimization thresholds can be set from command-line
+- converted MatrixFactorization into an SFP problem with AuxiliaryConstraints
+- all example programs admonish faulty command-line parameters in an
+  comprehensible way
+- all program show version and git build on first line
+- some fixes and extensions to doxygen documentation
+
+v1.5:
+- CT example may store noisy sinogram.
+- added "rotate" option to MatrixToPNG.
+- changes to Matrix Factorization:
+  - now done as Split Feasibility Problem.
+  - fixed MPI part.
+  - uses StoppingCriteria class as well.
+  - removed stuff that was inconsistent with general Basso base.
+  - extracted scaling ambiguity remover into own class.
+
+v1.4:
+- new example Gravity
+- new "example" MatrixToPNG (tool for ComputerTomography actually)
+- stopping criteria can be specified on command-line with boolean ops
+- ComputerTomography can use true solution and add noise (inverse crime check)
+- discrepancy parameter can now be used with any Minimizer, not just RESESOP
+- FIX: Command-line options sensibility check
+- FIX: install target was broken
+- FIX: user-specified diff for regression tests possible, e.g. ndiff
+
+v1.3:
+- added ComputerTomography example.
+- added RangeProjector example.
+- added NoiseAdder example.
+- linear mapping factory can now parse matrix file directly.
+
+v1.2:
+- several fixes to stepwidth used in regularized l1 norm, to soft thresholding,
+  and to MatrixFactorizer.
+- moved all examples away from src folder into extra examples folder. Each has
+  now a base library and the main() inside a slim executable along with an
+  Options folder.
+- initial doxygen documentation.
+
+v1.1:
+- orthogonalizable search directions.
+- adjoint of a linear mapping is now more cleverly stored (i.e. as internal
+  transpose flag and not as separate copy of the matrix).
+- database is now split into parameters and data with views to recreate the
+  old access style.
+- all examples now understand XML-style configuration files.
+- added first version of MatrixFactorizer example.
+
+v0.4:
+- Landweber is working with regularized l1 norm.
+- refactored to hide visibility of Eigen interface to some extent.
+- added regularized SESOP with two search directions and good starting values.
+- all vector and matrix operations are now fully counted to know about the
+  computational complexity.
+
+v0.3:
+- added inexact line search using NLopt and based on Wolfe conditions.
+- tried various stuff such as different order of search directions used,
+  checking on angles between search directions.
+
+v0.2:
+- refactored subspace method to be in line with Landweber and fixes.
+- added initial regularized l1 norm with duality mappings, i.e. soft 
+  thresholding operator.
+- added factory for the minimizer.
+
+v0.1:
+- initial version with Landweber and subspace methods.
