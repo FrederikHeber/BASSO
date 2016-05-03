@@ -28,8 +28,9 @@ const NormedSpace_ptr_t IllegalDualityMapping::getTargetSpace() const
 		<< MinimizationIllegalValue_name("illegally called");
 }
 
-const SpaceElement_ptr_t IllegalDualityMapping::operator()(
-		const SpaceElement_ptr_t &_sourceelement
+void IllegalDualityMapping::operator()(
+		const SpaceElement_ptr_t &_sourceelement,
+		SpaceElement_ptr_t &_destelement
 		) const
 {
 	// we just throw as this function must now be called

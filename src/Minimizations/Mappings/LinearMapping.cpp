@@ -43,8 +43,9 @@ LinearMapping::LinearMapping(
 	}
 }
 
-const SpaceElement_ptr_t LinearMapping::operator()(
-		const SpaceElement_ptr_t &_sourceelement
+void LinearMapping::operator()(
+		const SpaceElement_ptr_t &_sourceelement,
+		SpaceElement_ptr_t &_destelement
 		) const
 {
 	assert( _sourceelement->getSpace() == getSourceSpace() );
@@ -61,11 +62,7 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 			boost::chrono::high_resolution_clock::now();
 	MatrixVectorProductTimings += timing_end - timing_start;
 
-	SpaceElement_ptr_t targetelement =
-			ElementCreator::create(
-					getTargetSpace(),
-					tempvector);
-	return targetelement;
+	RepresentationAdvocate::set(_destelement, tempvector);
 }
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const

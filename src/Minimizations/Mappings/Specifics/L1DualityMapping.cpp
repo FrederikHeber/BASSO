@@ -34,11 +34,11 @@
  *	the ones found in  [Schöpfer et al., '06].
  *
  * \param _x vector
- * \return dual element corresponding to one element of the duality mapping for
- * 		x
+ * \param _Jx duality mapped \a _x
  */
-const SpaceElement_ptr_t L1DualityMapping::operator()(
-		const SpaceElement_ptr_t &_x
+void L1DualityMapping::operator()(
+		const SpaceElement_ptr_t &_x,
+		SpaceElement_ptr_t &_Jx
 		) const
 {
 	// start timing
@@ -50,18 +50,15 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 	const Norm &l1norm = *getSourceSpace()->getNorm();
 
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
-	SpaceElement_ptr_t sign_x =
-			ElementCreator::create(getTargetSpace(),
-			RepresentationAdvocate::get(_x->getSignVector()));
-	*sign_x *= factor;
+	assert( _Jx->getSpace()->getDimension() == _x->getSpace()->getDimension() );
+	for (size_t dim = 0; dim < _x->getSpace()->getDimension();++dim)
+		(*_Jx)[dim] = factor * Helpers::sign((*_x)[dim]);
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
 	timing += timing_end - timing_start;
 	++count;
-
-	return sign_x;
 }
 
 const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const

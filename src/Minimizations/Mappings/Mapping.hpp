@@ -13,6 +13,7 @@
 #include <boost/chrono.hpp>
 
 #include "Minimizations/types.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
 /** Mapping represents a transformation of SpaceElements from one Space
  * into another.
@@ -63,8 +64,23 @@ public:
 	 * @param _sourceelement element to map/transform
 	 * @return new transformed/mapped element
 	 */
-	virtual const SpaceElement_ptr_t operator()(
+	const SpaceElement_ptr_t operator()(
 			const SpaceElement_ptr_t &_sourceelement
+			) const
+	{
+		SpaceElement_ptr_t result = getTargetSpace()->createElement();
+		operator()(_sourceelement, result);
+		return result;
+	}
+
+	/** Mapping function.
+	 *
+	 * @param _sourceelement element to map/transform
+	 * @param _destelement transformed/mapped element on return
+	 */
+	virtual void operator()(
+			const SpaceElement_ptr_t &_sourceelement,
+			SpaceElement_ptr_t &_destelement
 			) const = 0;
 
 	/** Creates the adjoint mapping to this mapping.

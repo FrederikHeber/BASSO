@@ -61,13 +61,17 @@ public:
 	 */
 	SpaceElement_ptr_t operator*(const SpaceElement_ptr_t &_element) const;
 
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
 	/** Matrix multiplication from the right.
 	 *
 	 * @param _sourceelement element to map/transform
-	 * @return mapped/transformed element
+	 * @param _destelement transformed/mapped element on return
 	 */
-	const SpaceElement_ptr_t operator()(
-				const SpaceElement_ptr_t &_sourceelement
+	void operator()(
+				const SpaceElement_ptr_t &_sourceelement,
+				SpaceElement_ptr_t &_destelement
 				) const;
 
 	/** Creates the adjoint mapping to this mapping.

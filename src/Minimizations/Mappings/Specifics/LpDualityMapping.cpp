@@ -45,8 +45,9 @@ LpDualityMapping::LpDualityMapping(
  * \return dual element corresponding to one element of the duality mapping for
  * 		x
  */
-const SpaceElement_ptr_t LpDualityMapping::operator()(
-		const SpaceElement_ptr_t &_x
+void LpDualityMapping::operator()(
+		const SpaceElement_ptr_t &_x,
+		SpaceElement_ptr_t &_Jx
 		) const
 {
 	// start timing
@@ -58,32 +59,31 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 	const int p_as_int = p;
 	if (fabs((double)p_as_int - p) > BASSOTOLERANCE)
 		const_cast<int &>(p_as_int) = 0;
-	SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
 	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
 		RepresentationAdvocate::set(
-				Jx, 
+				_Jx,
 				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		if (p_as_int == 0)
-			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-				(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+				(*_Jx)[i] = ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
 		else
-			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-				(*Jx)[i] = ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
+			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+				(*_Jx)[i] = ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
 	} else if (p < (double)power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
 		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
 		RepresentationAdvocate::set(
-				Jx, 
+				_Jx,
 				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
 		if (p_as_int == 0)
-			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+				(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
 		else
-			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
+			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+				(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
 	} else {
 		const double norm = lpnorm(_x);
 		if (norm < tolerance) {
@@ -93,15 +93,15 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 			const double exponent = (double)power-p;
 			const double pnorm = ::pow(norm, exponent);
 			RepresentationAdvocate::set(
-					Jx, 
+					_Jx,
 					RepresentationAdvocate::get(_x->getAbsVector()));
 			SpaceElement_ptr_t sign_x = _x->getSignVector();
 			if (p_as_int == 0)
-				for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-					(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+				for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+					(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
 			else
-				for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-					(*Jx)[i] = pnorm * ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
+				for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
+					(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
 		}
 	}
 
@@ -110,8 +110,6 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 			boost::chrono::high_resolution_clock::now();
 	timing += timing_end - timing_start;
 	++count;
-
-	return Jx;
 }
 
 const Mapping_ptr_t LpDualityMapping::getAdjointMapping() const

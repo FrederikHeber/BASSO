@@ -32,11 +32,11 @@
  *	the ones found in  [Schöpfer et al., '06].
  *
  * \param _x vector
- * \return dual element corresponding to one element of the duality mapping for
- * 		x
+ * \param _Jx duality mapped \a _x
  */
-const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
-		const SpaceElement_ptr_t &_x
+void LInfinityDualityMapping::operator()(
+		const SpaceElement_ptr_t &_x,
+		SpaceElement_ptr_t &_Jx
 		) const
 {
 	// start timing
@@ -49,16 +49,14 @@ const SpaceElement_ptr_t LInfinityDualityMapping::operator()(
 	const double factor = ::pow(factor_index.first, (double)power-1.)
 			* Helpers::sign((*_x)[factor_index.second]);
 	// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
-	SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
-	(*Jx)[factor_index.second] = factor;
+	_Jx->setZero();
+	(*_Jx)[factor_index.second] = factor;
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
 	timing += timing_end - timing_start;
 	++count;
-
-	return Jx;
 }
 
 const Mapping_ptr_t LInfinityDualityMapping::getAdjointMapping() const
