@@ -134,6 +134,30 @@ const double SpaceElement::Norm() const
 			SpaceElement_ptr_t(SelfRef));
 }
 
+void SpaceElement::scaledAddition(
+		const double _alpha,
+		const SpaceElement_ptr_t &_element)
+{
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					getSpace()->opcounts.instance));
+	assert( getSpace() == _element->getSpace() );
+	assert( vector.innerSize() == _element->vector.innerSize() );
+	vector += _alpha * _element->vector;
+}
+
+void SpaceElement::scaledAddition(
+		const double _alpha,
+		const SpaceElement &_element)
+{
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					getSpace()->opcounts.instance));
+	assert( getSpace() == _element.getSpace() );
+	assert( vector.innerSize() == _element.vector.innerSize() );
+	vector += _alpha * _element.vector;
+}
+
 SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const
 {
 	SpaceElement_ptr_t newelement(getSpace()->createElement());

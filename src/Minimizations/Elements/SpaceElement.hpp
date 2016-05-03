@@ -179,6 +179,22 @@ public:
 	 */
 	const double Norm() const;
 
+	/** Scaled addition.
+	 *
+	 * @param _alpha scalar factor
+	 * @param _element element to scale and add
+	 * @return instance plus \a _element that is scaled by \a _alpha
+	 */
+	void scaledAddition(const double _alpha, const SpaceElement_ptr_t &_element);
+
+	/** Scaled addition.
+	 *
+	 * @param _alpha scalar factor
+	 * @param _element element to scale and add
+	 * @return instance plus \a _element that is scaled by \a _alpha
+	 */
+	void scaledAddition(const double _alpha, const SpaceElement &_element);
+
 	/** Scalar multiplication.
 	 *
 	 * @param _alpha scalar factor
