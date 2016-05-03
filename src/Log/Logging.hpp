@@ -23,6 +23,9 @@
 #include <set>
 #include <vector>
 
+//!> typedef for the long formatting_ostream of boost::log
+typedef boost::log::v2s_mt_posix::formatting_ostream boost_log_ostream;
+
 void startLogging();
 void stopLogging();
 
@@ -30,6 +33,7 @@ void showVersion(const std::string _programname = std::string(""));
 void showCopyright();
 
 template<class T>
+inline
 std::ostream & operator<<(std::ostream &ost, const std::list<T> & values)
 {
 	std::copy(
@@ -39,6 +43,7 @@ std::ostream & operator<<(std::ostream &ost, const std::list<T> & values)
 }
 
 template<class T>
+inline
 std::ostream & operator<<(std::ostream &ost, const std::set<T> & values)
 {
 	std::copy(
@@ -48,11 +53,46 @@ std::ostream & operator<<(std::ostream &ost, const std::set<T> & values)
 }
 
 template<class T>
+inline
 std::ostream & operator<<(std::ostream &ost, const std::vector<T> & values)
 {
 	std::copy(
 			values.begin(), values.end(),
 			std::ostream_iterator<T>(ost, " "));
+	return ost;
+}
+
+
+template<class T>
+inline
+boost_log_ostream&
+operator<<( boost_log_ostream&ost, const std::list<T> & values)
+{
+	for (typename std::list<T>::const_iterator iter = values.begin();
+			iter != values.begin(); ++iter)
+		ost << *iter << " ";
+	return ost;
+}
+
+template<class T>
+inline
+boost_log_ostream&
+operator<<( boost_log_ostream&ost, const std::set<T> & values)
+{
+	for (typename std::set<T>::const_iterator iter = values.begin();
+			iter != values.begin(); ++iter)
+		ost << *iter << " ";
+	return ost;
+}
+
+template<class T>
+inline
+boost_log_ostream&
+operator<<( boost_log_ostream&ost, const std::vector<T> & values)
+{
+	for (typename std::vector<T>::const_iterator iter = values.begin();
+			iter != values.begin(); ++iter)
+		ost << *iter << " ";
 	return ost;
 }
 
