@@ -40,7 +40,8 @@ LastNSearchDirections::LastNSearchDirections(
 	Searchspace(_SearchDirectionSpace_ptr,_N),
 	index(0),
 	lastIndices(_N, 0),
-	orthogonalization_type(_orthogonalization_type)
+	orthogonalization_type(_orthogonalization_type),
+	new_orthogonalized_dir(_SearchDirectionSpace_ptr->createElement())
 {}
 
 const unsigned int calculateMetricProjection(
@@ -151,16 +152,13 @@ void LastNSearchDirections::update(
 
 	/// orthogonalize with respect to all old search directions
 	if (orthogonalization_type != NoOrthogonalization) {
-		SpaceElement_ptr_t newdir = _newdir->getSpace()->createElement();
-		*newdir = _newdir;
-		double alpha = _alpha;
 		// we need to first orthogonalize w.r.t last search direction, then
 		// last but one, ...
 		std::vector<unsigned int> orderOfApplication(lastIndices.size(), 0);
 		for (size_t l = 0;l<lastIndices.size(); ++l)
 			orderOfApplication[ lastIndices[l] ] = l;
 		// put updated index (lastIndices[index]=0) at end of list as it is the
-		// oldes search direction
+		// oldest search direction
 		std::vector<unsigned int> indices_to_orthogonalize;
 		indices_to_orthogonalize.insert(
 				indices_to_orthogonalize.begin(),
@@ -171,7 +169,7 @@ void LastNSearchDirections::update(
 		switch (orthogonalization_type) {
 			case MetricOrthogonalization:
 				calculateMetricProjection(
-						newdir,
+						_newdir,
 						U,
 						tmin
 						);
@@ -181,7 +179,7 @@ void LastNSearchDirections::update(
 						iter != indices_to_orthogonalize.end(); ++iter) {
 					std::vector<double> tmin_tmp(1, 0.);
 					calculateBregmanProjection(
-							newdir,
+							_newdir,
 							U[ *iter ],
 							tmin_tmp
 							);
@@ -193,6 +191,8 @@ void LastNSearchDirections::update(
 					<< "We cannot get here.";
 				assert(0);
 		}
+		*new_orthogonalized_dir = _newdir;
+		double new_orthogonalized_alpha = _alpha;
 		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
 				iter != indices_to_orthogonalize.end(); ++iter) {
 			const double projection_coefficient = tmin[*iter];
@@ -202,17 +202,14 @@ void LastNSearchDirections::update(
 						"metric" : "bregman" )
 				<< " orthogonalization is " << projection_coefficient;
 
-			*newdir -= projection_coefficient * U[ *iter ];
-			alpha -= projection_coefficient * alphas[ *iter ];
+			new_orthogonalized_dir->scaledAddition(-1.*projection_coefficient, U[ *iter ]);
+			new_orthogonalized_alpha -= projection_coefficient * alphas[ *iter ];
 		}
-		const double prenorm = _newdir->Norm();
-		const double postnorm = newdir->Norm();
+		*(U[index]) = new_orthogonalized_dir;
+		alphas[index] = new_orthogonalized_alpha;
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Norm after projection changed from "
-			<< prenorm << " to " << postnorm;
-
-		*(U[index]) = newdir;
-		alphas[index] = alpha;
+			<< _newdir->Norm() << " to " << U[index]->Norm();
 	} else {
 		*(U[index]) = _newdir;
 		alphas[index] = _alpha;
