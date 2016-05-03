@@ -73,11 +73,6 @@ const unsigned int calculateMetricProjection(
 
 	unsigned int inner_iterations = (*functionminimizer)(
 			Ndirs, TolY, tmin);
-	std::stringstream output_stepwidth;
-	std::copy(tmin.begin(), tmin.end(),
-			std::ostream_iterator<double>(output_stepwidth, " "));
-	BOOST_LOG_TRIVIAL(debug)<< "tmin " << output_stepwidth.str()
-	<< " found in " << inner_iterations << " iterations.";
 
 	return inner_iterations;
 }
