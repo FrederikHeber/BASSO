@@ -55,6 +55,9 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 
 	const Norm &lpnorm = *getSourceSpace()->getNorm();
 	const double p = lpnorm.getPvalue();
+	const int p_as_int = p;
+	if (fabs((double)p_as_int - p) > BASSOTOLERANCE)
+		const_cast<int &>(p_as_int) = 0;
 	SpaceElement_ptr_t Jx = getTargetSpace()->createElement();
 	if (p == power) {
 		// J=abs(x).^(p-1).*sign(x);
@@ -62,8 +65,12 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 				Jx, 
 				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
-		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-			(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+		if (p_as_int == 0)
+			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+				(*Jx)[i] = ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+		else
+			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+				(*Jx)[i] = ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
 	} else if (p < (double)power) {
 		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
 		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
@@ -71,8 +78,12 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 				Jx, 
 				RepresentationAdvocate::get(_x->getAbsVector()));
 		SpaceElement_ptr_t sign_x = _x->getSignVector();
-		for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-			(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+		if (p_as_int == 0)
+			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+		else
+			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
 	} else {
 		const double norm = lpnorm(_x);
 		if (norm < tolerance) {
@@ -85,8 +96,12 @@ const SpaceElement_ptr_t LpDualityMapping::operator()(
 					Jx, 
 					RepresentationAdvocate::get(_x->getAbsVector()));
 			SpaceElement_ptr_t sign_x = _x->getSignVector();
-			for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
-				(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+			if (p_as_int == 0)
+				for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+					(*Jx)[i] = pnorm * ::pow((*Jx)[i], p - 1.) * (*sign_x)[i];
+			else
+				for (unsigned int i=0;i<Jx->getSpace()->getDimension();++i)
+					(*Jx)[i] = pnorm * ::pow((*Jx)[i], p_as_int - 1) * (*sign_x)[i];
 		}
 	}
 
