@@ -73,6 +73,17 @@ public:
 			) const;
 
 private:
+
+	/** Helper function to update the test dual iterate.
+	 *
+	 * @param _t linear expansion coefficients
+	 * @param _dualx current dual iterate
+	 */
+	void updateDualIterate(
+			const std::vector<double> &_t,
+			const SpaceElement_ptr_t &_dualx) const;
+
+private:
 	//!> power type of the weight function of \a J_q
 	const double dualpower;
 	//!> lp Norm object
@@ -84,6 +95,12 @@ private:
 	const std::vector<SpaceElement_ptr_t> &U;
 	//!> offset to hyperplanes
 	const std::vector<double> &alpha;
+
+	//!> internal temporary vector
+	mutable SpaceElement_ptr_t resx;
+
+	//!> internal vector with zero in all components
+	const SpaceElement_ptr_t zeroVec;
 };
 
 

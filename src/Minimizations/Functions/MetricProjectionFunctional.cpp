@@ -29,10 +29,13 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 	dualnorm(_dualnorm),
 	J_q(_J_q),
 	U(_U),
-	normsU(calculateNorms(dualnorm,U))
+	normsU(calculateNorms(dualnorm,U)),
+	resx((*U.begin())->getSpace()->createElement()),
+	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert( !U.empty() );
 	assert( U.size() == normsU.size() );
+	zeroVec->setZero();
 }
 
 MetricProjectionFunctional::MetricProjectionFunctional(
@@ -43,32 +46,22 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 	dualnorm(*_problem->SourceSpace->getDualSpace()->getNorm()),
 	J_q(*_problem->SourceSpace->getDualSpace()->getDualityMapping()),
 	U(_U),
-	normsU(calculateNorms(dualnorm,U))
+	normsU(calculateNorms(dualnorm,U)),
+	resx((*U.begin())->getSpace()->createElement()),
+	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert( !U.empty() );
 	assert( U.size() == normsU.size() );
+	zeroVec->setZero();
 }
 
-SpaceElement_ptr_t MetricProjectionFunctional::calculateLinearCombination(
-		const std::vector<double> &_t
-		) const
-{
-	assert ( U.size() == _t.size() );
-	SpaceElement_ptr_t resx = (*U.begin())->getSpace()->createElement();
-	resx->setZero();
-	*resx = std::inner_product(_t.begin(), _t.end(),U.begin(),resx);
-	return resx;
-}
-
-SpaceElement_ptr_t MetricProjectionFunctional::calculateDistance(
+void MetricProjectionFunctional::updateDualIterate(
 		const std::vector<double> &_t,
 		const SpaceElement_ptr_t &_dualx
 		) const
 {
-	const SpaceElement_ptr_t resx = _dualx->getSpace()->createElement();
 	*resx = _dualx;
-	*resx -= calculateLinearCombination(_t);
-	return resx;
+	*resx -= std::inner_product(_t.begin(), _t.end(), U.begin(), zeroVec);
 }
 
 double MetricProjectionFunctional::operator()(
@@ -77,7 +70,7 @@ double MetricProjectionFunctional::operator()(
 		) const
 {
 	// x=x-U*t;
-	const SpaceElement_ptr_t resx = calculateDistance(_t, _dualx);
+	updateDualIterate(_t, _dualx);
 	// fval=1/q*norm(x,q)^q
 	const double fval = 1./dualpower*::pow(dualnorm(resx), dualpower);
 	return fval;
@@ -89,7 +82,8 @@ std::vector<double> MetricProjectionFunctional::gradient(
 		) const
 {
 	// x=x-U*t;
-	const SpaceElement_ptr_t dual_resx = J_q(calculateDistance(_t, _dualx));
+	updateDualIterate(_t, _dualx);
+	const SpaceElement_ptr_t dual_resx = J_q(resx);
 	std::vector<double> gval(_t.size(), 0.);
 	for (size_t i=0;i<_t.size();++i)
 		if (fabs(normsU[i] > BASSOTOLERANCE))

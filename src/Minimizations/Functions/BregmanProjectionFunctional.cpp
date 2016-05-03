@@ -30,10 +30,13 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 	dualnorm(_dualnorm),
 	J_q(_J_q),
 	U(_U),
-	alpha(_alpha)
+	alpha(_alpha),
+	resx((*U.begin())->getSpace()->createElement()),
+	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert ( U.size() == alpha.size() );
 	assert( !U.empty() );
+	zeroVec->setZero();
 }
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
@@ -45,10 +48,21 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 	dualnorm(*_problem->SourceSpace->getDualSpace()->getNorm()),
 	J_q(*_problem->SourceSpace->getDualSpace()->getDualityMapping()),
 	U(_U),
-	alpha(_alpha)
+	alpha(_alpha),
+	resx((*U.begin())->getSpace()->createElement()),
+	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert ( U.size() == alpha.size() );
 	assert( !U.empty() );
+	zeroVec->setZero();
+}
+
+void BregmanProjectionFunctional::updateDualIterate(
+		const std::vector<double> &_t,
+		const SpaceElement_ptr_t &_dualx) const
+{
+	*resx = _dualx;
+	*resx -= std::inner_product(_t.begin(), _t.end(), U.begin(), zeroVec);
 }
 
 double BregmanProjectionFunctional::operator()(
@@ -59,10 +73,7 @@ double BregmanProjectionFunctional::operator()(
 	assert ( _t.size() == U.size() );
 	assert( (*U.begin())->getSpace() == _dualx->getSpace() );
 	// x=x-U*t;
-	SpaceElement_ptr_t resx = _dualx->getSpace()->createElement();
-	resx->setZero();
-	*resx = std::inner_product(_t.begin(), _t.end(),U.begin(),resx);
-	*resx = _dualx - resx;
+	updateDualIterate(_t, _dualx);
 	// fval=1/q*norm(x,p)^q+alpha'*t;
 	double alpha_times_t = 0.;
 	alpha_times_t = std::inner_product(
@@ -88,10 +99,7 @@ std::vector<double> BregmanProjectionFunctional::gradient(
 	assert ( _t.size() == U.size() );
 	assert( (*U.begin())->getSpace() == _dualx->getSpace() );
 	// x=x-U*t;
-	SpaceElement_ptr_t resx = _dualx->getSpace()->createElement();
-	resx->setZero();
-	*resx = std::inner_product(_t.begin(), _t.end(),U.begin(),resx);
-	*resx = _dualx - resx;
+	updateDualIterate(_t, _dualx);
 	std::vector<double> gval(alpha);
 	const SpaceElement_ptr_t dual_resx = J_q(resx);
 	for (size_t i=0;i<_t.size();++i) {
