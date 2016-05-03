@@ -60,8 +60,10 @@ void MetricProjectionFunctional::updateDualIterate(
 		const SpaceElement_ptr_t &_dualx
 		) const
 {
-	*resx = _dualx;
-	*resx -= std::inner_product(_t.begin(), _t.end(), U.begin(), zeroVec);
+	resx->setZero();
+	for (size_t dim = 0; dim < _t.size(); ++dim)
+		resx->scaledAddition(-1.*_t[dim], U[dim]);
+	*resx += _dualx;
 }
 
 double MetricProjectionFunctional::operator()(

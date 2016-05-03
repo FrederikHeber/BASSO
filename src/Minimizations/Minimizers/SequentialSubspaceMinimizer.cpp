@@ -304,7 +304,7 @@ void SequentialSubspaceMinimizer::updateIterates(
 	{
 		dual_update->setZero();
 		for (size_t i = 0; i < N; ++i)
-			*dual_update += tmin[i] * istate.getSearchSpace()[i];
+			dual_update->scaledAddition(tmin[i], istate.getSearchSpace()[i]);
 		*istate.m_dual_solution -= dual_update;
 	}
 	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << istate.m_dual_solution;
