@@ -12,7 +12,6 @@
 
 double ResidualFunctional::operator()(double _arg) const
 {
-	SpaceElement_ptr_t dual_solution = dualx->getSpace()->createElement();
 	*dual_solution = dualx;
 	*dual_solution -= _arg * u;
 	*problem->x =

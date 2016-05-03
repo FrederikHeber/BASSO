@@ -34,7 +34,8 @@ public:
 		dualx(_dualx),
 		u(_u),
 		residualizer(_residualizer),
-		residualvector(_problem->y->getSpace()->createElement())
+		residualvector(_problem->y->getSpace()->createElement()),
+		dual_solution(dualx->getSpace()->createElement())
 	{}
 
 	double operator()(double _arg) const;
@@ -45,6 +46,7 @@ private:
 	const SpaceElement_ptr_t &u;
 	const calculateResidual_t &residualizer;
 	mutable SpaceElement_ptr_t residualvector;
+	mutable SpaceElement_ptr_t dual_solution;
 };
 
 
