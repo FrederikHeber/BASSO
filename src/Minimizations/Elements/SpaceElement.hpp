@@ -171,7 +171,7 @@ public:
 	 * @param i index of component
 	 * @return \a i th component of element's representation.
 	 */
-	const double operator[](const int i) const;
+	const double& operator[](const int i) const;
 
 	/** Calculates the norm of this element in the given Space.
 	 *

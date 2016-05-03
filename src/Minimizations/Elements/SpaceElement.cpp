@@ -123,7 +123,7 @@ double& SpaceElement::operator[](const int i)
 	return vector[i];
 }
 
-const double SpaceElement::operator[](const int i) const
+const double& SpaceElement::operator[](const int i) const
 {
 	return vector[i];
 }
