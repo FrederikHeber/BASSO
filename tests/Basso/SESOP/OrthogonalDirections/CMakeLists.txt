@@ -16,13 +16,13 @@ add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1
 		--iteration-file SESOP_p2_r2_N1.db
 		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
 		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m
-		--solution solution_p2_r2.m)
+		--solution solution_p2_r2_N1.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 4 with relative residual of 0.0093.*")
 
 # test 1b: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2_N1.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N1_check
@@ -46,13 +46,13 @@ add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2
 		--iteration-file SESOP_p2_r2_N2.db
 		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
 		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m
-		--solution solution_p2_r2.m)
+		--solution solution_p2_r2_N2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 4 with relative residual of 0.0093.*")
 
 # test 1d: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2_N2.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N2_check
@@ -76,13 +76,13 @@ add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4
 		--iteration-file SESOP_p2_r2_N4.db
 		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/randommatrix.m 
 		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/randomvector.m
-		--solution solution_p2_r2.m)
+		--solution solution_p2_r2_N4.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4
 	PROPERTIES PASS_REGULAR_EXPRESSION "Solution after 4 with relative residual of 0.0093.*")
 
 # test 1f: checking results
 add_test (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/solution_p2_r2.m solution_p2_r2_N4.m)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (Basso_SESOP_RandomMatrix_p2_r2_orthogonalized_N4_check
