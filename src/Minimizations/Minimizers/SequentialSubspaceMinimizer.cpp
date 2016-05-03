@@ -238,11 +238,8 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	unsigned int inner_iterations = (*functionminimizer)(
 		Ndirs, TolFun, tmin);
 
-	std::stringstream output_stepwidth;
-	std::copy(tmin.begin(), tmin.end(),
-			std::ostream_iterator<double>(output_stepwidth, " "));
-	BOOST_LOG_TRIVIAL(debug)<< "tmin " << output_stepwidth.str()
-	<< " found in " << inner_iterations << " iterations.";
+	BOOST_LOG_TRIVIAL(debug)
+			<< "tmin " << tmin << " found in " << inner_iterations << " iterations.";
 
 	return inner_iterations;
 }
