@@ -56,52 +56,28 @@ void LpDualityMapping::operator()(
 
 	const Norm &lpnorm = *getSourceSpace()->getNorm();
 	const double p = lpnorm.getPvalue();
-	const int p_as_int = p;
-	if (fabs((double)p_as_int - p) > BASSOTOLERANCE)
-		const_cast<int &>(p_as_int) = 0;
-	if (p == power) {
-		// J=abs(x).^(p-1).*sign(x);
-		RepresentationAdvocate::set(
-				_Jx,
-				RepresentationAdvocate::get(_x->getAbsVector()));
-		SpaceElement_ptr_t sign_x = _x->getSignVector();
-		if (p_as_int == 0)
-			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-				(*_Jx)[i] = ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
-		else
-			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-				(*_Jx)[i] = ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
-	} else if (p < (double)power) {
-		// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
-		const double pnorm = ::pow(lpnorm(_x), (double)power-p);
-		RepresentationAdvocate::set(
-				_Jx,
-				RepresentationAdvocate::get(_x->getAbsVector()));
-		SpaceElement_ptr_t sign_x = _x->getSignVector();
-		if (p_as_int == 0)
-			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-				(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
-		else
-			for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-				(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
-	} else {
+	// (also in case: p == power)
+	// J=abs(x).^(p-1).*sign(x);
+	const SpaceElement_ptr_t sign_x = _x->getSignVector();
+	// need to do it this complicatedly as spaces aren't right
+	RepresentationAdvocate::set(
+			_Jx,
+			RepresentationAdvocate::get(_x->getAbsVector()));
+	_Jx->pow(p-1.);
+	RepresentationAdvocate::set(
+			_Jx,
+			RepresentationAdvocate::get(_Jx).cwiseProduct(
+					RepresentationAdvocate::get(sign_x)
+					));
+	if (p != power) {
 		const double norm = lpnorm(_x);
-		if (norm < tolerance) {
-			// J=zeros(size(x,1),1);
+		const double pnorm = ::pow(norm, (double)power-p);
+		if ((p < (double)power) || (norm > tolerance)) {
+			// J=norm(x,p)^(q-p)*abs(x).^(p-1).*sign(x);
+			*_Jx *= pnorm;
 		} else {
-			// J=n^(q-p)*abs(x).^(p-1).*sign(x);
-			const double exponent = (double)power-p;
-			const double pnorm = ::pow(norm, exponent);
-			RepresentationAdvocate::set(
-					_Jx,
-					RepresentationAdvocate::get(_x->getAbsVector()));
-			SpaceElement_ptr_t sign_x = _x->getSignVector();
-			if (p_as_int == 0)
-				for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-					(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p - 1.) * (*sign_x)[i];
-			else
-				for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i)
-					(*_Jx)[i] = pnorm * ::pow((*_Jx)[i], p_as_int - 1) * (*sign_x)[i];
+			// J=zeros(size(x,1),1);
+			_Jx->setZero();
 		}
 	}
 
