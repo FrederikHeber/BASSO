@@ -55,6 +55,10 @@ GeneralMinimizer::GeneralMinimizer(
 			_inverseproblem->x->getSpace(),
 			NormFactory::args_t(1, boost::any(2.))))
 {
+	// initialize temp vectors in search direction
+	searchdir.Jw = _inverseproblem->DualTargetSpace->createElement();
+	searchdir.u = _inverseproblem->DualSourceSpace->createElement();
+
 	// set tolerances values
 	_inverseproblem->x->getSpace()->getDualityMapping()->setTolerance(TolX);
 	_inverseproblem->x->getSpace()->getDualSpace()->getDualityMapping()->setTolerance(TolX);
@@ -85,10 +89,10 @@ void GeneralMinimizer::SearchDirection::update(
 	 	 const QuickAccessReferences &_refs,
 	 	 const SpaceElement_ptr_t &_residual)
 {
-		Jw = _refs.j_r( _residual );
+		_refs.j_r( _residual, Jw );
 		BOOST_LOG_TRIVIAL(trace)
 			<< "Jw= j_r (R_n) is " << Jw;
-		u = _refs.A_t(Jw);
+		_refs.A_t(Jw, u);
 		if (u->getSpace()->getDimension() > 10)
 			BOOST_LOG_TRIVIAL(trace)
 					<< "newdir is " << u;
@@ -132,7 +136,7 @@ double GeneralMinimizer::calculateResidual(
 		) const
 {
 	const Mapping &A = static_cast<const Mapping &>(*_problem->A);
-	*_residual = A(_problem->x);
+	A(_problem->x, _residual);
 	*_residual -= _problem->y;
 	const Norm &NormY = *_problem->y->getSpace()->getNorm();
 	return NormY(_residual);
