@@ -290,6 +290,11 @@ protected:
 
 	//!> whether to orthogonalize search directions w.r.t old ones
 	const LastNSearchDirections::OrthogonalizationType OrthogonalizationType;
+
+private:
+
+	//!> internal temporary variable
+	const SpaceElement_ptr_t dual_update;
 };
 
 inline

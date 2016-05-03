@@ -52,7 +52,8 @@ SequentialSubspaceMinimizer::SequentialSubspaceMinimizer(
 	constant_positivity(1e-6),
 	constant_interpolation(0.6),
 	DoCalculateAngles(false),
-	OrthogonalizationType(_opts.orthogonalization_type)
+	OrthogonalizationType(_opts.orthogonalization_type),
+	dual_update(_inverseproblem->DualSourceSpace->createElement())
 {
 	// override callback in dbcontainer to add more parameter columns
 	// don't do this in initializer list as class not fully constructed
@@ -301,10 +302,10 @@ void SequentialSubspaceMinimizer::updateIterates(
 {
 	// x=DualityMapping(Jx-tmin*u,DualNormX,DualPowerX,TolX);
 	{
-		const SpaceElement_ptr_t tempelement = refs.DualSpaceX.createElement();
+		dual_update->setZero();
 		for (size_t i = 0; i < N; ++i)
-			*tempelement += tmin[i] * istate.getSearchSpace()[i];
-		*istate.m_dual_solution -= tempelement;
+			*dual_update += tmin[i] * istate.getSearchSpace()[i];
+		*istate.m_dual_solution -= dual_update;
 	}
 	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << istate.m_dual_solution;
 	*istate.m_solution = refs.J_q(istate.m_dual_solution);
