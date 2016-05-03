@@ -36,7 +36,6 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 {
 	assert( !U.empty() );
 	assert( U.size() == normsU.size() );
-	zeroVec->setZero();
 }
 
 MetricProjectionFunctional::MetricProjectionFunctional(
@@ -54,7 +53,6 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 {
 	assert( !U.empty() );
 	assert( U.size() == normsU.size() );
-	zeroVec->setZero();
 }
 
 void MetricProjectionFunctional::updateDualIterate(

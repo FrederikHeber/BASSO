@@ -91,7 +91,6 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 	} else {
 		result.m_dual_solution =
 				inverseproblem->x->getSpace()->getDualSpace()->createElement();
-		result.m_dual_solution->setZero();
 	}
 
 	/// solver inverse problem

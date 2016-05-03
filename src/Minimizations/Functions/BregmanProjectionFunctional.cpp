@@ -37,7 +37,6 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 {
 	assert ( U.size() == alpha.size() );
 	assert( !U.empty() );
-	zeroVec->setZero();
 }
 
 BregmanProjectionFunctional::BregmanProjectionFunctional(
@@ -56,7 +55,6 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 {
 	assert ( U.size() == alpha.size() );
 	assert( !U.empty() );
-	zeroVec->setZero();
 }
 
 void BregmanProjectionFunctional::updateDualIterate(

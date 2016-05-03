@@ -96,7 +96,6 @@ GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
 	// empty true solution
 	SpaceElement_ptr_t truesolution =
 			inverseproblem->x->getSpace()->createElement();
-	truesolution->setZero();
 
 	// init starting value for this loop
 	result.m_solution = _startingvalue->getSpace()->createElement();
@@ -113,7 +112,6 @@ GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
 	} else {
 		result.m_dual_solution =
 				inverseproblem->x->getSpace()->getDualSpace()->createElement();
-		result.m_dual_solution->setZero();
 	}
 
 	// and minimize

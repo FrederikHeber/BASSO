@@ -64,7 +64,6 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 	*result.m_solution = _startingvalue;
 	result.m_dual_solution =
 			_startingvalue->getSpace()->getDualSpace()->createElement();
-	result.m_dual_solution->setZero();
 	result.residuum = std::numeric_limits<double>::max();
 	result.status = GeneralMinimizer::ReturnValues::notbegun;
 
