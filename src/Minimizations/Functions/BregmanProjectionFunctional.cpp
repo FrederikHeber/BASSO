@@ -32,6 +32,7 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 	U(_U),
 	alpha(_alpha),
 	resx((*U.begin())->getSpace()->createElement()),
+	dual_resx(resx->getSpace()->getDualSpace()->createElement()),
 	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert ( U.size() == alpha.size() );
@@ -50,6 +51,7 @@ BregmanProjectionFunctional::BregmanProjectionFunctional(
 	U(_U),
 	alpha(_alpha),
 	resx((*U.begin())->getSpace()->createElement()),
+	dual_resx(resx->getSpace()->getDualSpace()->createElement()),
 	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert ( U.size() == alpha.size() );
@@ -100,8 +102,8 @@ std::vector<double> BregmanProjectionFunctional::gradient(
 	assert( (*U.begin())->getSpace() == _dualx->getSpace() );
 	// x=x-U*t;
 	updateDualIterate(_t, _dualx);
+	J_q(resx, dual_resx);
 	std::vector<double> gval(alpha);
-	const SpaceElement_ptr_t dual_resx = J_q(resx);
 	for (size_t i=0;i<_t.size();++i) {
 		gval[i] -= U[i] * dual_resx;
 		if (isnan(gval[i]))

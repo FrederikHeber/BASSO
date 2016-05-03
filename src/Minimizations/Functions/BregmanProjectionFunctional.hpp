@@ -99,6 +99,9 @@ private:
 	//!> internal temporary vector
 	mutable SpaceElement_ptr_t resx;
 
+	//!> internal temporary vector for dual element
+	mutable SpaceElement_ptr_t dual_resx;
+
 	//!> internal vector with zero in all components
 	const SpaceElement_ptr_t zeroVec;
 };

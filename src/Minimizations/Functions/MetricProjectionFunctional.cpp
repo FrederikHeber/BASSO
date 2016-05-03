@@ -31,6 +31,7 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 	U(_U),
 	normsU(calculateNorms(dualnorm,U)),
 	resx((*U.begin())->getSpace()->createElement()),
+	dual_resx(resx->getSpace()->getDualSpace()->createElement()),
 	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert( !U.empty() );
@@ -48,6 +49,7 @@ MetricProjectionFunctional::MetricProjectionFunctional(
 	U(_U),
 	normsU(calculateNorms(dualnorm,U)),
 	resx((*U.begin())->getSpace()->createElement()),
+	dual_resx(resx->getSpace()->getDualSpace()->createElement()),
 	zeroVec((*U.begin())->getSpace()->createElement())
 {
 	assert( !U.empty() );
@@ -83,7 +85,7 @@ std::vector<double> MetricProjectionFunctional::gradient(
 {
 	// x=x-U*t;
 	updateDualIterate(_t, _dualx);
-	const SpaceElement_ptr_t dual_resx = J_q(resx);
+	J_q(resx, dual_resx);
 	std::vector<double> gval(_t.size(), 0.);
 	for (size_t i=0;i<_t.size();++i)
 		if (fabs(normsU[i] > BASSOTOLERANCE))
