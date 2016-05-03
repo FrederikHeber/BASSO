@@ -134,6 +134,11 @@ const double SpaceElement::Norm() const
 			SpaceElement_ptr_t(SelfRef));
 }
 
+void SpaceElement::pow(const double _exponent)
+{
+	vector = vector.array().pow(_exponent);
+}
+
 void SpaceElement::scaledAddition(
 		const double _alpha,
 		const SpaceElement_ptr_t &_element)

@@ -179,6 +179,12 @@ public:
 	 */
 	const double Norm() const;
 
+	/** Calculates the component-wise power of this element in the given Space.
+	 *
+	 * @param _exponent exponent used in pow
+	 */
+	void pow(const double _exponent);
+
 	/** Scaled addition.
 	 *
 	 * @param _alpha scalar factor
