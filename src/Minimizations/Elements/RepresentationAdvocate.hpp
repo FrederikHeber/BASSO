@@ -22,6 +22,7 @@ class InRangeSolver;
 class InverseProblemSolver;
 class L1DualityMapping;
 class LpDualityMapping;
+class LpNorm;
 struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
@@ -50,6 +51,7 @@ private:
 	friend class InverseProblemSolver;
 	friend class L1DualityMapping;
 	friend class LpDualityMapping;
+	friend class LpNorm;
 	friend struct LinearDependencyChecker;
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;

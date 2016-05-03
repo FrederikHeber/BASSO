@@ -15,6 +15,7 @@
 
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -29,15 +30,11 @@ public:
 	LpNorm(const NormedSpace_weakptr_t& _ref,
 			const double _p) :
 		Norm(_ref),
-		p(_p),
-		p_as_int(p)
+		p(_p)
 	{
 		if ((p <= 1.) || (p == std::numeric_limits<double>::infinity()))
 			throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("p");
-
-		if (fabs((double)p_as_int - p) > BASSOTOLERANCE)
-			const_cast<int &>(p_as_int) = 0;
 	}
 	~LpNorm() {}
 
@@ -61,22 +58,13 @@ protected:
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( getSpace() == _x->getSpace() );
-		double value = 0.;
-		if (p_as_int == 0)
-			for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
-				value += ::pow(fabs((*_x)[i]), p);
-		else
-			for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
-				value += ::pow(fabs((*_x)[i]), p_as_int);
-		return ::pow(value, 1./p);
+		const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+		return ::pow(vector.array().abs().pow(p).sum(), 1./p);
 	}
 
 private:
 	//!> p value for norm
 	const double p;
-
-	//!> states whether p is actually integer value (or is 0 otherwise)
-	const int p_as_int;
 };
 
 
