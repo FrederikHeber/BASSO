@@ -1,5 +1,5 @@
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/first-factor.m ${CMAKE_CURRENT_BINARY_DIR}/first-factor.m COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/second-factor.m ${CMAKE_CURRENT_BINARY_DIR}/second-factor.m COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/first-factor.m ${CMAKE_CURRENT_BINARY_DIR}/first-factor_rank1_rerun.m COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/second-factor.m ${CMAKE_CURRENT_BINARY_DIR}/second-factor_rank1_rerun.m COPYONLY)
 
 # test 1: Matrix factorization with rank 1 but parse in present factors
 add_test (
@@ -18,8 +18,8 @@ add_test (
 		--residual-threshold 1e-6 
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m
 		--parse-factors 1 
-		--solution-first-factor first-factor.m
-		--solution-second-factor second-factor.m
+		--solution-first-factor first-factor_rank1_rerun.m
+		--solution-second-factor second-factor_rank1_rerun.m
 		)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning
 	PROPERTIES WILL_FAIL false)
@@ -29,7 +29,7 @@ set_tests_properties (MatrixFactorizer_Indefinite_Rerunning
 
 	# test 1b: checking results
 add_test (MatrixFactorizer_Indefinite_Rerunning_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor_rank1_rerun.m)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_check_first
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_check_first
@@ -37,7 +37,7 @@ set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_Indefinite_Rerunning_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor_rank1_rerun.m)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_check_second
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_check_second
@@ -60,8 +60,8 @@ add_test (
 		--residual-threshold 1e-6 
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
 		--parse-factors 0 
-		--solution-first-factor first-factor.m
-		--solution-second-factor second-factor.m
+		--solution-first-factor first-factor_rank1_rerun.m
+		--solution-second-factor second-factor_rank1_rerun.m
 		)
 set_tests_properties (MatrixFactorizer_Indefinite_Rerunning_noparse
 	PROPERTIES WILL_FAIL false)

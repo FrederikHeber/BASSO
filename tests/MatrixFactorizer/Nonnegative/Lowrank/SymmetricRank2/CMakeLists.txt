@@ -16,8 +16,8 @@ add_test (MatrixFactorizer_Nonnegative_SymmetricRank2
 		--auxiliary-constraints "Nonnegative"
 		--max-sfp-loops 2
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
-		--solution-first-factor spectralmatrix.m
-		--solution-second-factor pixelmatrix.m)
+		--solution-first-factor spectralmatrix_rank2_nonnegative.m
+		--solution-second-factor pixelmatrix_rank2_nonnegative.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2
@@ -25,7 +25,7 @@ set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2
 
 # test 1b: checking results
 add_test (MatrixFactorizer_Nonnegative_SymmetricRank2_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix_rank2_nonnegative.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_check_first
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_check_first
@@ -33,7 +33,7 @@ set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_Nonnegative_SymmetricRank2_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix_rank2_nonnegative.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_check_second
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_check_second
@@ -59,8 +59,8 @@ if (MPI_FOUND)
 			--auxiliary-constraints "Nonnegative"
 			--max-sfp-loops 2
 			--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
-			--solution-first-factor spectralmatrix_mpi.m
-			--solution-second-factor pixelmatrix_mpi.m)
+			--solution-first-factor spectralmatrix_mpi_rank2_nonnegative.m
+			--solution-second-factor pixelmatrix_mpi_rank2_nonnegative.m)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi
@@ -68,7 +68,7 @@ if (MPI_FOUND)
 	
 	# test 1b: checking results
 	add_test (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_first
-		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix_mpi.m)
+		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix_mpi_rank2_nonnegative.m)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_first
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_first
@@ -76,7 +76,7 @@ if (MPI_FOUND)
 	
 	# test 1c: checking results
 	add_test (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_second
-		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix_mpi.m)
+		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix_mpi_rank2_nonnegative.m)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_second
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Nonnegative_SymmetricRank2_mpi_check_second
