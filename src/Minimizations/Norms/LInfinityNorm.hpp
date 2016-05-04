@@ -15,6 +15,7 @@
 #include "Norm.hpp"
 
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -58,7 +59,10 @@ protected:
 	{
 		// infinity norm
 		assert( getSpace() == _x->getSpace() );
-		return _x->getMaxCoefficientAndIndex().first;
+		unsigned int rowMax;
+		unsigned int colMax;
+		const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+		return vector.array().abs().maxCoeff(&rowMax, &colMax);
 	}
 };
 
