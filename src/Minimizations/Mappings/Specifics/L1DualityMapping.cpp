@@ -51,8 +51,10 @@ void L1DualityMapping::operator()(
 
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
 	assert( _Jx->getSpace()->getDimension() == _x->getSpace()->getDimension() );
-	for (size_t dim = 0; dim < _x->getSpace()->getDimension();++dim)
-		(*_Jx)[dim] = factor * Helpers::sign((*_x)[dim]);
+	const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+	RepresentationAdvocate::set(_Jx,
+			factor * vector.array().cwiseProduct(
+					vector.array().abs().cwiseInverse()));
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =

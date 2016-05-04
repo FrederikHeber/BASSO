@@ -44,13 +44,15 @@ void LInfinityDualityMapping::operator()(
 			boost::chrono::high_resolution_clock::now();
 
 	// [xNorm,k]=max(abs(x));
-	const std::pair<double,int> factor_index =
-			_x->getMaxCoefficientAndIndex();
-	const double factor = ::pow(factor_index.first, (double)power-1.)
-			* Helpers::sign((*_x)[factor_index.second]);
+	unsigned int rowMax;
+	unsigned int colMax;
+	const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+	const double value = vector.array().abs().maxCoeff(&rowMax, &colMax);
+	const double factor = ::pow(value, (double)power-1.)
+			* Helpers::sign((*_x)[rowMax]);
 	// J=xNorm^(q-1)*sign(x(k,1))*circshift(eye(size(x)),[k-1 0]);
 	_Jx->setZero();
-	(*_Jx)[factor_index.second] = factor;
+	(*_Jx)[rowMax] = factor;
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
