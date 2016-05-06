@@ -28,6 +28,8 @@ struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
 class LInfinityNorm;
+class NonnegativeConstraint;
+class NonpositiveConstraint;
 class RangeProjectionSolver;
 class RelativeShrinkageMapping;
 struct SingularValueDecomposition;
@@ -59,6 +61,8 @@ private:
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class LInfinityNorm;
+	friend class NonnegativeConstraint;
+	friend class NonpositiveConstraint;
 	friend class RangeProjectionSolver;
 	friend class RelativeShrinkageMapping;
 	friend struct SingularValueDecomposition;
