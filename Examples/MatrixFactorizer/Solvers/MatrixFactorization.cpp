@@ -284,6 +284,9 @@ void MatrixFactorization::operator()(
 			}
 		}
 
+		// construct transposed version of the data matrix (ColMajor is default)
+		const Eigen::MatrixXd data_transposed = _data.transpose();
+
 		// create outer ("loop") stopping criteria
 		StoppingArguments stopping_args;
 		stopping_args.setTolerance(spectral_opts.residual_threshold);
@@ -441,7 +444,7 @@ void MatrixFactorization::operator()(
 #ifdef MPI_FOUND
 					if (world.size() != 1) {
 						solveOneLoop_MPI(
-								_data.transpose(),
+								data_transposed,
 								pixel_matrix.transpose(),
 								spectral_matrix,
 								master,
@@ -457,7 +460,7 @@ void MatrixFactorization::operator()(
 #else /* OPENMP_FOUND */
 						solveOneLoop_sequentially(
 #endif /* OPENMP_FOUND */
-								_data.transpose(),
+								data_transposed,
 								pixel_matrix.transpose(),
 								spectral_matrix,
 								pixel_opts,
