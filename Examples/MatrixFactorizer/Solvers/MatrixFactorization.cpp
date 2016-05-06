@@ -109,9 +109,9 @@ static void solveOneLoop_OpenMP(
 		IterationInformation &info
 		)
 {
-	std::vector<double> returnvalues(_data.cols(), false);
+	size_t counter = 0;
 	if (!stop_condition) {
-#pragma omp parallel shared(returnvalues)
+#pragma omp parallel reduction (+ : counter)
 		{
 			InRangeSolver solver(
 					opts,
@@ -120,15 +120,14 @@ static void solveOneLoop_OpenMP(
 #pragma omp for
 			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
 				Eigen::VectorXd solution;
-				returnvalues[dim] =
-					solver(fixed_factor,
+				if (solver(fixed_factor,
 							_data.col(dim),
 							variable_factor.col(dim),
 							solution,
 							dim,
 							auxiliary_constraints
-							);
-				if (returnvalues[dim]) {
+							)) {
+					counter = counter+1;
 					#pragma omp critical (solution)
 					variable_factor.col(dim) = solution;
 				} else {
@@ -146,9 +145,8 @@ static void solveOneLoop_OpenMP(
 						info.getLoopTable(), "_minimization");
 			}
 		}
-		stop_condition |=
-				std::find(returnvalues.begin(), returnvalues.end(), false) != returnvalues.end();
 	}
+	stop_condition |= counter != _data.cols();
 }
 #else /* OPENMP_FOUND */
 static void solveOneLoop_sequentially(
