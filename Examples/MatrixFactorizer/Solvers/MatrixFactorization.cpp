@@ -128,7 +128,7 @@ static void solveOneLoop_OpenMP(
 							auxiliary_constraints
 							)) {
 					counter = counter+1;
-					#pragma omp critical (solution)
+//					#pragma omp critical (solution)
 					variable_factor.col(dim) = solution;
 				} else {
 					BOOST_LOG_TRIVIAL(error)
