@@ -47,7 +47,9 @@ void L1DualityMapping::operator()(
 
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
-	const Norm &l1norm = *getSourceSpace()->getNorm();
+	assert( getSourceSpace().get() == _x->getSpace().get() );
+	assert( getTargetSpace().get() == _Jx->getSpace().get() );
+	const Norm &l1norm = *_x->getSpace()->getNorm();
 
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
 	assert( _Jx->getSpace()->getDimension() == _x->getSpace()->getDimension() );

@@ -123,8 +123,9 @@ const double LinearMapping::Norm() const
 const double LinearMapping::MutualCoherence() const
 {
 	double mutual_coherence = 0.;
-	for (unsigned int i=0;i<getSourceSpace()->getDimension();++i) {
-		for (unsigned int j=i+1;j<getSourceSpace()->getDimension();++j) {
+	const unsigned int dim = getSourceSpace()->getDimension();
+	for (unsigned int i=0;i<dim;++i) {
+		for (unsigned int j=i+1;j<dim;++j) {
 			const Eigen::VectorXd col_i = matrix.col(i);
 			const Eigen::VectorXd col_j = matrix.col(j);
 			const double col_i_norm = col_i.norm();

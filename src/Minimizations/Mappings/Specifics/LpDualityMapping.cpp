@@ -54,7 +54,9 @@ void LpDualityMapping::operator()(
 	const boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
-	const Norm &lpnorm = *getSourceSpace()->getNorm();
+	assert( getSourceSpace().get() == _x->getSpace().get() );
+	assert( getTargetSpace().get() == _Jx->getSpace().get() );
+	const Norm &lpnorm = *_x->getSpace()->getNorm();
 	const double p = lpnorm.getPvalue();
 	// (also in case: p == power)
 	// J=abs(x).^(p-1).*sign(x);
