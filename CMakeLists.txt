@@ -8,7 +8,7 @@ project (Basso C CXX)
 
 # set debug and release flags
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g3 -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -DNDEBUG")
 
 # The version number.
 set (Basso_VERSION_MAJOR 1)
