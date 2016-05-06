@@ -113,13 +113,13 @@ static void solveOneLoop_OpenMP(
 	if (!stop_condition) {
 #pragma omp parallel reduction (+ : counter)
 		{
+			Eigen::VectorXd solution;
 			InRangeSolver solver(
 					opts,
 					opts.overall_keys,
 					opts.projection_delta);
 #pragma omp for schedule(static)
 			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
-				Eigen::VectorXd solution;
 				if (solver(fixed_factor,
 							_data.col(dim),
 							variable_factor.col(dim),
@@ -145,6 +145,7 @@ static void solveOneLoop_OpenMP(
 						info.getLoopTable(), "_minimization");
 			}
 		}
+
 	}
 	stop_condition |= counter != _data.cols();
 }
