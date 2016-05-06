@@ -109,18 +109,28 @@ static void solveOneLoop_OpenMP(
 		IterationInformation &info
 		)
 {
-	size_t counter = 0;
+	// init solvers and return values
+	//!> counter counts the number of successful minimizations, should equal number of columns
+	int counter = 0;
+	// cannot use std::vector<> here as this requires proper copy and assignment
+	// operators which is very complicated due to the internal databases and
+	// references for quick and convienient access
+	InRangeSolver* solvers[omp_get_max_threads()];
+	for (int i=0;i<omp_get_max_threads(); ++i)
+		solvers[i] = new InRangeSolver(
+				opts,
+				opts.overall_keys,
+				opts.projection_delta);
+	std::vector<AccumulatedValues> projector_values(omp_get_max_threads());
+	std::vector<AccumulatedValues> solver_values(omp_get_max_threads());
 	if (!stop_condition) {
-#pragma omp parallel reduction (+ : counter)
+#pragma omp parallel shared(solvers, projector_values, solver_values) reduction (+ : counter)
 		{
+			const size_t thread_id = omp_get_thread_num();
 			Eigen::VectorXd solution;
-			InRangeSolver solver(
-					opts,
-					opts.overall_keys,
-					opts.projection_delta);
 #pragma omp for schedule(static)
 			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
-				if (solver(fixed_factor,
+				if ((*solvers[thread_id])(fixed_factor,
 							_data.col(dim),
 							variable_factor.col(dim),
 							solution,
@@ -136,18 +146,24 @@ static void solveOneLoop_OpenMP(
 						<< dim << ".";
 				}
 			}
-			// place accumulated values in loop table
-#pragma omp single nowait
-			{
-				solver.insertAccumulatedProjectorValues(
-						info.getLoopTable(), "_projection");
-				solver.insertAccumulatedSolverValues(
-						info.getLoopTable(), "_minimization");
-			}
-		}
+			projector_values[thread_id] = (*solvers[thread_id]).getAccumulatedProjectorValues();
+			solver_values[thread_id] = (*solvers[thread_id]).getAccumulatedProjectorValues();
+		} /* end of omp parallel section */
 
+		// gather all values to accumulated in a single solver's databases
+		(*solvers[0]).insertProjectorValues(projector_values.begin(), projector_values.end());
+		(*solvers[0]).insertSolverValues(solver_values.begin(), solver_values.end());
+		// place accumulated values in loop table
+		(*solvers[0]).insertAccumulatedProjectorValues(
+				info.getLoopTable(), "_projection");
+		(*solvers[0]).insertAccumulatedSolverValues(
+				info.getLoopTable(), "_minimization");
 	}
 	stop_condition |= counter != _data.cols();
+
+	// free solvers
+	for (int i=0;i<omp_get_max_threads(); ++i)
+		delete solvers[i];
 }
 #else /* OPENMP_FOUND */
 static void solveOneLoop_sequentially(

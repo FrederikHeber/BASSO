@@ -25,7 +25,7 @@ class InnerProblemDatabase;
  */
 struct InRangeSolver
 {
-	/** Constructor for class Solver.
+	/** Constructor for class InRangeSolver.
 	 *
 	 * @param _opts options defining the manner of solving.
 	 * @param _overall_keys set of keys to accumulate from solver's overall
@@ -40,6 +40,15 @@ struct InRangeSolver
 			const InnerProblemDatabase::keys_t &_overall_keys,
 			const double _projection_delta = 1e-8
 			);
+
+	/** Copy constructor for class InRangeSolver.
+	 *
+	 * We need this to be able to store solvers in a std::vector, e.g. for
+	 * parallel runs when we want to preconstruct them.
+	 *
+	 * @param other other instance to copy from
+	 */
+	InRangeSolver(const InRangeSolver &other);
 
 	/** Functor that projects onto range and solves.
 	 *
@@ -97,6 +106,30 @@ struct InRangeSolver
 	 */
 	const AccumulatedValues& getAccumulatedSolverValues() const
 	{ return solverDB.getAccumulatedValues(); }
+
+	/** Function to add values accumulated in other solvers, e.g. due to parallel
+	 * runs, inside this solver's databases.
+	 *
+	 * @param _values_first start iterator
+	 * @param _values_last end iterator
+	 */
+	void insertProjectorValues(
+			const std::vector<AccumulatedValues>::const_iterator &_values_first,
+			const std::vector<AccumulatedValues>::const_iterator &_values_last
+			)
+	{ projectorDB.insertValues(_values_first,_values_last); }
+
+	/** Function to add values accumulated in other solvers, e.g. due to parallel
+	 * runs, inside this solver's databases.
+	 *
+	 * @param _values_first start iterator
+	 * @param _values_last end iterator
+	 */
+	void insertSolverValues(
+			const std::vector<AccumulatedValues>::const_iterator &_values_first,
+			const std::vector<AccumulatedValues>::const_iterator &_values_last
+			)
+	{ solverDB.insertValues(_values_first,_values_last); }
 
 private:
 	const CommandLineOptions &opts;
