@@ -117,7 +117,7 @@ static void solveOneLoop_OpenMP(
 					opts,
 					opts.overall_keys,
 					opts.projection_delta);
-#pragma omp for
+#pragma omp for schedule(static)
 			for (unsigned int dim = 0; dim < _data.cols(); ++dim) {
 				Eigen::VectorXd solution;
 				if (solver(fixed_factor,
