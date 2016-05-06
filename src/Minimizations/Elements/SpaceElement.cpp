@@ -83,7 +83,7 @@ const SpaceElement_ptr_t SpaceElement::getSignVector() const
 	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
 			VectorSpaceOperations::VectorModification>(
 					getSpace()->opcounts.instance));
-	*signvector = Helpers::signum(vector);
+	*signvector = vector.unaryExpr(std::ptr_fun(Helpers::sign));
 	return signvector;
 }
 

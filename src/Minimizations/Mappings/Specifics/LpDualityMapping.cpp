@@ -58,17 +58,16 @@ void LpDualityMapping::operator()(
 	const double p = lpnorm.getPvalue();
 	// (also in case: p == power)
 	// J=abs(x).^(p-1).*sign(x);
-	const SpaceElement_ptr_t sign_x = _x->getSignVector();
 	// need to do it this complicatedly as spaces aren't right
 	RepresentationAdvocate::set(
 			_Jx,
-			RepresentationAdvocate::get(_x->getAbsVector()));
+			RepresentationAdvocate::get(_x).array().abs());
 	_Jx->pow(p-1.);
 	RepresentationAdvocate::set(
 			_Jx,
 			RepresentationAdvocate::get(_Jx).cwiseProduct(
-					RepresentationAdvocate::get(sign_x)
-					));
+					RepresentationAdvocate::get(_x).unaryExpr(std::ptr_fun(Helpers::sign)))
+	);
 	if (p != power) {
 		const double norm = lpnorm(_x);
 		const double pnorm = ::pow(norm, (double)power-p);
