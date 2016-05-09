@@ -7,6 +7,7 @@
 
 #include "RelativeShrinkageMapping.hpp"
 
+#include <functional>
 #include <map>
 
 #include "Log/Logging.hpp"
@@ -38,6 +39,18 @@ RelativeShrinkageMapping::RelativeShrinkageMapping(
 		<< MinimizationIllegalValue_name("lambda");
 }
 
+template <class T>
+struct applyShrinkrage : public std::binary_function<T,T,double>
+{
+	double operator()(const T _value, const double _coefficient) const
+	{
+		const T abs_value = fabs(_value);
+		return (abs_value < _coefficient ?
+				0. :
+				(abs_value-_coefficient)*Helpers::sign(_value));
+	}
+};
+
 void RelativeShrinkageMapping::operator()(
 		const SpaceElement_ptr_t &_x,
 		SpaceElement_ptr_t &_Jx) const
@@ -47,13 +60,11 @@ void RelativeShrinkageMapping::operator()(
 			boost::chrono::high_resolution_clock::now();
 
 	const double coefficient = getRelativeShrinkage(_x);
-	for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i) {
-		const double abs_value = fabs((*_x)[i]);
-		(*_Jx)[i] = abs_value < coefficient ?
-				0. :
-				(abs_value-coefficient)*Helpers::sign((*_x)[i]);
-	}
-	*_Jx *= 1./lambda;
+	RepresentationAdvocate::set(
+			_Jx,
+			(1./lambda)*RepresentationAdvocate::get(_x).unaryExpr(
+					std::bind2nd(applyShrinkrage<double>(), coefficient))
+	);
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
