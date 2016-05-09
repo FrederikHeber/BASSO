@@ -69,23 +69,14 @@ public:
 			) const;
 
 private:
-	/** Helper function to calculate the element in the search space.
-	 *
-	 * @param _t expansion coefficients
-	 * @return element defined by coefficients
-	 */
-	SpaceElement_ptr_t calculateLinearCombination(
-			const std::vector<double> &_t
-			) const;
 
-	/** Calculates the distance vector between \a _dualx and the element
-	 * defined by the expansion coefficients in \a _t with internal search
-	 * space \a U
+	/** Updates the dual iterate defined by the distance between
+	 * \a _dualx and the element the expansion coefficients in
+	 * \a _t with internal search space \a U
 	 * @param _t expansion coefficients
 	 * @param _dualx other vector
-	 * @return distance vector
 	 */
-	SpaceElement_ptr_t calculateDistance(
+	void updateDualIterate(
 			const std::vector<double> &_t,
 			const SpaceElement_ptr_t &_dualx
 			) const;
@@ -114,6 +105,15 @@ private:
 	const std::vector<SpaceElement_ptr_t> &U;
 	//!> precomputed norms over all spanning vector of search space
 	const std::vector<double> normsU;
+
+	//! internal temporary variable
+	mutable SpaceElement_ptr_t resx;
+
+	//!> internal temporary vector for dual element
+	mutable SpaceElement_ptr_t dual_resx;
+
+	//!> internal vector with zero in all components
+	const SpaceElement_ptr_t zeroVec;
 };
 
 

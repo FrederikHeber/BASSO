@@ -32,12 +32,17 @@ public:
 		tolerance(BASSOTOLERANCE)
 	{}
 
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
 	/** Evaluates duality mapping at \a _x.
 	 *
 	 * \param _x point where to evaluate
+	 * \param _Jx duality mapped \a _x
 	 */
-	virtual const SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_x) const = 0;
+	virtual void operator()(
+			const SpaceElement_ptr_t &_x,
+			SpaceElement_ptr_t &_Jx) const = 0;
 
 	/** Setter for internal tolerance.
 	 *

@@ -1,5 +1,5 @@
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/spectralmatrix.m ${CMAKE_CURRENT_BINARY_DIR}/spectralmatrix.m COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/pixelmatrix.m ${CMAKE_CURRENT_BINARY_DIR}/pixelmatrix.m COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/spectralmatrix.m ${CMAKE_CURRENT_BINARY_DIR}/spectralmatrix_rank1_nonnegative.m COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pre/pixelmatrix.m ${CMAKE_CURRENT_BINARY_DIR}/pixelmatrix_rank1_nonnegative.m COPYONLY)
 
 # test 1: Matrix factorization with rank 1 but parse in present factors
 add_test (
@@ -21,8 +21,8 @@ add_test (
 		--max-sfp-loops 2
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m
 		--parse-factors 1 
-		--solution-first-factor spectralmatrix.m
-		--solution-second-factor pixelmatrix.m
+		--solution-first-factor spectralmatrix_rank1_nonnegative.m
+		--solution-second-factor pixelmatrix_rank1_nonnegative.m
 		)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning
 	PROPERTIES WILL_FAIL false)
@@ -32,7 +32,7 @@ set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning
 
 	# test 1b: checking results
 add_test (MatrixFactorizer_Nonnegative_Rerunning_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/spectralmatrix.m spectralmatrix_rank1_nonnegative.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_check_first
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_check_first
@@ -40,7 +40,7 @@ set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_Nonnegative_Rerunning_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/pixelmatrix.m pixelmatrix_rank1_nonnegative.m)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_check_second
 	PROPERTIES WILL_FAIL true)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_check_second
@@ -65,8 +65,8 @@ add_test (
 		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m
 		--parse-factors 0
-		--solution-first-factor spectralmatrix.m
-		--solution-second-factor pixelmatrix.m
+		--solution-first-factor spectralmatrix_rank1_nonnegative.m
+		--solution-second-factor pixelmatrix_rank1_nonnegative.m
 		)
 set_tests_properties (MatrixFactorizer_Nonnegative_Rerunning_noparse
 	PROPERTIES WILL_FAIL false)

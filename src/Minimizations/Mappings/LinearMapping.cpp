@@ -43,8 +43,9 @@ LinearMapping::LinearMapping(
 	}
 }
 
-const SpaceElement_ptr_t LinearMapping::operator()(
-		const SpaceElement_ptr_t &_sourceelement
+void LinearMapping::operator()(
+		const SpaceElement_ptr_t &_sourceelement,
+		SpaceElement_ptr_t &_destelement
 		) const
 {
 	assert( _sourceelement->getSpace() == getSourceSpace() );
@@ -61,11 +62,7 @@ const SpaceElement_ptr_t LinearMapping::operator()(
 			boost::chrono::high_resolution_clock::now();
 	MatrixVectorProductTimings += timing_end - timing_start;
 
-	SpaceElement_ptr_t targetelement =
-			ElementCreator::create(
-					getTargetSpace(),
-					tempvector);
-	return targetelement;
+	RepresentationAdvocate::set(_destelement, tempvector);
 }
 
 SpaceElement_ptr_t LinearMapping::operator*(const SpaceElement_ptr_t &_element) const
@@ -126,8 +123,9 @@ const double LinearMapping::Norm() const
 const double LinearMapping::MutualCoherence() const
 {
 	double mutual_coherence = 0.;
-	for (unsigned int i=0;i<getSourceSpace()->getDimension();++i) {
-		for (unsigned int j=i+1;j<getSourceSpace()->getDimension();++j) {
+	const unsigned int dim = getSourceSpace()->getDimension();
+	for (unsigned int i=0;i<dim;++i) {
+		for (unsigned int j=i+1;j<dim;++j) {
 			const Eigen::VectorXd col_i = matrix.col(i);
 			const Eigen::VectorXd col_j = matrix.col(j);
 			const double col_i_norm = col_i.norm();

@@ -34,11 +34,11 @@
  *	the ones found in  [Schöpfer et al., '06].
  *
  * \param _x vector
- * \return dual element corresponding to one element of the duality mapping for
- * 		x
+ * \param _Jx duality mapped \a _x
  */
-const SpaceElement_ptr_t L1DualityMapping::operator()(
-		const SpaceElement_ptr_t &_x
+void L1DualityMapping::operator()(
+		const SpaceElement_ptr_t &_x,
+		SpaceElement_ptr_t &_Jx
 		) const
 {
 	// start timing
@@ -47,21 +47,22 @@ const SpaceElement_ptr_t L1DualityMapping::operator()(
 
 	// single-valued selection
 	// J=norm(x,1)^(q-1)*sign(x);
-	const Norm &l1norm = *getSourceSpace()->getNorm();
+	assert( getSourceSpace().get() == _x->getSpace().get() );
+	assert( getTargetSpace().get() == _Jx->getSpace().get() );
+	const Norm &l1norm = *_x->getSpace()->getNorm();
 
 	const double factor = ::pow(l1norm(_x), (double)power-1.);
-	SpaceElement_ptr_t sign_x =
-			ElementCreator::create(getTargetSpace(),
-			RepresentationAdvocate::get(_x->getSignVector()));
-	*sign_x *= factor;
+	assert( _Jx->getSpace()->getDimension() == _x->getSpace()->getDimension() );
+	const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+	RepresentationAdvocate::set(_Jx,
+			factor * vector.array().cwiseProduct(
+					vector.array().abs().cwiseInverse()));
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
 	timing += timing_end - timing_start;
 	++count;
-
-	return sign_x;
 }
 
 const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const

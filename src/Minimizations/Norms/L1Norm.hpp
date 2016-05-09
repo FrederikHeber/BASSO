@@ -16,6 +16,7 @@
 #include "Norm.hpp"
 
 #include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -53,10 +54,8 @@ protected:
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( getSpace() == _x->getSpace() );
-		double value = 0.;
-		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
-			value += fabs((*_x)[i]);
-		return value;
+		const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+		return vector.array().abs().sum();
 	}
 };
 

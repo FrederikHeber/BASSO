@@ -14,8 +14,8 @@ add_test (MatrixFactorizer_Indefinite_NonsymmetricRank3
 		--max-loops 10
 		--residual-threshold 1e-4
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
-		--solution-first-factor first-factor.m
-		--solution-second-factor second-factor.m)
+		--solution-first-factor first-factor_rank3_nonsymmetric.m
+		--solution-second-factor second-factor_rank3_nonsymmetric.m)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3
@@ -23,7 +23,7 @@ set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3
 
 # test 1b: checking results
 add_test (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_first
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor_rank3_nonsymmetric.m)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_first
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_first
@@ -31,7 +31,7 @@ set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_first
 
 # test 1c: checking results
 add_test (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_second
-	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor.m)
+	${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor_rank3_nonsymmetric.m)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_second
 	PROPERTIES WILL_FAIL false)
 set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_check_second
@@ -55,8 +55,8 @@ if (MPI_FOUND)
 			--max-loops 10
 			--residual-threshold 1e-4
 			--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/data.m 
-			--solution-first-factor first-factor_mpi.m
-			--solution-second-factor second-factor_mpi.m)
+			--solution-first-factor first-factor_mpi_rank3_nonsymmetric.m
+			--solution-second-factor second-factor_mpi_rank3_nonsymmetric.m)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi
@@ -64,7 +64,7 @@ if (MPI_FOUND)
 	
 	# test 1b: checking results
 	add_test (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_first
-		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor_mpi.m)
+		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/first-factor.m first-factor_mpi_rank3_nonsymmetric.m)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_first
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_first
@@ -72,7 +72,7 @@ if (MPI_FOUND)
 	
 	# test 1c: checking results
 	add_test (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_second
-		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor_mpi.m)
+		${DIFFCMD} ${NDIFF_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}/post/second-factor.m second-factor_mpi_rank3_nonsymmetric.m)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_second
 		PROPERTIES WILL_FAIL false)
 	set_tests_properties (MatrixFactorizer_Indefinite_NonsymmetricRank3_mpi_check_second

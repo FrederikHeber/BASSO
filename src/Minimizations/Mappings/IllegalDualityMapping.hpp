@@ -40,13 +40,17 @@ public:
 	 */
 	const NormedSpace_ptr_t getTargetSpace() const;
 
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
 	/** Mapping function.
 	 *
 	 * @param _sourceelement element to map/transform
-	 * @return new transformed/mapped element
+	 * @param _destelement new transformed/mapped element
 	 */
-	const SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_sourceelement
+	void operator()(
+			const SpaceElement_ptr_t &_sourceelement,
+			SpaceElement_ptr_t &_destelement
 			) const;
 
 	/** Creates the adjoint mapping to this mapping.

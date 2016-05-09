@@ -165,6 +165,9 @@ protected:
 
 	//!> whether and how to orthogonalize new search directions w.r.t old ones
 	const OrthogonalizationType orthogonalization_type;
+
+	//!> internal updated new direction for orthogonalization
+	SpaceElement_ptr_t new_orthogonalized_dir;
 };
 
 

@@ -171,13 +171,35 @@ public:
 	 * @param i index of component
 	 * @return \a i th component of element's representation.
 	 */
-	const double operator[](const int i) const;
+	const double& operator[](const int i) const;
 
 	/** Calculates the norm of this element in the given Space.
 	 *
 	 * @return norm of the element
 	 */
 	const double Norm() const;
+
+	/** Calculates the component-wise power of this element in the given Space.
+	 *
+	 * @param _exponent exponent used in pow
+	 */
+	void pow(const double _exponent);
+
+	/** Scaled addition.
+	 *
+	 * @param _alpha scalar factor
+	 * @param _element element to scale and add
+	 * @return instance plus \a _element that is scaled by \a _alpha
+	 */
+	void scaledAddition(const double _alpha, const SpaceElement_ptr_t &_element);
+
+	/** Scaled addition.
+	 *
+	 * @param _alpha scalar factor
+	 * @param _element element to scale and add
+	 * @return instance plus \a _element that is scaled by \a _alpha
+	 */
+	void scaledAddition(const double _alpha, const SpaceElement &_element);
 
 	/** Scalar multiplication.
 	 *

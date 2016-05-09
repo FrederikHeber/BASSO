@@ -276,7 +276,6 @@ int main (int argc, char *argv[])
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
-	x0->setZero();
 	if (x0->getSpace()->getDimension() < 10)
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Starting at x0 = " << x0;

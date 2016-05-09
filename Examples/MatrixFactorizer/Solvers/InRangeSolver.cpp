@@ -34,6 +34,15 @@ InRangeSolver::InRangeSolver(
 	projection_delta(_projection_delta)
 {}
 
+InRangeSolver::InRangeSolver(const InRangeSolver &other) :
+	opts(other.opts),
+	projector_db(other.projector_db),
+	solver_db(other.solver_db),
+	projectorDB(static_cast<InnerProblemDatabase &>(*projector_db.get())),
+	solverDB(static_cast<InnerProblemDatabase &>(*solver_db.get())),
+	projection_delta(other.projection_delta)
+{}
+
 bool InRangeSolver::operator()(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs,

@@ -43,8 +43,12 @@ public:
 			const unsigned int _num_angles,
 			const unsigned int _num_offsets);
 
-	const SpaceElement_ptr_t operator()(
-				const SpaceElement_ptr_t &_sourceelement
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
+	void operator()(
+				const SpaceElement_ptr_t &_sourceelement,
+				SpaceElement_ptr_t &_destelement
 				) const;
 
 	const Mapping_ptr_t getAdjointMapping() const;

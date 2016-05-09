@@ -26,8 +26,9 @@ Backprojection::Backprojection(
 	MatrixVectorProductCounts(0)
 {}
 
-const SpaceElement_ptr_t Backprojection::operator()(
-		const SpaceElement_ptr_t &_sourceelement
+void Backprojection::operator()(
+		const SpaceElement_ptr_t &_sourceelement,
+		SpaceElement_ptr_t &_destelement
 		) const
 {
 	assert( _sourceelement->getSpace() == getSourceSpace() );
@@ -41,11 +42,7 @@ const SpaceElement_ptr_t Backprojection::operator()(
 			boost::chrono::high_resolution_clock::now();
 	MatrixVectorProductTimings += timing_end - timing_start;
 
-	SpaceElement_ptr_t targetelement =
-			ElementCreator::create(
-					getTargetSpace(),
-					tempvector);
-	return targetelement;
+	RepresentationAdvocate::set(_destelement, tempvector);
 }
 
 const Mapping_ptr_t Backprojection::getAdjointMapping() const

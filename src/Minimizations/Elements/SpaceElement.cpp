@@ -83,7 +83,7 @@ const SpaceElement_ptr_t SpaceElement::getSignVector() const
 	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
 			VectorSpaceOperations::VectorModification>(
 					getSpace()->opcounts.instance));
-	*signvector = Helpers::signum(vector);
+	*signvector = vector.unaryExpr(std::ptr_fun(Helpers::sign));
 	return signvector;
 }
 
@@ -123,7 +123,7 @@ double& SpaceElement::operator[](const int i)
 	return vector[i];
 }
 
-const double SpaceElement::operator[](const int i) const
+const double& SpaceElement::operator[](const int i) const
 {
 	return vector[i];
 }
@@ -132,6 +132,35 @@ const double SpaceElement::Norm() const
 {
 	return getSpace()->getNorm()->operator()(
 			SpaceElement_ptr_t(SelfRef));
+}
+
+void SpaceElement::pow(const double _exponent)
+{
+	vector = vector.array().pow(_exponent);
+}
+
+void SpaceElement::scaledAddition(
+		const double _alpha,
+		const SpaceElement_ptr_t &_element)
+{
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					getSpace()->opcounts.instance));
+	assert( getSpace() == _element->getSpace() );
+	assert( vector.innerSize() == _element->vector.innerSize() );
+	vector += _alpha * _element->vector;
+}
+
+void SpaceElement::scaledAddition(
+		const double _alpha,
+		const SpaceElement &_element)
+{
+	TIMEKEEPER(VectorSpaceOperations::getCountTiming<
+			VectorSpaceOperations::VectorAddition>(
+					getSpace()->opcounts.instance));
+	assert( getSpace() == _element.getSpace() );
+	assert( vector.innerSize() == _element.vector.innerSize() );
+	vector += _alpha * _element.vector;
 }
 
 SpaceElement_ptr_t SpaceElement::operator*(const double _alpha) const

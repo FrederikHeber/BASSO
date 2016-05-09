@@ -15,6 +15,7 @@
 
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
@@ -34,7 +35,6 @@ public:
 		if ((p <= 1.) || (p == std::numeric_limits<double>::infinity()))
 			throw NormIllegalValue_exception()
 				<< NormIllegalValue_name("p");
-
 	}
 	~LpNorm() {}
 
@@ -58,10 +58,8 @@ protected:
 	const double internal_operator(const SpaceElement_ptr_t &_x) const
 	{
 		assert( getSpace() == _x->getSpace() );
-		double value = 0.;
-		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
-			value += ::pow(fabs((*_x)[i]), p);
-		return ::pow(value, 1./p);
+		const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+		return ::pow(vector.array().abs().pow(p).sum(), 1./p);
 	}
 
 private:

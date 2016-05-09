@@ -38,31 +38,28 @@ RelativeShrinkageMapping::RelativeShrinkageMapping(
 		<< MinimizationIllegalValue_name("lambda");
 }
 
-const SpaceElement_ptr_t
-RelativeShrinkageMapping::operator()(
-		const SpaceElement_ptr_t &_x) const
+void RelativeShrinkageMapping::operator()(
+		const SpaceElement_ptr_t &_x,
+		SpaceElement_ptr_t &_Jx) const
 {
 	// start timing
 	const boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
 	const double coefficient = getRelativeShrinkage(_x);
-	SpaceElement_ptr_t result = getTargetSpace()->createElement();
-	for (unsigned int i=0;i<result->getSpace()->getDimension();++i) {
+	for (unsigned int i=0;i<_Jx->getSpace()->getDimension();++i) {
 		const double abs_value = fabs((*_x)[i]);
-		(*result)[i] = abs_value < coefficient ?
+		(*_Jx)[i] = abs_value < coefficient ?
 				0. :
 				(abs_value-coefficient)*Helpers::sign((*_x)[i]);
 	}
-	*result *= 1./lambda;
+	*_Jx *= 1./lambda;
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
 	timing += timing_end - timing_start;
 	++count;
-
-	return result;
 }
 
 const double

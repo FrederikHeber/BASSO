@@ -15,6 +15,16 @@
 #include "Log/Logging.hpp"
 #include "Minimizations/Functions/Minimizers/MinimizerExceptions.hpp"
 
+
+template<class T>
+inline boost::log::formatting_ostream&
+operator<<(boost::log::formatting_ostream&ost, const gsl_vector * values)
+{
+	for (size_t i=0;i<values->size;++i)
+		ost << gsl_vector_get(values, i) << " ";
+	return ost;
+}
+
 Minimizer<gsl_vector>::Minimizer(
 		const unsigned int _N
 		) :
@@ -59,7 +69,7 @@ Minimizer<gsl_vector>::checkGradient(
 
 static void doWarnIterate()
 {
-	bool repeating = false;
+	static bool repeating = false;
 	if (!repeating) {
 		BOOST_LOG_TRIVIAL(warning)
 			<< "gsl_multimin could not improve iterate anymore, not warning any longer.";
@@ -102,27 +112,18 @@ Minimizer<gsl_vector>::minimize(
 		{
 			const gsl_vector * const currentiterate =
 					gsl_multimin_fdfminimizer_x(s);
-			std::stringstream iterate;
-			iterate << "currentiterate";
 			for (unsigned int i=0;i<N;++i) {
 				const double &value = gsl_vector_get(currentiterate, i);
 				if (isnan(value) || isinf(value)) {
-					iterate << ", #" << i;
+					std::stringstream iterate;
+					iterate << "currentiterate, #" << i;
 					throw MinimizerIllegalNumber_exception()
 					<< MinimizerIllegalNumber_variablename(iterate.str());
 				}
 			}
 		}
-		{
-			std::stringstream iterate;
-			const gsl_vector * const currentiterate =
-					gsl_multimin_fdfminimizer_x(s);
-			iterate << "Current iterate #" << iter << ":";
-			for (unsigned int i=0;i<N;++i)
-				iterate << " " << gsl_vector_get(currentiterate, i);
-			BOOST_LOG_TRIVIAL(trace)
-				<< iterate.str();
-		}
+		BOOST_LOG_TRIVIAL(trace)
+			<< "Current iterate #" << iter << ":" << " " << gsl_multimin_fdfminimizer_x(s);
 
 		if (gsl_status == GSL_ENOPROG) {
 			doWarnIterate();

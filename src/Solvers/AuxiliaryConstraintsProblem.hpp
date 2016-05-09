@@ -88,7 +88,6 @@ private:
 		*result.m_solution = _startingvalue;
 		result.m_dual_solution =
 				_startingvalue->getSpace()->getDualSpace()->createElement();
-		result.m_dual_solution->setZero();
 		(*ac)(result.m_solution);
 		result.residuum = (_startingvalue - result.m_solution)->Norm();
 

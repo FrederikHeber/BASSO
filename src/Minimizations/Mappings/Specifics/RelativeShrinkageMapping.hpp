@@ -42,13 +42,17 @@ public:
 			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _lambda);
 
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
 	/** Evaluates for the given \a _x the soft thresholding result with respect
 	 * to \a _lambda.
 	 * @param _x vector to soft-threshold
-	 * @return componentwise soft threshold of \a _x by \a lambda
+	 * @param _Jx componentwise soft threshold of \a _x by \a lambda
 	 */
-	const SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_x) const;
+	void operator()(
+			const SpaceElement_ptr_t &_x,
+			SpaceElement_ptr_t &_Jx) const;
 
 	/** Creates the adjoint mapping to this mapping.
 	 *

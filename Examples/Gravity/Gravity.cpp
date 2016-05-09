@@ -148,7 +148,6 @@ int main (int argc, char *argv[])
 			false /* true solution calculation */);
 	SpaceElement_ptr_t solution_start =
 			inverseproblem->x->getSpace()->createElement();
-	solution_start->setZero();
 	GeneralMinimizer::ReturnValues result =
 			solver( solution_start );
 	if (result.status == GeneralMinimizer::ReturnValues::error)
