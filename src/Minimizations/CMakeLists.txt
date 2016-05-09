@@ -140,6 +140,7 @@ install (FILES Minimizers/StoppingCriteria/StoppingCriterion_impl.hpp DESTINATIO
 install (FILES Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp DESTINATION include)
 
 install (FILES Norms/Specifics/DualRegularizedL1Norm.hpp DESTINATION include)
+install (FILES Norms/Specifics/MappedNorm.hpp DESTINATION include)
 install (FILES Norms/Specifics/RegularizedL1Norm.hpp DESTINATION include)
 install (FILES Norms/IllegalNorm.hpp DESTINATION include)
 install (FILES Norms/L1Norm.hpp DESTINATION include)
