@@ -63,9 +63,18 @@ int main (int argc, char *argv[])
 		// find bounds
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
-		const double length = fabs(max - min);
 		BOOST_LOG_TRIVIAL(info)
 				<< "Data range is [" << min << ":" << max << "]";
+		double length = fabs(max - min);
+		if (opts.Colorize) {
+			if ((max > 0) && (min < 0)) {
+				length = std::max(max,fabs(min));
+			} else {
+				// either max and min both positive or both negative
+				// fourth case is excluded because of order
+				assert( !((max < 0) && (min > 0)));
+			}
+		}
 
 		png::image< png::rgb_pixel > *image = NULL;
 		switch(opts.Rotate) {
@@ -103,8 +112,18 @@ int main (int argc, char *argv[])
 			 if (opts.Flip)
 				 std::swap(i,j);
 
-			 const unsigned int value = 255.*(matrix[i+j*multiplier] - min)/length;
-			 const png::rgb_pixel pixel_value = png::rgb_pixel(value, value, value);
+			 unsigned int value = matrix[i+j*multiplier];
+			 png::rgb_pixel pixel_value;
+			 if (opts.Colorize) {
+				 value = 255*(value)/length;
+				 if (value > 0)
+					 pixel_value = png::rgb_pixel(value, 0, 0);
+				 else
+					 pixel_value = png::rgb_pixel(0, 0, value);
+			 } else {
+				 value = 255*(value - min)/length;
+				 pixel_value = png::rgb_pixel(value, value, value);
+			 }
 			 switch(opts.Rotate) {
 			 case 0:
 				 (*image)[x][y] = pixel_value;

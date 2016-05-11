@@ -59,6 +59,7 @@ public:
 	unsigned int num_pixel_y;
 	bool LeftToRight;
 	bool BottomToTop;
+	bool Colorize;
 	bool Flip;
 	unsigned int Rotate;
 

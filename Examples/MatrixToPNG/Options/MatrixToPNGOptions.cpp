@@ -32,20 +32,22 @@ void MatrixToPNGOptions::init()
 	boost::program_options::options_description desc_matrixtopng("MatrixToPNG options");
 
 	desc_matrixtopng.add_options()
-			("matrix", po::value< boost::filesystem::path >(),
-					"set the file name of input matrix")
+			("bottom-to-top", po::value< bool >(),
+					"set whether to run the columns from bottom to top or reverse")
+			("colorize", po::value< bool >(),
+					"use color red and blue to indicate positive and negative areas")
+			("flip", po::value< bool >(),
+					"set whether to exchange rows and columns")
 			("image", po::value< boost::filesystem::path >(),
 					"set the file name of output image")
+			("left-to-right", po::value< bool >(),
+					"set whether to run the rows from left to right or reverse")
+			("matrix", po::value< boost::filesystem::path >(),
+					"set the file name of input matrix")
 	        ("num-pixels-x", po::value< unsigned int >(),
 	        		"set the desired number of pixels in x direction")
 			("num-pixels-y", po::value< unsigned int >(),
 					"set the desired number of pixels in y direction")
-			("bottom-to-top", po::value< bool >(),
-					"set whether to run the columns from bottom to top or reverse")
-			("flip", po::value< bool >(),
-					"set whether to exchange rows and columns")
-			("left-to-right", po::value< bool >(),
-					"set whether to run the rows from left to right or reverse")
 			("rotate", po::value< unsigned int >(),
 					"set final rotation to none(0), -90 (1), -180(2), +90 (3)")
 	        ;
@@ -57,16 +59,42 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 {
 	Options::parse(argc,argv);
 
-	if (vm.count("matrix")) {
-		matrix_file = vm["matrix"].as<boost::filesystem::path>();
+	if (vm.count("bottom-to-top")) {
+		BottomToTop = vm["bottom-to-top"].as<bool>();
 		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing matrix from " << matrix_file;
+			<< "We go through columns from "
+			<< (BottomToTop ? "bottom to top" : "top to bottom");
+	}
+
+	if (vm.count("colorize")) {
+		Colorize = vm["colorize"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We " << (Colorize ? "do" : "don't") << " use colors to designate positive and negative areas";
+	}
+
+	if (vm.count("flip")) {
+		Flip = vm["flip"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We " << (Flip ? "do" : "don't") << " exchange rows and columns";
 	}
 
 	if (vm.count("image")) {
 		image_file = vm["image"].as<boost::filesystem::path>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Writing image from " << image_file;
+	}
+
+	if (vm.count("left-to-right")) {
+		LeftToRight = vm["left-to-right"].as<bool>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "We go through rows from "
+			<< (LeftToRight ? "left to right" : "right to left");
+	}
+
+	if (vm.count("matrix")) {
+		matrix_file = vm["matrix"].as<boost::filesystem::path>();
+		BOOST_LOG_TRIVIAL(debug)
+			<< "Parsing matrix from " << matrix_file;
 	}
 
 	if (vm.count("num-pixels-x")) {
@@ -79,27 +107,6 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Number of y pixels was set to " << num_pixel_y;
-	}
-
-	if (vm.count("left-to-right")) {
-		LeftToRight = vm["left-to-right"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We go through rows from "
-			<< (LeftToRight ? "left to right" : "right to left");
-	}
-
-	if (vm.count("bottom-to-top")) {
-		BottomToTop = vm["bottom-to-top"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We go through columns from "
-			<< (BottomToTop ? "bottom to top" : "top to bottom");
-	}
-
-
-	if (vm.count("flip")) {
-		Flip = vm["flip"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We " << (Flip ? "do" : "don't") << " exchange rows and columns";
 	}
 
 	if (vm.count("rotate")) {
@@ -163,12 +170,13 @@ void MatrixToPNGOptions::store(std::ostream &_output) const
 	Options::store(_output);
 
 	_output << "# [MatrixToPNG]" << std::endl;
-	writeValue<boost::filesystem::path>(_output, vm,  "matrix");
+	writeValue<bool>(_output, vm,  "bottom-to-top");
+	writeValue<bool>(_output, vm,  "colorize");
+	writeValue<bool>(_output, vm,  "flip");
 	writeValue<boost::filesystem::path>(_output, vm,  "image");
+	writeValue<bool>(_output, vm,  "left-to-right");
+	writeValue<boost::filesystem::path>(_output, vm,  "matrix");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-x");
 	writeValue<unsigned int>(_output, vm,  "num-pixels-y");
-	writeValue<bool>(_output, vm,  "left-to-right");
-	writeValue<bool>(_output, vm,  "bottom-to-top");
-	writeValue<bool>(_output, vm,  "flip");
 	writeValue<unsigned int>(_output, vm,  "rotate");
 }
