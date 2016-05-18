@@ -3,8 +3,10 @@
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (MatrixToPNGBase
+	Colortables/ColorTable.cpp
 	Options/MatrixToPNGOptions.cpp)
 
+install (FILES Colortables/ColorTable.hpp DESTINATION include)
 install (FILES Options/MatrixToPNGOptions.hpp DESTINATION include)
 
 # add the executable

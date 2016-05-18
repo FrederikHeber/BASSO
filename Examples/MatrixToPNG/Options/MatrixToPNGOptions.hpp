@@ -59,7 +59,7 @@ public:
 	unsigned int num_pixel_y;
 	bool LeftToRight;
 	bool BottomToTop;
-	bool Colorize;
+	std::string Colorize;
 	bool Flip;
 	unsigned int Rotate;
 

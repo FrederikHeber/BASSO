@@ -13,10 +13,66 @@
 #include <boost/chrono.hpp>
 #include <png++/png.hpp>
 
+#include "Colortables/ColorTable.hpp"
 #include "Options/MatrixToPNGOptions.hpp"
 
 #include "Log/Logging.hpp"
 #include "MatrixIO/MatrixIO.hpp"
+
+png::rgb_pixel getPixelValue(
+		const double _value,
+		const double _min,
+		const double _max,
+		const Eigen::MatrixXd &_colortable)
+{
+	png::rgb_pixel pixel_value;
+	if ((_colortable.rows() % 2 != 0) && (_min < 0)) {
+		// odd number of rows: middle most row gives "zero" color
+		const int no_sections = floor(_colortable.rows()/2);
+		const double length = (_value > 0) ? fabs(_max) : fabs(_min);
+		double temp = 0.;
+		if (_value > 0)
+			temp = (double)no_sections*_value/length;
+		else
+			temp = (double)no_sections*fabs(_value - _min)/length;
+		temp = std::max(std::min(temp, (double)no_sections), 0.);
+		const int section = floor(temp);
+		const double fraction = temp - section;
+		int offset = 0;
+		if (_value > 0) { // use second half of color table
+			offset = no_sections;
+		}
+		const int either_section = offset + section;
+		int or_section = offset + section + 1;
+		if (or_section == _colortable.rows())
+			or_section = either_section;
+		assert( (either_section >=0 ) && (either_section < _colortable.rows()));
+		assert( (or_section >=0 ) && (or_section < _colortable.rows()));
+		pixel_value = png::rgb_pixel(
+				255*(_colortable(either_section,0)*(1.-fraction) + _colortable(or_section,0)*fraction),
+				255*(_colortable(either_section,1)*(1.-fraction) + _colortable(or_section,1)*fraction),
+				255*(_colortable(either_section,2)*(1.-fraction) + _colortable(or_section,2)*fraction)
+				);
+	} else {
+		const int no_sections = _colortable.rows()-1;
+		const double length = fabs(_max - _min);
+		const double temp = (double)no_sections*fabs(_value - _min)/length;
+		const int section = floor(temp);
+		const double fraction = temp - section;
+		const int either_section = section;
+		int or_section = section + 1;
+		if (or_section == _colortable.rows())
+			or_section = either_section;
+		assert( (either_section >=0 ) && (either_section < _colortable.rows()));
+		assert( (or_section >=0 ) && (or_section < _colortable.rows()));
+		pixel_value = png::rgb_pixel(
+				255*(_colortable(either_section,0)*(1.-fraction) + _colortable(or_section,0)*fraction),
+				255*(_colortable(either_section,1)*(1.-fraction) + _colortable(or_section,1)*fraction),
+				255*(_colortable(either_section,2)*(1.-fraction) + _colortable(or_section,2)*fraction)
+				);
+	}
+	return pixel_value;
+}
 
 int main (int argc, char *argv[])
 {
@@ -59,22 +115,28 @@ int main (int argc, char *argv[])
 		return 255;
 	assert( matrix.rows() == num_pixels);
 
+	// get color table
+	ColorTable table;
+	Eigen::MatrixXd colortable;
+	if (!opts.Colorize.empty()) {
+		if (table.isKeyPresent(opts.Colorize))
+			colortable = table.getColorTable(opts.Colorize);
+		else {
+			if (!MatrixIO::parse(opts.Colorize, "color table", colortable))
+				return 255;
+			assert( matrix.rows() == num_pixels);
+		}
+	} else {
+		colortable = table.getColorTable("blackwhite");
+	}
+	assert( colortable.cols() == 3 );
+
 	if (!boost::filesystem::exists(opts.image_file)) {
 		// find bounds
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
 		BOOST_LOG_TRIVIAL(info)
 				<< "Data range is [" << min << ":" << max << "]";
-		double length = fabs(max - min);
-		if (opts.Colorize) {
-			if ((max > 0) && (min < 0)) {
-				length = std::max(max,fabs(min));
-			} else {
-				// either max and min both positive or both negative
-				// fourth case is excluded because of order
-				assert( !((max < 0) && (min > 0)));
-			}
-		}
 
 		png::image< png::rgb_pixel > *image = NULL;
 		switch(opts.Rotate) {
@@ -112,18 +174,8 @@ int main (int argc, char *argv[])
 			 if (opts.Flip)
 				 std::swap(i,j);
 
-			 unsigned int value = matrix[i+j*multiplier];
-			 png::rgb_pixel pixel_value;
-			 if (opts.Colorize) {
-				 value = 255*(value)/length;
-				 if (value > 0)
-					 pixel_value = png::rgb_pixel(value, 0, 0);
-				 else
-					 pixel_value = png::rgb_pixel(0, 0, value);
-			 } else {
-				 value = 255*(value - min)/length;
-				 pixel_value = png::rgb_pixel(value, value, value);
-			 }
+			 png::rgb_pixel pixel_value =
+					 getPixelValue(matrix[i+j*multiplier], min, max, colortable);
 			 switch(opts.Rotate) {
 			 case 0:
 				 (*image)[x][y] = pixel_value;

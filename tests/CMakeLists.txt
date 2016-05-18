@@ -36,3 +36,6 @@ add_subdirectory (RadonMatrixWriter)
 if (USE_NDIFF)
 	add_subdirectory (ndiff)
 endif (USE_NDIFF)
+
+# tests for MatrixToPNG program
+add_subdirectory (MatrixToPNG)

@@ -7,12 +7,14 @@
 
 #include "BassoConfig.h"
 
+#include "MatrixToPNG/Colortables/ColorTable.hpp"
 #include "MatrixToPNG/Options/MatrixToPNGOptions.hpp"
 
 #include <boost/filesystem.hpp>
 #include <iostream>
 
 #include "Log/Logging.hpp"
+
 
 namespace po = boost::program_options;
 
@@ -34,8 +36,8 @@ void MatrixToPNGOptions::init()
 	desc_matrixtopng.add_options()
 			("bottom-to-top", po::value< bool >(),
 					"set whether to run the columns from bottom to top or reverse")
-			("colorize", po::value< bool >(),
-					"use color red and blue to indicate positive and negative areas")
+			("colorize", po::value< std::string >(),
+					"use a color table such as redgreen, redblue, bluegreenred or blackwhite (default)")
 			("flip", po::value< bool >(),
 					"set whether to exchange rows and columns")
 			("image", po::value< boost::filesystem::path >(),
@@ -67,9 +69,14 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 	}
 
 	if (vm.count("colorize")) {
-		Colorize = vm["colorize"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We " << (Colorize ? "do" : "don't") << " use colors to designate positive and negative areas";
+		Colorize = vm["colorize"].as<std::string>();
+		if (!Colorize.empty())
+			BOOST_LOG_TRIVIAL(debug)
+				<< "We do use colors to designate positive and negative areas, using "
+				<< Colorize << ".";
+		else
+			BOOST_LOG_TRIVIAL(debug)
+				<< "We don't use colors to designate positive and negative areas.";
 	}
 
 	if (vm.count("flip")) {
@@ -124,6 +131,17 @@ bool MatrixToPNGOptions::internal_checkSensibility() const
 		return false;
 	}
 
+	if (vm.count("colorize")) {
+		// check whether it's a file name or a key in the color table
+		ColorTable table;
+		boost::filesystem::path filepath(Colorize);
+		if ((!table.isKeyPresent(Colorize)) && (!boost::filesystem::exists(filepath))) {
+			BOOST_LOG_TRIVIAL(error)
+				<< "Either the color table name is mis-spelled or the given color matrix filename does not exist";
+			return false;
+		}
+	}
+
 	if (!vm.count("image")) {
 		BOOST_LOG_TRIVIAL(error)
 				<< "image filename not set";
@@ -171,7 +189,7 @@ void MatrixToPNGOptions::store(std::ostream &_output) const
 
 	_output << "# [MatrixToPNG]" << std::endl;
 	writeValue<bool>(_output, vm,  "bottom-to-top");
-	writeValue<bool>(_output, vm,  "colorize");
+	writeValue<std::string>(_output, vm,  "colorize");
 	writeValue<bool>(_output, vm,  "flip");
 	writeValue<boost::filesystem::path>(_output, vm,  "image");
 	writeValue<bool>(_output, vm,  "left-to-right");
