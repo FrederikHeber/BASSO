@@ -131,7 +131,7 @@ int main (int argc, char *argv[])
 	}
 	assert( colortable.cols() == 3 );
 
-	if (!boost::filesystem::exists(opts.image_file)) {
+//	if (!boost::filesystem::exists(opts.image_file)) {
 		// find bounds
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
@@ -201,9 +201,10 @@ int main (int argc, char *argv[])
 		output.close();
 		if (image != NULL)
 			delete image;
-	} else {
-		BOOST_LOG_TRIVIAL(error) << "The given output file exists.";
-	}
+//	} else {
+//		BOOST_LOG_TRIVIAL(error) << "The given output file exists.";
+//		return 1;
+//	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
