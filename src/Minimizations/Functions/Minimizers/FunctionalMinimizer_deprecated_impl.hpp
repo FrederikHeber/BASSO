@@ -88,24 +88,20 @@ FunctionalMinimizer_deprecated<S,T>::checkWolfeConditions(
 			realgradient <= interpolatedgradient;
 
 //		// 1. positivity of step width component
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "1. Positivity: " << component << " > "
-//			<< constant_positivity;
+//		LOG(trace, "1. Positivity: " << component << " > " << constant_positivity);
 //		conditions_fulfilled &=
 //				component > constant_positivity;
 //		// 2. still descent in the current gradient component
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "2. Still descent: " << currentgradient[*iter]
-//			<< " < " << std::numeric_limits<double>::epsilon();
+//		LOG(trace, "2. Still descent: " << currentgradient[*iter]
+//			<< " < " << std::numeric_limits<double>::epsilon());
 //		conditions_fulfilled &= currentgradient[*iter]
 //						< std::numeric_limits<double>::epsilon();
 //		// 3. stronger descent than linear interpolation
 //		const double linearinterpolate = _startvalue
 //				+ constant_interpolation * component *
 //				_startgradient[*iter];
-//		BOOST_LOG_TRIVIAL(trace)
-//			<< "3. Stronger than linear: " << currentvalue
-//			<< " < " << linearinterpolate;
+//		LOG(trace, "3. Stronger than linear: " << currentvalue
+//			<< " < " << linearinterpolate);
 //		conditions_fulfilled &= (currentvalue < linearinterpolate);
 	if (conditions_fulfilled)
 		return FunctionMinimizer::gradient_success;

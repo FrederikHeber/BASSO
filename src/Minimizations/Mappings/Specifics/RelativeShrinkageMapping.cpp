@@ -100,14 +100,12 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 		const std::pair<double,size_t> maxCoeff = *iter;
 		largest_coeffs_map.erase(--(iter.base()));
 		// compare with coefficient
-//		BOOST_LOG_TRIVIAL(info)
-//			<< "Is current max " << maxCoeff.first
-//			<< " greater than coefficient " << coefficient << "?";
+//		LOG(info, "Is current max " << maxCoeff.first
+//			<< " greater than coefficient " << coefficient << "?");
 		if (coefficient > maxCoeff.first + BASSOTOLERANCE)
 			break;
 		// add to l1norm sum and to active set
-//		BOOST_LOG_TRIVIAL(info)
-//			<< "Adding " << maxCoeff.second << " to active_set.";
+//		LOG(info, "Adding " << maxCoeff.second << " to active_set.";
 		l1norm_sum += maxCoeff.first;
 		++active_set_size;
 		active_set.push_back(maxCoeff.second);
@@ -124,14 +122,11 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 ////		std::copy(
 ////				active_set.begin(), active_set.end(),
 ////				std::ostream_iterator<int>(output, ";"));
-////		BOOST_LOG_TRIVIAL(info)
-////				<< "Final active_set is " << output.str();
+////		LOG(info, "Final active_set is " << output.str();
 ////	}
 //	for (active_set_t::const_iterator iter = active_set.begin();
 //			iter != active_set.end(); ++iter) {
-////		BOOST_LOG_TRIVIAL(info)
-////				<< "Is |_x[" << *iter << "]| = "
-////				<<  fabs((*_x)[*iter]) << " >= " << coefficient << "?";
+////		LOG(info, "Is |_x[" << *iter << "]| = " <<  fabs((*_x)[*iter]) << " >= " << coefficient << "?");
 //		assert( fabs((*_x)[*iter]) + BASSOTOLERANCE >= coefficient );
 //	}
 //	// all other components don't
@@ -144,9 +139,7 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 //				complement_set.begin());
 //	for (active_set_t::const_iterator iter = complement_set.begin();
 //			iter != eraseiter; ++iter) {
-////		BOOST_LOG_TRIVIAL(info)
-////				<< "Is |_x[" << *iter << "]| = "
-////				<<  fabs((*_x)[*iter]) << " < " << coefficient << "?";
+////		LOG(info, "Is |_x[" << *iter << "]| = " <<  fabs((*_x)[*iter]) << " < " << coefficient << "?");
 //		assert( fabs((*_x)[*iter]) < coefficient + BASSOTOLERANCE);
 //	}
 

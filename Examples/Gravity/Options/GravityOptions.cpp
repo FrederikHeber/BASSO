@@ -65,8 +65,7 @@ bool GravityOptions::internal_checkSensibility() const
 {
 	// not yet needed, we don't adhere external gravity information
 //	if ((!vm.count("gravity-file")) || (!boost::filesystem::exists(gravityfield_file))) {
-//		BOOST_LOG_TRIVIAL(error)
-//				<< "Gravity file not set or not present.";
+//		LOG(error, "Gravity file not set or not present.");
 //		return false;
 //	}
 

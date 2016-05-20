@@ -74,9 +74,7 @@ const double getNthArgumentAs(
 			<< MappingIllegalValue_name("Not enough arguments given.");
     try {
         const T value = boost::any_cast<const T>(_args[_N]);
-//    	BOOST_LOG_TRIVIAL(info)
-//    			<< "getNthArgumentAs of args "
-//    			<< "[" << _N << "] is " << value;
+//    	LOG(info, "getNthArgumentAs of args " << "[" << _N << "] is " << value;
     	return value;
     } catch(const boost::bad_any_cast &) {
 		throw MappingIllegalValue_exception()

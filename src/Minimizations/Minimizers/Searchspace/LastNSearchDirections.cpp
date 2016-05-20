@@ -107,12 +107,9 @@ const unsigned int calculateBregmanProjection(
 			p/q)/searchdir_distance;
 //			const double projection_coefficient =
 //					projected_distance/searchdir_distance;
-//	BOOST_LOG_TRIVIAL(info)
-//		<< "Projection coefficient is " << gamma_projected_distance << "/"
-//		<< searchdir_distance << " = " << tmin[0];
-//			BOOST_LOG_TRIVIAL(info)
-//				<< "Compare numerator to "
-//				<< J_q(newdir) * _olddir / searchdir_norm;
+//	LOG(info, "Projection coefficient is " << gamma_projected_distance << "/"
+//		<< searchdir_distance << " = " << tmin[0]);
+//	LOG(info, "Compare numerator to " << J_q(newdir) * _olddir / searchdir_norm);
 	return 1;
 }
 

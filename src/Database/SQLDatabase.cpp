@@ -292,15 +292,14 @@ bool SQLDatabase::readTable(
 			Table::values_t valuevector;
 			ses << "SELECT " << *iter
 				<< " FROM " << _table.getName(), into(valuevector), now;
-//			BOOST_LOG_TRIVIAL(trace)
-//				<< "SQL: " << "SELECT " << *iter
-//				<< " FROM " << _table.getName();
-//			std::stringstream valuestream;
-//			std::copy(valuevector.begin(),valuevector.end(),
-//					std::ostream_iterator<std::string>(valuestream, ","));
-//			BOOST_LOG_TRIVIAL(trace)
-//				<< "RESULT: #" << valuevector.size() << " elements ("
-//				<< valuestream.str() << ")";
+//			if (Verbose::verbosity(boost::log::trivial::trace)) {
+//				LOG(trace, "SQL: " << "SELECT " << *iter << " FROM " << _table.getName());
+//				std::stringstream valuestream;
+//				std::copy(valuevector.begin(),valuevector.end(),
+//						std::ostream_iterator<std::string>(valuestream, ","));
+//				LOG(trace, "RESULT: #" << valuevector.size() << " elements ("
+//					<< valuestream.str() << ")");
+//			}
 			KeyValueMap.insert( std::make_pair(*iter, valuevector) );
 		}
 
@@ -453,9 +452,8 @@ size_t SQLDatabase::getIdOfTuplePresentInTable(
 	// we still have to add it to SQLDatabase's tables as otherwise we cannot
 	// form sensible SQL statements (without knowing the table structure).
 //	if (!_table.isUptodate()) {
-//		BOOST_LOG_TRIVIAL(warning)
-//			<< "Table " << _table.getName()
-//			<< " is not up-to-date. Parameter tuple may be yet unknown.";
+//		LOG(warning, "Table " << _table.getName()
+//			<< " is not up-to-date. Parameter tuple may be yet unknown.");
 //	}
 
 	std::vector<size_t> rowid;

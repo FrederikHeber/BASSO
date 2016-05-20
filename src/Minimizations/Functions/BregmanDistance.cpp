@@ -60,9 +60,7 @@ double BregmanDistance::operator()(
 		) const
 {
 
-//	BOOST_LOG_TRIVIAL(trace)
-//			<< "Calculating Bregman distance between "
-//			<< _x << " and " << _y;
+//	LOG(trace, "Calculating Bregman distance between " << _x << " and " << _y);
 	double result = 0.;
 	result += (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
 	result += (1./power) * ::pow(norm(_y), power);

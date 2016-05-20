@@ -324,11 +324,9 @@ void MatrixFactorization::operator()(
 				SpaceElement_ptr_t tempvector = ElementCreator::create(
 						L2,
 						spectral_matrix.col(i));
-//				BOOST_LOG_TRIVIAL(info)
-//							<< "tempvector of col " << i << " before constraining is " << *tempvector;
+//				LOG(info, "tempvector of col " << i << " before constraining is " << *tempvector);
 				(*auxiliary_constraints)(tempvector);
-//				BOOST_LOG_TRIVIAL(info)
-//							<< "tempvector of col " << i << " after constraining is " << *tempvector;
+//				LOG(info, "tempvector of col " << i << " after constraining is " << *tempvector);
 				const Eigen::Ref<Eigen::MatrixXd::ColXpr> col = spectral_matrix.col(i);
 				VectorSetter::set(col, tempvector);
 			}

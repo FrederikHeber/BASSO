@@ -97,8 +97,7 @@ struct parser
             break;
         }
         case ID_CHAR:       // matched something else
-//        	BOOST_LOG_TRIVIAL(info)
-//				<< "Matched a char." << t.value();
+//        	LOG(info, "Matched a char." << t.value());
         	// check whether it's a boolean operator
             break;
         }
