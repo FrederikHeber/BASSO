@@ -91,8 +91,7 @@ static void solveOneLoop_MPI(
 			info.getLoopTable(), "_minimization");
 	master.resetAccumulatedSolverValues();
 	if (!solver_ok)
-		BOOST_LOG_TRIVIAL(error)
-			<< "The minimizer for InRangeSolver could not finish.";
+		LOG(error, "The minimizer for InRangeSolver could not finish.");
 	stop_condition |= !solver_ok;
 }
 
@@ -225,8 +224,7 @@ void MatrixFactorization::operator()(
 
 		// calculate an initial residual prior to the starting factors
 		double residual = _data.norm();
-		BOOST_LOG_TRIVIAL(info)
-			<< "#" << loop_nr << " starting residual is " << residual;
+		LOG(info, "#" << loop_nr << " starting residual is " << residual);
 		info.replace(IterationInformation::LoopTable, "residual", residual);
 		info.addTuple(IterationInformation::LoopTable);
 
@@ -242,8 +240,7 @@ void MatrixFactorization::operator()(
 
 			// check whether parsing was successful, break otherwise
 			if (!parse_status) {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Parsing of either or both factors failed, aborting.";
+				LOG(error, "Parsing of either or both factors failed, aborting.");
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
@@ -255,15 +252,13 @@ void MatrixFactorization::operator()(
 
 		/// construct solution starting points
 		if (!parse_status) {
-			BOOST_LOG_TRIVIAL(info)
-					<< "Setting spectral matrix K to random starting values.";
+			LOG(info, "Setting spectral matrix K to random starting values.");
 			spectral_matrix = Eigen::MatrixXd(_data.rows(), spectral_opts.sparse_dim);
 			detail::constructRandomMatrix(spectral_matrix);
 		} else {
 			if ((spectral_matrix.rows() == _data.rows())
 					&& (spectral_matrix.cols() == spectral_opts.sparse_dim)) {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Using spectral matrix K parsed from file.";
+				LOG(info, "Using spectral matrix K parsed from file.");
 			} else {
 				BOOST_LOG_TRIVIAL(error)
 						<< "Parsed spectral matrix has dimensions "
@@ -277,16 +272,14 @@ void MatrixFactorization::operator()(
 			}
 		}
 		if (!parse_status) {
-			BOOST_LOG_TRIVIAL(info)
-					<< "Setting pixel matrix X to zero.";
+			LOG(info, "Setting pixel matrix X to zero.");
 			pixel_matrix = Eigen::MatrixXd(spectral_opts.sparse_dim, _data.cols());
 			detail::constructZeroMatrix(
 					pixel_matrix);
 		} else {
 			if ((pixel_matrix.rows() == spectral_opts.sparse_dim)
 					&& (pixel_matrix.cols() == _data.cols())) {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Using pixel matrix X parsed from file.";
+				LOG(info, "Using pixel matrix X parsed from file.");
 			} else {
 				BOOST_LOG_TRIVIAL(error)
 						<< "Parsed pixel matrix has dimensions "
@@ -321,11 +314,9 @@ void MatrixFactorization::operator()(
 		/// create feasible solution starting points
 		if (auxiliary_constraints) {
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-						<< "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose();
+				LOG(trace, "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose());
 			} else {
-				BOOST_LOG_TRIVIAL(info)
-						<< "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose();
+				LOG(info, "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose());
 			}
 
 			NormedSpaceFactory::args_t args_SpaceL2;
@@ -351,11 +342,9 @@ void MatrixFactorization::operator()(
 			spectral_matrix.transposeInPlace();
 
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-							<< "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose();
+				LOG(trace, "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose());
 			} else {
-				BOOST_LOG_TRIVIAL(info)
-							<< "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose();
+				LOG(info, "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose());
 			}
 		}
 
@@ -374,17 +363,14 @@ void MatrixFactorization::operator()(
 
 			if (spectral_opts.fix_factor != 1) {
 				info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr-1)+1);
-				BOOST_LOG_TRIVIAL(debug)
-					<< "======================== #" << loop_nr << "/1 ==================";
+				LOG(debug, "======================== #" << loop_nr << "/1 ==================");
 
 		//		renormalizeMatrixByTrace(spectral_matrix);
 
 				if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
+					LOG(trace, "Current spectral matrix K^t is\n" << spectral_matrix.transpose());
 				} else {
-					BOOST_LOG_TRIVIAL(info)
-							<< "Current spectral matrix K^t is\n" << spectral_matrix.transpose();
+					LOG(info, "Current spectral matrix K^t is\n" << spectral_matrix.transpose());
 				}
 
 				if (!stop_condition) {
@@ -418,11 +404,9 @@ void MatrixFactorization::operator()(
 				}
 
 				if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "Resulting pixel matrix X is\n" << pixel_matrix;
+					LOG(trace, "Resulting pixel matrix X is\n" << pixel_matrix);
 				} else {
-					BOOST_LOG_TRIVIAL(info)
-							<< "Resulting pixel matrix X is\n" << pixel_matrix;
+					LOG(info, "Resulting pixel matrix X is\n" << pixel_matrix);
 				}
 
 				// check criterion
@@ -430,8 +414,7 @@ void MatrixFactorization::operator()(
 					residual =
 							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
 					info.replace(IterationInformation::LoopTable, "residual", residual);
-					BOOST_LOG_TRIVIAL(info)
-						<< "#" << loop_nr << " 1/2, residual is " << residual;
+					LOG(info, "#" << loop_nr << " 1/2, residual is " << residual);
 				}
 
 				// submit loop tuple
@@ -439,19 +422,16 @@ void MatrixFactorization::operator()(
 			}
 
 			if (pixel_opts.fix_factor != 2) {
-				BOOST_LOG_TRIVIAL(debug)
-					<< "======================== #" << loop_nr << "/2 ==================";
+				LOG(debug, "======================== #" << loop_nr << "/2 ==================");
 
 				info.replace(IterationInformation::LoopTable, "loop_nr", 2*(int)(loop_nr));
 
 		//		renormalizeMatrixByTrace(pixel_matrix);
 
 				if ((pixel_matrix.innerSize() > 10) || (pixel_matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "Current pixel matrix X is\n" << pixel_matrix;
+					LOG(trace, "Current pixel matrix X is\n" << pixel_matrix);
 				} else {
-					BOOST_LOG_TRIVIAL(info)
-							<< "Current pixel matrix X is\n" << pixel_matrix;
+					LOG(info, "Current pixel matrix X is\n" << pixel_matrix);
 				}
 
 				if (!stop_condition) {
@@ -490,8 +470,7 @@ void MatrixFactorization::operator()(
 					{
 						residual =
 								detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-						BOOST_LOG_TRIVIAL(info)
-							<< "#" << loop_nr << " 2/2, residual is " << residual;
+						LOG(info, "#" << loop_nr << " 2/2, residual is " << residual);
 					}
 				}
 			}
@@ -502,25 +481,21 @@ void MatrixFactorization::operator()(
 				const double scaling_change =
 						equalizer(spectral_matrix, pixel_matrix);
 				info.replace(IterationInformation::LoopTable, "scaling_change", scaling_change);
-				BOOST_LOG_TRIVIAL(info)
-					<< "Scaling factor is " << scaling_change;
+				LOG(info, "Scaling factor is " << scaling_change);
 			}
 
 			if (pixel_opts.fix_factor != 2) {
 				if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
+					LOG(trace, "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose());
 				} else {
-					BOOST_LOG_TRIVIAL(info)
-							<< "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose();
+					LOG(info, "Resulting spectral K^t matrix is\n" << spectral_matrix.transpose());
 				}
 
 				// check criterion
 				{
 					residual =
 							detail::calculateResidual(_data, spectral_matrix, pixel_matrix);
-					BOOST_LOG_TRIVIAL(info)
-						<< "#" << loop_nr << ", residual is " << residual;
+					LOG(info, "#" << loop_nr << ", residual is " << residual);
 					info.replace(IterationInformation::LoopTable, "residual", residual);
 				}
 

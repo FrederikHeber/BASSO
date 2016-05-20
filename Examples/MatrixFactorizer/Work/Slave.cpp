@@ -42,23 +42,19 @@ void Slave::operator()()
 			break;
 
 		// send id
-		BOOST_LOG_TRIVIAL(info)
-				<< "#" << world.rank() << " - initiating by sending id.";
+		LOG(info, "#" << world.rank() << " - initiating by sending id.");
 		world.send(0, detail::InitialId, world.rank());
 
 		// get global information
-		BOOST_LOG_TRIVIAL(info)
-				<< "#" << world.rank() << " - getting options.";
+		LOG(info, "#" << world.rank() << " - getting options.");
 		MatrixFactorizerOptions opts;
 		mpi::broadcast(world, opts, 0);
 
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#" << world.rank() << " - getting constraints.";
+		LOG(debug, "#" << world.rank() << " - getting constraints.");
 		std::string auxiliary_constraints_string;
 		mpi::broadcast(world, auxiliary_constraints_string, 0);
 
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#" << world.rank() << " - getting matrix.";
+		LOG(debug, "#" << world.rank() << " - getting matrix.");
 		Eigen::MatrixXd matrix;
 		mpi::broadcast(world, matrix, 0);
 
@@ -85,8 +81,7 @@ void Slave::operator()()
 		while ((!terminate) && (!full_terminate)) {
 			/// wait for receiving data
 			WorkPackage package;
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << world.rank() << " - receiving next work package.";
+			LOG(debug, "#" << world.rank() << " - receiving next work package.");
 			world.recv(0, detail::ColumnWise, package);
 			const int col = package.col;
 			terminate |= (col == -1);
@@ -112,8 +107,7 @@ void Slave::operator()()
 				}
 
 				/// work on data
-				BOOST_LOG_TRIVIAL(debug)
-						<< "#" << world.rank() << " - working.";
+				LOG(debug, "#" << world.rank() << " - working.");
 				Eigen::VectorXd solution;
 				const bool solve_ok =
 						solver(matrix,
@@ -134,13 +128,11 @@ void Slave::operator()()
 				}
 
 				/// return result
-				BOOST_LOG_TRIVIAL(debug)
-						<< "#" << world.rank() << " - sending solution.";
+				LOG(debug, "#" << world.rank() << " - sending solution.");
 				WorkResult result(solution, solve_ok, col);
 				world.send(0, detail::ColumnWise, result);
 			} else {
-				BOOST_LOG_TRIVIAL(debug)
-						<< "#" << world.rank() << " - terminating.";
+				LOG(debug, "#" << world.rank() << " - terminating.");
 			}
 		}
 		// gather accumulated values from solved inner problems

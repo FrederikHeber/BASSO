@@ -73,15 +73,13 @@ TableDataOperator::extractValues() const
 		std::stringstream output;
 		std::copy(keys.begin(), keys.end(),
 				std::ostream_iterator<std::string>(output, ","));
-		BOOST_LOG_TRIVIAL(trace)
-			<< "keys are " << output.str();
+		LOG(trace, "keys are " << output.str());
 	}
 	{
 		std::stringstream output;
 		std::copy(accumulated_keys.begin(), accumulated_keys.end(),
 				std::ostream_iterator<std::string>(output, ","));
-		BOOST_LOG_TRIVIAL(trace)
-			<< "accumulated_keys are " << output.str();
+		LOG(trace, "accumulated_keys are " << output.str());
 	}
 	Table::KeyType_t KeyTypes = datatable.getKeyToTypeMap(keys);
 	assert(keys.size() == KeyTypes.size());

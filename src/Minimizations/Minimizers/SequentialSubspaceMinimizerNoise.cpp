@@ -19,6 +19,7 @@
 
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
+#include "Log/Logging.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/InverseProblems/QuickAccessReferences.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
@@ -67,8 +68,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			refs.NormX.getPvalue() > 2. ?
 			::pow(2., 2. - refs.DualNormX.getPvalue()) :
 			 refs.DualNormX.getPvalue() - 1.;
-	BOOST_LOG_TRIVIAL(debug)
-		<< "G is " << G;
+	LOG(debug, "G is " << G);
 
 	/// initialize return structure
 	if (!istate.getisInitialized()) {
@@ -161,8 +161,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 			if (istate.m_dual_solution->isApproxToConstant(0, TolX)) {
 				// tmin=beta^(PowerX-1);
 				tmin[0] = ::pow(beta, refs.J_p.getPower() - 1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "tmin is " << tmin[0];
+				LOG(trace, "tmin is " << tmin[0]);
 			} else {
 				// t0=(beta/G)^(PowerX-1);
 				// wrong, rather we have
@@ -170,8 +169,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				// see Remark b) on page 17
 				std::vector<double> t0(1, 0.);
 				tmin[0] = uNorm * ::pow(beta/G,refs.J_p.getPower() - 1.);
-				BOOST_LOG_TRIVIAL(trace)
-					<< "Initial tmin[0] is " << t0[0];
+				LOG(trace, "Initial tmin[0] is " << t0[0]);
 
 				std::vector<SpaceElement_ptr_t> ConstrainedSearchSpace(1);
 				ConstrainedSearchSpace[0] =
@@ -193,8 +191,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				std::swap(tmin[index], tmin[0]);
 			updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
 		} catch (MinimizerIllegalNumber_exception &e) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Encountered illegal number in line search minimum, not updating.";
+			LOG(error, "Encountered illegal number in line search minimum, not updating.");
 		}
 
 		if ((istate.NumberOuterIterations > 0) && (N == 2)) {

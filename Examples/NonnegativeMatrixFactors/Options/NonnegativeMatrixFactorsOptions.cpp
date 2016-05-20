@@ -46,32 +46,27 @@ void NonnegativeMatrixFactorsOptions::parse(int argc, char **argv)
 
 	if (vm.count("database")) {
 		database_file = vm["database"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing database file from " << database_file.string();
+		LOG(debug, "Parsing database file from " << database_file.string());
 	}
 
 	if (vm.count("destination-first-factor")) {
 		destination_first_factor = vm["destination-first-factor"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing first matrix factor file to " << destination_first_factor.string();
+		LOG(debug, "Writing first matrix factor file to " << destination_first_factor.string());
 	}
 
 	if (vm.count("destination-second-factor")) {
 		destination_second_factor = vm["destination-second-factor"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing second matrix factor file to " << destination_second_factor.string();
+		LOG(debug, "Writing second matrix factor file to " << destination_second_factor.string());
 	}
 
 	if (vm.count("matrix")) {
 		matrix = vm["matrix"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing matrix file from " << matrix.string();
+		LOG(debug, "Parsing matrix file from " << matrix.string());
 	}
 
 	if (vm.count("truncation-dimension")) {
 		truncation_dimension = vm["truncation-dimension"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Truncation dimension is " << truncation_dimension;
+		LOG(debug, "Truncation dimension is " << truncation_dimension);
 	}
 }
 
@@ -79,13 +74,11 @@ bool NonnegativeMatrixFactorsOptions::internal_checkSensibility() const
 {
 	if (!vm.count("matrix")
 			|| !boost::filesystem::exists(matrix)) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Matrix file not specified or non-existent.";
+		LOG(error, "Matrix file not specified or non-existent.");
 		return false;
 	}
 	if (!vm.count("truncation-dimension")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Truncation_dimension not specified.";
+		LOG(error, "Truncation_dimension not specified.");
 		return false;
 	}
 

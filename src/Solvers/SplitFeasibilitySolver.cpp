@@ -67,8 +67,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 	result.residuum = std::numeric_limits<double>::max();
 	result.status = GeneralMinimizer::ReturnValues::notbegun;
 
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Starting SplitFeasibilityProblem ...";
+	LOG(debug, "Starting SplitFeasibilityProblem ...");
 
 	const std::string bar = createBar(30);
 	for (unsigned int SplitFeasibilityProblem_loops = 0;
@@ -90,8 +89,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 					<< "Residual after problem " << (*iter)->getName()
 					<< " is " << result.residuum;
 			if (result.status != GeneralMinimizer::ReturnValues::finished) {
-				BOOST_LOG_TRIVIAL(error)
-						<< "The last SFP part did not finish properly.";
+				LOG(error, "The last SFP part did not finish properly.");
 				break;
 			}
 		}
@@ -101,8 +99,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 				<< bar;
 	}
 
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Finishing SplitFeasibilityProblem ...";
+	LOG(debug, "Finishing SplitFeasibilityProblem ...");
 
 	return result;
 }

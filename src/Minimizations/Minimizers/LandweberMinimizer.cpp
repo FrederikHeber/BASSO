@@ -159,8 +159,7 @@ LandweberMinimizer::operator()(
 				TolX,
 				0.
 				);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Step width is " << alpha;
+		LOG(trace, "Step width is " << alpha);
 
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
@@ -175,12 +174,10 @@ LandweberMinimizer::operator()(
 
 		/// update iterate
 		*returnvalues.m_dual_solution -= alpha * searchdir.u;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x^*_n+1 is " << returnvalues.m_dual_solution;
+		LOG(trace, "x^*_n+1 is " << returnvalues.m_dual_solution);
 		// finally map back from X^{\conj} to X: x_{n+1}
 		*returnvalues.m_solution = refs.J_q(returnvalues.m_dual_solution);
-		BOOST_LOG_TRIVIAL(trace)
-				<< "x_n+1 is " << returnvalues.m_solution;
+		LOG(trace, "x_n+1 is " << returnvalues.m_solution);
 		*_problem->x = returnvalues.m_solution;
 		if (setLambdaAdaptively) {
 			setRegularizationParameter(
@@ -258,7 +255,6 @@ void LandweberMinimizer::setRegularizationParameter(
 				<< "Lambda of RelativeShrinkageMapping in X^* is now "
 				<< mapping.getLambda();
 	} else {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Cannot set lambda adaptively as criterion is not fulfilled.";
+		LOG(error, "Cannot set lambda adaptively as criterion is not fulfilled.");
 	}
 }

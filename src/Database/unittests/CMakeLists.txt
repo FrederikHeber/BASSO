@@ -4,7 +4,7 @@
 add_executable (DatabaseUnitTest 
 	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
 	DatabaseUnitTest.cpp) 
-target_link_libraries (DatabaseUnitTest 
+target_link_libraries (DatabaseUnitTest
 	${EXTRA_LIBS}
 	${Boost_LIBRARIES}
 	${POCO_SQL_LIBRARIES}

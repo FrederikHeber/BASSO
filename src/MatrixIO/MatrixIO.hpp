@@ -52,10 +52,9 @@ bool parse(
 		}
 		return true;
 	} else {
-		if (_filename.empty())
-			BOOST_LOG_TRIVIAL(debug)
-					<< "No " << _name << " file was given.";
-		else {
+		if (_filename.empty()) {
+			LOG(debug, "No " << _name << " file was given.");
+		} else {
 			std::cerr << "Failed to open " << _filename << std::endl;
 			return false;
 		}

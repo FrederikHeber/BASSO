@@ -42,26 +42,22 @@ void GravityOptions::internal_parse()
 {
 	if (vm.count("depth")) {
 		depth = vm["depth"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Set depth to " << depth;
+		LOG(debug, "Set depth to " << depth);
 	}
 
 	if (vm.count("discretization")) {
 		discretization = vm["discretization"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Set number of discretization points to " << discretization;
+		LOG(debug, "Set number of discretization points to " << discretization);
 	}
 
 	if (vm.count("gravity-file")) {
 		gravityfield_file = vm["gravity-file"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Set gravity file to " << gravityfield_file;
+		LOG(debug, "Set gravity file to " << gravityfield_file);
 	}
 
 	if (vm.count("density-file")) {
 		density_file = vm["density-file"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Set density file to " << density_file;
+		LOG(debug, "Set density file to " << density_file);
 	}
 }
 
@@ -75,14 +71,12 @@ bool GravityOptions::internal_checkSensibility() const
 //	}
 
 	if (!vm.count("depth")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Depth is not set";
+		LOG(error, "Depth is not set");
 		return false;
 	}
 
 	if (!vm.count("discretization")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Discretization is not set";
+		LOG(error, "Discretization is not set");
 		return false;
 	}
 

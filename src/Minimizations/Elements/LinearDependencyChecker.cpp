@@ -21,8 +21,7 @@ bool LinearDependencyChecker::operator()(
 		const vectors_t &_vectors)
 {
 	if (_vectors.empty()) {
-		BOOST_LOG_TRIVIAL(warning)
-				<< "No vectors given whose linear dependency to check.";
+		LOG(warning, "No vectors given whose linear dependency to check.");
 		return true;
 	}
 	if (_vectors.size() == 1) {

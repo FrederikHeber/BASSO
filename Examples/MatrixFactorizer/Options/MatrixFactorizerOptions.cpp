@@ -64,23 +64,20 @@ void MatrixFactorizerOptions::internal_parse()
 {
 	if (vm.count("data")) {
 		data_file = vm["data"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Data file name is " << data_file.string();
+		LOG(debug, "Data file name is " << data_file.string());
 	}
 	if (vm.count("fix-factor")) {
 		fix_factor = vm["fix-factor"].as<unsigned int>();
-		if (fix_factor > 0)
-			BOOST_LOG_TRIVIAL(debug)
-				<< "We fix factor #" << fix_factor;
-		else
-			BOOST_LOG_TRIVIAL(debug)
-				<< "None of the factors are fixed.";
+		if (fix_factor > 0) {
+			LOG(debug, "We fix factor #" << fix_factor);
+		} else {
+			LOG(debug, "None of the factors are fixed.");
+		}
 	}
 
 	if (vm.count("max-loops")) {
 		max_loops = vm["max-loops"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Performing " << max_loops << " loop iterations over the two factors.";
+		LOG(debug, "Performing " << max_loops << " loop iterations over the two factors.");
 	}
 
 	if (vm.count("overall-keys")) {
@@ -88,12 +85,10 @@ void MatrixFactorizerOptions::internal_parse()
 		std::stringstream output;
 		std::copy(overall_keys.begin(), overall_keys.end(),
 				std::ostream_iterator<std::string>(output, ","));
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Overall keys was set to " << output.str();
+		LOG(debug, "Overall keys was set to " << output.str());
 	} else {
 		overall_keys.clear();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We don't accumulate any iteration keys from solver's overall table.";
+		LOG(debug, "We don't accumulate any iteration keys from solver's overall table.");
 	}
 	if (vm.count("parse-factors")) {
 		DoParseFactors = vm["parse-factors"].as<bool>();
@@ -103,67 +98,56 @@ void MatrixFactorizerOptions::internal_parse()
 	}
 	if (vm.count("projection-delta")) {
 		projection_delta = vm["projection-delta"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting projection's delta to " << projection_delta;
+		LOG(debug, "Setting projection's delta to " << projection_delta);
 	} else
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting projection's delta to default value of " << projection_delta;
+		LOG(debug, "Setting projection's delta to default value of " << projection_delta);
 
 	if (vm.count("residual-threshold")) {
 		residual_threshold = vm["residual-threshold"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Stopping when matrix residual is less than " << residual_threshold << ".";
+		LOG(debug, "Stopping when matrix residual is less than " << residual_threshold << ".");
 	}
 
 	if (vm.count("solution-difference")) {
 		solution_difference_file = vm["solution-difference"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Solution difference file name is " << solution_difference_file.string();
+		LOG(debug, "Solution difference file name is " << solution_difference_file.string());
 	}
 
 	if (vm.count("solution-first-factor")) {
 		solution_factor_one_file = vm["solution-first-factor"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "First Solution factor file name is " << solution_factor_one_file.string();
+		LOG(debug, "First Solution factor file name is " << solution_factor_one_file.string());
 	}
 
 	if (vm.count("solution-product")) {
 		solution_product_file = vm["solution-product"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Solution product file name is " << solution_product_file.string();
+		LOG(debug, "Solution product file name is " << solution_product_file.string());
 	}
 
 	if (vm.count("solution-second-factor")) {
 		solution_factor_two_file = vm["solution-second-factor"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Second Solution factor file name is " << solution_factor_two_file.string();
+		LOG(debug, "Second Solution factor file name is " << solution_factor_two_file.string());
 	}
 
 	if (vm.count("sparse-dimension")) {
 		sparse_dim = vm["sparse-dimension"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Sparse dimension set to " << sparse_dim;
+		LOG(debug, "Sparse dimension set to " << sparse_dim);
 	}
 }
 
 bool MatrixFactorizerOptions::internal_checkSensibility() const
 {
 	if ((!vm.count("data")) || (!boost::filesystem::exists(data_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Data file not set or not present.";
+		LOG(error, "Data file not set or not present.");
 		return false;
 	}
 
 	if ((vm.count("fix-factor"))
 			&& (fix_factor > 2)) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Either first(1), second(2), or no (0) factors can be fixed.";
+		LOG(error, "Either first(1), second(2), or no (0) factors can be fixed.");
 		return false;
 	}
 
 	if (!vm.count("sparse-dimension")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Sparse dimensionality not set";
+		LOG(error, "Sparse dimensionality not set");
 		return false;
 	}
 
@@ -171,14 +155,12 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 		// check files are given and exist
 		if (!vm.count("solution-first-factor")
 				|| !boost::filesystem::exists(solution_factor_one_file)) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "First factor file not specified or non-existent.";
+			LOG(error, "First factor file not specified or non-existent.");
 			return false;
 		}
 		if (!vm.count("solution-second-factor")
 				|| !boost::filesystem::exists(solution_factor_two_file)) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Second factor file not specified or non-existent.";
+			LOG(error, "Second factor file not specified or non-existent.");
 			return false;
 		}
 	}
@@ -190,14 +172,12 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 	// minimum norm (i.e. 0). This causes the iteration to jump between
 	// N+1 different values, none of them the correct solution
 	if ((N > 1) && (N > sparse_dim)) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of search directions must not be greater than the sparse dimension.";
+		LOG(error, "Number of search directions must not be greater than the sparse dimension.");
 		return false;
 	}
 
 	if (residual_threshold < 0.) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "residual-threshold must be greater than non-negative";
+		LOG(error, "residual-threshold must be greater than non-negative");
 		return false;
 	}
 

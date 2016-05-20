@@ -114,8 +114,7 @@ const double LinearMapping::Norm() const
 #else
 //	if ((matrix.innerSize() != matrix.outerSize())
 //			|| (!matrix.isApprox(matrix.transpose())))
-		BOOST_LOG_TRIVIAL(warning)
-				<< "BEWARE: Is this calculating the right matrix norm?";
+		LOG(warning, "BEWARE: Is this calculating the right matrix norm?");
 	return matrix.norm();
 #endif
 }
@@ -136,8 +135,7 @@ const double LinearMapping::MutualCoherence() const
 				mutual_coherence = temp;
 		}
 	}
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Mutual coherence of mapping is " << mutual_coherence;
+	LOG(debug, "Mutual coherence of mapping is " << mutual_coherence);
 	return mutual_coherence;
 }
 

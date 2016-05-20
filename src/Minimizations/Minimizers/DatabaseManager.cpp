@@ -111,8 +111,7 @@ void DatabaseManager::setParameterKey(
 	if (database.isDatabaseFileGiven()) {
 		// check for presence
 		if (!database.isTuplePresentInTable(parameters_table, parameter_tuple)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Parameter tuple not present, adding to table.";
+			LOG(debug, "Parameter tuple not present, adding to table.");
 			database.writeTable(parameters_table);
 		}
 		// and store rowid
@@ -120,8 +119,7 @@ void DatabaseManager::setParameterKey(
 					parameters_table, parameter_tuple);
 		// clear table such that present tuple is not stored again
 		database.clearTable(parameters_table.getName());
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting parameter_key to " << rowid;
+		LOG(debug, "Setting parameter_key to " << rowid);
 	} else {
 		// else set rowid to arbitrary value as there is no file anyway
 		rowid = 1;
@@ -216,20 +214,17 @@ bool DatabaseManager::createViews() const
 		// the database, see setParameterKey()
 	}
 	if (!status)
-		BOOST_LOG_TRIVIAL(error)
-			<< "(Some of the) Required Tables are empty, not creating views.";
+		LOG(error, "(Some of the) Required Tables are empty, not creating views.");
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
+		LOG(trace, "SQL: " << sql.str());
 		status &= database.executeSQLStatement(sql.str());
 	}
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS per_iteration AS SELECT * FROM parameters p INNER JOIN data_per_iteration d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
+		LOG(trace, "SQL: " << sql.str());
 		status &= database.executeSQLStatement(sql.str());
 	}
 	return status;

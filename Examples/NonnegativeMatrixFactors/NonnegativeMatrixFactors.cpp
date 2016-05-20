@@ -83,8 +83,7 @@ size_t prepareDatabase(
 	if (_database.isDatabaseFileGiven()) {
 		// check for presence
 		if (!_database.isTuplePresentInTable(paramtable, paramtuple)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Parameter tuple not present, adding to table.";
+			LOG(debug, "Parameter tuple not present, adding to table.");
 			_database.writeTable(paramtable);
 		}
 		// and store rowid
@@ -92,8 +91,7 @@ size_t prepareDatabase(
 				paramtable, paramtuple);
 		// clear table such that present tuple is not stored again
 		_database.clearTable(paramtable.getName());
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting parameter_key to " << rowid;
+		LOG(debug, "Setting parameter_key to " << rowid);
 	}
 
 	return rowid;
@@ -108,11 +106,9 @@ void finalizeDatabase(
 
 	std::stringstream sql;
 	sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
-	BOOST_LOG_TRIVIAL(trace)
-		<< "SQL: " << sql.str();
+	LOG(trace, "SQL: " << sql.str());
 	if (!_database.executeSQLStatement(sql.str()))
-		BOOST_LOG_TRIVIAL(error)
-				<< "Failed to create view.";
+		LOG(error, "Failed to create view.");
 }
 
 int main (int argc, char *argv[])
@@ -179,19 +175,14 @@ int main (int argc, char *argv[])
 	TruncatedSVD truncated_svd(sparse_matrix);
 	truncated_svd(inner_dimension, TruncatedSVD::LargestMagnitude);
 	const Eigen::MatrixXd &singularvalues = truncated_svd.getSingularvalues();
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Singular values " << singularvalues;
+	LOG(debug, "Singular values " << singularvalues);
 	const Eigen::MatrixXd &Left_singularvectors = truncated_svd.getLeftSingularvectors();
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Left eigenvectors " << Left_singularvectors;
+	LOG(debug, "Left eigenvectors " << Left_singularvectors);
 	const Eigen::MatrixXd &Right_singularvectors = truncated_svd.getRightSingularvectors();
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Right eigenvectors " << Right_singularvectors;
+	LOG(debug, "Right eigenvectors " << Right_singularvectors);
 	// note that eigenvalues are given in increasing order
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Matrix " << matrix;
-	BOOST_LOG_TRIVIAL(trace)
-			<< "U*S*V (truncated) " << Left_singularvectors * singularvalues.asDiagonal() * Right_singularvectors.transpose();
+	LOG(trace, "Matrix " << matrix);
+	LOG(trace, "U*S*V (truncated) " << Left_singularvectors * singularvalues.asDiagonal() * Right_singularvectors.transpose());
 	// don't check for equality! It's only a truncated SVD!
 //	assert( (USV - matrix).norm() < BASSOTOLERANCE);
 
@@ -203,10 +194,8 @@ int main (int argc, char *argv[])
 			const double sv = sqrt(singularvalues(inner_dimension-1-index,0));
 			W.col(index) = sv*Left_singularvectors.col(inner_dimension-1-index);
 			H.row(index) = sv*Right_singularvectors.col(inner_dimension-1-index);
-			BOOST_LOG_TRIVIAL(trace)
-					<< "W.col(" << index << ")' " << W.col(index).transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "H.row(" << index << ") " << H.row(index);
+			LOG(trace, "W.col(" << index << ")' " << W.col(index).transpose());
+			LOG(trace, "H.row(" << index << ") " << H.row(index));
 		}
 
 		/// for j = 2 : k
@@ -214,23 +203,17 @@ int main (int argc, char *argv[])
 			/// x =U(:,j); y =V(:,j);
 			const Eigen::VectorXd x = Left_singularvectors.col(inner_dimension-1-index);
 			const Eigen::VectorXd y = Right_singularvectors.col(inner_dimension-1-index);
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": x " << x.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": y " << y.transpose();
+			LOG(trace, "#" << index << ": x " << x.transpose());
+			LOG(trace, "#" << index << ": y " << y.transpose());
 			/// xp =pos(x); xn=neg(x); yp =pos(y); yn=neg(y);
 			const Eigen::VectorXd xp = getPositiveSection(x);
 			const Eigen::VectorXd xn = getNegativeSection(x);
 			const Eigen::VectorXd yp = getPositiveSection(y);
 			const Eigen::VectorXd yn = getNegativeSection(y);
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": xp " << xp.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": xn " << xn.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": yp " << yp.transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << index << ": yn " << yn.transpose();
+			LOG(trace, "#" << index << ": xp " << xp.transpose());
+			LOG(trace, "#" << index << ": xn " << xn.transpose());
+			LOG(trace, "#" << index << ": yp " << yp.transpose());
+			LOG(trace, "#" << index << ": yn " << yn.transpose());
 			/// xpnrm=norm(xp); ypnrm=norm(yp);mp =xpnrm∗ ypnrm
 			const double xp_norm = xp.norm();
 			const double yp_norm = yp.norm();
@@ -262,17 +245,12 @@ int main (int argc, char *argv[])
 				W.col(index).setZero();
 				H.row(index).setZero();
 			}
-			BOOST_LOG_TRIVIAL(trace)
-					<< "W.col(" << index << ")' " << W.col(index).transpose();
-			BOOST_LOG_TRIVIAL(trace)
-					<< "H.row(" << index << ") " << H.row(index);
+			LOG(trace, "W.col(" << index << ")' " << W.col(index).transpose());
+			LOG(trace, "H.row(" << index << ") " << H.row(index));
 		}
-		BOOST_LOG_TRIVIAL(trace)
-				<< "matrix " << matrix;
-		BOOST_LOG_TRIVIAL(trace)
-				<< "A-W*H " << matrix-W*H;
-		BOOST_LOG_TRIVIAL(debug)
-				<< "|A - W*H|_2 " << (matrix-W*H).norm();
+		LOG(trace, "matrix " << matrix);
+		LOG(trace, "A-W*H " << matrix-W*H);
+		LOG(debug, "|A - W*H|_2 " << (matrix-W*H).norm());
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =

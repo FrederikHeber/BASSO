@@ -15,6 +15,7 @@
 #include <boost/math/tools/minima.hpp>
 #include <limits>
 
+#include "Log/Logging.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
@@ -36,13 +37,11 @@ LandweberFixedStepWidth::LandweberFixedStepWidth(
 	G = NormX.getPvalue() < 2. ?
 			::pow(2., 2. - DualNormX.getPvalue()) :
 			 DualNormX.getPvalue() - 1.;
-	BOOST_LOG_TRIVIAL(trace)
-		<< "G is " << G;
+	LOG(trace, "G is " << G);
 
 	modulus_at_one = modul(1);
 	ANorm = dynamic_cast<const LinearMapping &>(*_problem->A).Norm(); //::pow(2, 1.+ 1./val_NormY);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "ANorm " << ANorm;
+	LOG(trace, "ANorm " << ANorm);
 }
 
 const double LandweberFixedStepWidth::operator()(
@@ -63,11 +62,9 @@ const double LandweberFixedStepWidth::operator()(
 	double alpha = _alpha;
 	if (_dualx->isApproxToConstant(0, _TolX)) {
 		const double q_p = ::pow(DualNormX.getPvalue(), NormX.getPvalue() - 1.);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "q_p " << q_p;
+		LOG(trace, "q_p " << q_p);
 		const double A_p = ::pow(ANorm,NormX.getPvalue());
-		BOOST_LOG_TRIVIAL(trace)
-			<< "A_p " << A_p;
+		LOG(trace, "A_p " << A_p);
 		double R_p = 0.;
 		if (NormX.getPvalue() == std::numeric_limits<double>::infinity()) {
 			R_p = _residual->getMaxCoefficientAndIndex().first;
@@ -80,36 +77,30 @@ const double LandweberFixedStepWidth::operator()(
 		} else {
 			R_r = ::pow(_residuum, NormY.getPvalue());
 		}
-		BOOST_LOG_TRIVIAL(trace)
-			<< "R_p " << R_p << ", R_r " << R_r;
+		LOG(trace, "R_p " << R_p << ", R_r " << R_r);
 		alpha = // C
 				0.9 * (q_p / A_p) * (R_p/R_r);
 	} else {
 		const double xnorm = NormX(_solution);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "xnorm " << xnorm;
+		LOG(trace, "xnorm " << xnorm);
 		const double two_q = ::pow(2., DualNormX.getPvalue());
-		BOOST_LOG_TRIVIAL(trace)
-			<< "two_q " << two_q;
+		LOG(trace, "two_q " << two_q);
 		alpha = C/(two_q * G * ANorm)
 				* (_residuum / xnorm);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "initial lambda " << alpha;
+		LOG(trace, "initial lambda " << alpha);
 		const double lambda = std::min(modulus_at_one, alpha);
 		// find intermediate value in smoothness modulus to match lambda
 		const double tau = calculateMatchingTau(lambda);
 		// calculate step width
 		const double x_p = ::pow( xnorm, NormX.getPvalue()-1.);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "x_p " << x_p;
+		LOG(trace, "x_p " << x_p);
 		double R_r = 0.;
 		if (NormY.getPvalue() == std::numeric_limits<double>::infinity()) {
 			R_r = _residual->getMaxCoefficientAndIndex().first / _residuum;
 		} else {
 			R_r = ::pow(_residuum, NormY.getPvalue() - 1.);
 		}
-		BOOST_LOG_TRIVIAL(trace)
-			<< "R_r " << R_r;
+		LOG(trace, "R_r " << R_r);
 		alpha = (tau/ANorm) * (x_p / R_r);
 	}
 	return alpha;
@@ -137,8 +128,7 @@ double LandweberFixedStepWidth::calculateMatchingTau(
 					maxiter);
 	tau = minpair.first;
 
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Matching tau from modulus of smoothness is " << tau;
+	LOG(trace, "Matching tau from modulus of smoothness is " << tau);
 	BOOST_LOG_TRIVIAL(trace)
 		<< "Counter-check: rho(tau)/tau = "
 		<< modul(tau)/tau << ", lambda = " << _lambda;

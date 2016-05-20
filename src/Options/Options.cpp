@@ -62,8 +62,7 @@ void Options::parse(int argc, char **argv)
 
 	if (vm.count("verbose")) {
 		verbose = vm["verbose"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Verbose set to " << verbose;
+		LOG(debug, "Verbose set to " << verbose);
 		setVerbosity();
 	}
 }

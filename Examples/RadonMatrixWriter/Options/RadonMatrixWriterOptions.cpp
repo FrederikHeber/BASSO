@@ -51,32 +51,27 @@ void RadonMatrixWriterOptions::parse(int argc, char **argv)
 
 	if (vm.count("num-pixels-x")) {
 		num_pixel_x = vm["num-pixels-x"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of x pixels was set to " << num_pixel_x;
+		LOG(debug, "Number of x pixels was set to " << num_pixel_x);
 	}
 
 	if (vm.count("num-pixels-y")) {
 		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of y pixels was set to " << num_pixel_y;
+		LOG(debug, "Number of y pixels was set to " << num_pixel_y);
 	}
 
 	if (vm.count("num-angles")) {
 		num_angles = vm["num-angles"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of angle steps was set to " << num_angles;
+		LOG(debug, "Number of angle steps was set to " << num_angles);
 	}
 
 	if (vm.count("num-offsets")) {
 		num_offsets = vm["num-offsets"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of offsets steps was set to " << num_offsets;
+		LOG(debug, "Number of offsets steps was set to " << num_offsets);
 	}
 
 	if (vm.count("radon-matrix")) {
 		radon_matrix = vm["radon-matrix"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << radon_matrix;
+		LOG(debug, "Filename of vector was set to " << radon_matrix);
 	}
 }
 
@@ -96,32 +91,27 @@ bool RadonMatrixWriterOptions::checkSensibility() const
 bool RadonMatrixWriterOptions::checkSensibility_dimensions() const
 {
 	if (!vm.count("num-pixels-x")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in x direction not set";
+		LOG(error, "Number of pixels in x direction not set");
 		return false;
 	}
 
 	if (!vm.count("num-pixels-y")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in y direction not set";
+		LOG(error, "Number of pixels in y direction not set");
 		return false;
 	}
 
 	if (!vm.count("num-angles")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of angle discretization steps not set";
+		LOG(error, "Number of angle discretization steps not set");
 		return false;
 	}
 
 	if (!vm.count("num-offsets")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of lateral offsets not set";
+		LOG(error, "Number of lateral offsets not set");
 		return false;
 	}
 
 	if ((!vm.count("radon-matrix"))) { // || (boost::filesystem::exists(radon_matrix))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Radon matrix file is not set."; // or already present.";
+		LOG(error, "Radon matrix file is not set."); // or already present.;
 		return false;
 	}
 

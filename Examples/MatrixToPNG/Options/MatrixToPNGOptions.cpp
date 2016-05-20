@@ -75,20 +75,17 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 				<< "We do use colors to designate positive and negative areas, using "
 				<< Colorize << ".";
 		else
-			BOOST_LOG_TRIVIAL(debug)
-				<< "We don't use colors to designate positive and negative areas.";
+			LOG(debug, "We don't use colors to designate positive and negative areas.");
 	}
 
 	if (vm.count("flip")) {
 		Flip = vm["flip"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We " << (Flip ? "do" : "don't") << " exchange rows and columns";
+		LOG(debug, "We " << (Flip ? "do" : "don't") << " exchange rows and columns");
 	}
 
 	if (vm.count("image")) {
 		image_file = vm["image"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing image from " << image_file;
+		LOG(debug, "Writing image from " << image_file);
 	}
 
 	if (vm.count("left-to-right")) {
@@ -100,34 +97,29 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing matrix from " << matrix_file;
+		LOG(debug, "Parsing matrix from " << matrix_file);
 	}
 
 	if (vm.count("num-pixels-x")) {
 		num_pixel_x = vm["num-pixels-x"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of x pixels was set to " << num_pixel_x;
+		LOG(debug, "Number of x pixels was set to " << num_pixel_x);
 	}
 
 	if (vm.count("num-pixels-y")) {
 		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of y pixels was set to " << num_pixel_y;
+		LOG(debug, "Number of y pixels was set to " << num_pixel_y);
 	}
 
 	if (vm.count("rotate")) {
 		Rotate = vm["rotate"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We rotate to " << Rotate;
+		LOG(debug, "We rotate to " << Rotate);
 	}
 }
 
 bool MatrixToPNGOptions::internal_checkSensibility() const
 {
 	if (!vm.count("matrix")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "matrix filename not set";
+		LOG(error, "matrix filename not set");
 		return false;
 	}
 
@@ -136,27 +128,23 @@ bool MatrixToPNGOptions::internal_checkSensibility() const
 		ColorTable table;
 		boost::filesystem::path filepath(Colorize);
 		if ((!table.isKeyPresent(Colorize)) && (!boost::filesystem::exists(filepath))) {
-			BOOST_LOG_TRIVIAL(error)
-				<< "Either the color table name is mis-spelled or the given color matrix filename does not exist";
+			LOG(error, "Either the color table name is mis-spelled or the given color matrix filename does not exist");
 			return false;
 		}
 	}
 
 	if (!vm.count("image")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "image filename not set";
+		LOG(error, "image filename not set");
 		return false;
 	}
 
 	if (!vm.count("num-pixels-x")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in x direction not set";
+		LOG(error, "Number of pixels in x direction not set");
 		return false;
 	}
 
 	if (!vm.count("num-pixels-y")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in y direction not set";
+		LOG(error, "Number of pixels in y direction not set");
 		return false;
 	}
 

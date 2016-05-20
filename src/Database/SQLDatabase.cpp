@@ -107,8 +107,7 @@ bool SQLDatabase::createTableIfNotExists(
 		}
 		sql << ")";
 	}
-	BOOST_LOG_TRIVIAL(trace)
-		<< "SQL: " << sql.str();
+	LOG(trace, "SQL: " << sql.str());
 	Statement stmt = ( ses << sql.str() );
 	stmt.execute();
 
@@ -173,8 +172,7 @@ bool SQLDatabase::deletePresentTuplesinTable(
 		// only execute if WHERE statement makes sense
 		if (hasTupleOneParameter(*tupleiter)) {
 			ses << sql_delete.str(), now;
-			BOOST_LOG_TRIVIAL(trace)
-				<< "SQL: " << sql_delete.str();
+			LOG(trace, "SQL: " << sql_delete.str());
 		}
 	}
 	ses << "END", now;
@@ -205,8 +203,7 @@ bool SQLDatabase::updateTable(
 	{
 		switch (valuevector.size()) {
 		case 0:
-			BOOST_LOG_TRIVIAL(warning)
-				<< "SQLDatabase contains no values";
+			LOG(warning, "SQLDatabase contains no values");
 			break;
 		// use preprocessor magic to create the range of cases
 #include <boost/preprocessor/iteration/local.hpp>
@@ -217,8 +214,7 @@ bool SQLDatabase::updateTable(
 #undef BASSO_ARGUMENTLIST
 #include "Database_undef.hpp"
 		default:
-			BOOST_LOG_TRIVIAL(error)
-				<< "Cannot deal (yet) with tuple size" << valuevector.size();
+			LOG(error, "Cannot deal (yet) with tuple size" << valuevector.size());
 			break;
 		}
 	}
@@ -277,8 +273,7 @@ bool SQLDatabase::readTable(
 {
 	/// check if table is uptodate
 	if (!_table.isUptodate()) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Table " << _table.getName() << " has not been written.";
+		LOG(error, "Table " << _table.getName() << " has not been written.");
 		return false;
 	}
 
@@ -315,8 +310,7 @@ bool SQLDatabase::readTable(
 		}
 
 		if (KeyValueMap.empty()) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Table " << _table.getName() << " is empty in sqlite file.";
+			LOG(error, "Table " << _table.getName() << " is empty in sqlite file.");
 			return false;
 		}
 
@@ -374,8 +368,7 @@ bool SQLDatabase::readTable(
 				break;
 			}
 			default:
-				BOOST_LOG_TRIVIAL(error)
-					<< "Key " << iter->first << " has unknown type.";
+				LOG(error, "Key " << iter->first << " has unknown type.");
 				return false;
 			}
 		}
@@ -407,8 +400,7 @@ bool SQLDatabase::readTable(
 					break;
 				}
 				default:
-					BOOST_LOG_TRIVIAL(error)
-						<< "Key " << iter->first << " has unknown type.";
+					LOG(error, "Key " << iter->first << " has unknown type.");
 					return false;
 				}
 
@@ -416,8 +408,7 @@ bool SQLDatabase::readTable(
 			_table.addTuple(tuple);
 		}
 	} else {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Table " << _table.getName() << " has no keys in sqlite file.";
+		LOG(error, "Table " << _table.getName() << " has no keys in sqlite file.");
 		return false;
 	}
 
@@ -450,8 +441,7 @@ bool SQLDatabase::isTuplePresentInTable(
 		std::stringstream sql;
 		sql << "SELECT rowid FROM " << _table.getName()
 			<< " WHERE " << printTupleWhereStatement(_tuple,KeyTypes);
-		BOOST_LOG_TRIVIAL(debug)
-			<< "SQL: " << sql.str();
+		LOG(debug, "SQL: " << sql.str());
 		try {
 			ses << sql.str(), into(rowid), now;
 		} catch (SQLite::InvalidSQLStatementException &e) {
@@ -484,8 +474,7 @@ size_t SQLDatabase::getIdOfTuplePresentInTable(
 		std::stringstream sql;
 		sql << "SELECT rowid FROM " << _table.getName()
 			<< " WHERE " << printTupleWhereStatement(_tuple,KeyTypes);
-		BOOST_LOG_TRIVIAL(debug)
-			<< "SQL: " << sql.str();
+		LOG(debug, "SQL: " << sql.str());
 		ses << sql.str(), into(rowid), now;
 	}
 	switch (rowid.size()) {

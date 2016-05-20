@@ -43,8 +43,7 @@ Searchspace::ptr_t SearchspaceFactory::create(
 		break;
 	case Nemirovsky:
 		if (_N != 2) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "NemirovskyDirection always uses two search directions.";
+			LOG(error, "NemirovskyDirection always uses two search directions.");
 			throw MinimizationIllegalValue_exception()
 					<< MinimizationIllegalValue_name("N");
 		}
@@ -53,8 +52,7 @@ Searchspace::ptr_t SearchspaceFactory::create(
 				);
 		break;
 	default:
-		BOOST_LOG_TRIVIAL(error)
-			<< "Current InstanceType is unknown.";
+		LOG(error, "Current InstanceType is unknown.");
 		assert(0);
 	}
 	return returninstance;

@@ -63,116 +63,98 @@ void ComputerTomographyOptions::internal_parse()
 {
 	if (vm.count("phantom")) {
 		comparison_file = vm["phantom"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing true solution/phantom vector from " << comparison_file;
+		LOG(debug, "Parsing true solution/phantom vector from " << comparison_file);
 	}
 
 	if (vm.count("noise-level")) {
 		noiselevel = vm["noise-level"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Noise level set to " << noiselevel;
+		LOG(debug, "Noise level set to " << noiselevel);
 	}
 
 	if (vm.count("noisy-sinogram")) {
 		noisy_sinogram_file = vm["noisy-sinogram"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of noisy sinogram was set to " << noisy_sinogram_file;
+		LOG(debug, "Filename of noisy sinogram was set to " << noisy_sinogram_file);
 	}
 
 	if (vm.count("num-pixels-x")) {
 		num_pixel_x = vm["num-pixels-x"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of x pixels was set to " << num_pixel_x;
+		LOG(debug, "Number of x pixels was set to " << num_pixel_x);
 	}
 
 	if (vm.count("num-pixels-y")) {
 		num_pixel_y = vm["num-pixels-y"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of y pixels was set to " << num_pixel_y;
+		LOG(debug, "Number of y pixels was set to " << num_pixel_y);
 	}
 
 	if (vm.count("num-angles")) {
 		num_angles = vm["num-angles"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of angle steps was set to " << num_angles;
+		LOG(debug, "Number of angle steps was set to " << num_angles);
 	}
 
 	if (vm.count("num-offsets")) {
 		num_offsets = vm["num-offsets"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of offsets steps was set to " << num_offsets;
+		LOG(debug, "Number of offsets steps was set to " << num_offsets);
 	}
 
 	if (vm.count("radon-matrix")) {
 		radon_matrix = vm["radon-matrix"].as< std::vector<boost::filesystem::path> >();
 		std::stringstream output;
 		output << radon_matrix;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename(s) of radon matrix files set to " << output.str();
+		LOG(debug, "Filename(s) of radon matrix files set to " << output.str());
 	}
 
 	if (vm.count("seed")) {
 		seed = vm["seed"].as<int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Random number generator seed was set to " << seed;
+		LOG(debug, "Random number generator seed was set to " << seed);
 	}
 
 	if (vm.count("sinogram")) {
 		rhs_file = vm["sinogram"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of sinogram was set to " << rhs_file;
+		LOG(debug, "Filename of sinogram was set to " << rhs_file);
 	}
 
 	if (vm.count("solution")) {
 		solution_file = vm["solution"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing solution vector to " << solution_file;
+		LOG(debug, "Writing solution vector to " << solution_file);
 	}
 
 	if (vm.count("solution-image")) {
 		solution_image_file = vm["solution-image"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing image of solution vector to " << solution_image_file;
+		LOG(debug, "Writing image of solution vector to " << solution_image_file);
 	}
 }
 
 bool ComputerTomographyOptions::internal_checkSensibility() const
 {
 	if (!vm.count("num-pixels-x")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in x direction not set";
+		LOG(error, "Number of pixels in x direction not set");
 		return false;
 	}
 
 	if (!vm.count("num-pixels-y")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of pixels in y direction not set";
+		LOG(error, "Number of pixels in y direction not set");
 		return false;
 	}
 
 	if (!vm.count("num-angles")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of angle discretization steps not set";
+		LOG(error, "Number of angle discretization steps not set");
 		return false;
 	}
 
 	if (!vm.count("num-offsets")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Number of lateral offsets not set";
+		LOG(error, "Number of lateral offsets not set");
 		return false;
 	}
 
 	if (((!vm.count("sinogram")) || (!boost::filesystem::exists(rhs_file)))
 		&& ((!vm.count("phantom")) || (!boost::filesystem::exists(comparison_file)))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Both right-hand side and solution file not set or not present.";
+		LOG(error, "Both right-hand side and solution file not set or not present.");
 		return false;
 
 	}
 
 	if ((vm.count("noisy-sinogram")) && (boost::filesystem::exists(noisy_sinogram_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Noisy sinogram file is already present.";
+		LOG(error, "Noisy sinogram file is already present.");
 		return false;
 	}
 
@@ -189,29 +171,25 @@ bool ComputerTomographyOptions::internal_checkSensibility_radonfactors() const
 	{
 	case 0:
 		if (vm.count("radon-matrix")) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Radon matrix used but not files given.";
+			LOG(error, "Radon matrix used but not files given.");
 			return false;
 		}
 		break;
 	case 1:
 		if (!boost::filesystem::exists(radon_matrix[0])) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "File of radon matrix does not exist.";
+			LOG(error, "File of radon matrix does not exist.");
 			return false;
 		}
 		break;
 	case 2:
 		if ((!boost::filesystem::exists(radon_matrix[0]))
 				|| (!boost::filesystem::exists(radon_matrix[1]))) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "At least one of the radon matrix files does not exist.";
+			LOG(error, "At least one of the radon matrix files does not exist.");
 			return false;
 		}
 		break;
 	default:
-		BOOST_LOG_TRIVIAL(error)
-				<< "More than two Radon matrix files given.";
+		LOG(error, "More than two Radon matrix files given.");
 		return false;
 		break;
 	}

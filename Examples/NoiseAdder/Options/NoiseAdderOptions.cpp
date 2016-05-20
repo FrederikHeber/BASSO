@@ -48,46 +48,39 @@ void NoiseAdderOptions::parse(int argc, char **argv)
 
 	if (vm.count("input")) {
 		input_file = vm["input"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of input set to " << input_file;
+		LOG(debug, "Filename of input set to " << input_file);
 	}
 
 	if (vm.count("output")) {
 		output_file = vm["output"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing output vector to " << output_file;
+		LOG(debug, "Writing output vector to " << output_file);
 	}
 
 	if (vm.count("noise-level")) {
 		noiselevel = vm["noise-level"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Noise level is set to " << noiselevel;
+		LOG(debug, "Noise level is set to " << noiselevel);
 	}
 
 	if (vm.count("relative-level")) {
 		relativelevel = vm["relative-level"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Noise level is set to " << relativelevel;
+		LOG(debug, "Noise level is set to " << relativelevel);
 	}
 }
 
 bool NoiseAdderOptions::internal_checkSensibility() const
 {
 	if (!vm.count("noise-level")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Noise level is not set";
+		LOG(error, "Noise level is not set");
 		return false;
 	}
 
 	if ((!vm.count("input")) || (!boost::filesystem::exists(input_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Input file not set or not present.";
+		LOG(error, "Input file not set or not present.");
 		return false;
 	}
 
 	if ((!vm.count("output")) || (boost::filesystem::exists(output_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Output file not set or already present.";
+		LOG(error, "Output file not set or already present.");
 		return false;
 	}
 

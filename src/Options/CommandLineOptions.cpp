@@ -174,8 +174,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 	// get desired algorithm
 	if (vm.count("algorithm")) {
 		algorithm_name = vm["algorithm"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "algorithm was set to " << algorithm_name;
+		LOG(debug, "algorithm was set to " << algorithm_name);
 	}
 
 	if (vm.count("auxiliary-constraints")) {
@@ -184,14 +183,12 @@ void CommandLineOptions::parse(int argc, char **argv)
 			<< "Auxiliary constraints are "
 			<< (auxiliary_constraints.empty() ? "None" : auxiliary_constraints);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Auxiliary constraints are None";
+		LOG(debug, "Auxiliary constraints are None");
 	}
 
 	if (vm.count("C")) {
 		C = vm["C"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "C was set to " << C;
+		LOG(debug, "C was set to " << C);
 	}
 
 	if (vm.count("calculateAngles")) {
@@ -204,11 +201,9 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("delta")) {
 		delta = vm["delta"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Magnitude of noise was set to " << delta;
+		LOG(debug, "Magnitude of noise was set to " << delta);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "delta set to default value of " << delta;
+		LOG(debug, "delta set to default value of " << delta);
 	}
 
 	if (vm.count("database-replace")) {
@@ -234,38 +229,31 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("iteration-file")) {
 		iteration_file = vm["iteration-file"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of iteration-file was set to " << iteration_file;
+		LOG(debug, "Filename of iteration-file was set to " << iteration_file);
 	}
 
 	if (vm.count("maxiter")) {
 		maxiter = vm["maxiter"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations was set to " << maxiter;
+		LOG(debug, "Maximum iterations was set to " << maxiter);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum iterations set to default value of " << maxiter;
+		LOG(debug, "Maximum iterations set to default value of " << maxiter);
 	}
 
 	if (vm.count("max-inner-iterations")) {
 		maxinneriter = vm["max-inner-iterations"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum number of inner iterations was set to " << maxinneriter;
+		LOG(debug, "Maximum number of inner iterations was set to " << maxinneriter);
 	}
 
 	if (vm.count("max-sfp-loops")) {
 		max_sfp_loops = vm["max-sfp-loops"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum number of SFP loops was set to " << max_sfp_loops;
+		LOG(debug, "Maximum number of SFP loops was set to " << max_sfp_loops);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum of SFP loops set to default value of " << max_sfp_loops;
+		LOG(debug, "Maximum of SFP loops set to default value of " << max_sfp_loops);
 	}
 
 	if (vm.count("max-walltime")) {
 		maxwalltime = vm["max-walltime"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum Walltime was set to " << maxwalltime << " seconds.";
+		LOG(debug, "Maximum Walltime was set to " << maxwalltime << " seconds.");
 	} else {
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Maximum Walltime set to default value of "
@@ -274,42 +262,36 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("minimization-library")) {
 		minlib = vm["minimization-library"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Using minimization library " << minlib;
+		LOG(debug, "Using minimization library " << minlib);
 	}
 
 	if (vm.count("type-space-x")) {
 		type_spacex = vm["type-space-x"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Type of space X was set to " << type_spacex;
+		LOG(debug, "Type of space X was set to " << type_spacex);
 	}
 
 	if (vm.count("type-space-y")) {
 		type_spacey = vm["type-space-y"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Type of space Y was set to " << type_spacey;
+		LOG(debug, "Type of space Y was set to " << type_spacey);
 	}
 
 	if (vm.count("px")) {
 		px = vm["px"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "P value of lp norm of X was set to " << px;
+		LOG(debug, "P value of lp norm of X was set to " << px);
 		if (px == 0.) // translate infinity
 			px = std::numeric_limits<double>::infinity();
 	}
 
 	if (vm.count("py")) {
 		py = vm["py"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "P value of lp norm of Y was set to " << py;
+		LOG(debug, "P value of lp norm of Y was set to " << py);
 		if (py == 0.) // translate infinity
 			py = std::numeric_limits<double>::infinity();
 	}
 
 	if (vm.count("number-directions")) {
 		N = vm["number-directions"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Number of search directions was set to " << N;
+		LOG(debug, "Number of search directions was set to " << N);
 	}
 
 	if (vm.count("orthogonal-directions")) {
@@ -323,28 +305,23 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("output-steps")) {
 		outputsteps = vm["output-steps"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Output steps was set to " << outputsteps;
+		LOG(debug, "Output steps was set to " << outputsteps);
 	}
 
 	if (vm.count("powerx")) {
 		powerx = vm["powerx"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in X was set to " << powerx;
+		LOG(debug, "Power of duality maping in X was set to " << powerx);
 	} else if (vm.count("px")) {
 		powerx = px > 2. ? px : 2.;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Using px as powerx if above 2: " << powerx << "\n.";
+		LOG(debug, "Using px as powerx if above 2: " << powerx << "\n.");
 	}
 
 	if (vm.count("powery")) {
 		powery = vm["powery"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Power of duality maping in Y was set to " << powery;
+		LOG(debug, "Power of duality maping in Y was set to " << powery);
 	} else if (vm.count("py")) {
 		powery = py > 2. ? py : 2.;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Using py as powery if above 2: " << powery << "\n.";
+		LOG(debug, "Using py as powery if above 2: " << powery << "\n.");
 	}
 
 	if (vm.count("regularization-parameter")) {
@@ -356,14 +333,12 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("searchspace")) {
 		searchspace_type = vm["searchspace"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting search space type to " << searchspace_type;
+		LOG(debug, "Setting search space type to " << searchspace_type);
 	}
 
 	if (vm.count("stepwidth-algorithm")) {
 		if (type != MinimizerFactory::landweber) {
-			BOOST_LOG_TRIVIAL(warning)
-					<< "stepwidth-algorithm is set, but not landweber chosen, ignoring";
+			LOG(warning, "stepwidth-algorithm is set, but not landweber chosen, ignoring");
 		}
 		stepwidth_type = vm["stepwidth-algorithm"].as<unsigned int>();
 		BOOST_LOG_TRIVIAL(debug) << "stepwidth-algorithm was set to "
@@ -372,35 +347,28 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("stopping-criteria")) {
 		stopping_criteria = vm["stopping-criteria"].as< std::string >();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Stopping criteria was set to " << stopping_criteria;
+		LOG(debug, "Stopping criteria was set to " << stopping_criteria);
 	}
 
 	if (vm.count("tau")) {
 		tau = vm["tau"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "tau was set to " << tau;
+		LOG(debug, "tau was set to " << tau);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "tau set to default value of " << tau;
+		LOG(debug, "tau set to default value of " << tau);
 	}
 
 	if (vm.count("tolerance-linesearch")) {
 		tolerance_linesearch = vm["tolerance-linesearch"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Tolerance for linesearches was set to " << tolerance_linesearch;
+		LOG(debug, "Tolerance for linesearches was set to " << tolerance_linesearch);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Tolerance for linesearches set to default value of " << tolerance_linesearch;
+		LOG(debug, "Tolerance for linesearches set to default value of " << tolerance_linesearch);
 	}
 
 	if (vm.count("tolerance-space-x")) {
 		tolerance_spacex = vm["tolerance-space-x"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Tolerance for space x mappings was set to " << tolerance_spacex;
+		LOG(debug, "Tolerance for space x mappings was set to " << tolerance_spacex);
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Tolerance for space x mappings set to default value of " << tolerance_spacex;
+		LOG(debug, "Tolerance for space x mappings set to default value of " << tolerance_spacex);
 	}
 
 	if (vm.count("tuple-parameters")) {
@@ -408,21 +376,18 @@ void CommandLineOptions::parse(int argc, char **argv)
 		std::stringstream output;
 		std::copy(tuple_parameters.begin(), tuple_parameters.end(),
 				std::ostream_iterator<std::string>(output, ","));
-		BOOST_LOG_TRIVIAL(debug)
-			<< "tuple parameters was set to " << output.str();
+		LOG(debug, "tuple parameters was set to " << output.str());
 	}
 
 	if (vm.count("update-algorithm")) {
 		updatetype = (enum LastNSearchDirections::UpdateAlgorithmType)
 				vm["update-algorithm"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Searchspace Index update algorithm set to " << updatetype;
+		LOG(debug, "Searchspace Index update algorithm set to " << updatetype);
 	}
 
 	if (vm.count("wolfe-constants")) {
 		wolfe_constants = vm["wolfe-constants"].as< std::vector<double> >();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting wolfe positivity constant to " << wolfe_constants[0];
+		LOG(debug, "Setting wolfe positivity constant to " << wolfe_constants[0]);
 		BOOST_LOG_TRIVIAL(debug)
 			<< "Setting wolfe stronger than linear constant to "
 			<< wolfe_constants[1];
@@ -435,8 +400,7 @@ bool CommandLineOptions::checkSensibility_config() const
 {
 	if (vm.count("config")) {
 		if (!boost::filesystem::exists(config_filename)) {
-				BOOST_LOG_TRIVIAL(error)
-					<< "Specified config file " << config_filename << " does not exist.";
+				LOG(error, "Specified config file " << config_filename << " does not exist.");
 				return false;
 		}
 	}
@@ -446,8 +410,7 @@ bool CommandLineOptions::checkSensibility_config() const
 bool CommandLineOptions::checkSensibility_delta() const
 {
 	if (!vm.count("delta")) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Noise level delta not set";
+		LOG(error, "Noise level delta not set");
 		return false;
 	}
 	return true;
@@ -458,8 +421,7 @@ bool CommandLineOptions::checkSensibility_OrthogonalDirections() const
 	if (vm.count("orthogonal-directions")) {
 		if (!((orthogonalization_type >= LastNSearchDirections::NoOrthogonalization)
 			&& (orthogonalization_type < LastNSearchDirections::MAX_Orthogonalization))) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Illegal orthogonalization type specified.";
+			LOG(error, "Illegal orthogonalization type specified.");
 			return false;
 		}
 	}
@@ -470,13 +432,11 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 {
 	if (type_spacex == "regularized_l1") {
 		if (!vm.count("regularization-parameter")) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "No regularization parameter set.";
+			LOG(error, "No regularization parameter set.");
 			return false;
 		} else {
 			if (vm.count("px") && (px != 1.)) {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Regularization parameter given and px set but not to l1 norm.";
+				LOG(error, "Regularization parameter given and px set but not to l1 norm.");
 				return false;
 			}
 		}
@@ -484,13 +444,11 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 
 	if (type_spacey == "regularized_l1") {
 		if (!vm.count("regularization-parameter")) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "No regularization parameter set.";
+			LOG(error, "No regularization parameter set.");
 			return false;
 		} else {
 			if (vm.count("py") && (py != 1.)) {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Regularization parameter given and py set but not to l1 norm.";
+				LOG(error, "Regularization parameter given and py set but not to l1 norm.");
 				return false;
 			}
 		}
@@ -536,8 +494,7 @@ bool CommandLineOptions::checkSensibility_algorithm() const
 {
 	// check whether algorithm_name states valid type
 	if (!MinimizerFactory::isValidTypeName(algorithm_name)) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Unknown algorithm specified by " << algorithm_name;
+		LOG(error, "Unknown algorithm specified by " << algorithm_name);
 		return false;
 	}
 	return true;
@@ -546,8 +503,7 @@ bool CommandLineOptions::checkSensibility_algorithm() const
 bool CommandLineOptions::checkSensibility_minlib() const
 {
 	if ((minlib != "gsl") && (minlib != "nlopt")) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "Minimization library must be either 'gsl' or 'nlopt'.";
+		LOG(error, "Minimization library must be either 'gsl' or 'nlopt'.");
 		return false;
 	}
 	return true;
@@ -557,8 +513,7 @@ bool CommandLineOptions::checkSensibility_norms() const
 {
 	if ((!NormFactory::isValidType(type_spacex))
 			|| (!NormFactory::isValidType(type_spacey))) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "Type of space of X or Y has invalid type.";
+		LOG(error, "Type of space of X or Y has invalid type.");
 		return false;
 	}
 	return true;
@@ -568,14 +523,12 @@ bool CommandLineOptions::checkSensibility_pvalues() const
 {
 	if ((type_spacex.substr(0,2) != "lp") &&
 			((vm.count("px") != 0) && (px != 1.))) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "No lp type desired but px value unequal 1 given";
+		LOG(error, "No lp type desired but px value unequal 1 given");
 		return false;
 	}
 	if ((type_spacey.substr(0,2) != "lp") &&
 			((vm.count("py") != 0) && (py != 1.))) {
-		BOOST_LOG_TRIVIAL(error)
-			<< "No lp type desired but py value unequal 1 given";
+		LOG(error, "No lp type desired but py value unequal 1 given");
 		return false;
 	}
 	return true;
@@ -604,8 +557,7 @@ bool CommandLineOptions::checkSensibility_updatealgorithm() const
 	if (vm.count("update-algorithm"))
 		if (!((updatetype >= LastNSearchDirections::RoundRobin)
 				&& (updatetype < LastNSearchDirections::MAX_UpdateAlgorithmType))) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Illegal update type set.";
+			LOG(error, "Illegal update type set.");
 			return false;
 		}
 	return true;
@@ -617,8 +569,7 @@ bool CommandLineOptions::checkSensibility_wolfeconstants() const
 		if ((wolfe_constants.size() != 2)
 				|| (wolfe_constants[0] <= 0)
 				|| (wolfe_constants[1] <= 0)) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Illegal Wolfe constants given, must be two and positive.";
+			LOG(error, "Illegal Wolfe constants given, must be two and positive.");
 			return false;
 		}
 	return true;

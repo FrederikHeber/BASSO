@@ -33,7 +33,7 @@ struct Verbose
 	 * @return true - do output log, false - don't
 	 */
 	static bool verbosity(const enum boost::log::trivial::severity_level &_level) {
-		assert( level_bool.size() > _level );
+		assert( level_bool.size() == 6 );
 		return level_bool[_level];
 	}
 

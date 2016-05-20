@@ -53,8 +53,7 @@ bool InRangeSolver::operator()(
 		)
 {
 	Eigen::VectorXd projected_rhs;
-	BOOST_LOG_TRIVIAL(debug)
-		<< "------------------------ n=" << _dim << " ------------------";
+	LOG(debug, "------------------------ n=" << _dim << " ------------------");
 	// project right-hand side onto range of matrix
 	BOOST_LOG_TRIVIAL(trace)
 			<< "Initial y_" << _dim << " is "
@@ -95,8 +94,7 @@ bool InRangeSolver::operator()(
 			<< "Difference y_" << _dim << "-y'_" << _dim << " is "
 			<< (_rhs-projected_rhs).transpose();
 
-	BOOST_LOG_TRIVIAL(debug)
-			<< "........................ n=" << _dim << " ..................";
+	LOG(debug, "........................ n=" << _dim << " ..................");
 
 	// prepare inverse problem
 	InverseProblem_ptr_t inverseproblem =
@@ -138,8 +136,7 @@ bool InRangeSolver::operator()(
 
 	if (result.status == GeneralMinimizer::ReturnValues::finished) {
 		_solution = RepresentationAdvocate::get(result.m_solution);
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Resulting vector is " << _solution.transpose();
+		LOG(trace, "Resulting vector is " << _solution.transpose());
 		return true;
 	} else
 		return false;

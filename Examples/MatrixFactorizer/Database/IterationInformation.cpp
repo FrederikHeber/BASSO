@@ -88,10 +88,9 @@ IterationInformation::IterationInformation(
 			// find key in overall_tuple
 			Table::TokenTypeMap_t::const_iterator tupleiter =
 					overall_tuple.find(*iter);
-			if (tupleiter == overall_tuple.end())
-				BOOST_LOG_TRIVIAL(error)
-						<< "Cannot find key " << *iter << "for accumulated values in overall table columns.";
-			else {
+			if (tupleiter == overall_tuple.end()) {
+				LOG(error, "Cannot find key " << *iter << "for accumulated values in overall table columns.");
+			} else {
 				TableDataAccumulator::prepareTableForAccumulatedValues(
 						loop_table,
 						Table::getVariantsType(tupleiter->second),
@@ -114,8 +113,7 @@ IterationInformation::~IterationInformation()
 {
 	// add views after tables have been created and filled
 	if (!createViews())
-		BOOST_LOG_TRIVIAL(warning)
-			<< "Could not create overall or per_iteration views.";
+		LOG(warning, "Could not create overall or per_iteration views.");
 }
 
 void IterationInformation::addTuple(
@@ -130,8 +128,7 @@ void IterationInformation::addTuple(
 		loop_overall_table.addTuple(overall_tuple);
 		break;
 	default:
-		BOOST_LOG_TRIVIAL(error)
-			<< "Unknown table in IterationInformation::addTuple()";
+		LOG(error, "Unknown table in IterationInformation::addTuple()");
 	}
 }
 
@@ -172,20 +169,17 @@ bool IterationInformation::createViews()
 		// the database, see setParameterKey()
 	}
 	if (!status)
-		BOOST_LOG_TRIVIAL(error)
-			<< "(Some of the) Required Tables are empty, not creating views.";
+		LOG(error, "(Some of the) Required Tables are empty, not creating views.");
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS loop AS SELECT * FROM parameters p INNER JOIN data_loop d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
+		LOG(trace, "SQL: " << sql.str());
 		status &= database->executeSQLStatement(sql.str());
 	}
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS loop_overall AS SELECT * FROM parameters p INNER JOIN data_loop_overall d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
+		LOG(trace, "SQL: " << sql.str());
 		status &= database->executeSQLStatement(sql.str());
 	}
 	return status;
@@ -213,8 +207,7 @@ size_t IterationInformation::prepareParametersTable(
 	if (database->isDatabaseFileGiven()) {
 		// check for presence
 		if (!database->isTuplePresentInTable(parameter_table, parameter_tuple)) {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Parameter tuple not present, adding to table.";
+			LOG(debug, "Parameter tuple not present, adding to table.");
 			database->writeTable(parameter_table);
 		}
 		// and return
@@ -222,8 +215,7 @@ size_t IterationInformation::prepareParametersTable(
 					parameter_table, parameter_tuple);
 		// clear table such that present tuple is not stored again
 		database->clearTable(parameter_table.getName());
-		BOOST_LOG_TRIVIAL(info)
-			<< "Obtaining parameter_key " << rowid;
+		LOG(info, "Obtaining parameter_key " << rowid);
 	} else {
 		// else set rowid to arbitrary value as there is no file anyway
 		rowid = 1;

@@ -17,6 +17,8 @@
 #include "Minimizations/Functions/Minimizers/Minimizer_gsl.hpp"
 #include "Minimizations/Functions/Minimizers/Minimizer_nlopt.hpp"
 
+#include "Log/Logging.hpp"
+
 template <class T>
 typename FunctionalMinimizer<T>::ptr_t
 FunctionalMinimizerFactory::create(
@@ -34,8 +36,7 @@ FunctionalMinimizerFactory::create(
 		instance.reset(new Minimizer<NLopt_vector>(_N));
 		break;
 	default:
-		BOOST_LOG_TRIVIAL(error)
-				<< "Unknown instance desired in FunctionalMinimizerFactory";
+		LOG(error, "Unknown instance desired in FunctionalMinimizerFactory");
 		assert(0);
 		break;
 	}
@@ -64,8 +65,7 @@ FunctionalMinimizerFactory::create(
 	FunctionMinimizer::ptr_t instance;
 	switch (CurrentMinLib) {
 	case gnuscientificlibrary:
-		BOOST_LOG_TRIVIAL(error)
-				<< "Wolfe line search is not implemented with gsl minimization.";
+		LOG(error, "Wolfe line search is not implemented with gsl minimization.");
 		assert(0);
 		break;
 	case nonlinearoptimization:
@@ -78,8 +78,7 @@ FunctionalMinimizerFactory::create(
 		break;
 	}
 	default:
-		BOOST_LOG_TRIVIAL(error)
-				<< "Unknown instance desired in FunctionalMinimizerFactory";
+		LOG(error, "Unknown instance desired in FunctionalMinimizerFactory");
 		assert(0);
 		break;
 	}

@@ -267,13 +267,13 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Minimizations)
 add_subdirectory (src/Math)
 set (EXTRA_LIBS ${EXTRA_LIBS} Math)
 
-# add the Log folder
-add_subdirectory (src/Log)
-set (EXTRA_LIBS ${EXTRA_LIBS} Log)
-
 # add the Database folder
 add_subdirectory (src/Database)
 set (EXTRA_LIBS ${EXTRA_LIBS} Database)
+
+# add the Log folder
+add_subdirectory (src/Log)
+set (EXTRA_LIBS ${EXTRA_LIBS} Log)
 
 #### EXECUTABLES ####
 

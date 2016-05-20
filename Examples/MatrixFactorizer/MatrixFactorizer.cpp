@@ -76,21 +76,15 @@ int outputSolution(
 					"Failed to write solution difference file.";
  		}
 
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Resulting first factor transposed is\n" << _spectral_matrix.transpose();
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Resulting second factor is\n" << _pixel_matrix;
+	LOG(debug, "Resulting first factor transposed is\n" << _spectral_matrix.transpose());
+	LOG(debug, "Resulting second factor is\n" << _pixel_matrix);
 
 	if ((_data.innerSize() <= 10) && (_data.outerSize() <= 10)) {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Data matrix was\n" << _data;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Product matrix is\n" << product_matrix;
-		BOOST_LOG_TRIVIAL(info)
-			<< "Difference matrix is\n" << difference_matrix;
+		LOG(debug, "Data matrix was\n" << _data);
+		LOG(debug, "Product matrix is\n" << product_matrix);
+		LOG(info, "Difference matrix is\n" << difference_matrix);
 	}
-	BOOST_LOG_TRIVIAL(info)
-		<< "Norm of difference is " << (_data - product_matrix).norm();
+	LOG(info, "Norm of difference is " << (_data - product_matrix).norm());
 
 	return returnstatus;
 }
@@ -122,11 +116,9 @@ int main(int argc, char **argv)
 				<< (world.size()-1) << " slaves to work on the problem.";
 #else /* MPI_FOUND */
 #ifdef OPENMP_FOUND
-		BOOST_LOG_TRIVIAL(info)
-			<< "Solving with parallel threads.";
+		LOG(info, "Solving with parallel threads.");
 #else /* OPENMP_FOUND */
-		BOOST_LOG_TRIVIAL(info)
-			<< "A single process solves the problem.";
+		LOG(info, "A single process solves the problem.");
 #endif /* OPENMP_FOUND */
 #endif /* MPI_FOUND */
 		/// starting timing
@@ -155,8 +147,7 @@ int main(int argc, char **argv)
 								opts.data_file.string(),
 								data);
 		} else {
-			BOOST_LOG_TRIVIAL(error)
-					<< "There was an error with the options, exiting.";
+			LOG(error, "There was an error with the options, exiting.");
 		}
 		// print parsed matrix and vector if small or high verbosity requested
 		if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
@@ -202,8 +193,7 @@ int main(int argc, char **argv)
 			// tell them here before the actual solver loop
 			master.sendTerminate();
 #else
-			BOOST_LOG_TRIVIAL(error)
-					<< "There was an error parsing data matrix, exiting.";
+			LOG(error, "There was an error parsing data matrix, exiting.");
 #endif /* MPI_FOUND */
 		}
 
@@ -225,8 +215,7 @@ int main(int argc, char **argv)
 #endif /* MPI_FOUND */
 
 	if (returnstatus != 0) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "There was an error performing the factorization, exiting.";
+		LOG(error, "There was an error performing the factorization, exiting.");
 	}
 
 	/// exit

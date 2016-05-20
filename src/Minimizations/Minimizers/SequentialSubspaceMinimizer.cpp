@@ -92,8 +92,7 @@ static Table::Tuple_t& prepareAngleTuple(
 		for (unsigned int i=0; i<_maxangles; ++i) {
 			std::stringstream componentname;
 			componentname << *nameiter << i+1;
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Adding " << componentname.str();
+			LOG(debug, "Adding " << componentname.str());
 			angle_tuple.insert( std::make_pair(componentname.str(), 0.), Table::Data);
 		}
 	return angle_tuple;
@@ -116,13 +115,11 @@ bool createAnglesViews(const Database &_database)
 		// the database, see setParameterKey()
 	}
 	if (!status)
-		BOOST_LOG_TRIVIAL(error)
-			<< "(Some of the) Required Tables are empty, not creating angle views.";
+		LOG(error, "(Some of the) Required Tables are empty, not creating angle views.");
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS angles AS SELECT * FROM parameters p INNER JOIN data_angles d ON p.rowid = d.parameters_fk";
-		BOOST_LOG_TRIVIAL(trace)
-			<< "SQL: " << sql.str();
+		LOG(trace, "SQL: " << sql.str());
 		status &= _database.executeSQLStatement(sql.str());
 	}
 	return status;
@@ -159,8 +156,7 @@ bool SequentialSubspaceMinimizer::isNonConverging(
 		<< current_residuum
 		<< " exceeding initial value of 1. by "
 		<< current_residuum/initial_residuum;
-		BOOST_LOG_TRIVIAL(error)
-		<< "STOPPING ITERATION";
+		LOG(error, "STOPPING ITERATION");
 		return true;
 	} else
 		return false;
@@ -239,8 +235,7 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	unsigned int inner_iterations = (*functionminimizer)(
 		Ndirs, TolFun, tmin);
 
-	BOOST_LOG_TRIVIAL(debug)
-			<< "tmin " << tmin << " found in " << inner_iterations << " iterations.";
+	LOG(debug, "tmin " << tmin << " found in " << inner_iterations << " iterations.");
 
 	return inner_iterations;
 }
@@ -381,8 +376,7 @@ SequentialSubspaceMinimizer::operator()(
 		searchdir.update(refs, istate.m_residual);
 		if (searchdir.u->isZero(BASSOTOLERANCE)) {
 			StopCriterion = true;
-			BOOST_LOG_TRIVIAL(debug)
-				<< "newdir is zero, stopping.";
+			LOG(debug, "newdir is zero, stopping.");
 			continue;
 		}
 		updateAngleTable(searchdir.u, angle_tuple);
@@ -394,8 +388,7 @@ SequentialSubspaceMinimizer::operator()(
 		// alpha=Jw'*y
 		const double alpha =
 				searchdir.Jw * refs.y;
-		BOOST_LOG_TRIVIAL(trace)
-			<< "alpha is " << alpha;
+		LOG(trace, "alpha is " << alpha);
 
 		// add u to U and alpha to alphas
 		updateSearchspace(_truesolution, searchdir.u, alpha);
@@ -410,8 +403,7 @@ SequentialSubspaceMinimizer::operator()(
 							istate.getSearchSpace(), istate.getAlphas());
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		} catch (MinimizerIllegalNumber_exception &e) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Encountered illegal number in line search minimum, not updating.";
+			LOG(error, "Encountered illegal number in line search minimum, not updating.");
 			tmin = std::vector<double>(N,0.);
 		}
 
@@ -423,8 +415,7 @@ SequentialSubspaceMinimizer::operator()(
 			const double reduction =
 					::pow(istate.residuum, p)
 					 /(p*::pow(C,p-1.)*::pow(refs.A.Norm(),p));
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Estimated reduction in Bregman distance is " << reduction;
+			LOG(debug, "Estimated reduction in Bregman distance is " << reduction);
 		}
 #endif
 
@@ -491,8 +482,7 @@ SequentialSubspaceMinimizer::operator()(
 
 	// create angles view if desired
 	if ((DoCalculateAngles) && (!createAnglesViews(dbcontainer.database)))
-		BOOST_LOG_TRIVIAL(warning)
-			<< "Could not create angles view in SQLite database.";
+		LOG(warning, "Could not create angles view in SQLite database.");
 
 	// and return solution
 	istate.status = ReturnValues::finished;

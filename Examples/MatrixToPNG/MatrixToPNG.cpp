@@ -135,8 +135,7 @@ int main (int argc, char *argv[])
 		// find bounds
 		const double min = matrix.minCoeff();
 		const double max = matrix.maxCoeff();
-		BOOST_LOG_TRIVIAL(info)
-				<< "Data range is [" << min << ":" << max << "]";
+		LOG(info, "Data range is [" << min << ":" << max << "]");
 
 		png::image< png::rgb_pixel > *image = NULL;
 		switch(opts.Rotate) {

@@ -71,8 +71,7 @@ static void doWarnIterate()
 {
 	static bool repeating = false;
 	if (!repeating) {
-		BOOST_LOG_TRIVIAL(warning)
-			<< "gsl_multimin could not improve iterate anymore, not warning any longer.";
+		LOG(warning, "gsl_multimin could not improve iterate anymore, not warning any longer.");
 		repeating = true;
 	}
 }
@@ -122,8 +121,7 @@ Minimizer<gsl_vector>::minimize(
 				}
 			}
 		}
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Current iterate #" << iter << ":" << " " << gsl_multimin_fdfminimizer_x(s);
+		LOG(trace, "Current iterate #" << iter << ":" << " " << gsl_multimin_fdfminimizer_x(s));
 
 		if (gsl_status == GSL_ENOPROG) {
 			doWarnIterate();
@@ -135,8 +133,7 @@ Minimizer<gsl_vector>::minimize(
 	}
 	while ((status == FunctionMinimizer::gradient_continue) && iter < maxiterations);
 
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Inner iteration took " << iter << " steps";
+	LOG(trace, "Inner iteration took " << iter << " steps");
 
 	// place solution at tmin
 	convertInternalTypeToArrayType(

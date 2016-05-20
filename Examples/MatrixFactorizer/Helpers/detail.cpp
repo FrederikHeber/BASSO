@@ -83,19 +83,17 @@ void detail::constructRandomMatrix(
 	// push to [0,1] if non-negativity desired
 	renormalizer.renormalize(_matrix);
 	if ((_matrix.innerSize() > 10) || (_matrix.outerSize() > 10)) {
-		if (_matrix.innerSize() > _matrix.outerSize())
-			BOOST_LOG_TRIVIAL(trace)
-					<< "Initial transposed matrix is\n" << _matrix.transpose();
-		else
-			BOOST_LOG_TRIVIAL(trace)
-					<< "Initial matrix is\n" << _matrix;
+		if (_matrix.innerSize() > _matrix.outerSize()) {
+			LOG(trace, "Initial transposed matrix is\n" << _matrix.transpose());
+		} else {
+			LOG(trace, "Initial matrix is\n" << _matrix);
+		}
 	} else {
-		if (_matrix.innerSize() > _matrix.outerSize())
-			BOOST_LOG_TRIVIAL(info)
-					<< "Initial transposed matrix is\n" << _matrix.transpose();
-		else
-			BOOST_LOG_TRIVIAL(info)
-					<< "Initial matrix is\n" << _matrix;
+		if (_matrix.innerSize() > _matrix.outerSize()) {
+			LOG(info, "Initial transposed matrix is\n" << _matrix.transpose());
+		} else {
+			LOG(info, "Initial matrix is\n" << _matrix);
+		}
 	}
 
 }

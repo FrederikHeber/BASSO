@@ -71,8 +71,7 @@ struct IterationInformation
 			overall_tuple.replace(_keyname, _value);
 			break;
 		default:
-			BOOST_LOG_TRIVIAL(error)
-				<< "Unknown table in IterationInformation::replace()";
+			LOG(error, "Unknown table in IterationInformation::replace()");
 		}
 	}
 

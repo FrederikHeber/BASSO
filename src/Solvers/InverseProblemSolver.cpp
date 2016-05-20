@@ -49,8 +49,7 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 	result.residuum = 0.;
 
 	if (minimizer == NULL) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Minimizer could not be constructed, exiting.";
+		LOG(error, "Minimizer could not be constructed, exiting.");
 		result.status = GeneralMinimizer::ReturnValues::error;
 		return result;
 	}
@@ -81,8 +80,7 @@ GeneralMinimizer::ReturnValues InverseProblemSolver::operator()(
 	*result.m_solution = _startingvalue;
 	*inverseproblem->x = result.m_solution;
 	if (result.m_solution->getSpace()->getDimension() < 10)
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Starting at x0 = " << result.m_solution;
+		LOG(debug, "Starting at x0 = " << result.m_solution);
 
 	// only for smooth spaces we may use the duality mapping
 	if (inverseproblem->x->getSpace()->getNorm()->isSmooth()) {

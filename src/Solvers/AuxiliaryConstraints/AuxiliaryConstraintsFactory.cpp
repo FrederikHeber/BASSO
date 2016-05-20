@@ -76,8 +76,7 @@ struct parser
         	AuxiliaryConstraintsFactory::Combination_types combination_type =
         			f.getCombinationTypeForName(tokenword.str());
         	if (stop_type != AuxiliaryConstraintsFactory::MAX_AuxiliaryConstraints_types) {
-            	BOOST_LOG_TRIVIAL(debug)
-    				<< "Matched instance: " << tokenword.str();
+            	LOG(debug, "Matched instance: " << tokenword.str());
         		AuxiliaryConstraints::ptr_t newcriterion =
         				f.createCriterion( stop_type );
         		if (combiner != AuxiliaryConstraintsFactory::NoCombination) {
@@ -88,14 +87,12 @@ struct parser
         			criterion = newcriterion;
         		}
         	} else if (combination_type != AuxiliaryConstraintsFactory::MAX_Combination_types) {
-            	BOOST_LOG_TRIVIAL(debug)
-    				<< "Matched combination: " << tokenword.str();
+            	LOG(debug, "Matched combination: " << tokenword.str());
         		// check whether it's an operator
         		assert( combiner == AuxiliaryConstraintsFactory::NoCombination);
         		combiner = combination_type;
         	} else {
-        		BOOST_LOG_TRIVIAL(error)
-        				<< "Cannot match instance: " << t.value();
+        		LOG(error, "Cannot match instance: " << t.value());
         	}
             break;
         }
@@ -142,8 +139,7 @@ AuxiliaryConstraintsFactory::create(
 				boost::ref(combiner)));
 
     if (!r) {
-    	BOOST_LOG_TRIVIAL(error)
-    			<< "Could not parse criteria line: " << _criteria_line;
+    	LOG(error, "Could not parse criteria line: " << _criteria_line);
     	criterion.reset();
     }
 

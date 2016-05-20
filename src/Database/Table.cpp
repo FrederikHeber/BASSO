@@ -134,8 +134,7 @@ std::vector<Table::values_t> Table::convertTuplesToValueVector(
 				break;
 			}
 			default:
-				BOOST_LOG_TRIVIAL(error)
-					<< "Unknown type for key " << keytypeiter->first;
+				LOG(error, "Unknown type for key " << keytypeiter->first);
 				break;
 			}
 			tempkeys.erase(keytypeiter->first);

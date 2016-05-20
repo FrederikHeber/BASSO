@@ -59,8 +59,7 @@ void printNumberOfValues(
 	std::stringstream output;
 	std::copy(sizes.begin(), sizes.end(),
 			std::ostream_iterator<size_t>(output, ","));
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#" << _rank << " gathered " << output.str();
+	LOG(debug, "#" << _rank << " gathered " << output.str());
 	const size_t totalentries =
 			std::accumulate(sizes.begin(), sizes.end(), 0);
 	BOOST_LOG_TRIVIAL(debug)
@@ -76,8 +75,7 @@ bool Master::solve(
 		)
 {
 	// send round that we don't terminate yet
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting no terminate.";
+	LOG(debug, "#0 - broadcasting no terminate.");
 	bool full_terminate = false;
 	mpi::broadcast(world, full_terminate, 0);
 
@@ -85,8 +83,7 @@ bool Master::solve(
 	std::deque<int> AvailableWorkers;
 	for (int i=1;i<world.size();++i) {
 		int id = -1;
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#0 - waiting for id " << i << ".";
+		LOG(debug, "#0 - waiting for id " << i << ".");
 		world.recv(i, InitialId, id);
 		assert( id != -1 );
 		AvailableWorkers.push_back(id);
@@ -94,14 +91,11 @@ bool Master::solve(
 	assert(AvailableWorkers.size() == world.size()-(unsigned int)1);
 
 	// send round global information
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting options.";
+	LOG(debug, "#0 - broadcasting options.");
 	mpi::broadcast(world, const_cast<MatrixFactorizerOptions &>(_opts), 0);
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting constraints.";
+	LOG(debug, "#0 - broadcasting constraints.");
 	mpi::broadcast(world, const_cast<std::string &>(_opts.auxiliary_constraints), 0);
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting matrix.";
+	LOG(debug, "#0 - broadcasting matrix.");
 	mpi::broadcast(world, const_cast<Eigen::MatrixXd &>(_matrix), 0);
 
 	// allocate variables for non-blocking communication
@@ -139,8 +133,7 @@ bool Master::solve(
 		// wait for free workers if non available
 		if ((AvailableWorkers.empty()) && (!uncompleted_requests.empty())) {
 			// wait for any result
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#0 - waiting for any work result.";
+			LOG(debug, "#0 - waiting for any work result.");
 			std::pair<
 				mpi::status,
 				std::deque<mpi::request>::iterator > result =
@@ -159,8 +152,7 @@ bool Master::solve(
 		}
 	}
 	// wait for all remaining results and handle incoming results
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - waiting for all remaining work results.";
+	LOG(debug, "#0 - waiting for all remaining work results.");
 	{
 		std::vector<mpi::status> completed_requests;
 		mpi::wait_all(
@@ -178,8 +170,7 @@ bool Master::solve(
 
 	// send terminate signal by empty work package
 	for (int i=1;i<world.size();++i) {
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#0 - sending termination signal to " << i << ".";
+		LOG(debug, "#0 - sending termination signal to " << i << ".");
 		world.send(i, ColumnWise, WorkPackage());
 	}
 	// gather operation for values accumulated from inner problem's overall tables
@@ -261,8 +252,7 @@ void Master::sendTerminate()
 {
 	// send full terminate signal
 	// send round global information
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#0 - broadcasting full terminate.";
+	LOG(debug, "#0 - broadcasting full terminate.");
 	bool full_terminate = true;
 	mpi::broadcast(world, full_terminate, 0);
 }

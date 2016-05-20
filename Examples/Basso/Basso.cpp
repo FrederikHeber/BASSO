@@ -161,8 +161,7 @@ int main (int argc, char *argv[])
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
 	if (x0->getSpace()->getDimension() < 10)
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Starting at x0 = " << x0;
+		LOG(debug, "Starting at x0 = " << x0);
 
 	// create auxiliary constraints
 	AuxiliaryConstraintsFactory constraint_factory;

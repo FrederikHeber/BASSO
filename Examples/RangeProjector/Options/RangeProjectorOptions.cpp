@@ -37,41 +37,35 @@ void RangeProjectorOptions::internal_parse()
 {
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << matrix_file;
+		LOG(debug, "Filename of matrix was set to " << matrix_file);
 	}
 
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << rhs_file;
+		LOG(debug, "Filename of vector was set to " << rhs_file);
 	}
 
 	if (vm.count("solution")) {
 		solution_file = vm["solution"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing solution vector to " << solution_file;
+		LOG(debug, "Writing solution vector to " << solution_file);
 	}
 
 	if (vm.count("solution-image")) {
 		solution_image_file = vm["solution-image"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing image of solution vector to " << solution_image_file;
+		LOG(debug, "Writing image of solution vector to " << solution_image_file);
 	}
 }
 
 bool RangeProjectorOptions::internal_checkSensibility() const
 {
 	if ((!vm.count("matrix")) || (!boost::filesystem::exists(matrix_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Matrix file not set or not present.";
+		LOG(error, "Matrix file not set or not present.");
 		return false;
 
 	}
 
 	if ((!vm.count("rhs")) || (!boost::filesystem::exists(rhs_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Right-hand side file not set or not present.";
+		LOG(error, "Right-hand side file not set or not present.");
 		return false;
 
 	}

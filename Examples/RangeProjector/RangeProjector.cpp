@@ -156,8 +156,7 @@ int main (int argc, char *argv[])
 
 	// get projected rhs
 	if (result.status != GeneralMinimizer::ReturnValues::finished) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Projection onto range failed.";
+		LOG(error, "Projection onto range failed.");
 		return 255;
 	}
 

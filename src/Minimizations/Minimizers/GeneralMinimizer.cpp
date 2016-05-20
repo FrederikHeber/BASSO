@@ -19,6 +19,7 @@
 #include <Minimizations/Mappings/DualityMappingFactory.hpp>
 #include <fstream>
 #include <sstream>
+
 #include "Log/Logging.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Functions/BregmanDistance.hpp"
@@ -81,8 +82,7 @@ GeneralMinimizer::~GeneralMinimizer()
 	// add view if not present to database if not empty
 	if (dbcontainer.size() != 0)
 		if (!dbcontainer.createViews())
-			BOOST_LOG_TRIVIAL(warning)
-				<< "Could not create overall or per_iteration views.";
+			LOG(warning, "Could not create overall or per_iteration views.");
 }
 
 void GeneralMinimizer::SearchDirection::update(
@@ -90,15 +90,13 @@ void GeneralMinimizer::SearchDirection::update(
 	 	 const SpaceElement_ptr_t &_residual)
 {
 		_refs.j_r( _residual, Jw );
-		BOOST_LOG_TRIVIAL(trace)
-			<< "Jw= j_r (R_n) is " << Jw;
+		LOG(trace, "Jw= j_r (R_n) is " << Jw);
 		_refs.A_t(Jw, u);
-		if (u->getSpace()->getDimension() > 10)
-			BOOST_LOG_TRIVIAL(trace)
-					<< "newdir is " << u;
-		else
-			BOOST_LOG_TRIVIAL(debug)
-					<< "newdir is " << u;
+		if (u->getSpace()->getDimension() > 10) {
+			LOG(trace, "newdir is " << u);
+		} else {
+			LOG(debug, "newdir is " << u);
+		}
 }
 
 bool GeneralMinimizer::CheckStoppingCondition(
@@ -122,12 +120,9 @@ void GeneralMinimizer::ReturnValues::output(
 	BOOST_LOG_TRIVIAL(debug)
 	<< "#" << NumberOuterIterations << ": "
 	<< "||Ax_n-y||/||y|| is " << residuum/ynorm;
-	BOOST_LOG_TRIVIAL(trace)
-	<< "x_n is " << m_solution;
-	BOOST_LOG_TRIVIAL(trace)
-	<< "dual_x_n is " << m_dual_solution;
-	BOOST_LOG_TRIVIAL(trace)
-	<< "R_n is " << m_residual;
+	LOG(trace, "x_n is " << m_solution);
+	LOG(trace, "dual_x_n is " << m_dual_solution);
+	LOG(trace, "R_n is " << m_residual);
 }
 
 double GeneralMinimizer::calculateResidual(
@@ -169,15 +164,13 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		fesetround(roundmode);
 		const double errorvalue =
 				std::max(distance-lower_bound, upper_bound-distance);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Reduction in Bregman Distance is " << OldBregmanDistance-distance;
+		LOG(debug, "Reduction in Bregman Distance is " << OldBregmanDistance-distance);
 		BOOST_LOG_TRIVIAL(debug)
 				<< "Bregman distance is " << distance
 				<< "+-" << errorvalue;
 //				<< " in [" << lower_bound << "," << upper_bound << "]";
 #else
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Bregman distance is " << distance;
+		LOG(debug, "Bregman distance is " << distance);
 #endif
 		// check that distance truly decreases
 		assert( (OldBregmanDistance == 0.)

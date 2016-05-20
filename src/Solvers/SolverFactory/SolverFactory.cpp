@@ -144,8 +144,7 @@ MinimizerFactory::instance_ptr_t SolverFactory::createMinimizer(
 						_opts.wolfe_constants);
 				// warning in case sanity check fails
 				if (!_opts.inexactLinesearch)
-					BOOST_LOG_TRIVIAL(warning)
-						<< "Wolfe constants set although we do perform an exact line search.";
+					LOG(warning, "Wolfe constants set although we do perform an exact line search.");
 			}
 			static_cast<SequentialSubspaceMinimizer*>(
 					minimizer.get())->setDoCalculateAngles(

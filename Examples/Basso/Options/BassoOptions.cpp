@@ -41,34 +41,29 @@ void BassoOptions::internal_parse()
 {
 	if (vm.count("compare-against")) {
 		comparison_file = vm["compare-against"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Parsing true solution vector from " << comparison_file;
+		LOG(debug, "Parsing true solution vector from " << comparison_file);
 	}
 
 	if (vm.count("matrix")) {
 		matrix_file = vm["matrix"].as< std::vector<boost::filesystem::path> >();
 		std::stringstream output;
 		output << matrix_file;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of matrix was set to " << output.str();
+		LOG(debug, "Filename of matrix was set to " << output.str());
 	}
 
 	if (vm.count("rhs")) {
 		rhs_file = vm["rhs"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Filename of vector was set to " << rhs_file;
+		LOG(debug, "Filename of vector was set to " << rhs_file);
 	}
 
 	if (vm.count("solution")) {
 		solution_file = vm["solution"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing solution vector to " << solution_file;
+		LOG(debug, "Writing solution vector to " << solution_file);
 	}
 
 	if (vm.count("solution-image")) {
 		solution_image_file = vm["solution-image"].as<boost::filesystem::path>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Writing image of solution vector to " << solution_image_file;
+		LOG(debug, "Writing image of solution vector to " << solution_image_file);
 	}
 }
 
@@ -79,29 +74,25 @@ bool BassoOptions::internal_checkSensibility() const
 	{
 	case 1:
 		if (!boost::filesystem::exists(matrix_file[0])) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "File of matrix does not exist.";
+			LOG(error, "File of matrix does not exist.");
 			return false;
 		}
 		break;
 	case 2:
 		if ((!boost::filesystem::exists(matrix_file[0]))
 				|| (!boost::filesystem::exists(matrix_file[1]))) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "At least one of the matrix files does not exist.";
+			LOG(error, "At least one of the matrix files does not exist.");
 			return false;
 		}
 		break;
 	default:
-		BOOST_LOG_TRIVIAL(error)
-				<< "More than two matrix files given.";
+		LOG(error, "More than two matrix files given.");
 		return false;
 		break;
 	}
 
 	if ((!vm.count("rhs")) || (!boost::filesystem::exists(rhs_file))) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Right-hand side file not set or not present.";
+		LOG(error, "Right-hand side file not set or not present.");
 		return false;
 
 	}

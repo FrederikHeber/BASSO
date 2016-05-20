@@ -89,11 +89,9 @@ Minimizer<NLopt_vector>::minimize(
 		throw MinimizerIllegalNumber_exception()
 		<< MinimizerIllegalNumber_variablename("minf");
 
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Inner iteration took " << iter << " steps";
+	LOG(debug, "Inner iteration took " << iter << " steps");
 #else
-	BOOST_LOG_TRIVIAL(error)
-		<< "NLopt support not compiled in.";
+	LOG(error, "NLopt support not compiled in.");
 	assert(0);
 #endif /* NLOPT_FOUND */
 

@@ -63,15 +63,13 @@ calculateLeftAndRightSign(
 		const double tmp = _U.dot(_matrix.col(j));
 		signs.first += sign(tmp)*tmp*tmp;
 	}
-	BOOST_LOG_TRIVIAL(trace)
-			<< "sign, left " << signs.first;
+	LOG(trace, "sign, left " << signs.first);
 	// right signs
 	for (int j=0;j<_matrix.rows();++j) {
 		const double tmp = _V.dot(_matrix.row(j));
 		signs.second += sign(tmp)*tmp*tmp;
 	}
-	BOOST_LOG_TRIVIAL(trace)
-			<< "sign, right " << signs.second;
+	LOG(trace, "sign, right " << signs.second);
 
 	return signs;
 }
@@ -101,8 +99,7 @@ void TruncatedSVD::correctSigns(const bool _correlated)
 					continue;
 				residual -= U.col(m)*S(m)*V.col(m).transpose();
 			}
-			BOOST_LOG_TRIVIAL(info)
-					<< "Residual " << residual;
+			LOG(info, "Residual " << residual);
 		}
 		signs.push_back(
 				calculateLeftAndRightSign(residual, U.col(k), V.col(k)));

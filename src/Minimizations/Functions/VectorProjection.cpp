@@ -62,8 +62,7 @@ VectorProjection::operator()(
 				(*functionminimizer)(dim, _Tol, tmin);
 		result = functionminimizer->getCurrentOptimumValue();
 
-		BOOST_LOG_TRIVIAL(trace)
-			<< "tmin is " << tmin;
+		LOG(trace, "tmin is " << tmin);
 	}
 
 	return std::make_pair( result, tmin);

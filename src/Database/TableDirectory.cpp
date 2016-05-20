@@ -39,8 +39,7 @@ void TableDirectory::clear()
 {
 	for(tables_t::iterator iter = tables.begin();
 		iter != tables.end(); ++iter) {
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Clearing table " << iter->second->getName();
+		LOG(debug, "Clearing table " << iter->second->getName());
 		iter->second->clear();
 	}
 }

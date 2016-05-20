@@ -57,8 +57,7 @@ void TableDataAccumulator::extractData() const
 		const std::string &keyname = *keyiter;
 		const size_t iterindex =
 				std::distance(accumulated_keys.begin(), keyiter);
-		BOOST_LOG_TRIVIAL(trace)
-				<< "There are " << valuevectors[iterindex].second.size() << " values for " << keyname;
+		LOG(trace, "There are " << valuevectors[iterindex].second.size() << " values for " << keyname);
 		assert(valuevectors[iterindex].second.size()==1);
 		const AccumulatedValues::iterator iter =
 				accumulatedValues.find(keyname);
@@ -93,8 +92,7 @@ void TableDataAccumulator::finalizeData() const
 			}
 			case Database_types::valchartype:
 			default:
-				BOOST_LOG_TRIVIAL(error)
-					<< "Unknown type for key " << keyname;
+				LOG(error, "Unknown type for key " << keyname);
 				break;
 		}
 	}
@@ -133,8 +131,7 @@ void TableDataAccumulator::prepareTableForAccumulatedValues(
 		}
 		case Database_types::valchartype:
 		default:
-			BOOST_LOG_TRIVIAL(error)
-				<< "Unknown or unhandleable type for key " << _keyname;
+			LOG(error, "Unknown or unhandleable type for key " << _keyname);
 			break;
 	}
 }

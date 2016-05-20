@@ -142,12 +142,10 @@ void LastNSearchDirections::update(
 			index = updateIndexToMostOrthogonal(_newdir);
 			break;
 		default:
-			BOOST_LOG_TRIVIAL(error)
-				<< "Unknown updateIndex algorithm.";
+			LOG(error, "Unknown updateIndex algorithm.");
 			assert(0);
 	}
-	BOOST_LOG_TRIVIAL(debug)
-		<< "Updated index is " << index;
+	LOG(debug, "Updated index is " << index);
 	lastIndices[index] = 0; // reset current search direction offset
 
 	/// orthogonalize with respect to all old search directions
@@ -187,8 +185,7 @@ void LastNSearchDirections::update(
 				}
 				break;
 			default:
-				BOOST_LOG_TRIVIAL(error)
-					<< "We cannot get here.";
+				LOG(error, "We cannot get here.");
 				assert(0);
 		}
 		*new_orthogonalized_dir = _newdir;

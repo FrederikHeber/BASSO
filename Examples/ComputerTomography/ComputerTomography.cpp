@@ -199,8 +199,7 @@ int main (int argc, char *argv[])
 			}
 			break;
 		default:
-			BOOST_LOG_TRIVIAL(error)
-					<< "Wrong number of matrix files given.";
+			LOG(error, "Wrong number of matrix files given.");
 			return 255;
 			break;
 		}
@@ -213,8 +212,7 @@ int main (int argc, char *argv[])
 		if (solution.isZero())
 			y = ElementCreator::create(Y, rhs);
 		else {
-			BOOST_LOG_TRIVIAL(info)
-					<< "Solution given, calculating rhs from it.";
+			LOG(info, "Solution given, calculating rhs from it.");
 			y = (*A)(truesolution);
 		}
 
@@ -268,8 +266,7 @@ int main (int argc, char *argv[])
 			SolverFactory::createMinimizer(
 					opts, inverseproblem, database);
 	if (minimizer == NULL) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Minimizer could not be constructed, exiting.";
+		LOG(error, "Minimizer could not be constructed, exiting.");
 		return 255;
 	}
 
@@ -277,8 +274,7 @@ int main (int argc, char *argv[])
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
 	if (x0->getSpace()->getDimension() < 10)
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Starting at x0 = " << x0;
+		LOG(debug, "Starting at x0 = " << x0);
 	SpaceElement_ptr_t dualx0 =
 			(opts.type_spacex == "lp") ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
