@@ -56,14 +56,14 @@ std::string printVector(const std::vector<std::string> &_vector)
 #define CasePrinter(z, count, argumentsequence) \
 	case count : \
 	{ \
-		BOOST_LOG_TRIVIAL(trace) << "SQL: " \
+		LOG(trace, "SQL: " \
 		<< "INSERT INTO " << \
 		BOOST_PP_SEQ_ELEM(1, argumentsequence) \
 		<< " " << \
 		BOOST_PP_STRINGIZE( QuestionmarksPrinter(count) ) \
 		StringizedComponentsPrinter(count, \
 				BOOST_PP_SEQ_ELEM(2, argumentsequence) \
-				); \
+				)); \
 		BOOST_PP_SEQ_ELEM(0, argumentsequence) \
 		<< "INSERT INTO " << \
 		BOOST_PP_SEQ_ELEM(1, argumentsequence) \

@@ -122,12 +122,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 		// uNorm=norm(u,DualNormX);
 		const double uNorm = refs.DualNormX(searchdir.u);
-		BOOST_LOG_TRIVIAL(debug) << "uNorm is " << uNorm;
+		LOG(debug, "uNorm is " << uNorm);
 		const double ScaleFactor = 1./uNorm;
 		// alpha=u'*x-Residual^PowerY; (29) or (24) in original form
 		const double alpha =
 				searchdir.u * istate.m_solution - ::pow(istate.residuum, refs.j_r.getPower());
-		BOOST_LOG_TRIVIAL(trace) << "alpha is " << alpha;
+		LOG(trace, "alpha is " << alpha);
 		updateSearchspace(_truesolution, searchdir.u, alpha);
 		const unsigned int index = istate.searchspace->getIndex();
 

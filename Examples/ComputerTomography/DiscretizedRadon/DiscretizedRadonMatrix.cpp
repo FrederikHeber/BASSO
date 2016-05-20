@@ -47,29 +47,29 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 			_num_offsets > 1 ?
 					(_num_offsets-1) / 2 : 0;
 	if (debugflag) {
-		BOOST_LOG_TRIVIAL(debug) << "half_offsets = " << half_offsets;
+		LOG(debug, "half_offsets = " << half_offsets);
 	}
 	const double q =
 			(half_offsets != 0) ?
 					1./(double)half_offsets : 2.;
 	if (debugflag) {
-		BOOST_LOG_TRIVIAL(debug) << "deltas = " << q;
+		LOG(debug, "deltas = " << q);
 	}
 	const double deltaphi = M_PI/_num_angles;
 	if (debugflag) {
-		BOOST_LOG_TRIVIAL(debug) << "deltaphi = " << deltaphi*180./M_PI;
+		LOG(debug, "deltaphi = " << deltaphi*180./M_PI);
 	}
 
 	// a_jm is the length of the intersection of line j with pixel m
 	for (unsigned int angle = 0; angle < _num_angles; ++angle) {
 		const double phi = angle*deltaphi;
 		if (debugflag) {
-			BOOST_LOG_TRIVIAL(debug) << "phi(" << angle << ") = " << phi;
+			LOG(debug, "phi(" << angle << ") = " << phi);
 		}
 		for (int offset = -half_offsets; offset <= half_offsets; ++offset) {
 			const double s = q * offset;
 			if (debugflag) {
-				BOOST_LOG_TRIVIAL(debug) << "s(" << offset+half_offsets << ") = " << s;
+				LOG(debug, "s(" << offset+half_offsets << ") = " << s);
 			}
 
 			// get all intersections points for this line
@@ -80,7 +80,7 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 				std::stringstream output;
 				std::copy(intersections.begin(), intersections.end(),
 						std::ostream_iterator<point_t>(output, "\n"));
-				BOOST_LOG_TRIVIAL(debug) << "intersections = \n" << output.str();
+				LOG(debug, "intersections = \n" << output.str());
 			}
 
 			// remove identical and illegal points
@@ -99,7 +99,7 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 								(*pixeliter)[1] + ((*pixeliter)[0] * num_pixel_y);
 						output << col_index+1 << "\n";
 					}
-					BOOST_LOG_TRIVIAL(debug) << "pixels = \n" << output.str();
+					LOG(debug, "pixels = \n" << output.str());
 				}
 
 				// flip pixels on upper/right image edges
@@ -113,7 +113,7 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 								(*pixeliter)[1] + ((*pixeliter)[0] * num_pixel_y);
 						output << col_index+1 << "\n";
 					}
-					BOOST_LOG_TRIVIAL(debug) << "pixels = \n" << output.str();
+					LOG(debug, "pixels = \n" << output.str());
 				}
 
 				// calculate lengths and add onto pixels

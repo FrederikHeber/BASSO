@@ -76,11 +76,9 @@ Minimizer<NLopt_vector>::minimize(
 //		nlopt::result result =
 				opt.optimize(_startvalue, minf);
 	} catch (nlopt::forced_stop &e) {
-		BOOST_LOG_TRIVIAL(debug)
-				<< "NLopt stopped forcedly by checkfunction, "
-				<< "checkfunction says: "
-				<< (_checkfunction(_Tol) == FunctionMinimizer::gradient_success ?
-						"valid" : "INVALID");
+		LOG(debug,"NLopt stopped forcedly by checkfunction, "
+				<< "checkfunction says: " << (_checkfunction(_Tol) == FunctionMinimizer::gradient_success ?
+						"valid" : "INVALID"));
 	}
 	if (isnan(optimum) || isinf(optimum))
 		throw MinimizerIllegalNumber_exception()

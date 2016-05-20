@@ -43,8 +43,8 @@ int outputSolution(
 				"spectral matrix",
 				_spectral_matrix)) {
 			returnstatus = 255;
-			BOOST_LOG_TRIVIAL(error) <<
-					"Failed to write first solution factor file.";
+			LOG(error,
+					"Failed to write first solution factor file.");
 		}
 	if (!_opts.solution_factor_two_file.string().empty())
 		if (!MatrixIO::store(
@@ -52,8 +52,8 @@ int outputSolution(
 				"pixel matrix",
 				_pixel_matrix)) {
 			returnstatus = 255;
-			BOOST_LOG_TRIVIAL(error) <<
-					"Failed to write second solution factor file.";
+			LOG(error,
+					"Failed to write second solution factor file.");
 		}
 	const Eigen::MatrixXd product_matrix = _spectral_matrix * _pixel_matrix;
 	if (!_opts.solution_product_file.string().empty())
@@ -62,8 +62,8 @@ int outputSolution(
 				"solution product",
 				product_matrix)) {
 			returnstatus = 255;
-			BOOST_LOG_TRIVIAL(error) <<
-					"Failed to write solution product file.";
+			LOG(error,
+					"Failed to write solution product file.");
  		}
 	const Eigen::MatrixXd difference_matrix = _data - product_matrix;
 	if (!_opts.solution_difference_file.string().empty())
@@ -72,8 +72,8 @@ int outputSolution(
 				"solution difference",
 				difference_matrix)) {
 			returnstatus = 255;
-			BOOST_LOG_TRIVIAL(error) <<
-					"Failed to write solution difference file.";
+			LOG(error,
+					"Failed to write solution difference file.");
  		}
 
 	LOG(debug, "Resulting first factor transposed is\n" << _spectral_matrix.transpose());

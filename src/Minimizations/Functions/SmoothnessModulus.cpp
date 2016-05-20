@@ -23,8 +23,8 @@ SmoothnessModulus::SmoothnessModulus(const double _p) :
 
 double SmoothnessModulus::operator()(const double _value) const
 {
-//	BOOST_LOG_TRIVIAL(trace) <<
-//			"Calculating modulus of smoothness at " << _value;
+//	LOG(trace,
+//			"Calculating modulus of smoothness at " << _value);
 
 	if ((_value <= 0.) && (_value > 1.)) throw MinimizationIllegalValue_exception()
 			<< MinimizationIllegalValue_name("_value");

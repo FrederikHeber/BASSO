@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
 		if (image != NULL)
 			delete image;
 //	} else {
-//		BOOST_LOG_TRIVIAL(error) << "The given output file exists.";
+//		LOG(error, "The given output file exists.");
 //		return 1;
 //	}
 

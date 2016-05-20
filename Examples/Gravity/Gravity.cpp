@@ -147,7 +147,7 @@ int main (int argc, char *argv[])
 	GeneralMinimizer::ReturnValues result =
 			solver( solution_start );
 	if (result.status == GeneralMinimizer::ReturnValues::error) {
-		BOOST_LOG_TRIVIAL(error) << "Something went wrong during minimization.";
+		LOG(error, "Something went wrong during minimization.");
 	}
 
 	// give result

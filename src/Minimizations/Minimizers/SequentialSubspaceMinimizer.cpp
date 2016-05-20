@@ -286,7 +286,7 @@ void SequentialSubspaceMinimizer::updateSearchspace(
 	} else {
 		istate.updateSearchSpace(newdir, alpha, istate.m_dual_solution, _truesolution);
 	}
-	BOOST_LOG_TRIVIAL(trace)<< "updated_index is " << istate.searchspace->getIndex();
+	LOG(trace, "updated_index is " << istate.searchspace->getIndex());
 }
 
 void SequentialSubspaceMinimizer::updateIterates(
@@ -302,9 +302,9 @@ void SequentialSubspaceMinimizer::updateIterates(
 			dual_update->scaledAddition(tmin[i], istate.getSearchSpace()[i]);
 		*istate.m_dual_solution -= dual_update;
 	}
-	BOOST_LOG_TRIVIAL(trace)<< "x^*_n+1 is " << istate.m_dual_solution;
+	LOG(trace, "x^*_n+1 is " << istate.m_dual_solution);
 	*istate.m_solution = refs.J_q(istate.m_dual_solution);
-	BOOST_LOG_TRIVIAL(trace)<< "x_n+1 is " << istate.m_solution;
+	LOG(trace, "x_n+1 is " << istate.m_solution);
 	*_x = istate.m_solution;
 	*dual_x = istate.m_dual_solution;
 }
