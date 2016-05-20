@@ -2,9 +2,12 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Log Logging.cpp Logging.hpp)
+add_library (Log 
+	Logging.cpp 
+	Verbose.cpp)
 
 ADD_DEPENDENCIES(Log version)
 
 install (FILES Logging.hpp DESTINATION include)
+install (FILES Verbose.hpp DESTINATION include)
 

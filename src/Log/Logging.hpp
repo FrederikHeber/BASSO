@@ -23,6 +23,12 @@
 #include <set>
 #include <vector>
 
+#include "Verbose.hpp"
+
+#define LOG(level, msg) \
+	{ if (Verbose::verbosity(boost::log::trivial:: level)) \
+		BOOST_LOG_TRIVIAL(level) << msg; }
+
 //!> typedef for the long formatting_ostream of boost::log
 typedef boost::log::v2s_mt_posix::formatting_ostream boost_log_ostream;
 

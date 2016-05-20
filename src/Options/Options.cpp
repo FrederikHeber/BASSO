@@ -87,29 +87,7 @@ void Options::showHelpinErrorCase() const
 
 void Options::setVerbosity() const
 {
-	stopLogging();
-	switch (verbose) {
-	default:
-	case 0:
-		boost::log::core::get()->set_filter
-		(
-				boost::log::trivial::severity >= boost::log::trivial::info
-		);
-		break;
-	case 1:
-		boost::log::core::get()->set_filter
-		(
-				boost::log::trivial::severity >= boost::log::trivial::debug
-		);
-		break;
-	case 2:
-		boost::log::core::get()->set_filter
-		(
-				boost::log::trivial::severity >= boost::log::trivial::trace
-		);
-		break;
-	}
-	startLogging();
+	Verbose::setVerbosity(verbose);
 }
 
 void Options::store(std::ostream &_output) const
