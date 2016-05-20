@@ -243,17 +243,13 @@ void LandweberMinimizer::setRegularizationParameter(
 						*_solution->getSpace()->getNorm()
 						);
 		const_cast<RegularizedL1Norm &>(regularizednorm).setLambda(lambda);
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Lambda of NormX is now "
-				<< regularizednorm.getLambda();
+		LOG(trace, "Lambda of NormX is now " << regularizednorm.getLambda());
 		const RelativeShrinkageMapping &mapping =
 				dynamic_cast<const RelativeShrinkageMapping &>(
 						*_solution->getSpace()->getDualSpace()->getDualityMapping()
 						);
 		const_cast<RelativeShrinkageMapping &>(mapping).setLambda(lambda);
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Lambda of RelativeShrinkageMapping in X^* is now "
-				<< mapping.getLambda();
+		LOG(trace, "Lambda of RelativeShrinkageMapping in X^* is now " << mapping.getLambda());
 	} else {
 		LOG(error, "Cannot set lambda adaptively as criterion is not fulfilled.");
 	}

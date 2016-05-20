@@ -74,9 +74,7 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 			(result.residuum > opts.delta)
 			&& (SplitFeasibilityProblem_loops < opts.max_sfp_loops);
 			++SplitFeasibilityProblem_loops) {
-		BOOST_LOG_TRIVIAL(debug)
-				<< bar << " SFP #" << SplitFeasibilityProblem_loops
-				<< " " << bar;
+		LOG(debug, bar << " SFP #" << SplitFeasibilityProblem_loops << " " << bar);
 
 		// go through each problem
 		for (problems_t::iterator iter = problems.begin();
@@ -85,18 +83,14 @@ GeneralMinimizer::ReturnValues SplitFeasibilitySolver::operator()(
 			(*iter)->clear();
 			result = (**iter)(result.m_solution);
 			(*iter)->finish();
-			BOOST_LOG_TRIVIAL(debug)
-					<< "Residual after problem " << (*iter)->getName()
-					<< " is " << result.residuum;
+			LOG(debug, "Residual after problem " << (*iter)->getName() << " is " << result.residuum);
 			if (result.status != GeneralMinimizer::ReturnValues::finished) {
 				LOG(error, "The last SFP part did not finish properly.");
 				break;
 			}
 		}
-		BOOST_LOG_TRIVIAL(debug)
-				<< bar
-				<< createBar(6+ceil(SplitFeasibilityProblem_loops/10))
-				<< bar;
+		LOG(debug, bar
+				<< createBar(6+ceil(SplitFeasibilityProblem_loops/10)) << bar);
 	}
 
 	LOG(debug, "Finishing SplitFeasibilityProblem ...");

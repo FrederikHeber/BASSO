@@ -127,17 +127,16 @@ const double TwoFactorLinearMapping::Norm() const
 	return first_singular_values[0]*second_singular_values[0];
 #else
 //	if ((matrix.innerSize() != matrix.outerSize())
-//			|| (!matrix.isApprox(matrix.transpose())))
+//			|| (!matrix.isApprox(matrix.transpose()))) {
 		LOG(warning, "BEWARE: Is this calculating the right matrix norm?");
+//	}
 	return first_factor.norm()*second_factor.norm();
 #endif
 }
 
 const double TwoFactorLinearMapping::MutualCoherence() const
 {
-	BOOST_LOG_TRIVIAL(warning)
-			<< "BEWARE: We are calculating the matrix product of two factors here for simplicity."
-			<< "Do you really need this functionality?";
+	LOG(warning, "BEWARE: We are calculating the matrix product of two factors here for simplicity." << "Do you really need this functionality?");
 	const Eigen::MatrixXd matrix = first_factor * second_factor;
 	double mutual_coherence = 0.;
 	for (unsigned int i=0;i<getSourceSpace()->getDimension();++i) {
@@ -158,9 +157,7 @@ const double TwoFactorLinearMapping::MutualCoherence() const
 
 SingularValueDecomposition TwoFactorLinearMapping::getSVD() const
 {
-	BOOST_LOG_TRIVIAL(warning)
-			<< "BEWARE: We are calculating the matrix product of two factors here for simplicity."
-			<< "Do you really need this functionality?";
+	LOG(warning, "BEWARE: We are calculating the matrix product of two factors here for simplicity." << "Do you really need this functionality?");
 	SingularValueDecomposition_impl::ptr_t svd_pimpl(
 			new SingularValueDecomposition_impl(first_factor*second_factor));
 	SingularValueDecomposition svd(svd_pimpl);

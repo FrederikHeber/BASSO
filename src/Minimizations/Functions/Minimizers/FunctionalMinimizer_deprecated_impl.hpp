@@ -78,16 +78,12 @@ FunctionalMinimizer_deprecated<S,T>::checkWolfeConditions(
 		realgradient += componentgradient * _startgradient[*iter];
 	}
 	// 1. sufficient decrease
-	BOOST_LOG_TRIVIAL(debug)
-			<< "1. sufficient decrease: " << currentvalue << " <= "
-			<< linearinterpolate;
+	LOG(debug, "1. sufficient decrease: " << currentvalue << " <= " << linearinterpolate);
 	conditions_fulfilled &=
 			(currentvalue <= linearinterpolate);
 
 	// 2. curvature condition
-	BOOST_LOG_TRIVIAL(debug)
-			<< "2. curvature condition: " << realgradient << " <= "
-			<< interpolatedgradient;
+	LOG(debug, "2. curvature condition: " << realgradient << " <= " << interpolatedgradient);
 	conditions_fulfilled &=
 			realgradient <= interpolatedgradient;
 

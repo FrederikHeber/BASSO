@@ -179,9 +179,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("auxiliary-constraints")) {
 		auxiliary_constraints = vm["auxiliary-constraints"].as<std::string>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Auxiliary constraints are "
-			<< (auxiliary_constraints.empty() ? "None" : auxiliary_constraints);
+		LOG(debug, "Auxiliary constraints are " << (auxiliary_constraints.empty() ? "None" : auxiliary_constraints));
 	} else {
 		LOG(debug, "Auxiliary constraints are None");
 	}
@@ -193,10 +191,8 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("calculateAngles")) {
 		calculateAngles = vm["calculateAngles"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "CalculateAngles was set to "
-			<< (calculateAngles ? "true" : "false")
-			<< ".";
+		LOG(debug, "CalculateAngles was set to "
+			<< (calculateAngles ? "true" : "false") << ".");
 	}
 
 	if (vm.count("delta")) {
@@ -208,23 +204,17 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("database-replace")) {
 		database_replace = vm["database-replace"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Database replace was set to "
-			<< (database_replace ? "replace" : "just add") << ".";
+		LOG(debug, "Database replace was set to " << (database_replace ? "replace" : "just add") << ".");
 	}
 
 	if (vm.count("enforceRandomMapping")) {
 		enforceRandomMapping = vm["enforceRandomMapping"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We do " << (enforceRandomMapping ? "" : "not")
-			<< " enforce the update algorithm to be a random mapping.";
+		LOG(debug, "We do " << (enforceRandomMapping ? "" : "not") << " enforce the update algorithm to be a random mapping.");
 	}
 
 	if (vm.count("inexact-linesearch")) {
 		inexactLinesearch = vm["inexact-linesearch"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We do " << (inexactLinesearch ? "not do" : "")
-			<< " an exact line search.";
+		LOG(debug, "We do " << (inexactLinesearch ? "not do" : "") << " an exact line search.");
 	}
 
 	if (vm.count("iteration-file")) {
@@ -255,9 +245,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		maxwalltime = vm["max-walltime"].as<double>();
 		LOG(debug, "Maximum Walltime was set to " << maxwalltime << " seconds.");
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Maximum Walltime set to default value of "
-			<< boost::chrono::duration<double>(maxwalltime) << " seconds.";
+		LOG(debug, "Maximum Walltime set to default value of " << boost::chrono::duration<double>(maxwalltime) << " seconds.");
 	}
 
 	if (vm.count("minimization-library")) {
@@ -298,9 +286,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 		orthogonalization_type =
 				(enum LastNSearchDirections::OrthogonalizationType)
 						vm["orthogonal-directions"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Orthogonalizing search directions: "
-			<< LastNSearchDirections::getOrthogonalizationTypeName(orthogonalization_type);
+		LOG(debug, "Orthogonalizing search directions: " << LastNSearchDirections::getOrthogonalizationTypeName(orthogonalization_type));
 	}
 
 	if (vm.count("output-steps")) {
@@ -326,9 +312,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 
 	if (vm.count("regularization-parameter")) {
 		regularization_parameter = vm["regularization-parameter"].as<double>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Regularization parameter of regularized L1 norm set to "
-			<< regularization_parameter << ".";
+		LOG(debug, "Regularization parameter of regularized L1 norm set to " << regularization_parameter << ".");
 	}
 
 	if (vm.count("searchspace")) {
@@ -341,8 +325,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 			LOG(warning, "stepwidth-algorithm is set, but not landweber chosen, ignoring");
 		}
 		stepwidth_type = vm["stepwidth-algorithm"].as<unsigned int>();
-		BOOST_LOG_TRIVIAL(debug) << "stepwidth-algorithm was set to "
-			<< stepwidth_type << "\n";
+		LOG(debug, "stepwidth-algorithm was set to " << stepwidth_type << "\n");
 	}
 
 	if (vm.count("stopping-criteria")) {
@@ -388,9 +371,7 @@ void CommandLineOptions::parse(int argc, char **argv)
 	if (vm.count("wolfe-constants")) {
 		wolfe_constants = vm["wolfe-constants"].as< std::vector<double> >();
 		LOG(debug, "Setting wolfe positivity constant to " << wolfe_constants[0]);
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Setting wolfe stronger than linear constant to "
-			<< wolfe_constants[1];
+		LOG(debug, "Setting wolfe stronger than linear constant to " << wolfe_constants[1]);
 	}
 
 	internal_parse();
@@ -459,9 +440,7 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 				&& (algorithm_name != MinimizerFactory::getNameForType(MinimizerFactory::landweber))))
 				|| ((!vm.count("stepwidth-algorithm")
 						&& (algorithm_name == MinimizerFactory::getNameForType(MinimizerFactory::landweber))))) {
-			BOOST_LOG_TRIVIAL(error)
-					<< "Either stepwidth algorithm chosen but not Landweber "
-					<< "or the other way round";
+			LOG(error, "Either stepwidth algorithm chosen but not Landweber " << "or the other way round");
 			return false;
 		}
 	}
@@ -471,9 +450,7 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 bool CommandLineOptions::checkSensibility_tau() const
 {
 	if ((vm.count("tau")) && (tau < 1.)) {
-		BOOST_LOG_TRIVIAL(warning)
-				<< "Tau is set, but value of " << tau
-				<< " is not greater equal to 1.";
+		LOG(warning, "Tau is set, but value of " << tau << " is not greater equal to 1.");
 		return false;
 	}
 	return true;
@@ -537,16 +514,12 @@ bool CommandLineOptions::checkSensibility_pvalues() const
 bool CommandLineOptions::checkSensibility_searchspace() const
 {
 	if (!SearchspaceFactory::isValidName(searchspace_type)) {
-		BOOST_LOG_TRIVIAL(error)
-					<< "Search space type " << searchspace_type
-					<< " is unknown to factory.";
+		LOG(error, "Search space type " << searchspace_type << " is unknown to factory.");
 		return false;
 	}
 
 	if (!FunctionalMinimizerFactory::isValidName(minlib)) {
-		BOOST_LOG_TRIVIAL(error)
-					<< "Minimization library " << minlib
-					<< " is unknown to factory.";
+		LOG(error, "Minimization library " << minlib << " is unknown to factory.");
 		return false;
 	}
 	return true;

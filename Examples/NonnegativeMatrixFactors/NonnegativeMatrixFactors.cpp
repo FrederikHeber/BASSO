@@ -107,8 +107,9 @@ void finalizeDatabase(
 	std::stringstream sql;
 	sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";
 	LOG(trace, "SQL: " << sql.str());
-	if (!_database.executeSQLStatement(sql.str()))
+	if (!_database.executeSQLStatement(sql.str())) {
 		LOG(error, "Failed to create view.");
+	}
 }
 
 int main (int argc, char *argv[])
@@ -160,9 +161,7 @@ int main (int argc, char *argv[])
 			std::min(opts.truncation_dimension,
 					(unsigned int)std::min(matrix.rows(), matrix.cols()));
 	if (inner_dimension != opts.truncation_dimension) {
-		BOOST_LOG_TRIVIAL(warning)
-				<< "Reduced truncation dimension to "
-				<< inner_dimension << " because of maximum rank consideration.";
+		LOG(warning, "Reduced truncation dimension to " << inner_dimension << " because of maximum rank consideration.");
 	}
 
 	/// apply method
@@ -257,8 +256,7 @@ int main (int argc, char *argv[])
 			boost::chrono::high_resolution_clock::now();
 	const boost::chrono::duration<double> runtime =
 			boost::chrono::duration<double>(timing_end - timing_start);
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< runtime << ".";
+	LOG(info, "The operation took " << runtime << ".");
 
 	// write runtime to database
 	if (!opts.database_file.string().empty()) {

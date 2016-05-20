@@ -113,8 +113,9 @@ const double LinearMapping::Norm() const
 	return singular_values[0];
 #else
 //	if ((matrix.innerSize() != matrix.outerSize())
-//			|| (!matrix.isApprox(matrix.transpose())))
+//			|| (!matrix.isApprox(matrix.transpose()))) {
 		LOG(warning, "BEWARE: Is this calculating the right matrix norm?");
+//	}
 	return matrix.norm();
 #endif
 }

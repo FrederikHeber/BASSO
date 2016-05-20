@@ -61,13 +61,9 @@ int detail::parseFactorFile(
 
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((_data.innerSize() > 10) || (_data.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< _name << " is "
-			<< _data << "." << std::endl;
+		LOG(trace, _name << " is " << _data << "." << std::endl);
 	} else {
-		BOOST_LOG_TRIVIAL(info)
-					<< _name << " is "
-					<< _data << "." << std::endl;
+		LOG(info, _name << " is " << _data << "." << std::endl);
 	}
 
 	return 0;

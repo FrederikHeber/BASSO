@@ -85,11 +85,11 @@ double BregmanProjectionFunctional::operator()(
 	const double fval =
 			1./dualpower * ::pow(dualnorm(resx), dualpower)
 			+ alpha_times_t;
-	if (isnan(fval))
-		BOOST_LOG_TRIVIAL(error)
-				<< "Encountered NaN in function calculation with "
-				<< *_dualx;
+	if (isnan(fval)) {
+		LOG(error, "Encountered NaN in function calculation with " << *_dualx
 //				<< " at " << _t << " and argument ";
+				);
+	}
 	return fval;
 }
 
@@ -106,11 +106,11 @@ std::vector<double> BregmanProjectionFunctional::gradient(
 	std::vector<double> gval(alpha);
 	for (size_t i=0;i<_t.size();++i) {
 		gval[i] -= U[i] * dual_resx;
-		if (isnan(gval[i]))
-			BOOST_LOG_TRIVIAL(error)
-					<< "Encountered NaN in gradient calculation  with "
-					<< *_dualx;
+		if (isnan(gval[i])) {
+			LOG(error, "Encountered NaN in gradient calculation  with " << *_dualx
 //					<< " at " << _t << " and argument ";
+					);
+		}
 	}
 	return gval;
 }

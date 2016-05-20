@@ -55,9 +55,7 @@ bool InRangeSolver::operator()(
 	Eigen::VectorXd projected_rhs;
 	LOG(debug, "------------------------ n=" << _dim << " ------------------");
 	// project right-hand side onto range of matrix
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Initial y_" << _dim << " is "
-			<< _rhs.transpose();
+	LOG(trace, "Initial y_" << _dim << " is " << _rhs.transpose());
 	{
 		// use smaller delta for the projection and SESOP
 		CommandLineOptions projection_opts(opts);
@@ -87,12 +85,8 @@ bool InRangeSolver::operator()(
 		else
 			return false;
 	}
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Projected y_" << _dim << " is "
-			<< projected_rhs.transpose();
-	BOOST_LOG_TRIVIAL(trace)
-			<< "Difference y_" << _dim << "-y'_" << _dim << " is "
-			<< (_rhs-projected_rhs).transpose();
+	LOG(trace, "Projected y_" << _dim << " is " << projected_rhs.transpose());
+	LOG(trace, "Difference y_" << _dim << "-y'_" << _dim << " is " << (_rhs-projected_rhs).transpose());
 
 	LOG(debug, "........................ n=" << _dim << " ..................");
 

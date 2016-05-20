@@ -112,9 +112,7 @@ void TruncatedSVD::correctSigns(const bool _correlated)
 			else
 				signs[k].second *= -1.;
 		}
-		BOOST_LOG_TRIVIAL(info)
-				<< "signs left[" << k << "] " << signs[k].first
-				<< ", signs right[" << k << "] " << signs[k].second;
+		LOG(info, "signs left[" << k << "] " << signs[k].first << ", signs right[" << k << "] " << signs[k].second);
 
 		U.col(k) *= sign(signs[k].first);
 		V.col(k) *= sign(signs[k].second);

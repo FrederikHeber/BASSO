@@ -90,15 +90,11 @@ int main (int argc, char *argv[])
 
 			// print parsed matrix and vector if small or high verbosity requested
 			if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-					<< "We solve for Ax = y with A = "
-					<< matrix << " and y = "
-					<< rhs.transpose() << std::endl;
+				LOG(trace, "We solve for Ax = y with A = "
+					<< matrix << " and y = " << rhs.transpose() << std::endl);
 			} else {
-				BOOST_LOG_TRIVIAL(info)
-					<< "We solve for Ax = y with A = "
-					<< matrix << " and y = "
-					<< rhs.transpose() << std::endl;
+				LOG(info, "We solve for Ax = y with A = "
+					<< matrix << " and y = " << rhs.transpose() << std::endl);
 			}
 
 			// prepare inverse problem
@@ -122,15 +118,11 @@ int main (int argc, char *argv[])
 
 			// print parsed matrix and vector if small or high verbosity requested
 			if ((second_factor.innerSize() > 10) || (first_factor.outerSize() > 10)) {
-				BOOST_LOG_TRIVIAL(trace)
-					<< "We solve for Ax = y with A = "
-					<< first_factor*second_factor << " and y = "
-					<< rhs.transpose() << std::endl;
+				LOG(trace, "We solve for Ax = y with A = "
+					<< first_factor*second_factor << " and y = " << rhs.transpose() << std::endl);
 			} else {
-				BOOST_LOG_TRIVIAL(info)
-					<< "We solve for Ax = y with A = "
-					<< first_factor*second_factor << " and y = "
-					<< rhs.transpose() << std::endl;
+				LOG(info, "We solve for Ax = y with A = "
+					<< first_factor*second_factor << " and y = " << rhs.transpose() << std::endl);
 			}
 
 			// prepare inverse problem
@@ -160,8 +152,9 @@ int main (int argc, char *argv[])
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
-	if (x0->getSpace()->getDimension() < 10)
+	if (x0->getSpace()->getDimension() < 10) {
 		LOG(debug, "Starting at x0 = " << x0);
+	}
 
 	// create auxiliary constraints
 	AuxiliaryConstraintsFactory constraint_factory;
@@ -295,9 +288,8 @@ int main (int argc, char *argv[])
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
+	LOG(info, "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start) << ".");
 
 	// exit
 	return 0;

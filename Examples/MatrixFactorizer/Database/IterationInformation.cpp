@@ -32,21 +32,15 @@ void addTupleParametersToTuple(
 		try {
 			const int int_value = boost::lexical_cast<int>(value);
 			_parameter_tuple.insert( std::make_pair(token, int_value), Table::Parameter);
-			BOOST_LOG_TRIVIAL(debug)
-					<< " Adding additional integer parameter ("
-					<< token << "," << int_value << ") to loop tuple.";
+			LOG(debug, " Adding additional integer parameter (" << token << "," << int_value << ") to loop tuple.");
 		} catch(const boost::bad_lexical_cast &) {
 			try {
 				const double double_value = boost::lexical_cast<double>(value);
 				_parameter_tuple.insert( std::make_pair(token, double_value), Table::Parameter);
-				BOOST_LOG_TRIVIAL(debug)
-						<< " Adding additional double parameter ("
-						<< token << "," << double_value << ") to loop tuple.";
+				LOG(debug, " Adding additional double parameter (" << token << "," << double_value << ") to loop tuple.");
 			} catch(const boost::bad_lexical_cast &) {
 				_parameter_tuple.insert( std::make_pair(token, value), Table::Parameter);
-				BOOST_LOG_TRIVIAL(debug)
-						<< " Adding additional string parameter ("
-						<< token << "," << value << ") to loop tuple.";
+				LOG(debug, " Adding additional string parameter (" << token << "," << value << ") to loop tuple.");
 			}
 		}
 	}
@@ -112,8 +106,9 @@ IterationInformation::IterationInformation(
 IterationInformation::~IterationInformation()
 {
 	// add views after tables have been created and filled
-	if (!createViews())
+	if (!createViews()) {
 		LOG(warning, "Could not create overall or per_iteration views.");
+	}
 }
 
 void IterationInformation::addTuple(
@@ -168,8 +163,9 @@ bool IterationInformation::createViews()
 		// possibly might be if the used parameter tuple is already in
 		// the database, see setParameterKey()
 	}
-	if (!status)
+	if (!status) {
 		LOG(error, "(Some of the) Required Tables are empty, not creating views.");
+	}
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS loop AS SELECT * FROM parameters p INNER JOIN data_loop d ON p.rowid = d.parameters_fk";

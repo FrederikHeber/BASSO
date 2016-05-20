@@ -90,8 +90,9 @@ static void solveOneLoop_MPI(
 	master.insertAccumulatedSolverValues(
 			info.getLoopTable(), "_minimization");
 	master.resetAccumulatedSolverValues();
-	if (!solver_ok)
+	if (!solver_ok) {
 		LOG(error, "The minimizer for InRangeSolver could not finish.");
+	}
 	stop_condition |= !solver_ok;
 }
 
@@ -140,9 +141,7 @@ static void solveOneLoop_OpenMP(
 //					#pragma omp critical (solution)
 					variable_factor.col(dim) = solution;
 				} else {
-					BOOST_LOG_TRIVIAL(error)
-						<< "The minimizer for InRangeSolver could not finish on column "
-						<< dim << ".";
+					LOG(error, "The minimizer for InRangeSolver could not finish on column " << dim << ".");
 				}
 			}
 			projector_values[thread_id] = (*solvers[thread_id]).getAccumulatedProjectorValues();
@@ -194,9 +193,7 @@ static void solveOneLoop_sequentially(
 		if (solver_ok)
 			variable_factor.col(dim) = solution;
 		else
-			BOOST_LOG_TRIVIAL(error)
-				<< "The minimizer for InRangeSolver could not finish on column "
-				<< dim << ".";
+			LOG(error, "The minimizer for InRangeSolver could not finish on column " << dim << ".");
 		stop_condition |= !solver_ok;
 	}
 	// place accumulated values in loop table
@@ -260,10 +257,8 @@ void MatrixFactorization::operator()(
 					&& (spectral_matrix.cols() == spectral_opts.sparse_dim)) {
 				LOG(info, "Using spectral matrix K parsed from file.");
 			} else {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Parsed spectral matrix has dimensions "
-						<< spectral_matrix.rows() << "," << spectral_matrix.cols()
-						<< ", while expecting " << _data.rows() << "," << spectral_opts.sparse_dim;
+				LOG(error, "Parsed spectral matrix has dimensions "
+						<< spectral_matrix.rows() << "," << spectral_matrix.cols() << ", while expecting " << _data.rows() << "," << spectral_opts.sparse_dim);
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
@@ -281,10 +276,8 @@ void MatrixFactorization::operator()(
 					&& (pixel_matrix.cols() == _data.cols())) {
 				LOG(info, "Using pixel matrix X parsed from file.");
 			} else {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Parsed pixel matrix has dimensions "
-						<< pixel_matrix.rows() << "," << pixel_matrix.cols()
-						<< ", while expecting " << spectral_opts.sparse_dim << "," <<  _data.cols();
+				LOG(error, "Parsed pixel matrix has dimensions "
+						<< pixel_matrix.rows() << "," << pixel_matrix.cols() << ", while expecting " << spectral_opts.sparse_dim << "," <<  _data.cols());
 				_returnstatus = 255;
 #ifdef MPI_FOUND
 				master.sendTerminate();
@@ -509,21 +502,17 @@ void MatrixFactorization::operator()(
 					residual,
 					1.);
 		}
-		if (loop_nr > spectral_opts.max_loops)
-			BOOST_LOG_TRIVIAL(error)
-				<< "Maximum number of loops " << spectral_opts.max_loops
-				<< " exceeded, stopping iteration.";
-		else
-			BOOST_LOG_TRIVIAL(info)
-				<< "Loop iteration performed " << loop_nr
-				<< " times.";
+		if (loop_nr > spectral_opts.max_loops) {
+			LOG(error, "Maximum number of loops " << spectral_opts.max_loops << " exceeded, stopping iteration.");
+		} else {
+			LOG(info, "Loop iteration performed " << loop_nr << " times.");
+		}
 
 		/// end timing
 		boost::chrono::high_resolution_clock::time_point timing_end =
 				boost::chrono::high_resolution_clock::now();
-		BOOST_LOG_TRIVIAL(info) << "The operation took "
-				<< boost::chrono::duration<double>(timing_end - timing_start).count()
-				<< " seconds.";
+		LOG(info, "The operation took "
+				<< boost::chrono::duration<double>(timing_end - timing_start).count() << " seconds.");
 
 		/// set last iteration information entry
 		info.replace(IterationInformation::OverallTable, "loops", (int)loop_nr);

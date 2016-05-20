@@ -100,8 +100,9 @@ GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
 	result.m_solution = _startingvalue->getSpace()->createElement();
 	*result.m_solution = _startingvalue;
 	*inverseproblem->x = result.m_solution;
-	if (result.m_solution->getSpace()->getDimension() < 10)
+	if (result.m_solution->getSpace()->getDimension() < 10) {
 		LOG(debug, "Starting at dualy0 = " << result.m_solution);
+	}
 
 	// only for smooth spaces we may use the duality mapping
 	if (inverseproblem->x->getSpace()->getNorm()->isSmooth()) {

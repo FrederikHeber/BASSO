@@ -114,8 +114,9 @@ bool createAnglesViews(const Database &_database)
 		// possibly might be if the used parameter tuple is already in
 		// the database, see setParameterKey()
 	}
-	if (!status)
+	if (!status) {
 		LOG(error, "(Some of the) Required Tables are empty, not creating angle views.");
+	}
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS angles AS SELECT * FROM parameters p INNER JOIN data_angles d ON p.rowid = d.parameters_fk";
@@ -152,10 +153,9 @@ bool SequentialSubspaceMinimizer::isNonConverging(
 	static const double threshold_factor = 1e4;
 	/// check for non-convergence
 	if (current_residuum/initial_residuum >= threshold_factor) {
-		BOOST_LOG_TRIVIAL(info)<< "Current residuum is "
+		LOG(info, "Current residuum is "
 		<< current_residuum
-		<< " exceeding initial value of 1. by "
-		<< current_residuum/initial_residuum;
+		<< " exceeding initial value of 1. by " << current_residuum/initial_residuum);
 		LOG(error, "STOPPING ITERATION");
 		return true;
 	} else
@@ -481,8 +481,9 @@ SequentialSubspaceMinimizer::operator()(
 	dbcontainer.data_overall_table.addTuple(overall_tuple);
 
 	// create angles view if desired
-	if ((DoCalculateAngles) && (!createAnglesViews(dbcontainer.database)))
+	if ((DoCalculateAngles) && (!createAnglesViews(dbcontainer.database))) {
 		LOG(warning, "Could not create angles view in SQLite database.");
+	}
 
 	// and return solution
 	istate.status = ReturnValues::finished;

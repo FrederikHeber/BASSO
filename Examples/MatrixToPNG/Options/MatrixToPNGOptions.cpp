@@ -63,19 +63,16 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 
 	if (vm.count("bottom-to-top")) {
 		BottomToTop = vm["bottom-to-top"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We go through columns from "
-			<< (BottomToTop ? "bottom to top" : "top to bottom");
+		LOG(debug, "We go through columns from " << (BottomToTop ? "bottom to top" : "top to bottom"));
 	}
 
 	if (vm.count("colorize")) {
 		Colorize = vm["colorize"].as<std::string>();
-		if (!Colorize.empty())
-			BOOST_LOG_TRIVIAL(debug)
-				<< "We do use colors to designate positive and negative areas, using "
-				<< Colorize << ".";
-		else
+		if (!Colorize.empty()) {
+			LOG(debug, "We do use colors to designate positive and negative areas, using " << Colorize << ".");
+		} else {
 			LOG(debug, "We don't use colors to designate positive and negative areas.");
+		}
 	}
 
 	if (vm.count("flip")) {
@@ -90,9 +87,7 @@ void MatrixToPNGOptions::parse(int argc, char **argv)
 
 	if (vm.count("left-to-right")) {
 		LeftToRight = vm["left-to-right"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We go through rows from "
-			<< (LeftToRight ? "left to right" : "right to left");
+		LOG(debug, "We go through rows from " << (LeftToRight ? "left to right" : "right to left"));
 	}
 
 	if (vm.count("matrix")) {

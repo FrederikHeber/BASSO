@@ -186,9 +186,7 @@ bool SQLDatabase::updateTable(
 		const Table::keys_t &_allowed_keys) const
 {
 	if (!DatabaseFileGiven) {
-		BOOST_LOG_TRIVIAL(warning)
-				<< "No database file given, cannot write table "
-				<< _table.getName() << " to file.";
+		LOG(warning, "No database file given, cannot write table " << _table.getName() << " to file.");
 		return false;
 	}
 
@@ -246,10 +244,9 @@ bool SQLDatabase::writeTable(const Table &_table) const
 		/// third, we create the table with the given keys
 		Table::keys_t::const_iterator specialiter = keys.begin();
 		std::advance(specialiter, keys.size() > MaxKeys ? MaxKeys : keys.size());
-		if (keys.size() > MaxKeys)
-			BOOST_LOG_TRIVIAL(error)
-					<< "Truncating database output by " << (keys.size() - MaxKeys)
-					<< " columns as too many columns are to be stored.";
+		if (keys.size() > MaxKeys) {
+			LOG(error, "Truncating database output by " << (keys.size() - MaxKeys) << " columns as too many columns are to be stored.");
+		}
 		Table::keys_t allowed_keys(keys.begin(), specialiter);
 		createTableIfNotExists(_table, KeyTypes, allowed_keys);
 
@@ -260,9 +257,7 @@ bool SQLDatabase::writeTable(const Table &_table) const
 		status &= updateTable(_table, KeyTypes, allowed_keys);
 
 	} else {
-		BOOST_LOG_TRIVIAL(warning)
-				<< "The table " << _table.getName()
-				<< " is empty, not writing to iteration-file.";
+		LOG(warning, "The table " << _table.getName() << " is empty, not writing to iteration-file.");
 	}
 
 	return status;
@@ -320,12 +315,10 @@ bool SQLDatabase::readTable(
 		assert(firstsize != 0);
 		for (++checkiter; checkiter != KeyValueMap.end(); ++checkiter)
 			if (firstsize != checkiter->second.size()) {
-				BOOST_LOG_TRIVIAL(error)
-						<< "Table " << _table.getName() << "'s column "
+				LOG(error, "Table " << _table.getName() << "'s column "
 						<< checkiter->first << " has different number of rows ("
 						<< checkiter->second.size() << ") than first column "
-						<< KeyValueMap.begin()->first << "( "
-						<< firstsize << ")";
+						<< KeyValueMap.begin()->first << "( " << firstsize << ")");
 				return false;
 			}
 
@@ -459,10 +452,11 @@ size_t SQLDatabase::getIdOfTuplePresentInTable(
 	// we cannot admonish this: If a tuple is already in the sqlite table,
 	// we still have to add it to SQLDatabase's tables as otherwise we cannot
 	// form sensible SQL statements (without knowing the table structure).
-//	if (!_table.isUptodate())
+//	if (!_table.isUptodate()) {
 //		BOOST_LOG_TRIVIAL(warning)
 //			<< "Table " << _table.getName()
 //			<< " is not up-to-date. Parameter tuple may be yet unknown.";
+//	}
 
 	std::vector<size_t> rowid;
 	const Table::keys_t keys = _table.getSetofUniqueKeys();
@@ -487,11 +481,9 @@ size_t SQLDatabase::getIdOfTuplePresentInTable(
 			std::stringstream valuestream;
 			std::copy(rowid.begin(), rowid.end(),
 					std::ostream_iterator<size_t>(valuestream, " "));
-			BOOST_LOG_TRIVIAL(warning)
-				<< "Table " << _table.getName()
+			LOG(warning, "Table " << _table.getName()
 				<< " contains more than one row with the given tuple: "
-				<< valuestream.str()
-				<< ". Returning first.";
+				<< valuestream.str() << ". Returning first.");
 			return rowid[0];
 		}
 	}

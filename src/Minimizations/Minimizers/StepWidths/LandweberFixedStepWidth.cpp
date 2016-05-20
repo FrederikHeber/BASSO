@@ -129,9 +129,7 @@ double LandweberFixedStepWidth::calculateMatchingTau(
 	tau = minpair.first;
 
 	LOG(trace, "Matching tau from modulus of smoothness is " << tau);
-	BOOST_LOG_TRIVIAL(trace)
-		<< "Counter-check: rho(tau)/tau = "
-		<< modul(tau)/tau << ", lambda = " << _lambda;
+	LOG(trace, "Counter-check: rho(tau)/tau = " << modul(tau)/tau << ", lambda = " << _lambda);
 
 	return tau;
 }

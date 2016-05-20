@@ -124,15 +124,11 @@ int main (int argc, char *argv[])
 
 	// print parsed matrix and vector if small or high verbosity requested
 	if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
-			<< rhs.transpose() << std::endl;
+		LOG(trace, "We solve for Ax = y with A = "
+			<< matrix << " and y = " << rhs.transpose() << std::endl);
 	} else {
-		BOOST_LOG_TRIVIAL(info)
-			<< "We solve for Ax = y with A = "
-			<< matrix << " and y = "
-			<< rhs.transpose() << std::endl;
+		LOG(info, "We solve for Ax = y with A = "
+			<< matrix << " and y = " << rhs.transpose() << std::endl);
 	}
 
 	// prepare inverse problem
@@ -150,8 +146,9 @@ int main (int argc, char *argv[])
 			inverseproblem->x->getSpace()->createElement();
 	GeneralMinimizer::ReturnValues result =
 			solver( solution_start );
-	if (result.status == GeneralMinimizer::ReturnValues::error)
+	if (result.status == GeneralMinimizer::ReturnValues::error) {
 		BOOST_LOG_TRIVIAL(error) << "Something went wrong during minimization.";
+	}
 
 	// give result
 	{
@@ -171,9 +168,8 @@ int main (int argc, char *argv[])
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
+	LOG(info, "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start) << ".");
 
 	// writing solution
 	{

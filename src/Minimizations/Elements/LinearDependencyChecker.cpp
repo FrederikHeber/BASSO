@@ -26,10 +26,8 @@ bool LinearDependencyChecker::operator()(
 	}
 	if (_vectors.size() == 1) {
 		const bool result = _vectors[0]->isZero(BASSOTOLERANCE);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Checking Linear Dependency: Rank is "
-				<< (result ? "0" : "1")
-				<< " with " << _vectors.size() << " vectors.";
+		LOG(debug, "Checking Linear Dependency: Rank is "
+				<< (result ? "0" : "1") << " with " << _vectors.size() << " vectors.");
 		return result;
 	}
 	Eigen::MatrixXd matrix(
@@ -39,9 +37,7 @@ bool LinearDependencyChecker::operator()(
 		matrix.col(index) =
 				RepresentationAdvocate::get(_vectors[index]);
 	const unsigned int rank = matrix.colPivHouseholderQr().rank();
-	BOOST_LOG_TRIVIAL(debug)
-			<< "Checking Linear Dependency: Rank is " << rank
-			<< " with " << _vectors.size() << " vectors.";
+	LOG(debug, "Checking Linear Dependency: Rank is " << rank << " with " << _vectors.size() << " vectors.");
 	return rank != _vectors.size();
 }
 

@@ -193,20 +193,16 @@ void LastNSearchDirections::update(
 		for (std::vector<unsigned int>::const_iterator iter = indices_to_orthogonalize.begin();
 				iter != indices_to_orthogonalize.end(); ++iter) {
 			const double projection_coefficient = tmin[*iter];
-			BOOST_LOG_TRIVIAL(debug)
-				<< "Projection coefficient of "
+			LOG(debug, "Projection coefficient of "
 				<< (orthogonalization_type == MetricOrthogonalization ?
-						"metric" : "bregman" )
-				<< " orthogonalization is " << projection_coefficient;
+						"metric" : "bregman" ) << " orthogonalization is " << projection_coefficient);
 
 			new_orthogonalized_dir->scaledAddition(-1.*projection_coefficient, U[ *iter ]);
 			new_orthogonalized_alpha -= projection_coefficient * alphas[ *iter ];
 		}
 		*(U[index]) = new_orthogonalized_dir;
 		alphas[index] = new_orthogonalized_alpha;
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Norm after projection changed from "
-			<< _newdir->Norm() << " to " << U[index]->Norm();
+		LOG(debug, "Norm after projection changed from " << _newdir->Norm() << " to " << U[index]->Norm());
 	} else {
 		*(U[index]) = _newdir;
 		alphas[index] = _alpha;

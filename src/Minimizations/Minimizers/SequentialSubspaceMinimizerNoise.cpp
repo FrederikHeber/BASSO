@@ -210,12 +210,10 @@ SequentialSubspaceMinimizerNoise::operator()(
 			std::vector<double> steps(N);
 			steps[index] = istate.getAlphas()[index]+d[index];
 			steps[lastIndex] = istate.getAlphas()[lastIndex];
-			BOOST_LOG_TRIVIAL(debug)
-				<< "On intersection? "
+			LOG(debug, "On intersection? "
 				<< Resold << " in ["
 				<< steps[lastIndex]-d[lastIndex]
-				<< ","
-				<< steps[lastIndex]+d[lastIndex]<< "]?";
+				<< "," << steps[lastIndex]+d[lastIndex]<< "]?");
 			// numerically stabler: first subtract hyperplane offset
 			const double planeOffset = Resold - steps[lastIndex];
 			if (fabs(planeOffset) > d[lastIndex]) {

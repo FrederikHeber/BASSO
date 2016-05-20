@@ -207,9 +207,8 @@ int main (int argc, char *argv[])
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
+	LOG(info, "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start) << ".");
 
 	// exit
 	return 0;

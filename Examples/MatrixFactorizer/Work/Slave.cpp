@@ -59,13 +59,9 @@ void Slave::operator()()
 		mpi::broadcast(world, matrix, 0);
 
 		if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-			BOOST_LOG_TRIVIAL(trace)
-					<< "#" << world.rank() << " - got global data\n"
-					<< matrix;
+			LOG(trace, "#" << world.rank() << " - got global data\n" << matrix);
 		} else {
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << world.rank() << " - got global data\n"
-					<< matrix;
+			LOG(debug, "#" << world.rank() << " - got global data\n" << matrix);
 		}
 
 		InRangeSolver solver(opts, opts.overall_keys, opts.projection_delta);
@@ -91,19 +87,11 @@ void Slave::operator()()
 						package.solution_startvalue;
 
 				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "#" << world.rank() << " got problem rhs, col "
-							<< col << "\n" << rhs.transpose();
-					BOOST_LOG_TRIVIAL(trace)
-							<< "#" << world.rank() << " got startvalue, col "
-							<< col << "\n" << solution_startvalue.transpose();
+					LOG(trace, "#" << world.rank() << " got problem rhs, col " << col << "\n" << rhs.transpose());
+					LOG(trace, "#" << world.rank() << " got startvalue, col " << col << "\n" << solution_startvalue.transpose());
 				} else {
-					BOOST_LOG_TRIVIAL(debug)
-							<< "#" << world.rank() << " got problem rhs, col "
-							<< col << "\n" << rhs.transpose();
-					BOOST_LOG_TRIVIAL(debug)
-							<< "#" << world.rank() << " got startvalue, col "
-							<< col << "\n" << solution_startvalue.transpose();
+					LOG(debug, "#" << world.rank() << " got problem rhs, col " << col << "\n" << rhs.transpose());
+					LOG(debug, "#" << world.rank() << " got startvalue, col " << col << "\n" << solution_startvalue.transpose());
 				}
 
 				/// work on data
@@ -118,13 +106,9 @@ void Slave::operator()()
 								auxiliary_constraints);
 
 				if ((matrix.innerSize() > 10) || (matrix.outerSize() > 10)) {
-					BOOST_LOG_TRIVIAL(trace)
-							<< "#" << world.rank() << " sending solution, col "
-							<< col << "\n" << solution.transpose();
+					LOG(trace, "#" << world.rank() << " sending solution, col " << col << "\n" << solution.transpose());
 				} else {
-					BOOST_LOG_TRIVIAL(debug)
-							<< "#" << world.rank() << " sending solution, col "
-							<< col << "\n" << solution.transpose();
+					LOG(debug, "#" << world.rank() << " sending solution, col " << col << "\n" << solution.transpose());
 				}
 
 				/// return result
@@ -139,17 +123,13 @@ void Slave::operator()()
 		{
 			const AccumulatedValues &in_values =
 					solver.getAccumulatedProjectorValues();
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << world.rank() << " sending " << in_values.getNumberOfValues()
-					<< " accumulated values from projector problem.";
+			LOG(debug, "#" << world.rank() << " sending " << in_values.getNumberOfValues() << " accumulated values from projector problem.");
 			boost::mpi::gather(world, in_values, 0);
 		}
 		{
 			const AccumulatedValues &in_values =
 					solver.getAccumulatedSolverValues();
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#" << world.rank() << " sending " << in_values.getNumberOfValues()
-					<< " accumulated values from minimization problem.";
+			LOG(debug, "#" << world.rank() << " sending " << in_values.getNumberOfValues() << " accumulated values from minimization problem.");
 			boost::mpi::gather(world, in_values, 0);
 		}
 	}

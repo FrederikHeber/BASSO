@@ -62,9 +62,7 @@ void printNumberOfValues(
 	LOG(debug, "#" << _rank << " gathered " << output.str());
 	const size_t totalentries =
 			std::accumulate(sizes.begin(), sizes.end(), 0);
-	BOOST_LOG_TRIVIAL(debug)
-			<< "#" << _rank << " gathered " << totalentries
-			<< " accumulated values from " << _name << " problem.";
+	LOG(debug, "#" << _rank << " gathered " << totalentries << " accumulated values from " << _name << " problem.");
 }
 
 bool Master::solve(
@@ -112,9 +110,7 @@ bool Master::solve(
 		AvailableWorkers.pop_front();
 		WorkPackage package =
 				WorkPackage(_rhs.col(col), _solution.col(col), col);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#0 - sending work package " << col
-				<< " to " << freeworker << ".";
+		LOG(debug, "#0 - sending work package " << col << " to " << freeworker << ".");
 		// if we ever use isend again, then we also need to store the
 		// resulting mpi::requests for isend (and not only for irecv)
 		// and wait for \b both. We would also need extra send buffers
@@ -123,9 +119,7 @@ bool Master::solve(
 		world.send(freeworker, ColumnWise, package);
 
 		// receive solution in a non-blocking manner
-		BOOST_LOG_TRIVIAL(debug)
-				<< "#0 - launching receiving work package " << col
-				<< " from " << freeworker << ".";
+		LOG(debug, "#0 - launching receiving work package " << col << " from " << freeworker << ".");
 		mpi::request request_object =
 				world.irecv(freeworker, ColumnWise, results[freeworker-1]);
 		uncompleted_requests.push_back(request_object);
@@ -141,9 +135,7 @@ bool Master::solve(
 							uncompleted_requests.begin(),
 							uncompleted_requests.end());
 			uncompleted_requests.erase(result.second);
-			BOOST_LOG_TRIVIAL(debug)
-					<< "#0 - received work result from "
-					<< result.first.source() << ".";
+			LOG(debug, "#0 - received work result from " << result.first.source() << ".");
 			// place worker back into available deque
 			AvailableWorkers.push_back(result.first.source());
 			// store solution
@@ -236,13 +228,9 @@ bool Master::handleResult(
 	solve_ok &= _results[id-1].solve_ok;
 	_solution.col(_results[id-1].col) = _results[id-1].solution;
 	if ((_solution.innerSize() > 10) || (_solution.outerSize() > 10)) {
-		BOOST_LOG_TRIVIAL(trace)
-				<< "Got solution for col #" << _results[id-1].col
-				<< "\n" << _results[id-1].solution.transpose();
+		LOG(trace, "Got solution for col #" << _results[id-1].col << "\n" << _results[id-1].solution.transpose());
 	} else {
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Got solution for col #" << _results[id-1].col
-				<< "\n" << _results[id-1].solution.transpose();
+		LOG(debug, "Got solution for col #" << _results[id-1].col << "\n" << _results[id-1].solution.transpose());
 	}
 
 	return solve_ok;

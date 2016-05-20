@@ -46,26 +46,31 @@ DiscretizedRadonMatrix::DiscretizedRadonMatrix(
 	const int half_offsets =
 			_num_offsets > 1 ?
 					(_num_offsets-1) / 2 : 0;
-	if (debugflag)
+	if (debugflag) {
 		BOOST_LOG_TRIVIAL(debug) << "half_offsets = " << half_offsets;
+	}
 	const double q =
 			(half_offsets != 0) ?
 					1./(double)half_offsets : 2.;
-	if (debugflag)
+	if (debugflag) {
 		BOOST_LOG_TRIVIAL(debug) << "deltas = " << q;
+	}
 	const double deltaphi = M_PI/_num_angles;
-	if (debugflag)
+	if (debugflag) {
 		BOOST_LOG_TRIVIAL(debug) << "deltaphi = " << deltaphi*180./M_PI;
+	}
 
 	// a_jm is the length of the intersection of line j with pixel m
 	for (unsigned int angle = 0; angle < _num_angles; ++angle) {
 		const double phi = angle*deltaphi;
-		if (debugflag)
+		if (debugflag) {
 			BOOST_LOG_TRIVIAL(debug) << "phi(" << angle << ") = " << phi;
+		}
 		for (int offset = -half_offsets; offset <= half_offsets; ++offset) {
 			const double s = q * offset;
-			if (debugflag)
+			if (debugflag) {
 				BOOST_LOG_TRIVIAL(debug) << "s(" << offset+half_offsets << ") = " << s;
+			}
 
 			// get all intersections points for this line
 			intersections_t intersections =
@@ -184,9 +189,9 @@ void DiscretizedRadonMatrix::calculateLengths(
 				(*pixeliter)[1] + ((*pixeliter)[0] * num_pixel_y);
 		matrix.coeffRef( row_index, col_index ) = length;
 		length_sum += length;
-		if (debugflag)
-			BOOST_LOG_TRIVIAL(debug) << "a_{" << row_index << ","
-				<< col_index << "} = " << length;
+		if (debugflag) {
+			LOG(debug, "a_{" << row_index << "," << col_index << "} = " << length);
+		}
 	}
 	assert( fabs(length_sum - totallength) < BASSOTOLERANCE );
 	assert( pixeliter == _pixels.end() );
@@ -240,15 +245,11 @@ DiscretizedRadonMatrix::calculatePixelBoundaryIntersections(
 				intersections.insert(point_y);
 		}
 	if ((0) && (intersections.size() > 0)) {
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Line starts at " << _s << " and slants with ("
-			<< cphi << "," << sphi << ").";
+		LOG(debug, "Line starts at " << _s << " and slants with (" << cphi << "," << sphi << ").");
 		std::stringstream output;
 		std::copy(intersections.begin(), intersections.end(),
 				std::ostream_iterator<point_t>(output, "\n"));
-		BOOST_LOG_TRIVIAL(debug)
-			<< "We have the following intersections at Pixel from : " << std::endl
-			<< output.str();
+		LOG(debug, "We have the following intersections at Pixel from : " << std::endl << output.str());
 	}
 	return intersections;
 }

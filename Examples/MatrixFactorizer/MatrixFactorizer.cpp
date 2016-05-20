@@ -111,9 +111,7 @@ int main(int argc, char **argv)
 	int returnstatus = 0;
 #ifdef MPI_FOUND
 	if (world.rank() == 0) {
-		BOOST_LOG_TRIVIAL(info)
-				<< "We have one master to distribute and "
-				<< (world.size()-1) << " slaves to work on the problem.";
+		LOG(info, "We have one master to distribute and " << (world.size()-1) << " slaves to work on the problem.");
 #else /* MPI_FOUND */
 #ifdef OPENMP_FOUND
 		LOG(info, "Solving with parallel threads.");
@@ -151,13 +149,9 @@ int main(int argc, char **argv)
 		}
 		// print parsed matrix and vector if small or high verbosity requested
 		if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
-			BOOST_LOG_TRIVIAL(trace)
-				<< "We solve for Y=K*X with Y =\n"
-				<< data << "." << std::endl;
+			LOG(trace, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
 		} else {
-			BOOST_LOG_TRIVIAL(info)
-						<< "We solve for Y=K*X with Y =\n"
-						<< data << "." << std::endl;
+			LOG(info, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
 		}
 
 		if (returnstatus == 0) {
@@ -199,9 +193,8 @@ int main(int argc, char **argv)
 
 		boost::chrono::high_resolution_clock::time_point timing_end =
 				boost::chrono::high_resolution_clock::now();
-		BOOST_LOG_TRIVIAL(info) << "The operation took "
-				<< boost::chrono::duration<double>(timing_end - timing_start)
-				<< ".";
+		LOG(info, "The operation took "
+				<< boost::chrono::duration<double>(timing_end - timing_start) << ".");
 
 #ifdef MPI_FOUND
 	} else {

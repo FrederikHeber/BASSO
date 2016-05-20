@@ -92,9 +92,7 @@ void MatrixFactorizerOptions::internal_parse()
 	}
 	if (vm.count("parse-factors")) {
 		DoParseFactors = vm["parse-factors"].as<bool>();
-		BOOST_LOG_TRIVIAL(debug)
-			<< "For the starting matrices, we "
-			<< (DoParseFactors ? "do": "do not") << " parse the factors from given files.";
+		LOG(debug, "For the starting matrices, we " << (DoParseFactors ? "do": "do not") << " parse the factors from given files.");
 	}
 	if (vm.count("projection-delta")) {
 		projection_delta = vm["projection-delta"].as<double>();
@@ -188,9 +186,7 @@ void MatrixFactorizerOptions::internal_setSecondaryValues()
 {
 	if (residual_threshold == 0.) {
 		residual_threshold = delta;
-		BOOST_LOG_TRIVIAL(info)
-			<< "Residual threshold not set, defaulting to delta of "
-			<< residual_threshold;
+		LOG(info, "Residual threshold not set, defaulting to delta of " << residual_threshold);
 	}
 }
 

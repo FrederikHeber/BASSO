@@ -80,9 +80,11 @@ GeneralMinimizer::GeneralMinimizer(
 GeneralMinimizer::~GeneralMinimizer()
 {
 	// add view if not present to database if not empty
-	if (dbcontainer.size() != 0)
-		if (!dbcontainer.createViews())
+	if (dbcontainer.size() != 0) {
+		if (!dbcontainer.createViews()) {
 			LOG(warning, "Could not create overall or per_iteration views.");
+		}
+	}
 }
 
 void GeneralMinimizer::SearchDirection::update(
@@ -115,11 +117,8 @@ void GeneralMinimizer::ReturnValues::output(
 		const double ynorm) const
 {
 	/// output prior to iterate update
-	BOOST_LOG_TRIVIAL(debug)<< "#" << NumberOuterIterations
-	<< " with residual of " << residuum;
-	BOOST_LOG_TRIVIAL(debug)
-	<< "#" << NumberOuterIterations << ": "
-	<< "||Ax_n-y||/||y|| is " << residuum/ynorm;
+	LOG(debug, "#" << NumberOuterIterations << " with residual of " << residuum);
+	LOG(debug, "#" << NumberOuterIterations << ": " << "||Ax_n-y||/||y|| is " << residuum/ynorm);
 	LOG(trace, "x_n is " << m_solution);
 	LOG(trace, "dual_x_n is " << m_dual_solution);
 	LOG(trace, "R_n is " << m_residual);
@@ -165,9 +164,7 @@ const double GeneralMinimizer::calculateBregmanDistance(
 		const double errorvalue =
 				std::max(distance-lower_bound, upper_bound-distance);
 		LOG(debug, "Reduction in Bregman Distance is " << OldBregmanDistance-distance);
-		BOOST_LOG_TRIVIAL(debug)
-				<< "Bregman distance is " << distance
-				<< "+-" << errorvalue;
+		LOG(debug, "Bregman distance is " << distance << "+-" << errorvalue);
 //				<< " in [" << lower_bound << "," << upper_bound << "]";
 #else
 		LOG(debug, "Bregman distance is " << distance);
@@ -192,9 +189,7 @@ const double GeneralMinimizer::calculateError(
 			// create L2 norm for measuring error
 			new_error = (*l2norm)(_solution-_truesolution);
 		}
-		BOOST_LOG_TRIVIAL(debug)
-			<< "Error is " << ": "
-			<< "||x_n-x|| is " << new_error;
+		LOG(debug, "Error is " << ": " << "||x_n-x|| is " << new_error);
 	}
 	return new_error;
 }

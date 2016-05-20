@@ -213,8 +213,9 @@ bool DatabaseManager::createViews() const
 		// possibly might be if the used parameter tuple is already in
 		// the database, see setParameterKey()
 	}
-	if (!status)
+	if (!status) {
 		LOG(error, "(Some of the) Required Tables are empty, not creating views.");
+	}
 	if (status) {
 		std::stringstream sql;
 		sql << "CREATE VIEW IF NOT EXISTS overall AS SELECT * FROM parameters p INNER JOIN data_overall d ON p.rowid = d.parameters_fk";

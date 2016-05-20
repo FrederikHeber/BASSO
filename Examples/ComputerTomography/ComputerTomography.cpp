@@ -95,17 +95,13 @@ int main (int argc, char *argv[])
 
 	// check that dimensions fit
 	if (solution.size() != num_pixels) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Solution has size " << solution.size()
-				<< " but product of desired pixel dimensions is "
-				<< num_pixels;
+		LOG(error, "Solution has size " << solution.size()
+				<< " but product of desired pixel dimensions is " << num_pixels);
 		return 255;
 	}
 	if (rhs.size() != num_measurements) {
-		BOOST_LOG_TRIVIAL(error)
-				<< "Right-hand-side has size " << rhs.size()
-				<< " but number of measurements is "
-				<< num_measurements;
+		LOG(error, "Right-hand-side has size " << rhs.size()
+				<< " but number of measurements is " << num_measurements);
 		return 255;
 	}
 
@@ -226,14 +222,10 @@ int main (int argc, char *argv[])
 			SpaceElement_ptr_t noise =
 					ElementCreator::create(Y, noisevector);
 			*noise *= y->Norm()/noise->Norm() * opts.noiselevel;
-			BOOST_LOG_TRIVIAL(info)
-					<< "Max and min coeffs of noise are "
-					<< noise->getMaxCoefficientAndIndex().first << " and "
-					<< -1.*((-1.*noise)->getMaxCoefficientAndIndex().first);
-			BOOST_LOG_TRIVIAL(info)
-					<< "Max and min coeffs of image are "
-					<< y->getMaxCoefficientAndIndex().first << " and "
-					<< -1.*((-1.*y)->getMaxCoefficientAndIndex().first);
+			LOG(info, "Max and min coeffs of noise are "
+					<< noise->getMaxCoefficientAndIndex().first << " and " << -1.*((-1.*noise)->getMaxCoefficientAndIndex().first));
+			LOG(info, "Max and min coeffs of image are "
+					<< y->getMaxCoefficientAndIndex().first << " and " << -1.*((-1.*y)->getMaxCoefficientAndIndex().first));
 			*y += noise;
 
 			using namespace MatrixIO;
@@ -273,8 +265,9 @@ int main (int argc, char *argv[])
 	// prepare start value and dual solution
 	SpaceElement_ptr_t x0 =
 			inverseproblem->x->getSpace()->createElement();
-	if (x0->getSpace()->getDimension() < 10)
+	if (x0->getSpace()->getDimension() < 10) {
 		LOG(debug, "Starting at x0 = " << x0);
+	}
 	SpaceElement_ptr_t dualx0 =
 			(opts.type_spacex == "lp") ?
 			(*inverseproblem->x->getSpace()->getDualityMapping())(x0) :
@@ -352,9 +345,8 @@ int main (int argc, char *argv[])
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
-	BOOST_LOG_TRIVIAL(info) << "The operation took "
-			<< boost::chrono::duration<double>(timing_end - timing_start)
-			<< ".";
+	LOG(info, "The operation took "
+			<< boost::chrono::duration<double>(timing_end - timing_start) << ".");
 
 	// exit
 	return 0;
