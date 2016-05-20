@@ -71,7 +71,7 @@ private:
 	friend class SplitFeasibilitySolver;
 	friend class TwoFactorLinearMapping;
 	friend struct VectorSetter;
-	static const Eigen::VectorXd get(
+	static const Eigen::VectorXd& get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }
 
