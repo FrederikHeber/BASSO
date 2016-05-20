@@ -120,12 +120,12 @@ const std::pair<double, int> SpaceElement::getMaxCoefficientAndIndex(
 
 double& SpaceElement::operator[](const int i)
 {
-	return vector[i];
+	return vector.coeffRef(i);
 }
 
 const double& SpaceElement::operator[](const int i) const
 {
-	return vector[i];
+	return vector.coeffRef(i);
 }
 
 const double SpaceElement::Norm() const

@@ -137,7 +137,7 @@ inline std::ostream & operator<<(
 		for (; (row < rows) && ost.good(); ++row ) {
 			index_t col = 0;
 			for (; (col < cols) && ost.good(); ++col )
-				ost << m.coeff(row, col) << " ";
+				ost << m.coeffRef(row, col) << " ";
 			ost << std::endl;
 			if (col != cols)
 				throw MatrixIOStreamEnded_exception();

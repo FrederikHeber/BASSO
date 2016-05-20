@@ -137,7 +137,7 @@ void TruncatedSVD::operator()(
 
 		S = solver.eigenvalues();
 		for (int i=0;i<S.rows();++i)
-			S.coeffRef(i,0) = sqrt(S.coeff(i,0));
+			S.coeffRef(i,0) = sqrt(S.coeffRef(i,0));
 		U = solver.eigenvectors();
 	}
 	{
