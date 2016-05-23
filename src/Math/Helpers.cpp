@@ -33,7 +33,7 @@ Eigen::VectorXd Helpers::circshift(const Eigen::VectorXd &_x, const int shift)
 	}
 }
 
-double Helpers::sign(const double _x)
+double Helpers::sign(const double& _x)
 {
 	if (fabs(_x) < BASSOTOLERANCE)
 		return 0.;

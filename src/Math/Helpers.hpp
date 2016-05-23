@@ -48,7 +48,7 @@ namespace Helpers {
 	 * \param x value
 	 * \return -1, 0, or 1 if \a x is negative, zero or positive
 	 */
-	double sign(const double _x);
+	double sign(const double& _x);
 
 	/** Implements signum function, i.e. componentwise sign.
 	 *
