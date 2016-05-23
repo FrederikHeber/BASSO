@@ -153,48 +153,47 @@ int main (int argc, char *argv[])
 		}
 		assert( image != NULL );
 		unsigned int multiplier = !opts.Flip ? opts.num_pixel_x : opts.num_pixel_y;
-		for (size_t y = 0; y < opts.num_pixel_y; ++y)
-		{
-		 for (size_t x = 0; x < opts.num_pixel_x; ++x)
-		 {
-			 unsigned int i;
-			 unsigned int j;
+		if (min != max)
+			for (size_t y = 0; y < opts.num_pixel_y; ++y) {
+				for (size_t x = 0; x < opts.num_pixel_x; ++x) {
+				unsigned int i;
+				unsigned int j;
 
-			 if (opts.LeftToRight)
-				 i = x;
-			 else
-				 i = opts.num_pixel_x - x - 1;
+				if (opts.LeftToRight)
+					i = x;
+				else
+					i = opts.num_pixel_x - x - 1;
 
-			 if (opts.BottomToTop)
-				 j = y;
-			 else
-				 j = opts.num_pixel_y - y - 1;
+				if (opts.BottomToTop)
+					j = y;
+				else
+					j = opts.num_pixel_y - y - 1;
 
-			 if (opts.Flip)
-				 std::swap(i,j);
+				if (opts.Flip)
+					std::swap(i,j);
 
-			 png::rgb_pixel pixel_value =
-					 getPixelValue(matrix[i+j*multiplier], min, max, colortable);
-			 switch(opts.Rotate) {
-			 case 0:
-				 (*image)[x][y] = pixel_value;
-				 break;
-			 case 1:
-				 (*image)[opts.num_pixel_y-1-y][x] = pixel_value;
-				 break;
-			 case 2:
-				 (*image)[opts.num_pixel_x-1-x][opts.num_pixel_y-1-y] = pixel_value;
-				 break;
-			 case 3:
-				 (*image)[y][opts.num_pixel_x-1-x] = pixel_value;
-				 break;
-			 default:
-				 assert(0); /* case should not happen */
-				 break;
-			 }
-			 // non-checking equivalent of image->set_pixel(x, y, ...);
-		 }
-		}
+				png::rgb_pixel pixel_value =
+						getPixelValue(matrix[i+j*multiplier], min, max, colortable);
+				switch(opts.Rotate) {
+				case 0:
+					(*image)[x][y] = pixel_value;
+					break;
+				case 1:
+					(*image)[opts.num_pixel_y-1-y][x] = pixel_value;
+					break;
+				case 2:
+					(*image)[opts.num_pixel_x-1-x][opts.num_pixel_y-1-y] = pixel_value;
+					break;
+				case 3:
+					(*image)[y][opts.num_pixel_x-1-x] = pixel_value;
+					break;
+				default:
+					assert(0); /* case should not happen */
+					break;
+				}
+				// non-checking equivalent of image->set_pixel(x, y, ...);
+				}
+			}
 		std::ofstream output(opts.image_file.string().c_str());
 		image->write_stream(output);
 		output.close();
