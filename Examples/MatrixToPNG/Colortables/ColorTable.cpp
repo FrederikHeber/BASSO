@@ -32,6 +32,12 @@ ColorTable::ColorTable()
 			1, 0, 0;
 	colortable.insert( std::make_pair ("bluegreenred", bluegreenred) );
 
+	Eigen::MatrixXd blueblackred(3,3);
+	blueblackred << 0, 0, 1,
+			0, 0, 0,
+			1, 0, 0;
+	colortable.insert( std::make_pair ("blueblackred", blueblackred) );
+
 	Eigen::MatrixXd blackwhite(2,3);
 	blackwhite << 0, 0, 0,
 			1, 1, 1;
