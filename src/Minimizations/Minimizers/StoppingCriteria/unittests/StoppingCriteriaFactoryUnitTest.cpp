@@ -12,6 +12,7 @@
 
 #include "Log/Logging.hpp"
 
+#include "Minimizations/Minimizers/StoppingCriteria/CheckDivergentResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckIterationCount.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckResiduum.hpp"
@@ -47,6 +48,12 @@ void StoppingCriteriaFactoryUnitTest::singleinstanceTest()
 	StoppingCriteriaFactory factory;
 	StoppingArguments args;
 
+	{
+		std::string criteria_line = "DivergentResiduum";
+		StoppingCriterion::ptr_t criterion =
+				factory.create(criteria_line, args);
+		CPPUNIT_ASSERT( dynamic_cast<CheckDivergentResiduum *>(criterion.get()) != NULL);
+	}
 	{
 		std::string criteria_line = "MaxIterationCount";
 		StoppingCriterion::ptr_t criterion =

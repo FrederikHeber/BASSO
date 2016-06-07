@@ -21,6 +21,7 @@
 
 #include "Log/Logging.hpp"
 
+#include "Minimizations/Minimizers/StoppingCriteria/CheckDivergentResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckIterationCount.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckRelativeChangeResiduum.hpp"
 #include "Minimizations/Minimizers/StoppingCriteria/CheckRelativeResiduum.hpp"
@@ -114,6 +115,7 @@ struct parser
 StoppingCriteriaFactory::StoppingCriteriaFactory()
 {
 	// fill string to criterion type map
+	StringToCriterionTypeMap["DivergentResiduum"] = DivergentResiduum;
 	StringToCriterionTypeMap["MaxIterationCount"] = IterationCount;
 	StringToCriterionTypeMap["RelativeChangeResiduum"] = RelativeChangeResiduum;
 	StringToCriterionTypeMap["RelativeResiduum"] = RelativeResiduum;
@@ -165,6 +167,9 @@ StoppingCriteriaFactory::createCriterion(
 	StoppingCriterion::ptr_t criterion;
 
 	switch (_type) {
+	case DivergentResiduum:
+		criterion.reset( new CheckDivergentResiduum(_args) );
+		break;
 	case IterationCount:
 		criterion.reset( new CheckIterationCount(_args) );
 		break;

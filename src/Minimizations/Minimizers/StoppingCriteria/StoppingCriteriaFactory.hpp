@@ -29,6 +29,7 @@ struct StoppingCriteriaFactory
 	//!> enumeration of all stopping criteria
 	enum StoppingCriteria_types
 	{
+		DivergentResiduum, //!< residuum has increased w.r.t last iteration
 		IterationCount,	//!< number of iterations
 		RelativeChangeResiduum, //!< relative change in residuum between iteration steps
 		RelativeResiduum, //!< relative residuum with respect to initial value
