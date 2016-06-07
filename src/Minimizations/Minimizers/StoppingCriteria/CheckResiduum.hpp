@@ -29,6 +29,12 @@ struct CheckResiduum : public StoppingCriterion_impl
 		return _residuum <= args.getTolerance()*args.getDiscrepancyParameter();
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("Residuum");
+		return name;
+	}
+
 	const StoppingArguments args;
 };
 

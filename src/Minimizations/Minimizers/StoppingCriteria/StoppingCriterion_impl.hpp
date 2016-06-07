@@ -37,6 +37,33 @@ struct StoppingCriterion_impl
 			const int _current_outeriterations,
 			const double _residuum,
 			const double _ynorm) const = 0;
+
+	/** Returns the specific name of this stopping condition."
+	 *
+	 * @return name of condition
+	 */
+	virtual const std::string & getName() const = 0;
+
+	/** Gives a statement on who currently says we should stop.
+	 *
+	 * @param _time current spent time on iteratging
+	 * @param _current_outeriterations current number of iteration steps
+	 * @param _residuum residuum at current iteration
+	 * @param _ynorm norm of right-hand side (y)
+	 * @return name of stopping criterion if true, else - empty string
+	 */
+	virtual std::string whoIsTrue(
+			const boost::chrono::duration<double> &_time,
+			const int _current_outeriterations,
+			const double _residuum,
+			const double _ynorm
+			) const
+	{
+		if (operator()(_time, _current_outeriterations, _residuum, _ynorm))
+			return getName();
+		else
+			return std::string();
+	}
 };
 
 #endif /* MINIMIZATIONS_MINIMIZERS_STOPPINGCRITERIA_STOPPINGCRITERION_IMPL_HPP_ */

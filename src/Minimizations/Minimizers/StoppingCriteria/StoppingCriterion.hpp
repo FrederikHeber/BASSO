@@ -40,6 +40,27 @@ struct StoppingCriterion
 			const double _residuum,
 			const double _ynorm) const;
 
+	/** Returns the full description ("name") of this stopping criterion.
+	 *
+	 * @return
+	 */
+	const std::string& getName() const;
+
+	/** Gives a statement on who currently says we should stop.
+	 *
+	 * @param _time current spent time on iteratging
+	 * @param _current_outeriterations current number of iteration steps
+	 * @param _residuum residuum at current iteration
+	 * @param _ynorm norm of right-hand side (y)
+	 * @return names of stopping criterion
+	 */
+	std::string whoIsTrue(
+			const boost::chrono::duration<double> &_time,
+			const int _current_outeriterations,
+			const double _residuum,
+			const double _ynorm
+			) const;
+
 private:
 	//!> internal predicate evaluating the stopping criterion or a combination
 	const ptr_t internal_impl;

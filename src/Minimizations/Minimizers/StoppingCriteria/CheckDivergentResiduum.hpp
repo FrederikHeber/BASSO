@@ -35,6 +35,12 @@ struct CheckDivergentResiduum : public StoppingCriterion_impl
 			return true;
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("DivergentResiduum");
+		return name;
+	}
+
 	const StoppingArguments args;
 
 private:

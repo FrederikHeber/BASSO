@@ -29,6 +29,12 @@ struct CheckIterationCount : public StoppingCriterion_impl
 		return _current_outeriterations >= args.getMaxIterations();
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("IterationCount");
+		return name;
+	}
+
 	const StoppingArguments args;
 };
 

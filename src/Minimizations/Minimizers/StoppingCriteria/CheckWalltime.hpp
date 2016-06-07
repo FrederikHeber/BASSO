@@ -30,6 +30,12 @@ struct CheckWalltime : public StoppingCriterion_impl
 		return _time >= args.getMaxWalltime();
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("WallTime");
+		return name;
+	}
+
 	const StoppingArguments args;
 };
 

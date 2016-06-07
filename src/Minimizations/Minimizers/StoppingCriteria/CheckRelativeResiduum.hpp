@@ -29,6 +29,12 @@ struct CheckRelativeResiduum : public StoppingCriterion_impl
 		return _residuum/_ynorm <= args.getTolerance()*args.getDiscrepancyParameter();
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("RelativeResiduum");
+		return name;
+	}
+
 	const StoppingArguments args;
 };
 

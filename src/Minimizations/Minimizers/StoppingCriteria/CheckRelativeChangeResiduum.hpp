@@ -35,6 +35,12 @@ struct CheckRelativeChangeResiduum : public StoppingCriterion_impl
 		return result;
 	}
 
+	const std::string& getName() const
+	{
+		static const std::string name("RelativeChangeResiduum");
+		return name;
+	}
+
 	const StoppingArguments args;
 private:
 

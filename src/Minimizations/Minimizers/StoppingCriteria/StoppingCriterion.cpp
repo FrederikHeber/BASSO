@@ -23,6 +23,20 @@ bool StoppingCriterion::operator()(
 	return internal_impl->operator()(_time, _current_outeriterations, _residuum, _ynorm);
 }
 
+const std::string& StoppingCriterion::getName() const
+{
+	return internal_impl->getName();
+}
+
+std::string StoppingCriterion::whoIsTrue(
+		const boost::chrono::duration<double> &_time,
+		const int _current_outeriterations,
+		const double _residuum,
+		const double _ynorm) const
+{
+	return internal_impl->whoIsTrue(_time, _current_outeriterations, _residuum, _ynorm);
+}
+
 StoppingCriterion::ptr_t operator&&(
 		const StoppingCriterion::ptr_t &_a,
 		const StoppingCriterion::ptr_t &_b)
