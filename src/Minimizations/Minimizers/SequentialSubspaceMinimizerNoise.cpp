@@ -285,6 +285,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
+	LOG(debug, "Iteration was stopped by "
+			<< stopping_criteria->whoIsTrue(
+					timing_end - timing_start,
+					istate.NumberOuterIterations,
+					istate.residuum,
+					ynorm));
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );

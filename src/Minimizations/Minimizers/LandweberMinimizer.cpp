@@ -207,9 +207,15 @@ LandweberMinimizer::operator()(
 		/// submit current tuple to database
 		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
 	}
-
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
+	LOG(debug, "Iteration was stopped by "
+			<< stopping_criteria->whoIsTrue(
+					timing_end - timing_start,
+					returnvalues.NumberOuterIterations,
+					returnvalues.residuum,
+					ynorm));
+
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );

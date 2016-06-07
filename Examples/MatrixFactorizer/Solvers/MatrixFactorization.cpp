@@ -500,6 +500,13 @@ void MatrixFactorization::operator()(
 					residual,
 					1.);
 		}
+		LOG(info, "Iteration was stopped by "
+				<< stopping_criterion->whoIsTrue(
+						boost::chrono::duration<double>(0),
+						loop_nr,
+						residual,
+						1.));
+
 		if (loop_nr > spectral_opts.max_loops) {
 			LOG(error, "Maximum number of loops " << spectral_opts.max_loops << " exceeded, stopping iteration.");
 		} else {
