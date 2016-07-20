@@ -57,7 +57,8 @@ Eigen::SparseMatrix<double> getSparseMatrix(const Eigen::MatrixXd& _matrix)
 	triplets.reserve(_matrix.cols()*_matrix.rows());
 	for (int i=0;i<_matrix.rows();++i)
 		for (int j=0;j<_matrix.cols();++j) {
-			triplets.push_back( Eigen::Triplet<double>(i,j, _matrix.coeffRef(i,j)));
+			if (fabs(_matrix.coeffRef(i,j)) > BASSOTOLERANCE)
+				triplets.push_back( Eigen::Triplet<double>(i,j, _matrix.coeffRef(i,j)));
 		}
 	sparse_matrix.setFromTriplets( triplets.begin(), triplets.end() );
 
