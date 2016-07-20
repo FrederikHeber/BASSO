@@ -175,18 +175,31 @@ int main (int argc, char *argv[])
 	TruncatedSVD truncated_svd(sparse_matrix);
 	truncated_svd(inner_dimension, TruncatedSVD::LargestMagnitude);
 	const Eigen::MatrixXd &singularvalues = truncated_svd.getSingularvalues();
-	LOG(debug, "Singular values " << singularvalues);
+	LOG(debug, "Singular values of size " << singularvalues.rows() << "x" << singularvalues.cols() << " are\n" << singularvalues);
 	const Eigen::MatrixXd &Left_singularvectors = truncated_svd.getLeftSingularvectors();
-	LOG(debug, "Left eigenvectors " << Left_singularvectors);
+	LOG(debug, "Left eigenvectors of size " << Left_singularvectors.rows() << "x" << Left_singularvectors.cols() << " are\n" << Left_singularvectors);
 	const Eigen::MatrixXd &Right_singularvectors = truncated_svd.getRightSingularvectors();
-	LOG(debug, "Right eigenvectors " << Right_singularvectors);
+	LOG(debug, "Right eigenvectors of size " << Right_singularvectors.rows() << "x" << Right_singularvectors.cols() << " are\n" << Right_singularvectors);
 	// note that eigenvalues are given in increasing order
-	LOG(trace, "Matrix " << matrix);
-	LOG(trace, "U*S*V (truncated) " << Left_singularvectors * singularvalues.asDiagonal() * Right_singularvectors.transpose());
+	LOG(trace, "Matrix = \n" << matrix);
+	LOG(debug, "| Matrix | = " << matrix.norm());
+//	for (int i=0;i<opts.truncation_dimension;++i) {
+//		Eigen::MatrixXd USV = Left_singularvectors.col(i) * singularvalues(i,0) * Right_singularvectors.col(i).transpose();
+//		LOG(trace, "U*S*V (#" << i << ") = \n" << USV);
+//	}
+	Eigen::MatrixXd USV = Left_singularvectors * singularvalues.asDiagonal() * Right_singularvectors.transpose();
+	const double Anorm = matrix.norm();
+	const double USVnorm = USV.norm();
+	const double SVDDifferencenorm = (matrix - USV).norm();
+	LOG(trace, "U*S*V (truncated) = \n" << USV);
+	LOG(debug, "|U*S*V (truncated)| = " << USVnorm);
+	LOG(debug, "|U*S*V (truncated) - matrix| = " << SVDDifferencenorm);
 	// don't check for equality! It's only a truncated SVD!
-//	assert( (USV - matrix).norm() < BASSOTOLERANCE);
+	// hence, we only check that the residual has gotten smaller
+	assert( SVDDifferencenorm < Anorm);
 
 	/// 2. Initialize W(:, 1) = sqrt(S(1, 1)) ∗ U(:, 1) and H(1, :) = sqrt(S(1, 1)) ∗ V(:, 1)'
+	double residual = 0.;
 	{
 		// reversed order due to increasing eigenvalue sort order
 		{
@@ -250,7 +263,8 @@ int main (int argc, char *argv[])
 		}
 		LOG(trace, "matrix " << matrix);
 		LOG(trace, "A-W*H " << matrix-W*H);
-		LOG(debug, "|A - W*H|_2 " << (matrix-W*H).norm());
+		residual = (matrix-W*H).norm();
+		LOG(debug, "|A - W*H|_2 " << residual);
 	}
 
 	boost::chrono::high_resolution_clock::time_point timing_end =
@@ -264,6 +278,10 @@ int main (int argc, char *argv[])
 		Table& datatable = database.getTable("data_overall");
 		Table::Tuple_t &datatuple = datatable.getTuple();
 		datatuple.insert( std::make_pair("runtime", (double)runtime.count()), Table::Data);
+		datatuple.insert( std::make_pair("Anorm", Anorm), Table::Data);
+		datatuple.insert( std::make_pair("USVnorm", USVnorm), Table::Data);
+		datatuple.insert( std::make_pair("SVDDifferencenorm", SVDDifferencenorm), Table::Data);
+		datatuple.insert( std::make_pair("residual", residual), Table::Data);
 		datatable.addTuple(datatuple);
 
 		finalizeDatabase(database, opts);
