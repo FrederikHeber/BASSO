@@ -204,9 +204,15 @@ int main (int argc, char *argv[])
 		// reversed order due to increasing eigenvalue sort order
 		{
 			const int index = 0;
-			const double sv = sqrt(singularvalues(inner_dimension-1-index,0));
-			W.col(index) = sv*Left_singularvectors.col(inner_dimension-1-index);
-			H.row(index) = sv*Right_singularvectors.col(inner_dimension-1-index);
+			const int reversed_index = inner_dimension-1-index;
+			const double sv = sqrt(singularvalues(reversed_index,0));
+			// reverse sign if both vectors' components are completely negative
+			const double factor =
+					(Left_singularvectors.col(reversed_index).maxCoeff() <= 0.)
+					&& (Right_singularvectors.col(reversed_index).maxCoeff() <= 0.) ?
+					-1. : 1.;
+			W.col(index) = factor*sv*Left_singularvectors.col(reversed_index);
+			H.row(index) = factor*sv*Right_singularvectors.col(reversed_index);
 			LOG(trace, "W.col(" << index << ")' " << W.col(index).transpose());
 			LOG(trace, "H.row(" << index << ") " << H.row(index));
 		}

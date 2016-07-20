@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <list>
+
 #include <Eigen/SparseCore>
 #include <unsupported/Eigen/ArpackSupport>
 
@@ -119,6 +121,27 @@ void TruncatedSVD::correctSigns(const bool _correlated)
 	}
 }
 
+std::string spellOutComputationInfo(const Eigen::ComputationInfo &_info)
+{
+	switch (_info) {
+	case Eigen::Success:
+		return std::string("Success");
+		break;
+	case Eigen::NumericalIssue:
+		return std::string("NumericalIssue");
+		break;
+	case Eigen::NoConvergence:
+		return std::string("NoConvergence");
+		break;
+	case Eigen::InvalidInput:
+		return std::string("InvalidInput");
+		break;
+	default:
+		return std::string("unknown");
+		break;
+	}
+}
+
 
 void TruncatedSVD::operator()(
 		unsigned int k,
@@ -126,20 +149,24 @@ void TruncatedSVD::operator()(
 {
 	const std::string desired_type = TypeToString[_type];
 
-	{
-		Eigen::ArpackGeneralizedSelfAdjointEigenSolver< MatrixType_t > solver(
-				matrix*matrix.transpose(),
-				k,
-				desired_type,
-				Eigen::ComputeEigenvectors,
-				BASSOTOLERANCE
-				);
-
-		S = solver.eigenvalues();
-		for (int i=0;i<S.rows();++i)
-			S.coeffRef(i,0) = sqrt(S.coeffRef(i,0));
-		U = solver.eigenvectors();
-	}
+//	{
+//		Eigen::ArpackGeneralizedSelfAdjointEigenSolver< MatrixType_t > solver(
+//				matrix*matrix.transpose(),
+//				k,
+//				desired_type,
+//				Eigen::ComputeEigenvectors,
+//				BASSOTOLERANCE
+//				);
+//		LOG(info, "State o Convergence: " << spellOutComputationInfo(solver.info()));
+//		LOG(info, "Number of iterations: " << solver.getNbrIterations());
+//		LOG(info, "Number of converged eigenvalues: " << solver.getNbrConvergedEigenValues());
+//
+//		S = solver.eigenvalues();
+//		for (int i=0;i<S.rows();++i)
+//			S.coeffRef(i,0) = sqrt(S.coeffRef(i,0));
+//		U = solver.eigenvectors();
+//		solver.info();
+//	}
 	{
 		Eigen::ArpackGeneralizedSelfAdjointEigenSolver< MatrixType_t > solver(
 				matrix.transpose()*matrix,
@@ -148,35 +175,78 @@ void TruncatedSVD::operator()(
 				Eigen::ComputeEigenvectors,
 				BASSOTOLERANCE
 				);
+		LOG(debug, "State of Convergence: " << spellOutComputationInfo(solver.info()));
+		LOG(debug, "Number of iterations: " << solver.getNbrIterations());
+		LOG(debug, "Number of converged eigenvalues: " << solver.getNbrConvergedEigenValues());
 
+		S = solver.eigenvalues();
+		for (int i=0;i<S.rows();++i)
+			S.coeffRef(i,0) = sqrt(S.coeffRef(i,0));
 //		assert( (S - solver.eigenvalues()).norm() < sqrt(BASSOTOLERANCE));
 		V = solver.eigenvectors();
 	}
+
+	// obtain U by 1/sigma_i * A * v_i
+	std::list<int> zerovalues;
+	U = Eigen::MatrixXd(matrix.rows(),S.rows());
+	for (int i=0;i<S.rows();++i) {
+		if (fabs(S.coeffRef(i,0)) > BASSOTOLERANCE) {
+			U.col(i) = 1./S.coeffRef(i,0) * (matrix * V.col(i));
+		} else {
+			zerovalues.push_back(i);
+		}
+	}
+	assert( zerovalues.empty() );
+//	// all zero singular must be made orthogonal to all other vectors
+//	assert( zerovalues.size() <= S.rows() );
+//	for (; !zerovalues.empty();) {
+//		const int index = zerovalues.back();
+//		// create orthogonal vector
+//		if (zerovalues.size()-1 == S.rows()) {
+//			// there's just one other vector
+//			// search for the only index of an orthogonal vector
+//			int otherindex = -1;
+//			for (int i=0;i<S.rows();++i) {
+//				const std::list<int>::const_iterator iter =
+//						std::find(zerovalues.begin(),
+//								zerovalues.end(), i);
+//				if (iter == zerovalues.end()) {
+//					otherindex = i;
+//					break;
+//				}
+//			}
+//			assert( otherindex != -1 );
+//			// create a linear independent vector
+//			U.col(index).setZero();
+//			if (fabs(U(0, otherindex) < BASSOTOLERANCE))
+//				U(0,index) = 1.;
+//			else if (fabs(U(1, otherindex) < BASSOTOLERANCE))
+//				U(1,index) = 1.;
+//			else {
+//				U(0,index) = -U(1, otherindex);
+//				U(1,index) = U(0, otherindex);
+//			}
+//			// and do Gram-Schmidt
+//			const double expfactor = U.col(index).dot(U.col(otherindex));
+//			assert( fabs(expfactor - 1.) > BASSOTOLERANCE );
+//			U.col(index) = U.col(index) - U.col(index).dot(U.col(otherindex))*U.col(index);
+//			U.col(index) *= 1./U.col(index).norm();
+//		} else {
+//			U.col(index).setZero();
+//			for (int i=0;i<S.rows();++i) {
+//				const std::list<int>::const_iterator iter =
+//						std::find(zerovalues.begin(),
+//								zerovalues.end(), i);
+//				if (iter != zerovalues.end())
+//					continue;
+//				if (U.col(index).isZero())
+//					U.col(index) = U.col(i);
+//				else
+//					U.col(index) = U.col(index).cross(U.col(i));
+//			}
+//		}
+//	}
+
 	assert( matrix.rows() == U.rows() );
 	assert( matrix.cols() == V.rows() );
-
-	/** Basically, we do here something similar to [Bro, Acer, Kolda '07],
-	 * \sa TruncatedSVD::correctSigns().
-	 *
-	 * However, in our case the problem is even larger: The signs are not
-	 * even set in such a way as to fulfill the above condition of resembling
-	 * the original data matrix. This is because both are obtained via a
-	 * truncated eigenvalue calculation separately. Hence, singular vectors
-	 * in U and V know nothing about each other, especially not with respect
-	 * to their sign, as the overall sign of an eigenvector is arbitrary.
-	 *
-	 * Hence, we use the ansatz of the Technical Report of comparing the
-	 * singular vector with the majority of the data vectors and flipping
-	 * the sign if the majority ends up pointing in the other direction.
-	 * Afterwards, the correctSigns() may still be applied.
-	 *
-	 */
-	for (int k=0;k<S.rows();++k) {
-		const Eigen::MatrixXd fullmatrix(matrix);
-		const std::pair<double, double> signs(
-				calculateLeftAndRightSign(fullmatrix, U.col(k), V.col(k)));
-
-		U.col(k) *= sign(signs.first);
-		V.col(k) *= sign(signs.second);
-	}
 }
