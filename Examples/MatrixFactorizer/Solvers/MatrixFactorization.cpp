@@ -306,6 +306,7 @@ void MatrixFactorization::operator()(
 
 		/// create feasible solution starting points
 		if (auxiliary_constraints) {
+			double norm_difference = spectral_matrix.norm();
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 				LOG(trace, "Spectral matrix K^t before constraining is \n" << spectral_matrix.transpose());
 			} else {
@@ -331,6 +332,8 @@ void MatrixFactorization::operator()(
 				VectorSetter::set(col, tempvector);
 			}
 			spectral_matrix.transposeInPlace();
+			norm_difference -= spectral_matrix.norm();
+			LOG(info, "Spectral matrix K^t's l2 norm due to constraints changed by " << norm_difference);
 
 			if ((spectral_matrix.innerSize() > 10) || (spectral_matrix.outerSize() > 10)) {
 				LOG(trace, "Spectral matrix K^t after constraining is \n" << spectral_matrix.transpose());
