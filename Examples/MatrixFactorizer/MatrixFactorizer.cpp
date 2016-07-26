@@ -147,14 +147,14 @@ int main(int argc, char **argv)
 		} else {
 			LOG(error, "There was an error with the options, exiting.");
 		}
-		// print parsed matrix and vector if small or high verbosity requested
-		if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
-			LOG(trace, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
-		} else {
-			LOG(info, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
-		}
 
 		if (returnstatus == 0) {
+			// print parsed matrix and vector if small or high verbosity requested
+			if ((data.innerSize() > 10) || (data.outerSize() > 10)) {
+				LOG(trace, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
+			} else {
+				LOG(info, "We solve for Y=K*X with Y =\n" << data << "." << std::endl);
+			}
 
 			/// create Database
 			IterationInformation info(opts, data.innerSize(), data.outerSize());
@@ -201,10 +201,10 @@ int main(int argc, char **argv)
 		// enter in solve() loop
 		Slave worker(world);
 		worker();
-
-		// exchange return status
-		mpi::broadcast(world, returnstatus, 0);
 	}
+
+	// exchange return status between master and slaves
+	mpi::broadcast(world, returnstatus, 0);
 #endif /* MPI_FOUND */
 
 	if (returnstatus != 0) {
