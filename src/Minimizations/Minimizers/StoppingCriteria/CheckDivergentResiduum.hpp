@@ -19,7 +19,9 @@ struct CheckDivergentResiduum : public StoppingCriterion_impl
 {
 	CheckDivergentResiduum(const StoppingArguments &_args) :
 		args(_args),
-		oldresiduum(std::numeric_limits<double>::max())
+		oldresiduum(std::numeric_limits<double>::max()),
+		violation_counts(0),
+		MAX_COUNTS(3)
 	{}
 
 	bool operator()(
@@ -31,8 +33,14 @@ struct CheckDivergentResiduum : public StoppingCriterion_impl
 		if (oldresiduum >= _residuum) {
 			oldresiduum = _residuum;
 			return false;
-		} else
-			return true;
+		} else {
+			oldresiduum = _residuum;
+			++violation_counts;
+			if (violation_counts > MAX_COUNTS)
+				return true;
+			else
+				return false;
+		}
 	}
 
 	const std::string& getName() const
@@ -46,6 +54,10 @@ struct CheckDivergentResiduum : public StoppingCriterion_impl
 private:
 	//!> stores old residuum from last iteration
 	mutable double oldresiduum;
+	//!> counts how often this check was violated
+	mutable unsigned int violation_counts;
+	//!> how often check may be violated before we trigger stop
+	const unsigned int MAX_COUNTS;
 };
 
 
