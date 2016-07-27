@@ -42,11 +42,11 @@ void Slave::operator()()
 			break;
 
 		// send id
-		LOG(info, "#" << world.rank() << " - initiating by sending id.");
+		LOG(debug, "#" << world.rank() << " - initiating by sending id.");
 		world.send(0, detail::InitialId, world.rank());
 
 		// get global information
-		LOG(info, "#" << world.rank() << " - getting options.");
+		LOG(debug, "#" << world.rank() << " - getting options.");
 		MatrixFactorizerOptions opts;
 		mpi::broadcast(world, opts, 0);
 
