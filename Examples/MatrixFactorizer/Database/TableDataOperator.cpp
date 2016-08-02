@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "Database/Database.hpp"
+#include "Database/DatabaseExceptions.hpp"
 #include "Log/Logging.hpp"
 
 TableDataOperator::TableDataOperator(
@@ -83,9 +84,17 @@ TableDataOperator::extractValues() const
 	}
 	Table::KeyType_t KeyTypes = datatable.getKeyToTypeMap(keys);
 	assert(keys.size() == KeyTypes.size());
-	assert(std::includes(
+	if (!std::includes(
 			keys.begin(), keys.end(),
-			accumulated_keys.begin(), accumulated_keys.end()));
+			accumulated_keys.begin(), accumulated_keys.end())) {
+		for (Table::keys_t::const_iterator iter = accumulated_keys.begin();
+				iter != accumulated_keys.end(); ++iter)
+			if (std::count(keys.begin(), keys.end(), *iter) == 0) {
+				throw DatabaseIllegalKey_exception()
+						<< DatabaseIllegalKey_name(*iter);
+				break;
+			}
+	}
 	valuevectors_t valuevectors =
 			convertTuplesToValueVector(datatable, KeyTypes, accumulated_keys);
 	assert(valuevectors.size() == accumulated_keys.size());

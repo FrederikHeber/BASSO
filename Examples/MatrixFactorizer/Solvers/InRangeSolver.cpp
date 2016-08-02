@@ -12,6 +12,7 @@
 
 #include "Log/Logging.hpp"
 
+#include "Database/DatabaseExceptions.hpp"
 #include "MatrixFactorizer/Helpers/detail.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Options/CommandLineOptions.hpp"
@@ -77,7 +78,13 @@ bool InRangeSolver::operator()(
 		projector_db->clear();
 		GeneralMinimizer::ReturnValues result =
 				projector(dualy0);
-		projector_db->finish();
+		try {
+			projector_db->finish();
+		} catch (DatabaseIllegalKey_exception &e) {
+			LOG(error, "There was a problem with extracting iteration data from the inner problems: illegal key name "
+					<< *boost::get_error_info<DatabaseIllegalKey_name>(e));
+			throw;
+		}
 
 		// get projected rhs
 		if (result.status == GeneralMinimizer::ReturnValues::finished)

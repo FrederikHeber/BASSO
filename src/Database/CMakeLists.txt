@@ -9,6 +9,7 @@ add_library (Database
 	Table_Tuple.cpp)
 
 install (FILES Database.hpp DESTINATION include)
+install (FILES DatabaseExceptions.hpp DESTINATION include)
 install (FILES Database_impl.hpp DESTINATION include)
 install (FILES Database_mock.hpp DESTINATION include)
 install (FILES Database_undef.hpp DESTINATION include)
