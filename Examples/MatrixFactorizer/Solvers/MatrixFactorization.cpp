@@ -293,11 +293,9 @@ void MatrixFactorization::operator()(
 		StoppingArguments stopping_args;
 		stopping_args.setTolerance(spectral_opts.residual_threshold);
 		stopping_args.setMaxIterations(spectral_opts.max_loops);
-		std::string stopping_criteria(
-				"MaxIterationCount || RelativeChangeResiduum || Residuum || DivergentResiduum");
 		StoppingCriteriaFactory stop_factory;
 		StoppingCriterion::ptr_t stopping_criterion =
-				stop_factory.create(stopping_criteria, stopping_args);
+				stop_factory.create(spectral_opts.factorization_stopping_criteria, stopping_args);
 
 		// create auxiliary constraints
 		AuxiliaryConstraintsFactory constraint_factory;

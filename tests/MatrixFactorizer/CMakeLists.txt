@@ -25,6 +25,9 @@ set_tests_properties (MatrixFactorizerUsageMessage
 	PROPERTIES PASS_REGULAR_EXPRESSION "General options:")
 
 # configuration file tests
+add_subdirectory (simple)
+
+# configuration file tests
 add_subdirectory (config)
 
 # SQLite database file tests

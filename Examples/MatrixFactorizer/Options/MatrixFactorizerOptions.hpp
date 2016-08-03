@@ -17,6 +17,7 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include "Minimizations/Minimizers/StoppingCriteria/StoppingArguments.hpp"
 #include "Options/filesystem_path_serialization.hpp"
 #include "Options/CommandLineOptions.hpp"
 
@@ -56,6 +57,7 @@ public:
 	unsigned int max_loops;
 	std::vector<std::string> overall_keys;
 	bool DoParseFactors;
+	std::string factorization_stopping_criteria;
 	unsigned int fix_factor;
 	double projection_delta;
 	double residual_threshold;
@@ -77,6 +79,7 @@ private:
 		// MatrixFactorizerOptions
 		ar & data_file;
 		ar & DoParseFactors;
+		ar & factorization_stopping_criteria;
 		ar & fix_factor;
 		ar & max_loops;
 		ar & overall_keys;
@@ -99,6 +102,7 @@ private:
 		// MatrixFactorizerOptions
 		ar & data_file;
 		ar & DoParseFactors;
+		ar & factorization_stopping_criteria;
 		ar & fix_factor;
 		ar & max_loops;
 		ar & overall_keys;

@@ -19,6 +19,7 @@ namespace po = boost::program_options;
 MatrixFactorizerOptions::MatrixFactorizerOptions() :
 		max_loops(100),
 		DoParseFactors(false),
+		factorization_stopping_criteria("MaxIterationCount || Residuum || RelativeChangeResiduum || DivergentResiduum"),
 		fix_factor(0),
 		projection_delta(1e-8),
 		residual_threshold(0.),
@@ -32,6 +33,8 @@ void MatrixFactorizerOptions::internal_init()
 	desc_matrixfactorizer.add_options()
 			("data", po::value<boost::filesystem::path>(),
 					"set the file name of the data matrix")
+			("factorization-stopping-criteria", po::value< std::string >(),
+					"set (optionally) the desired matrix factorization stopping criteria, boolean operators allowed. This overrules any set stopping parameters such as maxiter, max-walltime, and delta.")
 			("fix-factor", po::value< unsigned int >(),
 					"set whether to fix one of the factors during minimization")
 			("max-loops", po::value<unsigned int>(),
@@ -66,6 +69,13 @@ void MatrixFactorizerOptions::internal_parse()
 		data_file = vm["data"].as<boost::filesystem::path>();
 		LOG(debug, "Data file name is " << data_file.string());
 	}
+
+	if (vm.count("factorization-stopping-criteria")) {
+		factorization_stopping_criteria = vm["factorization-stopping-criteria"].as< std::string >();
+		LOG(debug, "Matrix factorization stopping criteria was set to "
+				<< factorization_stopping_criteria);
+	}
+
 	if (vm.count("fix-factor")) {
 		fix_factor = vm["fix-factor"].as<unsigned int>();
 		if (fix_factor > 0) {
@@ -138,6 +148,11 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 		return false;
 	}
 
+	if ((vm.count("factorization-stopping-criteria")) && (factorization_stopping_criteria.empty())) {
+		LOG(error, "Empty stopping criteria set for the matrix factorization.");
+		return false;
+	}
+
 	if ((vm.count("fix-factor"))
 			&& (fix_factor > 2)) {
 		LOG(error, "Either first(1), second(2), or no (0) factors can be fixed.");
@@ -195,6 +210,7 @@ void MatrixFactorizerOptions::internal_store(std::ostream &_output) const
 	_output << "# [MatrixFactorizer]" << std::endl;
 	writeValue<boost::filesystem::path>(_output, vm,  "data");
 	writeValue<unsigned int>(_output, vm,  "fix-factor");
+	writeValue<std::string>(_output, vm,  "factorization-stopping-criteria");
 	writeValue<unsigned int>(_output, vm,  "max-loops");
 	if (overall_keys.size() != 0) {
 		for (std::vector<std::string>::const_iterator iter = overall_keys.begin();
