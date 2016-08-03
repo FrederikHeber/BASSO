@@ -525,6 +525,15 @@ bool CommandLineOptions::checkSensibility_searchspace() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_stopping_criteria() const
+{
+	if ((vm.count("stopping-criteria")) && (stopping_criteria.empty())) {
+		LOG(error, "Empty stopping criteria set.");
+		return false;
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_updatealgorithm() const
 {
 	if (vm.count("update-algorithm"))
@@ -564,6 +573,7 @@ bool CommandLineOptions::checkSensibility() const
 	status &= checkSensibility_norms();
 	status &= checkSensibility_pvalues();
 	status &= checkSensibility_searchspace();
+	status &= checkSensibility_stopping_criteria();
 	status &= checkSensibility_updatealgorithm();
 	status &= checkSensibility_wolfeconstants();
 	status &= internal_checkSensibility();
