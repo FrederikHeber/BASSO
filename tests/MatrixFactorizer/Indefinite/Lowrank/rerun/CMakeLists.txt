@@ -12,6 +12,7 @@ add_test (
 		--py 2 
 		--powery 2 
 		--delta 1e-8
+		--projection-delta 1e-8
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1
@@ -54,6 +55,7 @@ add_test (
 		--py 2 
 		--powery 2 
 		--delta 1e-8
+		--projection-delta 1e-8
 		--maxiter 50
 		--number-directions 1
 		--sparse-dim 1

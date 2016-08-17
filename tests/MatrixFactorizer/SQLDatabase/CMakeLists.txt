@@ -8,6 +8,7 @@ add_test (MatrixFactorizer_SQLDatabase
 		--py 2 
 		--powery 2 
 		--delta 1e-6 
+		--projection-delta 1e-6
 		--maxiter 50
 		--orthogonal-directions 1
 		--number-directions 1

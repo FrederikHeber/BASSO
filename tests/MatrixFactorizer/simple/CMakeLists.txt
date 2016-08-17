@@ -7,6 +7,7 @@ add_test (MatrixFactorizerSimple_NonExistantMatrix
 		--py 2 
 		--powery 2 
 		--delta 0.01
+		--projection-delta 0.01
 		--sparse-dim 1
 		--data ${CMAKE_CURRENT_SOURCE_DIR}/pre/nomatrix.m 
 		--solution-first-factor first-factor.m
@@ -23,6 +24,7 @@ add_test (MatrixFactorizerSimple_StoppingCriteria
 		--py 2 
 		--powery 2 
 		--delta 0.01
+		--projection-delta 0.01
 		--sparse-dim 1
 		--number-directions 1
 		--max-loops 10
@@ -42,6 +44,7 @@ add_test (MatrixFactorizerSimple_EmptyStoppingCriteria
 		--py 2 
 		--powery 2 
 		--delta 0.01
+		--projection-delta 0.01
 		--sparse-dim 1
 		--number-directions 1
 		--factorization-stopping-criteria ""

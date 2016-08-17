@@ -67,8 +67,15 @@ GeneralMinimizer::GeneralMinimizer(
 
 	// create stopping criterion
 	StoppingCriteriaFactory stop_factory;
+	StoppingArguments stopping_args;
+	stopping_args.setTolerance(_opts.delta);
+	stopping_args.setMaxIterations(_opts.maxiter);
+	stopping_args.setMaxWalltime(
+			boost::chrono::duration<double>(_opts.maxwalltime));
+	stopping_args.setDiscrepancyParameter(_opts.tau);
+
 	const_cast<StoppingCriterion::ptr_t &>(stopping_criteria) =
-			stop_factory.create(_opts.stopping_criteria, _opts.stopping_args);
+			stop_factory.create(_opts.stopping_criteria, stopping_args);
 
 	// set NoOp additional parameters
 	// don't do this in initializer list as class not fully constructed

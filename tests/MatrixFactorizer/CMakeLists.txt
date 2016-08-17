@@ -38,3 +38,6 @@ add_subdirectory (Indefinite)
 
 # non-negative matrices
 add_subdirectory (Nonnegative)
+
+# working projection-delta option 
+add_subdirectory (ProjectionDelta)

@@ -147,7 +147,6 @@ public:
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options
-	StoppingArguments stopping_args;
 	enum MinimizerFactory::InstanceType type;
 
 private:

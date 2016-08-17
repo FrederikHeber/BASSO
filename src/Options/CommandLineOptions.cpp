@@ -624,11 +624,6 @@ void CommandLineOptions::setSecondaryValues()
 			++count;
 		}
 	}
-	stopping_args.setTolerance(delta);
-	stopping_args.setMaxIterations(maxiter);
-	stopping_args.setMaxWalltime(
-			boost::chrono::duration<double>(maxwalltime));
-	stopping_args.setDiscrepancyParameter(tau);
 
 	// set lp value in case of regularized_l1
 	if ((type_spacex == "regularized_l1") && (vm.count("px") == 0))
