@@ -461,8 +461,10 @@ bool CommandLineOptions::checkSensibility_tuple_parameters() const
 	if (vm.count("tuple-parameters")) {
 		if (tuple_parameters.size() % 2 == 0)
 			return true;
-		else
+		else {
+			LOG(error, "Tuple parameters need to come in pairs.");
 			return false;
+		}
 	}
 	return true;
 }
