@@ -55,14 +55,30 @@ MatrixFactorization::MatrixFactorization(
 	// an operator between two lp spaces always factors through a
 	// Hilbert space. Hence, we use an l_2 space between the two
 	// matrix factors
+	//
+	// bullocks: So far, functional analysis has not been very helpful.
+	// As SESOP is generally very slow if Y is not an l_2 space, we
+	// use the desired spaces for the minimum-norm setting and the l_2
+	// space for the data fidelity constraint
+
+	// note on bullocks: because of the factoring the l_2 space would
+	// always be the space X, and we could only choose the space Y which
+	// is not very helpful,
+	// namely: A : X -> Y and  A=KX => X: X -> l_2, K: l_2 -> Y but we
+	// calculate X^t, i.e. X^t: l_2 -> X^\ast. Hence, source space is
+	// always an l_2
 	const_cast<MatrixFactorizerOptions &>(pixel_opts).type_spacey =
 			"lp";
 	const_cast<MatrixFactorizerOptions &>(pixel_opts).py = 2.;
 	const_cast<MatrixFactorizerOptions &>(pixel_opts).powery = 2.;
 	const_cast<MatrixFactorizerOptions &>(spectral_opts).type_spacex =
+			spectral_opts.type_spacey;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).px = spectral_opts.py;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).powerx = spectral_opts.powery;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).type_spacey =
 			"lp";
-	const_cast<MatrixFactorizerOptions &>(spectral_opts).px = 2.;
-	const_cast<MatrixFactorizerOptions &>(spectral_opts).powerx = 2.;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).py = 2.;
+	const_cast<MatrixFactorizerOptions &>(spectral_opts).powery = 2.;
 }
 
 #ifdef MPI_FOUND
