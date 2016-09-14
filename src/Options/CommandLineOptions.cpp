@@ -321,9 +321,6 @@ void CommandLineOptions::parse(int argc, char **argv)
 	}
 
 	if (vm.count("stepwidth-algorithm")) {
-		if (type != MinimizerFactory::landweber) {
-			LOG(warning, "stepwidth-algorithm is set, but not landweber chosen, ignoring");
-		}
 		stepwidth_type = vm["stepwidth-algorithm"].as<unsigned int>();
 		LOG(debug, "stepwidth-algorithm was set to " << stepwidth_type << "\n");
 	}
@@ -435,15 +432,6 @@ bool CommandLineOptions::checkSensibility_regularizationparameter() const
 		}
 	}
 
-	if (vm.count("regularization-parameter")) {
-		if (((vm.count("stepwidth-algorithm")
-				&& (algorithm_name != MinimizerFactory::getNameForType(MinimizerFactory::landweber))))
-				|| ((!vm.count("stepwidth-algorithm")
-						&& (algorithm_name == MinimizerFactory::getNameForType(MinimizerFactory::landweber))))) {
-			LOG(error, "Either stepwidth algorithm chosen but not Landweber " << "or the other way round");
-			return false;
-		}
-	}
 	return true;
 }
 
@@ -527,6 +515,16 @@ bool CommandLineOptions::checkSensibility_searchspace() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_stepwidth_algorithm() const
+{
+	if ((vm.count("stepwidth-algorithm"))
+			&& (algorithm_name != MinimizerFactory::getNameForType(MinimizerFactory::landweber))) {
+		LOG(error, "stepwidth algorithm set but not Landweber chosen.");
+		return false;
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_stopping_criteria() const
 {
 	if ((vm.count("stopping-criteria")) && (stopping_criteria.empty())) {
@@ -575,6 +573,7 @@ bool CommandLineOptions::checkSensibility() const
 	status &= checkSensibility_norms();
 	status &= checkSensibility_pvalues();
 	status &= checkSensibility_searchspace();
+	status &= checkSensibility_stepwidth_algorithm();
 	status &= checkSensibility_stopping_criteria();
 	status &= checkSensibility_updatealgorithm();
 	status &= checkSensibility_wolfeconstants();

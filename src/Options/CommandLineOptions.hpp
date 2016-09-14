@@ -105,6 +105,7 @@ private:
 	bool checkSensibility_norms() const;
 	bool checkSensibility_pvalues() const;
 	bool checkSensibility_searchspace() const;
+	bool checkSensibility_stepwidth_algorithm() const;
 	bool checkSensibility_stopping_criteria() const;
 	bool checkSensibility_updatealgorithm() const;
 	bool checkSensibility_wolfeconstants() const;
