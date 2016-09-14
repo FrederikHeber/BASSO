@@ -46,7 +46,13 @@ const double DynamicRegularizedL1NormStepWidth::operator()(
 	const LinearMapping &A_t = static_cast<const LinearMapping &>(*A_adjoint);
 	const SpaceElement_ptr_t upper = A * _solution - problem->y;
 	const SpaceElement_ptr_t lower = A_t * (*J_r)(upper);
-	const double norm_value = (*l2norm_Y)(upper)/(*l2norm_DualX)(lower);
-	return norm_value*norm_value;
+	const double numerator = (*l2norm_Y)(upper);
+	const double denominator = (*l2norm_DualX)(lower);
+	if (fabs(denominator) > BASSOTOLERANCE) {
+		const double norm_value = numerator/denominator;
+		return norm_value*norm_value;
+	} else {
+		return 0.;
+	}
 }
 
