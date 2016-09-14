@@ -23,6 +23,9 @@
 #include "Minimizations/Mappings/SingularValueDecomposition_impl.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
+// static refs
+unsigned int LinearMapping::warned_rightnorm = 0;
+
 LinearMapping::LinearMapping(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
@@ -114,7 +117,10 @@ const double LinearMapping::Norm() const
 #else
 //	if ((matrix.innerSize() != matrix.outerSize())
 //			|| (!matrix.isApprox(matrix.transpose()))) {
+	if (warned_rightnorm < 3) {
 		LOG(warning, "BEWARE: Is this calculating the right matrix norm?");
+		++warned_rightnorm;
+	}
 //	}
 	return matrix.norm();
 #endif

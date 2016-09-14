@@ -157,6 +157,9 @@ private:
 
 	//!> counts the time used for matrix-vector products
 	mutable boost::chrono::nanoseconds MatrixVectorProductTimings;
+
+	//!> small counter to limit warning message about right norm
+	static unsigned int warned_rightnorm;
 };
 
 
