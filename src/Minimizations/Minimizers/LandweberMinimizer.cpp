@@ -143,6 +143,7 @@ LandweberMinimizer::operator()(
 
 	/// -# loop over stopping criterion
 	returnvalues.status = ReturnValues::started;
+	unsigned int tuple_counter = 1;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, returnvalues.m_residual);
@@ -210,7 +211,13 @@ LandweberMinimizer::operator()(
 				returnvalues.m_solution, refs.A, returnvalues.NumberOuterIterations);
 
 		/// submit current tuple to database
-		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+		if (everynthtuple != 0) {
+			if (tuple_counter >= everynthtuple) {
+				dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+				tuple_counter = 1;
+			} else
+				++tuple_counter;
+		}
 	}
 	boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
@@ -220,7 +227,6 @@ LandweberMinimizer::operator()(
 					returnvalues.NumberOuterIterations,
 					returnvalues.residuum,
 					ynorm));
-
 
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );

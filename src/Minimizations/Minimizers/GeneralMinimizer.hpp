@@ -235,6 +235,8 @@ public:
 	const double TolFun;
 	//!> output solution each .. steps, 0 means never
 	unsigned int outputsteps;
+	//!> only store each nth tuple in database
+	const unsigned int everynthtuple;
 
 private:
 

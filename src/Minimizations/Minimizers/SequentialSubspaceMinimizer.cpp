@@ -163,11 +163,15 @@ bool SequentialSubspaceMinimizer::isNonConverging(
 }
 
 void SequentialSubspaceMinimizer::fillPerIterationTable(
-		Table::Tuple_t& per_iteration_tuple)
+		Table::Tuple_t& per_iteration_tuple,
+		unsigned int tuple_counter)
 {
 	// create a sequence of entries in Database till MaxOuterIterations
+	assert( everynthtuple >= tuple_counter );
+	assert( everynthtuple > 0 );
+	istate.NumberOuterIterations += everynthtuple-tuple_counter;
 	for (;istate.NumberOuterIterations < MaxOuterIterations;
-			++istate.NumberOuterIterations) {
+			istate.NumberOuterIterations+=everynthtuple) {
 		// update iterations in tuple
 		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
 
@@ -178,11 +182,15 @@ void SequentialSubspaceMinimizer::fillPerIterationTable(
 
 void SequentialSubspaceMinimizer::fillAngleTable(
 		Table::Tuple_t& angle_tuple,
-		Table& data_angle_table)
+		Table& data_angle_table,
+		const unsigned int tuple_counter)
 {
 	// create a sequence of entries in Database till MaxOuterIterations
+	assert( everynthtuple >= tuple_counter );
+	assert( everynthtuple > 0 );
+	istate.NumberOuterIterations += everynthtuple-tuple_counter;
 	for (;istate.NumberOuterIterations < MaxOuterIterations;
-			++istate.NumberOuterIterations) {
+			istate.NumberOuterIterations+=everynthtuple) {
 		// update iterations in tuple
 		if (DoCalculateAngles)
 		angle_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
@@ -370,6 +378,7 @@ SequentialSubspaceMinimizer::operator()(
 			ynorm);
 
 	istate.status = ReturnValues::started;
+	unsigned int tuple_counter = 1;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
@@ -435,10 +444,17 @@ SequentialSubspaceMinimizer::operator()(
 		per_iteration_tuple.replace("inner_iterations",
 				(int) (inner_iterations));
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+
 		// submit current tuples
-		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
-		if (DoCalculateAngles)
-			data_angle_table.addTuple(angle_tuple);
+		if (everynthtuple != 0) {
+			if (tuple_counter >= everynthtuple) {
+				dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+				if (DoCalculateAngles)
+					data_angle_table.addTuple(angle_tuple);
+				tuple_counter = 1;
+			} else
+				++tuple_counter;
+		}
 
 		/// update iterate
 		updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
@@ -459,9 +475,9 @@ SequentialSubspaceMinimizer::operator()(
 		/// check for non-convergence
 		const double current_relative_residuum = fabs(istate.residuum/ynorm);
 		if (isNonConverging(current_relative_residuum,
-				initial_relative_residuum)) {
-			fillPerIterationTable(per_iteration_tuple);
-			fillAngleTable(angle_tuple,data_angle_table);
+				initial_relative_residuum) && (everynthtuple != 0)) {
+			fillPerIterationTable(per_iteration_tuple, tuple_counter);
+			fillAngleTable(angle_tuple,data_angle_table, tuple_counter);
 		}
 
 		// print intermediate solution

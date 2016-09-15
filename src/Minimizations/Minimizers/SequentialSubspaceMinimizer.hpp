@@ -135,11 +135,13 @@ protected:
 			const double initial_residuum) const;
 
 	void fillPerIterationTable(
-			Table::Tuple_t& per_iteration_tuple);
+			Table::Tuple_t& per_iteration_tuple,
+			unsigned int tuple_counter);
 
 	void fillAngleTable(
 			Table::Tuple_t& angle_tuple,
-			Table& data_angle_table);
+			Table& data_angle_table,
+			unsigned int tuple_counter);
 
 	void updateAngleTable(
 			const SpaceElement_ptr_t& newdir,

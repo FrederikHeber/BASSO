@@ -113,6 +113,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 
 	std::vector<double> d(N,0.);
 	istate.status = ReturnValues::started;
+	unsigned int tuple_counter = 1;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, istate.m_residual);
@@ -258,7 +259,13 @@ SequentialSubspaceMinimizerNoise::operator()(
 		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
 
 		/// submit current tuples
-		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+		if (everynthtuple != 0) {
+			if (tuple_counter >= everynthtuple) {
+				dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+				tuple_counter = 1;
+			} else
+				++tuple_counter;
+		}
 
 		/// update residual
 		istate.residuum = calculateResidual(_problem,istate.m_residual);
@@ -277,7 +284,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 		/// check for non-convergence
 		if (isNonConverging(current_residuum,
 				initial_residuum))
-			fillPerIterationTable(per_iteration_tuple);
+			fillPerIterationTable(per_iteration_tuple, tuple_counter);
 
 		/// print intermediate solution
 		printIntermediateSolution(

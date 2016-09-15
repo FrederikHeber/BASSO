@@ -50,6 +50,7 @@ GeneralMinimizer::GeneralMinimizer(
 	TolY(Delta),
 	TolFun(_opts.tolerance_linesearch),
 	outputsteps(_opts.outputsteps),
+	everynthtuple(_opts.everynthtuple),
 	OldBregmanDistance(0.),
 	l2norm(NormFactory::create(
 			"lp",

@@ -119,6 +119,7 @@ public:
 	bool database_replace;
 	double delta;
 	bool enforceRandomMapping;
+	unsigned int everynthtuple;
 	bool inexactLinesearch;
 	boost::filesystem::path iteration_file;
 	unsigned int maxinneriter;
@@ -165,6 +166,7 @@ private:
 		ar & database_replace;
 		ar & delta;
 		ar & enforceRandomMapping;
+		ar & everynthtuple;
 		ar & inexactLinesearch;
 		ar & iteration_file;
 		ar & maxinneriter;
@@ -206,6 +208,7 @@ private:
 		ar & database_replace;
 		ar & delta;
 		ar & enforceRandomMapping;
+		ar & everynthtuple;
 		ar & inexactLinesearch;
 		ar & iteration_file;
 		ar & maxinneriter;

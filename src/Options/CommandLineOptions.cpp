@@ -33,6 +33,7 @@ CommandLineOptions::CommandLineOptions() :
 	database_replace(false),
 	delta(1e-4),
 	enforceRandomMapping(false),
+	everynthtuple(1),
 	inexactLinesearch(false),
 	maxinneriter(0),
 	maxiter(50),
@@ -81,6 +82,8 @@ void CommandLineOptions::init()
 					"set (optionally) the tolerance value for performing dual mapping of elements in space Y.")
 			("iteration-file", po::value< boost::filesystem::path >(),
 	        		"set the filename to write information on iteration in sqlite format")
+			("every-nth-tuple", po::value<unsigned int>(),
+					"do not store every iteration information tuple in iteration file but only every nth, 0 deactivates per_iteration tuples.")
 			("minimization-library", po::value<std::string>(),
 					"set which minimization library to use (gsl,nlopt)")
 			("max-inner-iterations", po::value<unsigned int>(),
@@ -210,6 +213,17 @@ void CommandLineOptions::parse(int argc, char **argv)
 	if (vm.count("enforceRandomMapping")) {
 		enforceRandomMapping = vm["enforceRandomMapping"].as<bool>();
 		LOG(debug, "We do " << (enforceRandomMapping ? "" : "not") << " enforce the update algorithm to be a random mapping.");
+	}
+
+	if (vm.count("every-nth-tuple")) {
+		everynthtuple = vm["every-nth-tuple"].as<unsigned int>();
+		if (everynthtuple != 0) {
+			LOG(debug, "Every nth tuple was set to " << everynthtuple);
+		} else {
+			LOG(info, "Per iteration tuples are not added in database, only overall information.");
+		}
+	} else {
+		LOG(debug, "Storing every tuple in database.");
 	}
 
 	if (vm.count("inexact-linesearch")) {
@@ -660,6 +674,7 @@ void CommandLineOptions::store(std::ostream &_output) const
 	_output << "# [Algorithm]" << std::endl;
 	writeValue<std::string>(_output, vm,  "algorithm");
 	writeValue<double>(_output, vm,  "delta");
+	writeValue<unsigned int>(_output, vm,  "every-nth-tuple");
 	writeValue<boost::filesystem::path>(_output, vm, "iteration-file");
 	writeValue<std::string>(_output, vm,  "minimization-library");
 	writeValue<std::string>(_output, vm,  "stopping-criteria");
