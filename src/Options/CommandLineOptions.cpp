@@ -43,7 +43,7 @@ CommandLineOptions::CommandLineOptions() :
 	type_spacey("lp"),
 	px(2.),
 	py(2.),
-	N(2),
+	N(1),
 	orthogonalization_type(LastNSearchDirections::NoOrthogonalization),
 	outputsteps(0),
 	powerx(2.),
