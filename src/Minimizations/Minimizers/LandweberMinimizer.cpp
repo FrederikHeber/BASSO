@@ -166,7 +166,10 @@ LandweberMinimizer::operator()(
 		/// database update prior to iterate update
 		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
 		per_iteration_tuple.replace( "residual", returnvalues.residuum);
-		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+		if (fabs(ynorm) > BASSOTOLERANCE)
+			per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+		else
+			per_iteration_tuple.replace( "relative_residual", 0.);
 		per_iteration_tuple.replace( "bregman_distance",
 				calculateBregmanDistance(
 						Delta_p, returnvalues.m_solution, _truesolution, returnvalues.m_dual_solution));
@@ -222,7 +225,10 @@ LandweberMinimizer::operator()(
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );
 	overall_tuple.replace( "residual", returnvalues.residuum );
-	overall_tuple.replace( "relative_residual", returnvalues.residuum/ynorm );
+	if (fabs(ynorm) > BASSOTOLERANCE)
+		overall_tuple.replace( "relative_residual", returnvalues.residuum/ynorm );
+	else
+		overall_tuple.replace( "relative_residual", 0. );
 	overall_tuple.replace( "runtime",
 			boost::chrono::duration<double>(timing_end - timing_start).count() );
 	dbcontainer.finalizeOverallTuple(overall_tuple, refs);

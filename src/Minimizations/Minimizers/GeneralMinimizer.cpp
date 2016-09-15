@@ -125,7 +125,13 @@ void GeneralMinimizer::ReturnValues::output(
 {
 	/// output prior to iterate update
 	LOG(debug, "#" << NumberOuterIterations << " with residual of " << residuum);
-	LOG(debug, "#" << NumberOuterIterations << ": " << "||Ax_n-y||/||y|| is " << residuum/ynorm);
+	if (fabs(ynorm) > BASSOTOLERANCE) {
+		LOG(debug, "#" << NumberOuterIterations << ": "
+				<< "||Ax_n-y||/||y|| is " << residuum/ynorm);
+	} else {
+		LOG(debug, "#" << NumberOuterIterations << ": "
+				<< "||Ax_n-y||/||y|| is not calculable, as ||y||=" << ynorm);
+	}
 	LOG(trace, "x_n is " << m_solution);
 	LOG(trace, "dual_x_n is " << m_dual_solution);
 	LOG(trace, "R_n is " << m_residual);
