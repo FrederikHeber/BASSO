@@ -43,19 +43,21 @@ RangeProjectionSolver::RangeProjectionSolver(
 	NormedSpace_ptr_t Y;
 	NormedSpace_ptr_t Ys;
 	{
+		// we require only the minimum norm distance
 		NormedSpaceFactory::args_t args;
-		args += boost::any(opts.py), boost::any(opts.powery);
+		args += boost::any(2.), boost::any(2.);
 		Y = NormedSpaceFactory::create(
-				_matrix.innerSize(), opts.type_spacey, args);
+				_matrix.innerSize(), "lp", args);
 		Ys = Y->getDualSpace();
 	}
 	NormedSpace_ptr_t X;
 	NormedSpace_ptr_t Xs;
 	{
+		// we require only the minimum norm distance
 		NormedSpaceFactory::args_t args;
-		args += boost::any(opts.px), boost::any(opts.powerx);
+		args += boost::any(2.), boost::any(2.);
 		X = NormedSpaceFactory::create(
-				_matrix.outerSize(), opts.type_spacex, args);
+				_matrix.outerSize(), "lp", args);
 		Xs = X->getDualSpace();
 	}
 
