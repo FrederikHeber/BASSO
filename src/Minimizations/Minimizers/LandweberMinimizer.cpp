@@ -241,6 +241,13 @@ LandweberMinimizer::operator()(
 					returnvalues.residuum,
 					ynorm));
 
+	// submit last per_iteration tuple
+	if (everynthtuple != 0) {
+		updatePerIterationTuple(per_iteration_tuple,
+				returnvalues, ynorm, alpha, Delta_p, _truesolution);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+	}
+
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", returnvalues.NumberOuterIterations );
 	overall_tuple.replace( "residual", returnvalues.residuum );

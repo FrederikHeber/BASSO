@@ -89,3 +89,31 @@ if (SQLITE_FOUND)
 	set_tests_properties (Basso_EveryNthTuple_activated_sqliteextract_1
 		PROPERTIES DEPENDS Basso_EveryNthTuple_activated)
 endif (SQLITE_FOUND)
+
+# do we always add last tuple?
+add_test (Basso_EveryNthTuple_lasttuple
+	${PROJECT_BINARY_DIR}/Examples/Basso/Basso
+		--iteration-file sqltest_lasttuple.db
+		--algorithm Landweber
+		--every-nth-tuple 10
+		--type-space-x "lp" 
+		--px 2 
+		--type-space-y "lp" 
+		--py 2 
+		--powery 2 
+		--delta 0.01 
+		--matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
+		--rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m)
+set_tests_properties (Basso_EveryNthTuple_lasttuple
+	PROPERTIES WILL_FAIL false)
+
+if (SQLITE_FOUND)
+	add_test (Basso_EveryNthTuple_lasttuple_sqliteextract_1
+		${SQLITECMD} 
+			-csv sqltest_lasttuple.db 
+			"SELECT iteration, residual FROM per_iteration;")
+	set_tests_properties (Basso_EveryNthTuple_lasttuple_sqliteextract_1
+		PROPERTIES PASS_REGULAR_EXPRESSION "1,1.02.*e-08")
+	set_tests_properties (Basso_EveryNthTuple_lasttuple_sqliteextract_1
+		PROPERTIES DEPENDS Basso_EveryNthTuple_lasttuple)
+endif (SQLITE_FOUND)

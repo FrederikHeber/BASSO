@@ -290,6 +290,13 @@ SequentialSubspaceMinimizerNoise::operator()(
 					istate.residuum,
 					ynorm));
 
+	// submit last per_iteration tuple
+	if (everynthtuple != 0) {
+		updatePerIterationTuple(per_iteration_tuple,
+				ynorm, stepwidth_norm, inner_iterations, Delta_p, _truesolution);
+		dbcontainer.data_per_iteration_table.addTuple(per_iteration_tuple);
+	}
+
 	// submit overall_tuple
 	overall_tuple.replace( "iterations", istate.NumberOuterIterations );
 	overall_tuple.replace( "residual", istate.residuum );
