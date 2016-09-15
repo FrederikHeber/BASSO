@@ -59,6 +59,28 @@ void LandweberMinimizer::setC(const double _C)
 	const_cast<double&>(C) = _C;
 }
 
+void LandweberMinimizer::updatePerIterationTuple(
+		Table::Tuple_t& per_iteration_tuple,
+		ReturnValues &returnvalues,
+		const double &ynorm,
+		const double &alpha,
+		boost::shared_ptr<BregmanDistance> &Delta_p,
+		const SpaceElement_ptr_t &_truesolution) const
+{
+	per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
+	per_iteration_tuple.replace( "residual", returnvalues.residuum);
+	if (fabs(ynorm) > BASSOTOLERANCE)
+		per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
+	else
+		per_iteration_tuple.replace( "relative_residual", 0.);
+	per_iteration_tuple.replace( "bregman_distance",
+			calculateBregmanDistance(
+					Delta_p, returnvalues.m_solution, _truesolution, returnvalues.m_dual_solution));
+	per_iteration_tuple.replace( "error",
+			calculateError(returnvalues.m_solution, _truesolution));
+	per_iteration_tuple.replace( "stepwidth", alpha);
+}
+
 GeneralMinimizer::ReturnValues
 LandweberMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -144,6 +166,7 @@ LandweberMinimizer::operator()(
 	/// -# loop over stopping criterion
 	returnvalues.status = ReturnValues::started;
 	unsigned int tuple_counter = 1;
+	double alpha = 0.;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, returnvalues.m_residual);
@@ -153,7 +176,7 @@ LandweberMinimizer::operator()(
 
 		/// find step width
 		// (F. Schöpfer, 11.4.2014) too conservative! Line search instead
-		double alpha = (*stepwidth)(
+		alpha = (*stepwidth)(
 				returnvalues.m_dual_solution,
 				searchdir.u,
 				returnvalues.m_solution,
@@ -165,18 +188,8 @@ LandweberMinimizer::operator()(
 		LOG(trace, "Step width is " << alpha);
 
 		/// database update prior to iterate update
-		per_iteration_tuple.replace( "iteration", (int)returnvalues.NumberOuterIterations);
-		per_iteration_tuple.replace( "residual", returnvalues.residuum);
-		if (fabs(ynorm) > BASSOTOLERANCE)
-			per_iteration_tuple.replace( "relative_residual", returnvalues.residuum/ynorm);
-		else
-			per_iteration_tuple.replace( "relative_residual", 0.);
-		per_iteration_tuple.replace( "bregman_distance",
-				calculateBregmanDistance(
-						Delta_p, returnvalues.m_solution, _truesolution, returnvalues.m_dual_solution));
-		per_iteration_tuple.replace( "error",
-				calculateError(returnvalues.m_solution, _truesolution));
-		per_iteration_tuple.replace( "stepwidth", alpha);
+		updatePerIterationTuple(per_iteration_tuple,
+				returnvalues, ynorm, alpha, Delta_p, _truesolution);
 
 		/// update iterate
 		*returnvalues.m_dual_solution -= alpha * searchdir.u;

@@ -158,6 +158,14 @@ protected:
 			SpaceElement_ptr_t& _x,
 			SpaceElement_ptr_t& dual_x) const;
 
+	void updatePerIterationTuple(
+			Table::Tuple_t& per_iteration_tuple,
+			const double &ynorm,
+			const double &stepwidth_norm,
+			const int &inner_iterations,
+			boost::shared_ptr<BregmanDistance> &Delta_p,
+			const SpaceElement_ptr_t &_truesolution) const;
+
 protected:
 
 	/** This class encapsulates the state of the iteration, i.e. all

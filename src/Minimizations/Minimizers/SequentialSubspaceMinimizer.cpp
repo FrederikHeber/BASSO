@@ -317,6 +317,31 @@ void SequentialSubspaceMinimizer::updateIterates(
 	*dual_x = istate.m_dual_solution;
 }
 
+void SequentialSubspaceMinimizer::updatePerIterationTuple(
+		Table::Tuple_t& per_iteration_tuple,
+		const double &ynorm,
+		const double &stepwidth_norm,
+		const int &inner_iterations,
+		boost::shared_ptr<BregmanDistance> &Delta_p,
+		const SpaceElement_ptr_t &_truesolution) const
+{
+	per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
+	per_iteration_tuple.replace( "residual", istate.residuum);
+	if (fabs(ynorm) > BASSOTOLERANCE)
+		per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
+	else
+		per_iteration_tuple.replace( "relative_residual", 0.);
+	per_iteration_tuple.replace( "bregman_distance",
+			calculateBregmanDistance(
+							Delta_p, istate.m_solution, _truesolution, istate.m_dual_solution));
+	per_iteration_tuple.replace( "error",
+			calculateError(istate.m_solution, _truesolution));
+	per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
+	per_iteration_tuple.replace("inner_iterations",
+			(int) (inner_iterations));
+	per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+}
+
 SequentialSubspaceMinimizer::ReturnValues
 SequentialSubspaceMinimizer::operator()(
 		const InverseProblem_ptr_t &_problem,
@@ -379,6 +404,8 @@ SequentialSubspaceMinimizer::operator()(
 
 	istate.status = ReturnValues::started;
 	unsigned int tuple_counter = 1;
+	unsigned int inner_iterations = 0;
+	double stepwidth_norm = 0.;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
@@ -404,8 +431,6 @@ SequentialSubspaceMinimizer::operator()(
 
 		/// get optimal stepwidth
 		std::vector<double> tmin(N, 0.);
-		double stepwidth_norm = 0.;
-		unsigned int inner_iterations = 0;
 		try {
 			inner_iterations =
 					calculateStepWidth(refs, istate.m_dual_solution, tmin,
@@ -429,21 +454,8 @@ SequentialSubspaceMinimizer::operator()(
 #endif
 
 		/// database update prior to iterate update
-		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-		per_iteration_tuple.replace( "residual", istate.residuum);
-		if (fabs(ynorm) > BASSOTOLERANCE)
-			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
-		else
-			per_iteration_tuple.replace( "relative_residual", 0.);
-		per_iteration_tuple.replace( "bregman_distance",
-				calculateBregmanDistance(
-								Delta_p, istate.m_solution, _truesolution, istate.m_dual_solution));
-		per_iteration_tuple.replace( "error",
-				calculateError(istate.m_solution, _truesolution));
-		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
-		per_iteration_tuple.replace("inner_iterations",
-				(int) (inner_iterations));
-		per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+		updatePerIterationTuple(per_iteration_tuple,
+				ynorm, stepwidth_norm, inner_iterations, Delta_p, _truesolution);
 
 		// submit current tuples
 		if (everynthtuple != 0) {

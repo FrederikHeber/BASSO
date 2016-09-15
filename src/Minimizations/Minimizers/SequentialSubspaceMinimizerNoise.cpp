@@ -114,6 +114,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 	std::vector<double> d(N,0.);
 	istate.status = ReturnValues::started;
 	unsigned int tuple_counter = 1;
+	double stepwidth_norm = 0.;
+	unsigned int inner_iterations = 0;
 	while (!StopCriterion) {
 		/// Calculation of search direction
 		searchdir.update(refs, istate.m_residual);
@@ -140,26 +142,12 @@ SequentialSubspaceMinimizerNoise::operator()(
 				 *(istate.residuum-Delta)/::pow(uNorm, refs.J_q.getPower());
 
 		/// database update prior to iterate update
-		per_iteration_tuple.replace( "iteration", (int)istate.NumberOuterIterations);
-		per_iteration_tuple.replace( "residual", istate.residuum);
-		if (fabs(ynorm) > BASSOTOLERANCE)
-			per_iteration_tuple.replace( "relative_residual", istate.residuum/ynorm);
-		else
-			per_iteration_tuple.replace( "relative_residual", 0.);
-		per_iteration_tuple.replace( "bregman_distance",
-				calculateBregmanDistance(
-								Delta_p, istate.m_solution, _truesolution, istate.m_dual_solution));
-		per_iteration_tuple.replace( "error",
-				calculateError(istate.m_solution, _truesolution));
-		per_iteration_tuple.replace( "updated_index", (int)istate.searchspace->getIndex());
-//			per_iteration_tuple.replace("inner_iterations",
-//					(int) (inner_iterations));
-//			per_iteration_tuple.replace( "stepwidth", sqrt(stepwidth_norm));
+		updatePerIterationTuple(per_iteration_tuple,
+				ynorm, stepwidth_norm, inner_iterations, Delta_p, _truesolution);
 
 		/// 1st update onto new hyperplane
 		// index contains newest direction on whose associated hyperplane
 		// x in general does not lie.
-		double stepwidth_norm = 0.;
 		try {
 			std::vector<double> tmin(1, 0.);
 			if (istate.m_dual_solution->isApproxToConstant(0, TolX)) {
@@ -181,7 +169,7 @@ SequentialSubspaceMinimizerNoise::operator()(
 				std::vector<double> steps(1);
 				steps[0] = ScaleFactor*(istate.getAlphas()[index]+d[index]);
 
-//				const unsigned int inner_iterations =
+				inner_iterations =
 						calculateStepWidth(refs, istate.m_dual_solution, tmin,
 								ConstrainedSearchSpace, steps);
 

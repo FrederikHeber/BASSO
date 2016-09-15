@@ -10,10 +10,12 @@
 
 #include "BassoConfig.h"
 
+#include "Database/Table.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
 
 class Database;
+class ReturnValues;
 
 class LandweberMinimizer : public GeneralMinimizer
 {
@@ -55,6 +57,14 @@ private:
 	void setRegularizationParameter(
 			const double mutual_coherence,
 			const SpaceElement_ptr_t &_solution) const;
+
+	void updatePerIterationTuple(
+			Table::Tuple_t& per_iteration_tuple,
+			ReturnValues &returnvalues,
+			const double &ynorm,
+			const double &alpha,
+			boost::shared_ptr<BregmanDistance> &Delta_p,
+			const SpaceElement_ptr_t &_truesolution) const;
 
 public:
 	//!> positive dampening constant for iteration
