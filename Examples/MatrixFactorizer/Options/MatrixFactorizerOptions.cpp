@@ -159,6 +159,14 @@ bool MatrixFactorizerOptions::internal_checkSensibility() const
 		return false;
 	}
 
+	if ((vm.count("overall-keys")) && (!overall_keys.empty())
+			&& (everynthtuple == 0)) {
+		LOG(error, "If every-nth-tuple is set to zero, per iteration tuples of"
+				<< " inner problems are not stored and hence cannot be accumulated"
+				<< " over for overall keys.");
+		return false;
+	}
+
 	if (!vm.count("sparse-dimension")) {
 		LOG(error, "Sparse dimensionality not set");
 		return false;
