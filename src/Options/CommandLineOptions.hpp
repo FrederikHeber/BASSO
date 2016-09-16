@@ -96,6 +96,7 @@ protected:
 private:
 	bool checkSensibility_config() const;
 	bool checkSensibility_delta() const;
+	bool checkSensibility_everynthtuple() const;
 	bool checkSensibility_OrthogonalDirections() const;
 	bool checkSensibility_regularizationparameter() const;
 	bool checkSensibility_tau() const;

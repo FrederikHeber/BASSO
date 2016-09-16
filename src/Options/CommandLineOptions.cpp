@@ -408,6 +408,18 @@ bool CommandLineOptions::checkSensibility_delta() const
 	return true;
 }
 
+bool CommandLineOptions::checkSensibility_everynthtuple() const
+{
+	if (!vm.count("every-nth-tuple")) {
+		if (vm.count("maxiter") && (maxiter > 5000)) {
+			LOG(error, "Maxiter is very large. We recommend to not store all tuples, "
+					<< "use every-nth-tuple. Or set explicitly to 1 if desired");
+			return false;
+		}
+	}
+	return true;
+}
+
 bool CommandLineOptions::checkSensibility_OrthogonalDirections() const
 {
 	if (vm.count("orthogonal-directions")) {
@@ -578,6 +590,7 @@ bool CommandLineOptions::checkSensibility() const
 	bool status = true;
 	status &= checkSensibility_config();
 	status &= checkSensibility_delta();
+	status &= checkSensibility_everynthtuple();
 	status &= checkSensibility_OrthogonalDirections();
 	status &= checkSensibility_regularizationparameter();
 	status &= checkSensibility_tau();
