@@ -18,7 +18,8 @@
 // static entities
 const std::string FunctionalMinimizerFactory::TypeNames[] = {
 		"gsl",
-		"nlopt"
+		"nlopt",
+		"nonconvex_regularizedl1"
 };
 enum FunctionalMinimizerFactory::MinimizationLibraries
 FunctionalMinimizerFactory::CurrentMinLib(gnuscientificlibrary);

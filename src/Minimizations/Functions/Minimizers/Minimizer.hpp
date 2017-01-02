@@ -57,5 +57,6 @@ public:
 
 #include "Minimizer_gsl.hpp"
 #include "Minimizer_nlopt.hpp"
+#include "Minimizer_nonconvex_regularizedl1.hpp"
 
 #endif /* MINIMIZER_HPP_ */

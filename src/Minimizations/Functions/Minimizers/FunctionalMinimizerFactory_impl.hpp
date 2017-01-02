@@ -35,6 +35,9 @@ FunctionalMinimizerFactory::create(
 	case nonlinearoptimization:
 		instance.reset(new Minimizer<NLopt_vector>(_N));
 		break;
+	case nonconvex_regularizedl1:
+		instance.reset(new Minimizer<NonConvexRegL1>(_N));
+		break;
 	default:
 		LOG(error, "Unknown instance desired in FunctionalMinimizerFactory");
 		assert(0);
@@ -75,6 +78,13 @@ FunctionalMinimizerFactory::create(
 		minimizer_nlopt->setConstantPositivity(_constant_positivity);
 		minimizer_nlopt->setPositivityBoundIndices(_Wolfe_indexset);
 		instance.reset(minimizer_nlopt);
+		break;
+	}
+	case nonconvex_regularizedl1:
+	{
+		Minimizer<NonConvexRegL1> *minimizer_nonconvex =
+				new Minimizer<NonConvexRegL1>(_N);
+		instance.reset(minimizer_nonconvex);
 		break;
 	}
 	default:

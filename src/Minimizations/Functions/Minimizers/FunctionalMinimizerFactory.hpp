@@ -25,6 +25,7 @@ struct FunctionalMinimizerFactory
 	enum MinimizationLibraries {
 		gnuscientificlibrary=0,
 		nonlinearoptimization=1,
+		nonconvex_regularizedl1=2,
 		MAX_MinimizationLibraries
 	};
 

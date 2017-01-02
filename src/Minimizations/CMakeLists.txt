@@ -14,6 +14,7 @@ add_library (Minimizations
 	Functions/Minimizers/FunctionalMinimizerFactory.cpp
 	Functions/Minimizers/Minimizer_gsl.cpp
 	Functions/Minimizers/Minimizer_nlopt.cpp
+	Functions/Minimizers/Minimizer_nonconvex_regularizedl1.cpp
 	Functions/ResidualFunctional.cpp
 	Functions/SmoothnessModulus.cpp
 	Functions/VectorProjection.cpp
@@ -86,6 +87,7 @@ install (FILES Functions/Minimizers/MinimizationFunctional.hpp DESTINATION inclu
 install (FILES Functions/Minimizers/Minimizer.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer_gsl.hpp DESTINATION include)
 install (FILES Functions/Minimizers/Minimizer_nlopt.hpp DESTINATION include)
+install (FILES Functions/Minimizers/Minimizer_nonconvex_regularizedl1.hpp DESTINATION include)
 install (FILES Functions/Minimizers/MinimizerExceptions.hpp DESTINATION include)
 install (FILES Functions/ResidualFunctional.hpp DESTINATION include)
 install (FILES Functions/SmoothnessFunctional.hpp DESTINATION include)
