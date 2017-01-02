@@ -495,8 +495,8 @@ bool CommandLineOptions::checkSensibility_algorithm() const
 
 bool CommandLineOptions::checkSensibility_minlib() const
 {
-	if ((minlib != "gsl") && (minlib != "nlopt")) {
-		LOG(error, "Minimization library must be either 'gsl' or 'nlopt'.");
+	if (!FunctionalMinimizerFactory::isValidName(minlib)) {
+		LOG(error, "Minimization library name '" << minlib << "' is unknown.");
 		return false;
 	}
 	return true;
