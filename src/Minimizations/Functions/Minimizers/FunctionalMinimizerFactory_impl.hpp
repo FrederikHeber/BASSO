@@ -36,13 +36,41 @@ FunctionalMinimizerFactory::create(
 		instance.reset(new Minimizer<NLopt_vector>(_N));
 		break;
 	case nonconvex_regularizedl1:
-		instance.reset(new Minimizer<NonConvexRegL1>(_N));
+		LOG(error, "Nonconvex minimizer for seemingly convex problem requested.");
+		assert(0);
 		break;
 	default:
 		LOG(error, "Unknown instance desired in FunctionalMinimizerFactory");
 		assert(0);
 		break;
 	}
+	instance->setMaxIterations(maxiterations);
+
+	typename FunctionalMinimizer<T>::ptr_t fmin(
+			new FunctionalMinimizer_exactLinesearch<T>(
+					_functional,
+					instance,
+					_value));
+
+	return fmin;
+}
+
+template <class T>
+typename FunctionalMinimizer<T>::ptr_t
+FunctionalMinimizerFactory::create(
+		const unsigned int _N,
+		const MinimizationFunctional<T> &_functional,
+		T &_value,
+		const std::vector< std::vector<double> > &_sections_per_direction
+		)
+{
+	FunctionMinimizer::ptr_t instance;
+	if (CurrentMinLib != nonconvex_regularizedl1) {
+		LOG(error, "Unknown instance desired in FunctionalMinimizerFactory");
+		assert(0);
+	}
+	Minimizer<NonConvexRegL1> *min_regl1 = new Minimizer<NonConvexRegL1>(_N, _sections_per_direction);
+	instance.reset(min_regl1);
 	instance->setMaxIterations(maxiterations);
 
 	typename FunctionalMinimizer<T>::ptr_t fmin(
@@ -82,9 +110,8 @@ FunctionalMinimizerFactory::create(
 	}
 	case nonconvex_regularizedl1:
 	{
-		Minimizer<NonConvexRegL1> *minimizer_nonconvex =
-				new Minimizer<NonConvexRegL1>(_N);
-		instance.reset(minimizer_nonconvex);
+		LOG(error, "Nonconvex minimizer for seemingly convex problem requested.");
+		assert(0);
 		break;
 	}
 	default:

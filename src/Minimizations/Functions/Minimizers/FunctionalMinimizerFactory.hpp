@@ -43,6 +43,27 @@ struct FunctionalMinimizerFactory
 			T &_value
 			);
 
+	/** Creates a minimizer instance for the current parameters for a set of
+	 * convex intervals.
+	 *
+	 * The overall functional is non-convex but the search range can divided in
+	 * such a way that it is convex over each of the intervals.
+	 *
+	 * @param _N number of search directions
+	 * @param _functional the function to minimize
+	 * @param _value the external value as workspace for minimization
+	 * @param _sections_per_direction boundaries of the intervalls. First and
+	 * 		  last interval is half-open
+	 * @return created instance
+	 */
+	template <class T>
+	static typename FunctionalMinimizer<T>::ptr_t create(
+			const unsigned int _N,
+			const MinimizationFunctional<T> &_functional,
+			T &_value,
+			const std::vector< std::vector< double > > &_sections_per_direction
+			);
+
 	/** Creates a minimizer instance for the current parameters, with inexact
 	 * line search according to Wolfe conditions
 	 *
