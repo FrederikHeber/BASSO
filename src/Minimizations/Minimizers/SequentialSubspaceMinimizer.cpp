@@ -219,9 +219,49 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 			refs.DualNormX, refs.J_q, refs.J_q.getPower(), _searchspace, _alphas);
 	const HyperplaneProjection<BregmanProjectionFunctional> functional(
 			bregman, dual_solution);
-
 	FunctionalMinimizer< std::vector<double> >::ptr_t functionminimizer;
-	if (inexactLinesearch) {
+
+	// check whether we have regularized l1
+	const bool regularized_l1 = dual_solution->getSpace()->getDualSpace()->getNorm()->getPvalue() == 1.;
+	if (regularized_l1) {
+		// find all intervals, for each search direction separately
+		// we have dual_solution and _searchspace (with all search directions):
+		// find all axis sections per direction
+		typedef std::vector<double> sections_t;
+		typedef std::vector<sections_t> sections_per_direction_t;
+		sections_per_direction_t sections_per_direction;
+		sections_per_direction.resize(_searchspace.size());
+		sections_per_direction_t::iterator sectioniter = sections_per_direction.begin();
+		for (std::vector<SpaceElement_ptr_t>::const_iterator diriter = _searchspace.begin();
+				diriter != _searchspace.end(); ++diriter) {
+			// reserve space as we know maximum amount of sections
+			const int dim = (*diriter)->getSpace()->getDimension();
+			sectioniter->reserve(dim);
+
+			// go through every coordinate: t_i = -x_i/g_i
+			for(int i=0;i<dim;++i)
+				sectioniter->push_back(-1.*(*dual_solution)[i]/(**diriter)[i]);
+			assert(dim == (int)sectioniter->size());
+
+			// sort the obtained sections
+			std::sort(sectioniter->begin(), sectioniter->end());
+
+			// print for debugging
+			std::stringstream output;
+			std::copy(sectioniter->begin(), sectioniter->end(),
+					std::ostream_iterator<double>(output, ", "));
+			LOG(debug, "Intersections (num " << sectioniter->size() << ") with axis for direction #"
+					<< std::distance(_searchspace.begin(), diriter)
+					<< ": " << output.str());
+		}
+
+		functionminimizer =
+				FunctionalMinimizerFactory::create< std::vector<double> >(
+					Ndirs,
+					functional,
+					tmin,
+					sections_per_direction);
+	} else if (inexactLinesearch) {
 		const unsigned int current_index = istate.searchspace->getIndex();
 		Wolfe_indexset_t Wolfe_indexset(1, current_index);
 		functionminimizer =
