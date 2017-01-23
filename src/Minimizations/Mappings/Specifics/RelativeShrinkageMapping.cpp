@@ -111,7 +111,7 @@ RelativeShrinkageMapping::getRelativeShrinkage(
 		active_set.push_back(maxCoeff.second);
 		// and recalculate coefficient
 		coefficient = l1norm_sum/((double)active_set_size + lambda);
-	} while (active_set_size < _x->getSpace()->getDimension());
+	} while (!largest_coeffs_map.empty());
 
 
 //	// sensibility checks
