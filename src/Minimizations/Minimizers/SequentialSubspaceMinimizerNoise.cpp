@@ -183,7 +183,8 @@ SequentialSubspaceMinimizerNoise::operator()(
 				std::swap(tmin[index], tmin[0]);
 			updateIterates(refs, tmin, _problem->x, istate.m_dual_solution);
 		} catch (MinimizerIllegalNumber_exception &e) {
-			LOG(error, "Encountered illegal number in line search minimum, not updating.");
+			LOG(error, "Encountered illegal number in line search "
+					<< *boost::get_error_info<MinimizerIllegalNumber_variablename>(e) << ", not updating.");
 		}
 
 		if ((istate.NumberOuterIterations > 0) && (N == 2)) {

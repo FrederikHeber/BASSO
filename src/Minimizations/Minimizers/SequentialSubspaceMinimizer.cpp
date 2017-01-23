@@ -477,7 +477,8 @@ SequentialSubspaceMinimizer::operator()(
 							istate.getSearchSpace(), istate.getAlphas());
 			stepwidth_norm = std::inner_product(tmin.begin(), tmin.end(), tmin.begin(), stepwidth_norm);
 		} catch (MinimizerIllegalNumber_exception &e) {
-			LOG(error, "Encountered illegal number in line search minimum, not updating.");
+			LOG(error, "Encountered illegal number in line search "
+					<< *boost::get_error_info<MinimizerIllegalNumber_variablename>(e) << ", not updating.");
 			tmin = std::vector<double>(N,0.);
 		}
 
