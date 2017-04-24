@@ -117,6 +117,8 @@ private:
 			const NonConvexRegL1 * const _x,
 			array_type &_t);
 
+public:
+
 	/** Wrapper for functiongradient_evaluator_t to translate array type
 	 * into internal argument type for the specific minimizer.
 	 *
