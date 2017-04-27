@@ -77,3 +77,17 @@ target_link_libraries (RelativeShrinkageMappingUnitTest
 
 add_test (RelativeShrinkageMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/RelativeShrinkageMappingUnitTest)
+
+########################## SoftThresholdingMappingUnitTest #######################
+add_executable (SoftThresholdingMappingUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	SoftThresholdingMappingUnitTest.cpp) 
+target_link_libraries (SoftThresholdingMappingUnitTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
+
+add_test (SoftThresholdingMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/SoftThresholdingMappingUnitTest)
+	
