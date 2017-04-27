@@ -52,6 +52,7 @@ add_library (Minimizations
 	Minimizers/StoppingCriteria/StoppingCriterion.cpp
 	Minimizers/StoppingCriteria/StoppingCriteriaFactory.cpp
 	Norms/NormFactory.cpp
+	Norms/Specifics/RelativeShrinkageCoefficient.cpp
 	Spaces/NormedSpaceFactory.cpp
 	Spaces/NormedSpace.cpp
 	)
@@ -146,6 +147,7 @@ install (FILES Minimizers/StoppingCriteria/StoppingCriteriaFactory.hpp DESTINATI
 install (FILES Norms/Specifics/DualRegularizedL1Norm.hpp DESTINATION include)
 install (FILES Norms/Specifics/MappedNorm.hpp DESTINATION include)
 install (FILES Norms/Specifics/RegularizedL1Norm.hpp DESTINATION include)
+install (FILES Norms/Specifics/RelativeShrinkageCoefficient.hpp DESTINATION include)
 install (FILES Norms/IllegalNorm.hpp DESTINATION include)
 install (FILES Norms/L1Norm.hpp DESTINATION include)
 install (FILES Norms/LInfinityNorm.hpp DESTINATION include)
