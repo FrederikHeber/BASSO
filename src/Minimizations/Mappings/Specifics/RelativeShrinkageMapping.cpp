@@ -19,14 +19,6 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 RelativeShrinkageMapping::RelativeShrinkageMapping(
-		const NormedSpace_weakptr_t &_NormedSpaceRef) :
-	L1DualityMapping(_NormedSpaceRef, 2.),
-	lambda(0.1),
-	count(0),
-	timing(boost::chrono::nanoseconds(0))
-{}
-
-RelativeShrinkageMapping::RelativeShrinkageMapping(
 		const NormedSpace_weakptr_t &_NormedSpaceRef,
 		const double _lambda) :
 	L1DualityMapping(_NormedSpaceRef, 2.),
