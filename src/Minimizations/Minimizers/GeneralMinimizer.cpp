@@ -183,7 +183,8 @@ const double GeneralMinimizer::calculateBregmanDistance(
 #else
 		LOG(debug, "Bregman distance is " << distance);
 #endif
-		// check that distance truly decreases
+		// check that distance is non-negative and truly decreases
+		assert ( (distance) > - BASSOTOLERANCE );
 		assert( (OldBregmanDistance == 0.)
 				|| ((OldBregmanDistance - distance) > - BASSOTOLERANCE) );
 		OldBregmanDistance = distance;
