@@ -59,11 +59,12 @@ double BregmanDistance::operator()(
 		const SpaceElement_ptr_t &_xdual
 		) const
 {
-
-//	LOG(trace, "Calculating Bregman distance between " << _x << " and " << _y);
-	double result = 0.;
-	result += (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
-	result += (1./power) * ::pow(norm(_y), power);
-	result -= _xdual * _y;
+	const double resultX = (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
+	const double resultY = (1./power) * ::pow(norm(_y), power);
+	const double resultSKP =_xdual * _y;
+	double result = resultX+resultY-resultSKP;
+	LOG(debug, "Calculating Bregman distance between " << _x << " and " << _y
+			<< " as " << resultX << "+" << resultY << "-" << resultSKP << "="
+			<< result);
 	return result;
 }
