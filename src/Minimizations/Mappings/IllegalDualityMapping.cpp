@@ -38,6 +38,16 @@ void IllegalDualityMapping::operator()(
 		<< MinimizationIllegalValue_name("illegally called");
 }
 
+void IllegalDualityMapping::getMinimumInfimum(
+		const SpaceElement_ptr_t &_x,
+		const SpaceElement_ptr_t &_y,
+		SpaceElement_ptr_t &_Jx) const
+{
+	// we just throw as this function must now be called
+	throw MinimizationIllegalValue_exception()
+		<< MinimizationIllegalValue_name("illegally called");
+}
+
 const Mapping_ptr_t IllegalDualityMapping::getAdjointMapping() const
 {
 	// we just throw as this function must now be called

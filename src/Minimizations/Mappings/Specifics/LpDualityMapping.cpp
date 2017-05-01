@@ -89,6 +89,15 @@ void LpDualityMapping::operator()(
 	++count;
 }
 
+void LpDualityMapping::getMinimumInfimum(
+		const SpaceElement_ptr_t &_x,
+		const SpaceElement_ptr_t &_y,
+		SpaceElement_ptr_t &_Jx) const
+{
+	// lp space with p in (1,\infty) is smooth, hence return unique dual element
+	operator()(_x, _Jx);
+}
+
 const Mapping_ptr_t LpDualityMapping::getAdjointMapping() const
 {
 	// calculate conjugate value

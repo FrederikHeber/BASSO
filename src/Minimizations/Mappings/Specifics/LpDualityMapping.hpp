@@ -48,6 +48,18 @@ public:
 			SpaceElement_ptr_t &_destelement
 			) const;
 
+	/** Gets the one dual element of possibly many that minimizes the
+	 * scalar product to the given other element.
+	 *
+	 * \param _x point for which to get dual element(s)
+	 * \param _y other element to minimize scalar product against
+	 * \return _Jx duality mapped \a _x for which \f$ < Jx, y > \f$ is minimal
+	 */
+	void getMinimumInfimum(
+			const SpaceElement_ptr_t &_x,
+			const SpaceElement_ptr_t &_y,
+			SpaceElement_ptr_t &_Jx) const;
+
 	/** Creates the adjoint mapping to this mapping.
 	 *
 	 * @return mapping instance with adjoint

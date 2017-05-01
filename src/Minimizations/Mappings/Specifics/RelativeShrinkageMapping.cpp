@@ -64,6 +64,16 @@ void RelativeShrinkageMapping::operator()(
 	++count;
 }
 
+void RelativeShrinkageMapping::getMinimumInfimum(
+		const SpaceElement_ptr_t &_x,
+		const SpaceElement_ptr_t &_y,
+		SpaceElement_ptr_t &_Jx) const
+{
+	// TODO: The space is not smooth, hence, we have to truly evaluate!
+	assert(0);
+	operator()(_x, _Jx);
+}
+
 const Mapping_ptr_t RelativeShrinkageMapping::getAdjointMapping() const
 {
 	Mapping_ptr_t instance(
