@@ -31,6 +31,7 @@ class LInfinityNorm;
 class NonnegativeConstraint;
 class NonpositiveConstraint;
 class RangeProjectionSolver;
+class RegularizedL1DualityMapping;
 class RelativeShrinkageMapping;
 struct SingularValueDecomposition;
 struct SpaceElementWriter;
@@ -64,6 +65,7 @@ private:
 	friend class NonnegativeConstraint;
 	friend class NonpositiveConstraint;
 	friend class RangeProjectionSolver;
+	friend class RegularizedL1DualityMapping;
 	friend class RelativeShrinkageMapping;
 	friend struct SingularValueDecomposition;
 	friend struct SpaceElementWriter;

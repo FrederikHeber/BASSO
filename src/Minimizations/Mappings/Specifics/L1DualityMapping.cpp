@@ -70,9 +70,17 @@ void L1DualityMapping::getMinimumInfimum(
 		const SpaceElement_ptr_t &_y,
 		SpaceElement_ptr_t &_Jx) const
 {
-	// TODO: The space is not smooth, hence, we have to truly evaluate!
-	assert(0);
+	// l1 is (component-wise) only not differentiable where we intersect with axis
+	// hence, for all intersections check whether flipped sign is better
+	assert( getSourceSpace().get() == _x->getSpace().get() );
+	assert( getTargetSpace().get() == _Jx->getSpace().get() );
 	operator()(_x, _Jx);
+	for (unsigned int i=0;i<_x->getSpace()->getDimension();++i) {
+		if (fabs((*_x)[i]) < BASSOTOLERANCE ) {
+			if ((*_Jx)[i] * (*_y)[i] > 0)
+				(*_Jx)[i] *= -1.;
+		}
+	}
 }
 
 const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const

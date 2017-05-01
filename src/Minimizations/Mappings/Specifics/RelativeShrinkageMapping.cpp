@@ -10,7 +10,7 @@
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Mappings/IllegalDualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RegularizedL1DualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
 #include "Minimizations/Norms/Specifics/RelativeShrinkageCoefficient.hpp"
@@ -69,15 +69,15 @@ void RelativeShrinkageMapping::getMinimumInfimum(
 		const SpaceElement_ptr_t &_y,
 		SpaceElement_ptr_t &_Jx) const
 {
-	// TODO: The space is not smooth, hence, we have to truly evaluate!
-	assert(0);
+	// the space is smooth, hence is single-valued
 	operator()(_x, _Jx);
 }
 
 const Mapping_ptr_t RelativeShrinkageMapping::getAdjointMapping() const
 {
 	Mapping_ptr_t instance(
-			new IllegalDualityMapping
+			new RegularizedL1DualityMapping(
+					getTargetSpace(), lambda)
 	);
 	return instance;
 }
