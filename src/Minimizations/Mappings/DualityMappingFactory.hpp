@@ -123,6 +123,16 @@ private:
 	static Mapping_ptr_t createRelativeShrinkrageInstance(
 			const NormedSpace_weakptr_t _NormedSpaceRef,
 			const args_t &_args);
+
+	/** Creates a regularized l1 duality mapping.
+	 *
+	 * @param _NormedSpaceRef ref to normed space
+	 * @param _args vector of arguments
+	 * @return created instance
+	 */
+	static Mapping_ptr_t createRegularizedL1Instance(
+			const NormedSpace_weakptr_t _NormedSpaceRef,
+			const args_t &_args);
 };
 
 
