@@ -36,7 +36,8 @@ static void getArgs(
 		_args_SpaceX +=
 				boost::any(_opts.px),
 				boost::any(_opts.powerx);
-	} else if (_opts.type_spacex == "regularized_l1") {
+	} else if ((_opts.type_spacex == "regularized_l1") ||
+			(_opts.type_spacex == "softthresholding_l1")) {
 		_args_SpaceX +=
 				boost::any(_opts.regularization_parameter),
 				boost::any(_opts.powerx);
