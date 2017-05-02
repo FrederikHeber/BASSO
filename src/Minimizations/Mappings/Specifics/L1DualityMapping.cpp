@@ -11,11 +11,13 @@
 
 #include <cmath>
 
+#include "Log/Logging.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 #include "Minimizations/Norms/L1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
 #include "Math/Helpers.hpp"
 
 /** General function to calculate the duality mapping.
@@ -49,14 +51,26 @@ void L1DualityMapping::operator()(
 	// J=norm(x,1)^(q-1)*sign(x);
 	assert( getSourceSpace().get() == _x->getSpace().get() );
 	assert( getTargetSpace().get() == _Jx->getSpace().get() );
-	const Norm &l1norm = *_x->getSpace()->getNorm();
-
-	const double factor = ::pow(l1norm(_x), (double)power-1.);
+	const Norm &norm = *_x->getSpace()->getNorm();
+	const L1Norm *l1norm = static_cast<const L1Norm *>(&norm);
+	const RegularizedL1Norm *regl1norm = static_cast<const RegularizedL1Norm *>(&norm);
+	double factor = 0.;
+	if (regl1norm != NULL)
+		factor = ::pow(regl1norm->L1Norm::operator()(_x), (double)power-1.);
+	else if (l1norm != NULL)
+		factor = ::pow((*l1norm)(_x), (double)power-1.);
+	else {
+		factor = 0./0.;
+		assert(0);
+	}
 	assert( _Jx->getSpace()->getDimension() == _x->getSpace()->getDimension() );
-	const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
-	RepresentationAdvocate::set(_Jx,
-			factor * vector.array().cwiseProduct(
-					vector.array().abs().cwiseInverse()));
+//	const Eigen::VectorXd &vector = RepresentationAdvocate::get(_x);
+	_Jx = getTargetSpace()->createElement();
+	for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
+		if (fabs((*_x)[i]) > BASSOTOLERANCE)
+			(*_Jx)[i] = factor*(*_x)[i]/fabs((*_x)[i]);
+		else
+			(*_Jx)[i] = 0.;
 
 	// finish timing
 	const boost::chrono::high_resolution_clock::time_point timing_end =
@@ -74,13 +88,21 @@ void L1DualityMapping::getMinimumInfimum(
 	// hence, for all intersections check whether flipped sign is better
 	assert( getSourceSpace().get() == _x->getSpace().get() );
 	assert( getTargetSpace().get() == _Jx->getSpace().get() );
-	operator()(_x, _Jx);
-	for (unsigned int i=0;i<_x->getSpace()->getDimension();++i) {
-		if (fabs((*_x)[i]) < BASSOTOLERANCE ) {
-			if ((*_Jx)[i] * (*_y)[i] > 0)
-				(*_Jx)[i] *= -1.;
+	L1DualityMapping::operator()(_x, _Jx);
+	// get the norm by finding the first non-zero element
+	double factor = 0.;
+	for (unsigned int i=0;i<_x->getSpace()->getDimension();++i)
+		if (fabs((*_Jx)[i]) > 0) {
+			factor = fabs((*_Jx)[i]);
+			break;
 		}
-	}
+	// then change all zero elements
+	if (factor != 0.)
+		for (unsigned int i=0;i<_x->getSpace()->getDimension();++i) {
+			if ((fabs((*_x)[i]) < BASSOTOLERANCE)
+					&& (fabs((*_y)[i]) > BASSOTOLERANCE))
+				(*_Jx)[i] = (*_y)[i] < 0 ? factor : -factor;
+		}
 }
 
 const Mapping_ptr_t L1DualityMapping::getAdjointMapping() const
