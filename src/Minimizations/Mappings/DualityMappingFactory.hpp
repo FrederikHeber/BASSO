@@ -104,6 +104,16 @@ private:
 			const NormedSpace_weakptr_t _NormedSpaceRef,
 			const args_t &_args);
 
+	/** Creates a soft thresholding mapping.
+	 *
+	 * @param _NormedSpaceRef ref to normed space
+	 * @param _args vector of arguments
+	 * @return created instance
+	 */
+	static Mapping_ptr_t createSoftThresholdingInstance(
+			const NormedSpace_weakptr_t _NormedSpaceRef,
+			const args_t &_args);
+
 	/** Creates a relative shrinkage mapping.
 	 *
 	 * @param _NormedSpaceRef ref to normed space

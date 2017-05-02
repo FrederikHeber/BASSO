@@ -23,6 +23,7 @@
 #include "Minimizations/Mappings/Specifics/LpDualityMapping.hpp"
 #include "Minimizations/Mappings/Specifics/LInfinityDualityMapping.hpp"
 #include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
+#include "Minimizations/Mappings/Specifics/SoftThresholdingMapping.hpp"
 
 const DualityMappingFactory::TokenCreatorMap_t DualityMappingFactory::getMap()
 {
@@ -38,6 +39,12 @@ const DualityMappingFactory::TokenCreatorMap_t DualityMappingFactory::getMap()
 	// dual of regularized_1 is smooth, is relative shrinkage
 	TokenCreatorMap["dual_regularized_l1"] =
 			boost::bind(&DualityMappingFactory::createRelativeShrinkrageInstance, _1, _2);
+	// regularized_1 is not smooth, hence illegal mapping
+	TokenCreatorMap["softthresholding_l1"] =
+			boost::bind(&DualityMappingFactory::createIllegalInstance, _1, _2);
+	// dual of regularized_1 is smooth, is relative shrinkages
+	TokenCreatorMap["dual_softthresholding_l1"] =
+			boost::bind(&DualityMappingFactory::createSoftThresholdingInstance, _1, _2);
 	return TokenCreatorMap;
 }
 
@@ -130,13 +137,23 @@ DualityMappingFactory::createIllegalInstance(
 }
 
 Mapping_ptr_t
+DualityMappingFactory::createSoftThresholdingInstance(
+		const NormedSpace_weakptr_t _NormedSpaceRef,
+		const args_t &_args)
+{
+	const double lambda = getNthArgumentAs<double>(_args, 0);
+	DualityMapping *mapping = new SoftThresholdingMapping(
+			_NormedSpaceRef, lambda);
+	return Mapping_ptr_t(mapping);
+}
+
+Mapping_ptr_t
 DualityMappingFactory::createRelativeShrinkrageInstance(
 		const NormedSpace_weakptr_t _NormedSpaceRef,
 		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
 	DualityMapping *mapping = new RelativeShrinkageMapping(
-			_NormedSpaceRef,
-			lambda);
+			_NormedSpaceRef, lambda);
 	return Mapping_ptr_t(mapping);
 }
