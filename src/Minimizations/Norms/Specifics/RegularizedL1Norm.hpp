@@ -1,12 +1,12 @@
 /*
  * RegularizedL1Norm.hpp
  *
- *  Created on: Oct 24, 2014
+ *  Created on: May 2, 2017
  *      Author: heber
  */
 
-#ifndef REGULARIZEDL1NORM_HPP_
-#define REGULARIZEDL1NORM_HPP_
+#ifndef MINIMIZATIONS_NORMS_SPECIFICS_REGULARIZEDL1NORM_HPP_
+#define MINIMIZATIONS_NORMS_SPECIFICS_REGULARIZEDL1NORM_HPP_
 
 #include "BassoConfig.h"
 
@@ -17,6 +17,8 @@
 
 /** This class implements a regularized l1 norm of the form
  * \f$ \sqrt{ \frac 1 2 ||.||^2_1 + \frac \lambda 2 ||.||^2_2 } \f$.
+ *
+ * where \f$ \lambda \f$ is determined by RelativeShrinkageCoefficient.
  *
  */
 class RegularizedL1Norm : public L1Norm
@@ -77,6 +79,4 @@ private:
 	const double lambda;
 };
 
-
-
-#endif /* REGULARIZEDL1NORM_HPP_ */
+#endif /* MINIMIZATIONS_NORMS_SPECIFICS_REGULARIZEDL1NORM_HPP_ */

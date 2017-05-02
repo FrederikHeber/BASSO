@@ -1,0 +1,90 @@
+/*
+ * DualRelativeShrinkageL1Norm.hpp
+ *
+ *  Created on: Apr 25, 2017
+ *      Author: heber
+ */
+
+#ifndef DUALRELATIVESHRINKAGEL1NORM_HPP_
+#define DUALRELATIVESHRINKAGEL1NORM_HPP_
+
+#include "BassoConfig.h"
+
+#include <cassert>
+#include "Minimizations/Mappings/Specifics/RelativeShrinkageMapping.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Norms/Norm.hpp"
+#include "Minimizations/Norms/Specifics/DualRegularizedL1Norm.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+
+/** This class implements the dual of the regularized l1 norm of the form
+ * \f$ \sqrt{ \frac 1 2 ||.||^2_1 + \frac \lambda 2 ||.||^2_2 } \f$ which is
+ * \f$ || \sqrt{ c_{\lambda}^2(.) + \frac 1 {\lambda} || S_{\lambda} (.) ||^2_2 } \f$ .
+ *
+ * where \f$ \lambda \f$ is determined by RelativeShrinkageCoefficient.
+ *
+ * see [Schoepfer, 2012].
+ */
+class DualRelativeShrinkageL1Norm : public DualRegularizedL1Norm
+{
+public:
+	/** Constructor for class Norm.
+	 *
+	 * \note The internal RelativeShrinkageMapping brings the given \a _x
+	 * into its dual space. Hence, we set the internal L2-norm
+	 * onto this space as well.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 * @param _lambda regularization parameter
+	 */
+	DualRelativeShrinkageL1Norm(
+			const NormedSpace_weakptr_t& _ref,
+			const double _lambda = 0.1) :
+		DualRegularizedL1Norm(_ref),
+		relativeshrinker(_ref, _lambda),
+		l2norm(relativeshrinker.getTargetSpace(), 2.)
+	{}
+
+	/** Setter for soft thresholding parameter \a lambda.
+	 *
+	 * @param _lambda new value for parameter
+	 */
+	void setLambda(const double _lambda) const
+	{
+		relativeshrinker.setLambda(_lambda);
+	}
+
+	/** Getter for the regularization parameter.
+	 *
+	 * @return regularization parameter
+	 */
+	const double getLambda() const
+	{ return relativeshrinker.getLambda(); }
+
+protected:
+
+	/** Evaluates the norm for a given \a _x.
+	 *
+	 *  @param _x element of the space, whose norm to evaluated
+	 * @return norm of \a _x
+	 */
+	const double internal_operator(const SpaceElement_ptr_t &_x) const
+	{
+		assert( getSpace() == _x->getSpace() );
+		double value = 0.;
+		value += ::pow(getLambda(), 2);
+		value += ::pow(l2norm(relativeshrinker(_x)), 2)/getLambda();
+		return sqrt(value);
+	}
+
+private:
+	//!> internal soft thresholding operator
+	mutable RelativeShrinkageMapping relativeshrinker;
+
+	//!> internal l2 norm
+	const LpNorm l2norm;
+};
+
+
+
+#endif /* DUALRELATIVESHRINKAGEL1NORM_HPP_ */

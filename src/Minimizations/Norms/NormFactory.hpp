@@ -122,22 +122,28 @@ private:
 			const NormedSpace_weakptr_t _ref,
 			const args_t &_args);
 
-	/** Creates a regularized l1 norm.
+	/** Creates a regularized l1 norm using relative shrinkage.
 	 *
-	 * \sa RegularizedL1Norm
+	 * \sa RelativeShrinkageL1Norm
+	 *
+	 * No arguments are needed. Lambda is set automatically depending on the
+	 * argument.
 	 *
 	 * @param _ref reference to the space this norm is associated with
 	 * @param _args arguments containing exactly one double defining the
 	 * 		  regularization parameter.
 	 * @return Norm instance
 	 */
-	static Norm_ptr_t createRegularizedL1Instance(
+	static Norm_ptr_t createRelativeShrinkageL1Instance(
 			const NormedSpace_weakptr_t _ref,
 			const args_t &_args);
 
-	/** Creates a dual norm to regularized l1 norm.
+	/** Creates a dual norm to regularized l1 norm using relative shrinkage.
 	 *
-	 * \sa DualRegularizedL1Norm
+	 * \sa DualRelativeShrinkageL1Norm
+	 *
+	 * No arguments are needed. Lambda is set automatically depending on the
+	 * argument.
 	 *
 	 * @param _ref reference to the space this norm is associated with,
 	 * 		  i.e. here the dual instance
@@ -145,7 +151,39 @@ private:
 	 * 		  regularization parameter.
 	 * @return Norm instance
 	 */
-	static Norm_ptr_t createDualRegularizedL1Instance(
+	static Norm_ptr_t createDualRelativeShrinkageL1Instance(
+			const NormedSpace_weakptr_t _ref,
+			const args_t &_args);
+	/** Creates a regularized l1 norm using soft thresholding.
+	 *
+	 * \sa SoftThresholdingL1Norm
+	 *
+	 * No arguments are needed. Lambda is set automatically depending on the
+	 * argument.
+	 *
+	 * @param _ref reference to the space this norm is associated with
+	 * @param _args arguments containing exactly one double defining the
+	 * 		  regularization parameter.
+	 * @return Norm instance
+	 */
+	static Norm_ptr_t createSoftThresholdingL1Instance(
+			const NormedSpace_weakptr_t _ref,
+			const args_t &_args);
+
+	/** Creates a dual norm to regularized l1 norm using soft thresholding.
+	 *
+	 * \sa DualSoftThresholdingL1Norm
+	 *
+	 * No arguments are needed. Lambda is set automatically depending on the
+	 * argument.
+	 *
+	 * @param _ref reference to the space this norm is associated with,
+	 * 		  i.e. here the dual instance
+	 * @param _args arguments containing exactly one double defining the
+	 * 		  regularization parameter.
+	 * @return Norm instance
+	 */
+	static Norm_ptr_t createDualSoftThresholdingL1Instance(
 			const NormedSpace_weakptr_t _ref,
 			const args_t &_args);
 

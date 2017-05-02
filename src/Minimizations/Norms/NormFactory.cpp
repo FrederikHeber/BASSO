@@ -21,8 +21,10 @@
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/LInfinityNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
-#include "Minimizations/Norms/Specifics/DualRegularizedL1Norm.hpp"
-#include "Minimizations/Norms/Specifics/RegularizedL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/DualRelativeShrinkageL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/DualSoftThresholdingL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/RelativeShrinkageL1Norm.hpp"
+#include "Minimizations/Norms/Specifics/SoftThresholdingL1Norm.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
 const NormFactory::TokenCreatorMap_t NormFactory::getMap()
@@ -36,9 +38,17 @@ const NormFactory::TokenCreatorMap_t NormFactory::getMap()
 	TokenCreatorMap["dual_lp"] =
 			boost::bind(&NormFactory::createDualLpInstance, _1, _2);
 	TokenCreatorMap["regularized_l1"] =
-			boost::bind(&NormFactory::createRegularizedL1Instance, _1, _2);
+			boost::bind(&NormFactory::createRelativeShrinkageL1Instance, _1, _2);
 	TokenCreatorMap["dual_regularized_l1"] =
-			boost::bind(&NormFactory::createDualRegularizedL1Instance, _1, _2);
+			boost::bind(&NormFactory::createDualRelativeShrinkageL1Instance, _1, _2);
+	TokenCreatorMap["relativeshrinkage_l1"] =
+			boost::bind(&NormFactory::createRelativeShrinkageL1Instance, _1, _2);
+	TokenCreatorMap["dual_relativeshrinkage_l1"] =
+			boost::bind(&NormFactory::createDualRelativeShrinkageL1Instance, _1, _2);
+	TokenCreatorMap["softthresholding_l1"] =
+			boost::bind(&NormFactory::createSoftThresholdingL1Instance, _1, _2);
+	TokenCreatorMap["dual_softthresholding_l1"] =
+			boost::bind(&NormFactory::createDualSoftThresholdingL1Instance, _1, _2);
 	return TokenCreatorMap;
 }
 
@@ -129,20 +139,36 @@ Norm_ptr_t NormFactory::createDualLpInstance(
 	return createLpNorm(_ref, q);
 }
 
-Norm_ptr_t NormFactory::createRegularizedL1Instance(
+Norm_ptr_t NormFactory::createRelativeShrinkageL1Instance(
 		const NormedSpace_weakptr_t _ref,
 		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
-	return Norm_ptr_t(new RegularizedL1Norm(_ref, lambda));
+	return Norm_ptr_t(new RelativeShrinkageL1Norm(_ref, lambda));
 }
 
-Norm_ptr_t NormFactory::createDualRegularizedL1Instance(
+Norm_ptr_t NormFactory::createDualRelativeShrinkageL1Instance(
 		const NormedSpace_weakptr_t _ref,
 		const args_t &_args)
 {
 	const double lambda = getNthArgumentAs<double>(_args, 0);
-	return Norm_ptr_t(new DualRegularizedL1Norm(_ref, lambda));
+	return Norm_ptr_t(new DualRelativeShrinkageL1Norm(_ref, lambda));
+}
+
+Norm_ptr_t NormFactory::createSoftThresholdingL1Instance(
+		const NormedSpace_weakptr_t _ref,
+		const args_t &_args)
+{
+	const double lambda = getNthArgumentAs<double>(_args, 0);
+	return Norm_ptr_t(new SoftThresholdingL1Norm(_ref, lambda));
+}
+
+Norm_ptr_t NormFactory::createDualSoftThresholdingL1Instance(
+		const NormedSpace_weakptr_t _ref,
+		const args_t &_args)
+{
+	const double lambda = getNthArgumentAs<double>(_args, 0);
+	return Norm_ptr_t(new DualSoftThresholdingL1Norm(_ref, lambda));
 }
 
 Norm_ptr_t NormFactory::createIllegalInstance(
