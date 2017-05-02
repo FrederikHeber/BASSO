@@ -247,12 +247,12 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 			std::sort(sectioniter->begin(), sectioniter->end());
 
 			// print for debugging
-			std::stringstream output;
-			std::copy(sectioniter->begin(), sectioniter->end(),
-					std::ostream_iterator<double>(output, ", "));
-			LOG(debug, "Intersections (num " << sectioniter->size() << ") with axis for direction #"
-					<< std::distance(_searchspace.begin(), diriter)
-					<< ": " << output.str());
+//			std::stringstream output;
+//			std::copy(sectioniter->begin(), sectioniter->end(),
+//					std::ostream_iterator<double>(output, ", "));
+//			LOG(debug, "Intersections (num " << sectioniter->size() << ") with axis for direction #"
+//					<< std::distance(_searchspace.begin(), diriter)
+//					<< ": " << output.str());
 		}
 
 		functionminimizer =
