@@ -59,7 +59,10 @@ double BregmanDistance::operator()(
 		const SpaceElement_ptr_t &_xdual
 		) const
 {
+	const double resultX = (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
+	const double resultY = (1./power) * ::pow(norm(_y), power);
 	double resultSKP = 0.;
+	double result = 0.;
 	// check whether space is smooth
 	if (_x->getSpace()->getNorm()->isSmooth()) {
 		resultSKP =_xdual * _y;
@@ -71,17 +74,16 @@ double BregmanDistance::operator()(
 		SpaceElement_ptr_t xdual_mininf = _xdual->getSpace()->createElement();
 		mapping.getMinimumInfimum(_x, _y, xdual_mininf);
 		resultSKP = xdual_mininf * _y;
+		result = resultX+resultY-resultSKP;
+		LOG(debug, "Calculating Bregman distance with dual " << xdual_mininf
+				<< " as " << resultX << "+" << resultY << "-" << resultSKP << "="
+				<< result);
 	}
-	const double resultX = (1./Helpers::ConjugateValue(power)) * ::pow(norm(_x), power);
-	const double resultY = (1./power) * ::pow(norm(_y), power);
-	double result = resultX+resultY-resultSKP;
-	LOG(debug, "Calculating Bregman distance between " << _x << " and " << _y
-			<< " as " << resultX << "+" << resultY << "-" << resultSKP << "="
-			<< result);
-	if (_x->getSpace()->getNorm()->isSmooth()) {
+	if (1) {
+//	if (_x->getSpace()->getNorm()->isSmooth()) {
 		resultSKP =_xdual * _y;
 		double old_result = resultX+resultY-resultSKP;
-		LOG(debug, "Calculating former Bregman distance between " << _x << " and " << _y
+		LOG(debug, "Calculating former Bregman distance with old dual " << _xdual
 				<< " as " << resultX << "+" << resultY << "-" << resultSKP << "="
 				<< old_result);
 	}
