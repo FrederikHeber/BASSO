@@ -12,13 +12,17 @@
 
 #include <boost/chrono.hpp>
 
-#include "Minimizations/Mappings/Specifics/L1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/RegularizedL1DualityMapping.hpp"
 #include "Minimizations/types.hpp"
 
 class SoftThresholdingMappingUnitTest;
 
+/** This class implements the soft thresholding regularized l1 operator
+ * where the regularization parameter \f$ lambda \f$ is kept fixed.
+ *
+ */
 class SoftThresholdingMapping :
-	public L1DualityMapping
+	public RegularizedL1DualityMapping
 {
 	//!> grant unit test access to private parts
 	friend class SoftThresholdingMappingUnitTest;
@@ -32,60 +36,23 @@ public:
 			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _lambda = 0.1);
 
+	//!> expose overloaded operator method from base class
+	using Mapping::operator();
+
 	/** Evaluates for the given \a _x the soft thresholding result with respect
 	 * to \a _lambda.
 	 * @param _x vector to soft-threshold
-	 * @return componentwise soft threshold of \a _x by \a lambda
+	 * @param _Jx componentwise soft threshold of \a _x by \a lambda
 	 */
-	const SpaceElement_ptr_t operator()(
-			const SpaceElement_ptr_t &_x) const;
+	void operator()(
+			const SpaceElement_ptr_t &_x,
+			SpaceElement_ptr_t &_Jx) const;
 
 	/** Creates the adjoint mapping to this mapping.
 	 *
 	 * @return mapping instance with adjoint
 	 */
 	const Mapping_ptr_t getAdjointMapping() const;
-
-	/** Setter for soft thresholding parameter \a lambda.
-	 *
-	 * @param _lambda new value for parameter
-	 */
-	void setLambda(const double _lambda) const
-	{
-		const_cast<double &>(lambda) = _lambda;
-	}
-
-	/** Getter for the regularization parameter.
-	 *
-	 * @return regularization parameter
-	 */
-	const double getLambda() const
-	{ return lambda; }
-
-	/** Returns the number of times the operator() was called.
-	 *
-	 * @return number of calls
-	 */
-	const unsigned int getCount() const
-	{ return count; }
-
-	/** Returns the total runtime the program spent so far on
-	 * its operator().
-	 *
-	 * @return runtime summed over all calls
-	 */
-	const boost::chrono::nanoseconds getTiming() const
-	{ return timing; }
-
-private:
-	//!> soft thresholding parameter
-	const double lambda;
-
-	//!> number of times the operator was called
-	mutable unsigned int count;
-
-	//!> total runtime spent on executing this operator
-	mutable boost::chrono::nanoseconds timing;
 };
 
 
