@@ -18,7 +18,7 @@
 RelativeShrinkageMapping::RelativeShrinkageMapping(
 		const NormedSpace_weakptr_t &_NormedSpaceRef,
 		const double _lambda) :
-	RegularizedL1DualityMapping(_NormedSpaceRef, _lambda)
+	DualRegularizedL1DualityMapping(_NormedSpaceRef, _lambda)
 {
 	if (!(lambda > 0))
 		throw MinimizationIllegalValue_exception()

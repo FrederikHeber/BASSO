@@ -28,7 +28,7 @@
 #include "Minimizations/Functions/ResidualFunctional.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
-#include "Minimizations/Mappings/Specifics/RegularizedL1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/DualRegularizedL1DualityMapping.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidth.hpp"
 #include "Minimizations/Minimizers/StepWidths/DetermineStepWidthFactory.hpp"
@@ -284,12 +284,12 @@ void LandweberMinimizer::setRegularizationParameter(
 						);
 		const_cast<RegularizedL1Norm &>(regularizednorm).setLambda(lambda);
 		LOG(trace, "Lambda of NormX is now " << regularizednorm.getLambda());
-		const RegularizedL1DualityMapping &mapping =
-				dynamic_cast<const RegularizedL1DualityMapping &>(
+		const DualRegularizedL1DualityMapping &mapping =
+				dynamic_cast<const DualRegularizedL1DualityMapping &>(
 						*_solution->getSpace()->getDualSpace()->getDualityMapping()
 						);
-		const_cast<RegularizedL1DualityMapping &>(mapping).setLambda(lambda);
-		LOG(trace, "Lambda of RegularizedL1DualityMapping in X^* is now " << mapping.getLambda());
+		const_cast<DualRegularizedL1DualityMapping &>(mapping).setLambda(lambda);
+		LOG(trace, "Lambda of DualRegularizedL1DualityMapping in X^* is now " << mapping.getLambda());
 	} else {
 		LOG(error, "Cannot set lambda adaptively as criterion is not fulfilled.");
 	}

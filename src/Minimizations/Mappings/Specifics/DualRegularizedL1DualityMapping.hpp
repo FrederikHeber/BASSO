@@ -1,12 +1,12 @@
 /*
- * RegularizedL1DualityMapping.hpp
+ * DualRegularizedL1DualityMapping.hpp
  *
- *  Created on: Oct 13, 2014
+ *  Created on: May 02, 2017
  *      Author: heber
  */
 
-#ifndef REGULARIZEDL1DUALITYMAPPING_HPP_
-#define REGULARIZEDL1DUALITYMAPPING_HPP_
+#ifndef DUALREGULARIZEDL1DUALITYMAPPING_HPP_
+#define DUALREGULARIZEDL1DUALITYMAPPING_HPP_
 
 #include "BassoConfig.h"
 
@@ -20,16 +20,16 @@
  * [Schoepfer 2012] which is required for the dual norm and duality
  * mapping to the (squared) regularized l1 norm.
  */
-class RegularizedL1DualityMapping :
+class DualRegularizedL1DualityMapping :
 	public L1DualityMapping
 {
 public:
-	/** Default constructor of class RegularizedL1DualityMapping.
+	/** Default constructor of class DualRegularizedL1DualityMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space
 	 * @param _lambda soft thresholding parameter
 	 */
-	RegularizedL1DualityMapping(
+	DualRegularizedL1DualityMapping(
 			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _lambda = 0.1) :
 		L1DualityMapping(_NormedSpaceRef, 2.),
@@ -93,4 +93,4 @@ protected:
 };
 
 
-#endif /* REGULARIZEDL1DUALITYMAPPING_HPP_ */
+#endif /* DUALREGULARIZEDL1DUALITYMAPPING_HPP_ */

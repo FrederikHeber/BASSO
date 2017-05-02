@@ -12,7 +12,7 @@
 
 #include <boost/chrono.hpp>
 
-#include "Minimizations/Mappings/Specifics/RegularizedL1DualityMapping.hpp"
+#include "Minimizations/Mappings/Specifics/DualRegularizedL1DualityMapping.hpp"
 #include "Minimizations/types.hpp"
 
 class SoftThresholdingMappingUnitTest;
@@ -22,7 +22,7 @@ class SoftThresholdingMappingUnitTest;
  *
  */
 class SoftThresholdingMapping :
-	public RegularizedL1DualityMapping
+	public DualRegularizedL1DualityMapping
 {
 	//!> grant unit test access to private parts
 	friend class SoftThresholdingMappingUnitTest;
