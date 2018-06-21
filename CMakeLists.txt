@@ -301,6 +301,10 @@ add_subdirectory (Examples/ComputerTomography/DiscretizedRadon/unittests)
 
 add_subdirectory (src/Documentation)
 
+### Userguide
+
+add_subdirectory (doc)
+
 ##################### PACKING INSTRUCTIONS ###############################
 
 # build a CPack driven installer package

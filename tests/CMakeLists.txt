@@ -39,3 +39,7 @@ endif (USE_NDIFF)
 
 # tests for MatrixToPNG program
 add_subdirectory (MatrixToPNG)
+
+# tests for Userguide examples
+add_subdirectory (Userguide)
+
