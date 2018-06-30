@@ -1,9 +1,16 @@
 BAnach Sequential Subspace Optimizer
 ====================================
 // Web page meta data
-:keywords:    BASSO, Banach space, minimization, linear system of equations
-:description: BASSO is a library written in C++ for solving underdetermined or +
-              overdetermined linear systems of equations Ax=y.
+:Author:        Frederik Heber
+:Email:         frederik.heber@gmail.com
+:keywords:      BASSO, Banach space, minimization, linear system of equations
+:description:   BASSO is a library written in C++ for solving underdetermined or overdetermined linear systems of equations Ax=y.
+:Date:          {revdate}
+:Revision:      {revnumber}
+:toc:
+:toc-placement: preamble
+:doctype:       book
+:numbered:
 
 .{revdate}: BASSO {revnumber}
 ******************************************************************************
@@ -64,6 +71,23 @@ As one last ingredient we need a new distance measure, replacing the metric dist
 \Delta(x,y) = \tfrac 1 {p^\ast} ||x||^p - < J_p (x), y > + \tfrac 1 p || y ||^p
 +++++++++++
 
+All of this can be found in the following nice-to-read academical papers: 
+
+- link:#Schoepfer2006[[Schoepfer2006]]
++
+first paper on a non-linear Landweber method using Duality Mappings for general smooth, convex Banach spaces. Proof of strong convergence in noise-free case.
+- link:#Schoepfer2008[[Schoepfer2008]]
++
+Paper on the underlying relation between Metric and Bregman projections that form the essential basis for the Sequential Subspace Methods. Multiple search directions. Proof of weak convergence.
+- link:#Schoepfer2009[[Schoepfer2009]]
++
+Extension to perturbed right-hand sides. Proof of strong convergence for specific set of multiple search directions. Fast method when using two search directions by projection onto hyperplanes.
+- link:#Heber2019[[Heber2019]] (also available as arXiv preprint link:#Heber2016[[Heber2016]]).
++
+Acceleration of the Sequential Subspace Methods by using metric projections to orthogonalize search directions. Connection to Conjugate Gradient Minimal Error method.
+
+If you want to constrain yourself to a single paper, then we recommend the last one as it formed the basis for this library.
+
 Overview
 --------
 
@@ -96,7 +120,7 @@ All things associated to an object, e.g., the norm of a space, can be queried fr
 
 This should give you a rough idea of how to solve an inverse problem
 
-1. Create the two Banach spaces as `NormedSpace` by supplying the respective lp norm parameter. Their dual spaces are created automatically.
+1. Create the two Banach spaces as `NormedSpace` by supplying the respective lp norm parameter. Their dual spaces are created automatically and so are in turn the required duality mappings.
 2. Create the right-hand side latexmath:[y] as a `SpaceElement` by using `NormedSpace.createElement()` or `ElementCreator.create()` giving the associated space and the link:http://eigen.tuxfamiliy.org[Eigen] vector.
 3. Create the linear mapping latexmath:[A] using `LinearMappingFactory.createInstance()` giving the two spaces and the link:http://eigen.tuxfamiliy.org[Eigen] matrix.
 4. Create the inverse problem `InverseProblem` giving the mapping, the two spaces and the right-hand side.
@@ -141,13 +165,89 @@ Examples
 
 We have implemented a number of typical inverse problems using BASSO. These are command-line programs that take all required parameters as arguments using the  `boost::program_options` library. See the `Examples` folder and all subfolders therein.
 
-Note that basically all examples come with an additional program `...Configurator` that writes command-line options into a file. This is to allow reproducible runs where all employed options can be inspected at any time for a given result.
+Note that basically all examples come with an additional program `...Configurator` that writes command-line options into a file. This is to allow reproducible runs where all employed options can be inspected at any time for a given result. At any later point in time you can easily see what options produced the respective output files by looking at this file.
 
 === BASSO
 
+The main program which solves any kind of inverse problem given in the form of two files containing the matrix and the right-hand sie vector has the same name as the library itself, namely *BASSO*.
+
+In the following we use it to solve a simple problem which has been investigated in link:#Schoepfer2006[[Schoepfer2006]]: Determine the point on a line (in two dimensions) which has minimal distance to the origin in the latexmath:[\ell_p]-norm.
+
+[latexmath]
+-----------
+    A = \begin{pmatrix} 2 & 1 \\ 2 & 1 \end{pmatrix}, \quad y = \begin{pmatrix} 2 \\ 2 \end{pmatrix}
+-----------
+
+We encode the *matrix* A and the *vector* y in the files 'matrix.m' and 'vector.m', respectively.
+
+NOTE: 'BASSO' uses the _MatLab/Octave file format_ with its typical '.m' suffix in its file formats. This allows to use Octave to easily create, read, and write matrix or vectors from and to files. See link:https://octave.org/doc/v4.2.1/Simple-File-I_002fO.html[Simple File I/O] for details. The file parsing is handled by the `MatrixIO` class, see link:#MatrixIO[].
+
+[source,bash]
+-------------
+Basso 
+                --algorithm Landweber
+                --type-space-x "lp" 
+                --px 2 
+                --powerx 2
+                --type-space-y "lp" 
+                --py 2 
+                --powery 2
+                --delta 0.0001 
+                --C 1 
+                --maxiter 50 
+                --iteration-file Landweber1.db
+                --matrix ${CMAKE_CURRENT_SOURCE_DIR}/pre/matrix.m 
+                --rhs ${CMAKE_CURRENT_SOURCE_DIR}/pre/vector.m
+                --solution straightline1.m
+-------------
+
+In this call of 'Basso' we use the Landweber with latexmath:[{\cal X}] and latexmath:[{\cal Y}] being latexmath:[\ell_2]-spaces. We terminate when the residual is less than 1e-4 and use at most 50 iterations. All information on the iterations is written to an SQLite database file 'Landweber1.db'. The solution, i.e. the point closest to the origin on the line described by latexmath:[A] is written to 'straightline1.m'.
+
 === Gravity
 
-=== MatrixFactorization
+In the very nice book link:#Hansen2010[[Hansen2010]] an example of finding the gravitational constant is given. We have implemented this example in the context of BASSO.
+
+[quote, Discrete Inverse Problems - Insight and Algorithms, P.C. Hansen]
+_____
+An unknown mass distribution with density f(t) is located at depth d below the surface, from 0 to 1 on the t axis [shown in Figure 2.1]. We assume there is not mass outside the source, which produces a gravity field everywhere. At the surface along the s axis (see the figure) from 0 to 1, we measure the vertical component of the gravity field, which we refer to as g(s).
+_____
+
+This is the problem we have to solve: There is a one-dimensional manifold with "mass" at some distance d to our measurement device. At the surface we feel the combined effect of the whole manifold but always diminished by the distance to the respective point mass at f(t). We have information only of the measured gravity field g(s) and now want to deduce the mass distribution f(t).
+
+What we need is a equation that relates the two: This is known by the name of Fredholm integral equation of the first kind, see link:#Hansen2010[[Hansen2010]].
+
+[latexmath]
+-----------
+\int_0^1 K(s,t)  f(t) dt = g(s), \quad 0 \leq s \leq 1
+-----------
+
+latexmath:[K(s,t)] here is called the "kernel". If the kernel is linear and we discretize the x axis by using a set of equidistant points along it, we obtain a matrix and the equation becomes the typical inverse problems that we know already: latexmath:[Ax=y].
+
+[latexmath]
+-----------
+K(s,t) = \frac{d} {\bigl (d^2+(s-t)^2 \bigr)^{\tfrac 3 2}}
+-----------
+
+This equation for the kernel results from knowing that the magnitude of the gravity field along s behaves as latexmath:[f(t)dt/r^2], where latexmath:[r = \sqrt{d^2 + (s-t)^2}] is the distance between the source point s and the field point t.
+
+
+
+=== ComputerTomography
+
+
+
+=== MatrixFactorizer
+
+Helper programs
+---------------
+
+=== NoiseAdder
+
+=== RangeProjector
+
+=== MatrixToPNG
+
+=== RadonMatrixWriter
 
 Reference
 ---------
@@ -157,3 +257,11 @@ Reference
 
 [[SplitFeasibilitySolver]]
 === SplitFeasibilitySolver
+
+[[MatrixIO]]
+=== MatrixIO
+
+
+:numbered!:
+
+include::bibliography.adoc[]
