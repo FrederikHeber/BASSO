@@ -9,4 +9,5 @@ Bibliography
 - [[[Schoepfer2009]]] Schöpfer, F., & Schuster, T. (2009). Fast regularizing sequential subspace optimization in Banach spaces. Inverse Problems, 25(1), 1–22. http://doi.org/10.1088/0266-5611/25/1/015013
 - [[[Hansen2010]]] Hansen, P. C. (2010). Discrete Inverse Problems - Insight and Algorithms (1st ed.). SIAM.
 - [[[Heber2016]]] Heber, F., Schöpfer, F., & Schuster, T. (2016). A CG-type method in Banach spaces with an application to computerized tomography. Retrieved from http://arxiv.org/abs/1602.04036
+- [[Wald2017]] Wald, A., & Schuster, T. (2017). Sequential subspace optimization for nonlinear inverse problems. Journal of Inverse and Ill-Posed Problems, 25(1), 99–117. http://doi.org/10.1515/jiip-2016-0014
 - [[[Heber2019]]] Heber, F., Schöpfer, F., & Schuster, T. (2019). Acceleration of sequential subspace optimization in Banach spaces by orthogonal search directions. Journal of Computational and Applied Mathematics, 345, 1–22. http://doi.org/10.1016/j.cam.2018.05.049

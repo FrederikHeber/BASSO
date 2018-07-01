@@ -8,9 +8,9 @@ find_package (DBLATEX)
 set (BASSO_DOCDIR ${CMAKE_CURRENT_SOURCE_DIR})
 set (BASSO_TITLE ${PROJECT_NAME} ${BASSO_PACKAGE_VERSION})
 set (BASSO_STYLESHEET ${BASSO_DOCDIR}/stylesheet.css)
-set (BASSO_A2X ${ASCIIDOC_EXECUTABLE} -b docbook -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
+set (BASSO_A2X ${ASCIIDOC_EXECUTABLE} -b docbook -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
 set (BASSO_X2D ${DBLATEX_COMMAND})
-set (BASSO_A2H ${ASCIIDOC_EXECUTABLE} -b html5 -a latexmath -a stylesheeet=${BASSO_STYLESHEET} -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
+set (BASSO_A2H ${ASCIIDOC_EXECUTABLE} -b html5 -a latexmath -a stylesheeet=${BASSO_STYLESHEET} -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
 
 macro (add_libbasso_pdf NAME)
 add_custom_command (
