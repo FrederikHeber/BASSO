@@ -9,7 +9,13 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 add_library (pyBasso SHARED 
 	pybasso.cpp)
 
-target_link_libraries(pyBasso ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(pyBasso 
+	Minimizations
+	${NLOPT_LIBRARIES}
+	${GSL_LIBRARY} 
+	${Boost_LIBRARIES}
+	${Python_LIBRARIES} 
+)
 
 # Copy the __init__.py file
 configure_file(__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py COPYONLY)

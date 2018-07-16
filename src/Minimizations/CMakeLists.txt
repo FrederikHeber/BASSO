@@ -2,7 +2,7 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Minimizations 
+add_library (Minimizations SHARED
 	Elements/ElementCreator.cpp
 	Elements/LinearDependencyChecker.cpp
 	Elements/SpaceElement.cpp
@@ -55,7 +55,13 @@ add_library (Minimizations
 	Spaces/NormedSpace.cpp
 	)
 	
-target_link_libraries(Minimizations ${NLOPT_LIBRARIES})
+target_link_libraries(Minimizations
+	Math
+	Log
+	${GSL_LIBRARY} 
+	${NLOPT_LIBRARIES}
+	${Boost_LIBRARIES}
+)
 
 install (TARGETS Minimizations DESTINATION bin)
 
