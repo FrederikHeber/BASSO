@@ -27,15 +27,42 @@
  *      Author: heber
  */
 
-char const* greet()
-{
-   return "hello, world";
-}
-
+#include <boost/assign.hpp>
 #include <boost/python.hpp>
+
+#include <string>
+
+#include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Spaces/NormedSpace.hpp"
+#include "Minimizations/Spaces/NormedSpaceFactory.hpp"
+
+using namespace boost::assign;
+using namespace boost::python;
+
+NormedSpace_ptr_t create_LpSpace(
+		const int _dimension,
+		const double _p,
+		const double _power
+		)
+{
+	InverseProblemFactory::args_t _args_SpaceX;
+	_args_SpaceX += boost::any(_p), boost::any(_power);
+	return NormedSpaceFactory::create(
+			_dimension, std::string("lp"), _args_SpaceX);
+}
 
 BOOST_PYTHON_MODULE(pyBasso)
 {
-    using namespace boost::python;
-    def("greet", greet);
+	// classes
+	class_<LpNorm>("LpNorm", no_init)
+		.def("getPvalue", &LpNorm::getPvalue)
+	;
+
+    class_<NormedSpace>("NormedSpace", no_init)
+        .def("getDimension", &NormedSpace::getDimension)
+    ;
+
+    // factory methods
+    def("create_NormedSpace", &NormedSpaceFactory::create);
 }
