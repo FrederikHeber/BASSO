@@ -130,8 +130,9 @@ set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 find_package (Librt)
 
 # find boost
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 set ( Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.55" "1.55.0" )
-set ( Boost_USE_STATIC_LIBS ON )
+set ( Boost_USE_STATIC_LIBS OFF )
 if (MPI_FOUND)
 	find_package ( Boost 1.54 COMPONENTS
 		chrono
