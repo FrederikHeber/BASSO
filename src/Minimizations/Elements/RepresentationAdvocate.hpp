@@ -28,6 +28,7 @@ struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
 class LInfinityNorm;
+class NonLinearMapping;
 class NonnegativeConstraint;
 class NonpositiveConstraint;
 class RangeProjectionSolver;
@@ -61,6 +62,7 @@ private:
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class LInfinityNorm;
+	friend class NonLinearMapping;
 	friend class NonnegativeConstraint;
 	friend class NonpositiveConstraint;
 	friend class RangeProjectionSolver;

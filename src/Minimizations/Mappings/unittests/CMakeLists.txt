@@ -91,4 +91,16 @@ target_link_libraries (LinearMappingUnitTest
 add_test (LinearMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LinearMappingUnitTest)
 
-	
+########################## NonLinearMappingUnitTest #######################
+add_executable (NonLinearMappingUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	NonLinearMappingUnitTest.cpp) 
+target_link_libraries (NonLinearMappingUnitTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
+
+add_test (NonLinearMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/NonLinearMappingUnitTest)
+
