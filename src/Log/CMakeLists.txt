@@ -2,7 +2,7 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Log 
+add_library (Log
 	Logging.cpp 
 	Verbose.cpp)
 

@@ -141,6 +141,7 @@ if (MPI_FOUND)
 		filesystem
 		mpi
 		program_options
+		python
 		serialization 
 		system 
 		thread
@@ -152,6 +153,7 @@ else (MPI_FOUND)
 		log 
 		filesystem
 		program_options
+		python
 		serialization 
 		system 
 		thread
@@ -275,6 +277,10 @@ set (EXTRA_LIBS ${EXTRA_LIBS} Database)
 # add the Log folder
 add_subdirectory (src/Log)
 set (EXTRA_LIBS ${EXTRA_LIBS} Log)
+
+#### PYTHON BINDINGS ####
+
+add_subdirectory(src/Python)
 
 #### EXECUTABLES ####
 
