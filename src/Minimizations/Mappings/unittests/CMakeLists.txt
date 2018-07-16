@@ -77,3 +77,18 @@ target_link_libraries (RelativeShrinkageMappingUnitTest
 
 add_test (RelativeShrinkageMappingUnitTest 
 	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/RelativeShrinkageMappingUnitTest)
+
+########################## LinearMappingUnitTest #######################
+add_executable (LinearMappingUnitTest 
+	${PROJECT_SOURCE_DIR}/src/unittests/TestRunner.cpp 
+	LinearMappingUnitTest.cpp) 
+target_link_libraries (LinearMappingUnitTest 
+	${EXTRA_LIBS}
+	${Boost_LIBRARIES}
+	"${CPPUNIT_LIBRARY}"
+	${LIBRT_LIBRARIES})
+
+add_test (LinearMappingUnitTest 
+	${PROJECT_BINARY_DIR}/src/Minimizations/Mappings/unittests/LinearMappingUnitTest)
+
+	
