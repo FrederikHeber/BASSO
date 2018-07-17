@@ -100,6 +100,18 @@ const bool SpaceElement_isApprox(
 const Norm& NormedSpace_getNorm(const NormedSpace_ptr_t &_space) {
 	return const_cast<const Norm &>(*_space->getNorm().get()); }
 
+const SpaceElement_ptr_t Mapping_operator(
+		const Mapping_ptr_t &_map,
+		const SpaceElement_ptr_t &_element)
+{
+	return (*_map)(_element);
+}
+
+const double Mapping_getTiming(const Mapping_ptr_t &_map)
+{
+	return boost::chrono::duration<double>(_map->getTiming()).count();
+}
+
 /* Wrapper class for interface class with virtual functions */
 
 struct NormWrap : Norm, wrapper<Norm> {
@@ -115,12 +127,32 @@ struct MappingWrap : Mapping, wrapper<Mapping> {
 				SpaceElement_ptr_t &_destelement
 				)
     { this->get_override("operator()")(); }
+	virtual const NormedSpace_ptr_t getSourceSpace() const
+    { return this->get_override("getSourceSpace")(); }
+	virtual const NormedSpace_ptr_t getTargetSpace() const
+    { return this->get_override("getTargetSpace")(); }
 	virtual const Mapping_ptr_t getAdjointMapping()
     { return this->get_override("getAdjointMapping")(); }
 	virtual const unsigned int getCount()
     { return this->get_override("getCount")(); }
 	virtual const boost::chrono::nanoseconds getTiming()
     { return this->get_override("getTiming")(); }
+};
+
+struct DualityMappingWrap : DualityMapping, wrapper<DualityMapping> {
+	virtual void operator()(
+				const SpaceElement_ptr_t &_sourceelement,
+				SpaceElement_ptr_t &_destelement
+				)
+    { this->get_override("operator()")(); }
+};
+
+struct PowerTypeDualityMappingWrap : PowerTypeDualityMapping, wrapper<PowerTypeDualityMapping> {
+	virtual void operator()(
+				const SpaceElement_ptr_t &_sourceelement,
+				SpaceElement_ptr_t &_destelement
+				)
+    { this->get_override("operator()")(); }
 };
 
 BOOST_PYTHON_MODULE(pyBasso)
@@ -134,13 +166,22 @@ BOOST_PYTHON_MODULE(pyBasso)
 	class_<MappingWrap, Mapping_ptr_t, boost::noncopyable>("Mapping", no_init)
 		.def_readonly("sourcespace", &Mapping::getSourceSpace)
 		.def_readonly("targetspace", &Mapping::getTargetSpace)
-		.def("getSourceSpace", &Mapping::getSourceSpace)
-/*		.def("__call__", &Mapping::operator()) */
-		.def_readonly("adjoint", pure_virtual(&Mapping::getAdjointMapping)) //, return_internal_reference<1>()
+		.def("__call__", &Mapping_operator)
+		.def_readonly("adjoint", &Mapping::getAdjointMapping)
 		.def_readonly("power", &Mapping::getPower)
-		.def("getCount", pure_virtual(&Mapping::getAdjointMapping))
-		.def("getTiming", pure_virtual(&Mapping::getAdjointMapping))
+		.def("getCount", &Mapping::getCount)
+		.def("getTiming", &Mapping_getTiming)
 	    ;
+	class_<
+		DualityMappingWrap,
+		boost::shared_ptr<DualityMappingWrap>,
+		boost::noncopyable>("DualityMapping", no_init)
+		;
+	class_<
+		PowerTypeDualityMappingWrap,
+		boost::shared_ptr<PowerTypeDualityMappingWrap>,
+		boost::noncopyable>("PowerTypeDualityMapping", no_init)
+		;
 
 	/*** classes ***/
 	class_<LpNorm, bases<Norm> >("LpNorm", no_init);
@@ -149,7 +190,7 @@ BOOST_PYTHON_MODULE(pyBasso)
 		.def("getNorm", &NormedSpace_getNorm, return_internal_reference<1>())
 		.def_readonly("space", &NormedSpace::getSpace)
 		.def_readonly("dualspace", &NormedSpace::getDualSpace)
-		.def("getDualityMapping", &NormedSpace::getDualityMapping, return_internal_reference<1>())
+		.def("getDualityMapping", &NormedSpace::getDualityMapping)
 		.def_readonly("dim", &NormedSpace::getDimension)
 		.def("createElement", &NormedSpace::createElement)
     ;
