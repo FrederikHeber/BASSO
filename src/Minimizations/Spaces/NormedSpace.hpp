@@ -121,7 +121,7 @@ public:
 	 *
 	 * @return const reference to duality mapping
 	 */
-	const Mapping_ptr_t& getDualityMapping() const;
+	const Mapping_ptr_t getDualityMapping() const;
 
 	/** Const getter for the dimension of the representations in this space.
 	 *

@@ -63,7 +63,7 @@ SpaceElement_ptr_t NormedSpace::createElement() const
 	return newelement;
 }
 
-const Mapping_ptr_t& NormedSpace::getDualityMapping() const
+const Mapping_ptr_t NormedSpace::getDualityMapping() const
 {
 	assert (dualitymapping != NULL);
 	return dualitymapping;
