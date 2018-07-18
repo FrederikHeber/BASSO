@@ -266,7 +266,7 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	unsigned int inner_iterations = (*functionminimizer)(
 		Ndirs, TolFun, tmin);
 
-	LOG(debug, "tmin " << tmin << " found in " << inner_iterations << " iterations.");
+	LOG(debug, "tmin " << tmin[0] << " found in " << inner_iterations << " iterations.");
 
 	return inner_iterations;
 }
