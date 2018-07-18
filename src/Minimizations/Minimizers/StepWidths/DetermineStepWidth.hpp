@@ -19,6 +19,8 @@
  */
 struct DetermineStepWidth
 {
+	virtual ~DetermineStepWidth() {}
+
 	virtual const double operator()(
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,

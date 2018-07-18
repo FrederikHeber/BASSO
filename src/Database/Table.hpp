@@ -54,6 +54,8 @@ protected:
 
 public:
 
+	virtual ~Table() {}
+
 	//!> enumeration on what a column represents
 	enum ColumnType {
 		Parameter=0,
@@ -86,6 +88,7 @@ public:
 
 			Tuple_t() {}
 	public:
+			virtual ~Tuple_t() {}
 
 		virtual bool operator<(const Tuple_t &_a) const;
 

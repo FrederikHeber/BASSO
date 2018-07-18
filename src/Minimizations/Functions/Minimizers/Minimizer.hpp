@@ -22,8 +22,7 @@ class Minimizer : public FunctionMinimizer
 
 public:
 	Minimizer(const unsigned int _N);
-	~Minimizer();
-
+	virtual ~Minimizer();
 
 	enum FunctionMinimizer::GradientStatus
 	checkGradient(const double _tol) const;

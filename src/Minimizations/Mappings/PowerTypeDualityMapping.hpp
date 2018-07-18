@@ -32,6 +32,8 @@ public:
 		tolerance(BASSOTOLERANCE)
 	{}
 
+	virtual ~PowerTypeDualityMapping() {}
+
 	//!> expose overloaded operator method from base class
 	using Mapping::operator();
 

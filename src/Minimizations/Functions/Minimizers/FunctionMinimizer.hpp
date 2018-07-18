@@ -17,13 +17,14 @@
 
 struct FunctionMinimizer
 {
-
 	FunctionMinimizer(const unsigned int _N) :
 		maxiterations(100),
 		optimum(0),
 		tempoptimum(_N),
 		tempgradient(_N)
 	{}
+
+	virtual ~FunctionMinimizer() {}
 
 	//!> typedef for instance wrapped in shared pointer
 	typedef boost::shared_ptr<FunctionMinimizer> ptr_t;

@@ -93,6 +93,8 @@ public:
 			const unsigned int _dimension,
 			const Norm_ptr_t &_norm);
 
+	virtual ~NormedSpace() {}
+
 	/** Getter for the this space.
 	 *
 	 * @return shared_ptr for this Space (correctly connected to the only

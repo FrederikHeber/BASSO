@@ -36,6 +36,8 @@ public:
 		TargetSpaceRef(_TargetSpaceRef)
 	{}
 
+	virtual ~Mapping() {}
+
 	/** Getter for the source space of this mapping.
 	 *
 	 * @return ref to source space
