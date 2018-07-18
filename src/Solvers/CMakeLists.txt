@@ -2,7 +2,7 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Solvers 
+add_library (Solvers SHARED
 	AuxiliaryConstraints/AuxiliaryConstraints.cpp
 	AuxiliaryConstraints/AuxiliaryConstraintsFactory.cpp
 	InverseProblemSolver.cpp
@@ -10,6 +10,11 @@ add_library (Solvers
 	SolverFactory/SolverFactory.cpp
 	SplitFeasibilitySolver.cpp
 	)
+
+target_link_libraries(Solvers
+	Minimizations
+	Log
+)
 
 install (FILES AuxiliaryConstraints/AuxiliaryConstraints.hpp DESTINATION include)
 install (FILES AuxiliaryConstraints/AuxiliaryConstraint_impl.hpp DESTINATION include)

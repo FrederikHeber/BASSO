@@ -2,11 +2,17 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Database 
+add_library (Database SHARED
 	SQLDatabase.cpp 
 	Table.cpp 
 	TableDirectory.cpp 
 	Table_Tuple.cpp)
+
+target_link_libraries(Database
+	Minimizations
+	Log
+	${POCO_SQL_LIBRARIES}
+)
 
 install (FILES Database.hpp DESTINATION include)
 install (FILES DatabaseExceptions.hpp DESTINATION include)

@@ -11,6 +11,9 @@ add_library (pyBasso SHARED
 	utility.cpp)
 
 target_link_libraries(pyBasso 
+	Solvers
+	Database
+	Options
 	Minimizations
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
