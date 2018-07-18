@@ -38,6 +38,8 @@ struct SpaceElementReader;
 class SplitFeasibilitySolver;
 class TwoFactorLinearMapping;
 
+struct pyBasso_SpaceElement_access;
+
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
  *
@@ -71,6 +73,9 @@ private:
 	friend class SplitFeasibilitySolver;
 	friend class TwoFactorLinearMapping;
 	friend struct VectorSetter;
+
+	friend struct pyBasso_SpaceElement_access;
+
 	static const Eigen::VectorXd& get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }

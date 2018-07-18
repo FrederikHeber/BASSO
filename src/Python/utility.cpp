@@ -36,11 +36,14 @@
  *      Author: heber
  */
 
+#include "utility.hpp"
+
 #include <boost/assign.hpp>
 
 #include "Log/Logging.hpp"
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
@@ -97,3 +100,11 @@ const SpaceElement_ptr_t Mapping_operator(
 
 const double Mapping_getTiming(const Mapping_ptr_t &_map)
 { 	return boost::chrono::duration<double>(_map->getTiming()).count(); }
+
+const Eigen::VectorXd pyBasso_SpaceElement_access::get(SpaceElement_ptr_t &element)
+{ 	return RepresentationAdvocate::get(element); }
+
+void pyBasso_SpaceElement_access::set(SpaceElement_ptr_t &element, const Eigen::VectorXd &vector)
+{
+	RepresentationAdvocate::set(element, vector);
+}

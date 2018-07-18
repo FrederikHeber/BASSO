@@ -44,4 +44,10 @@ const SpaceElement_ptr_t Mapping_operator(
 
 const double Mapping_getTiming(const Mapping_ptr_t &_map);
 
+struct pyBasso_SpaceElement_access {
+	static void set(SpaceElement_ptr_t &element, const Eigen::VectorXd &vector);
+	static const Eigen::VectorXd get(SpaceElement_ptr_t &element);
+};
+
+
 #endif /* PYTHON_UTILITY_HPP_ */
