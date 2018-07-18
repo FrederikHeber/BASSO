@@ -7,7 +7,8 @@ include_directories( ${PYTHON_INCLUDE_DIRS} )
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (pyBasso SHARED 
-	pybasso.cpp)
+	pybasso.cpp
+	utility.cpp)
 
 target_link_libraries(pyBasso 
 	Minimizations
