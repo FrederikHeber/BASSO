@@ -24,6 +24,8 @@ struct CheckDivergentResiduum : public StoppingCriterion_impl
 		MAX_COUNTS(3)
 	{}
 
+	virtual ~CheckDivergentResiduum() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &_time,
 			const int _current_outeriterations,

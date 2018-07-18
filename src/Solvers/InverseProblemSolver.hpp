@@ -37,6 +37,8 @@ struct InverseProblemSolver : public FeasibilityProblem
 			const bool _checkTrueSolution
 			);
 
+	virtual ~InverseProblemSolver() {}
+
 	/** Operator to solve this specific feasibility problem.
 	 *
 	 * @param _startingvalue start value or zero

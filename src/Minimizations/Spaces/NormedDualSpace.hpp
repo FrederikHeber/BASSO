@@ -66,6 +66,7 @@ public:
 		NormedSpace(_dimension,_norm)
 	{}
 
+	virtual ~NormedDualSpace() {}
 
 private:
 	//!> here, we only have a weak_ptr to the dual space.

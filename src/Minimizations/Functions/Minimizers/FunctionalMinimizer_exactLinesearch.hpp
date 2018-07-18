@@ -43,6 +43,8 @@ public:
 			FunctionMinimizer::ptr_t &_minimizer,
 			S &_value);
 
+	virtual ~FunctionalMinimizer_exactLinesearch() {}
+
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
 			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;

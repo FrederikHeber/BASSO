@@ -39,7 +39,7 @@ public:
 	 * Frees memory used by the internally used minimization library.
 	 *
 	 */
-	~Minimizer();
+	virtual ~Minimizer();
 
 	/** Default check whether iteration should terminate as gradient's
 	 * magnitude is below tolerance threshold \a _tol.

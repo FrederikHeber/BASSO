@@ -21,6 +21,8 @@ struct ConstantRegularizedL1NormStepWidth :
 	ConstantRegularizedL1NormStepWidth(
 			const InverseProblem_ptr_t &_problem);
 
+	virtual ~ConstantRegularizedL1NormStepWidth() {}
+
 	const double operator()(
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,

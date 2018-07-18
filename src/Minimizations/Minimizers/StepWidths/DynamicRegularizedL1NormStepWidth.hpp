@@ -29,6 +29,8 @@ struct DynamicRegularizedL1NormStepWidth :
 			const InverseProblem_ptr_t &_problem,
 			const Mapping_ptr_t &_J_r);
 
+	virtual ~DynamicRegularizedL1NormStepWidth() {}
+
 	const double operator()(
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,

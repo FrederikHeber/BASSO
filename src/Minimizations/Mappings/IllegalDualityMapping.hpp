@@ -28,6 +28,8 @@ public:
 	 */
 	IllegalDualityMapping();
 
+	virtual ~IllegalDualityMapping() {}
+
 	/** Getter for the source space of this mapping.
 	 *
 	 * @return ref to source space

@@ -21,6 +21,8 @@ struct StoppingCriterion_NOT : public StoppingCriterion_impl
 				impl(_impl)
 	{}
 
+	virtual ~StoppingCriterion_NOT() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &_time,
 			const int _current_outeriterations,

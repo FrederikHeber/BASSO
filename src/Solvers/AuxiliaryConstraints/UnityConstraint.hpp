@@ -21,6 +21,8 @@ struct UnityConstraint : public AuxiliaryConstraint_impl
 		const double norm = _vector->Norm();
 		*_vector *= 1./norm;
 	}
+
+	virtual ~UnityConstraint() {}
 };
 
 

@@ -38,6 +38,8 @@ struct RangeProjectionSolver : public FeasibilityProblem
 			const CommandLineOptions &_opts
 			);
 
+	virtual ~RangeProjectionSolver() {}
+
 	/** Operator to solve this specific feasibility problem.
 	 *
 	 * @param _startingvalue start value or zero

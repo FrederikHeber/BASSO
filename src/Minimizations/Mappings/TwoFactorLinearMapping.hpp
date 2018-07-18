@@ -54,6 +54,8 @@ private:
 
 public:
 
+	virtual ~TwoFactorLinearMapping() {}
+
 	/** Matrix multiplication from the right.
 	 *
 	 * @param _element element to map/transform

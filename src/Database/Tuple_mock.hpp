@@ -30,6 +30,8 @@ public:
 	bool operator<(const Tuple_t &_a) const
 	{ return true; }
 
+	virtual ~Tuple_mock() {}
+
 	/** Replaces a present (name, value) pair with a new \a _value.
 	 *
 	 * Asserts that name is already present.

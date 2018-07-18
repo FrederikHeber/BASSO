@@ -41,6 +41,8 @@
 #include <numeric>
 #include <sstream>
 
+#include "Log/Logging.hpp"
+
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"

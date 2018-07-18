@@ -24,6 +24,8 @@ struct NonpositiveConstraint : public AuxiliaryConstraint_impl
 				.5*((-1.*RepresentationAdvocate::get(_vector)).array().abs()-
 						RepresentationAdvocate::get(_vector).array()));
 	}
+
+	virtual ~NonpositiveConstraint() {}
 };
 
 

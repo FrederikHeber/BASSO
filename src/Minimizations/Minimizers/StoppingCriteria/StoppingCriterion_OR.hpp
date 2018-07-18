@@ -23,6 +23,8 @@ struct StoppingCriterion_OR : public StoppingCriterion_impl
 				right(_right)
 	{}
 
+	virtual ~StoppingCriterion_OR() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &_time,
 			const int _current_outeriterations,

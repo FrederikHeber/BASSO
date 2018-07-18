@@ -20,6 +20,8 @@ struct CheckRelativeResiduum : public StoppingCriterion_impl
 		args(_args)
 	{}
 
+	virtual ~CheckRelativeResiduum() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &_time,
 			const int _current_outeriterations,

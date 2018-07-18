@@ -38,6 +38,8 @@ public:
 		timing(boost::chrono::nanoseconds(0))
 	{}
 
+	virtual ~L1DualityMapping() {}
+
 	//!> expose overloaded operator method from base class
 	using Mapping::operator();
 

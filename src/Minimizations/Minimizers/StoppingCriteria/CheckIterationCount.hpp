@@ -20,6 +20,8 @@ struct CheckIterationCount : public StoppingCriterion_impl
 		args(_args)
 	{}
 
+	virtual ~CheckIterationCount() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &_time,
 			const int _current_outeriterations,

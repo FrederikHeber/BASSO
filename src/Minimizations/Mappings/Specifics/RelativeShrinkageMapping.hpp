@@ -33,6 +33,8 @@ public:
 	 */
 	RelativeShrinkageMapping(const NormedSpace_weakptr_t &_NormedSpaceRef);
 
+	virtual ~RelativeShrinkageMapping() {}
+
 	/** Default constructor of class RelativeShrinkageMapping.
 	 *
 	 * @param _NormedSpaceRef reference to space

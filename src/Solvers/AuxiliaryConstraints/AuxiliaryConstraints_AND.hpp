@@ -27,6 +27,8 @@ struct AuxiliaryConstraints_AND : public AuxiliaryConstraint_impl
 		right->operator()(_vector);
 	}
 
+	virtual ~AuxiliaryConstraints_AND() {}
+
 	const AuxiliaryConstraints::ptr_t left;
 	const AuxiliaryConstraints::ptr_t right;
 };
