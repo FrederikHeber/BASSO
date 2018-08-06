@@ -37,6 +37,7 @@
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/NonLinearMapping.hpp"
 #include "Minimizations/Mappings/TwoFactorLinearMapping.hpp"
 
 const Mapping_ptr_t
@@ -53,6 +54,25 @@ MappingFactory::createInstance(
 					_matrix,
 					_isAdjoint));
 	static_cast<LinearMapping *>(mapping.get())->setSelfRef(mapping);
+	return mapping;
+}
+
+const Mapping_ptr_t
+MappingFactory::createNonlinearInstance(
+		const NormedSpace_weakptr_t _SourceSpaceRef,
+		const NormedSpace_weakptr_t _TargetSpaceRef,
+		const NonLinearMapping::non_linear_map_t &_map_function,
+		const NonLinearMapping::non_linear_map_t &_derivative,
+		const bool _isAdjoint)
+{
+	Mapping_ptr_t mapping(
+			new NonLinearMapping(
+					_SourceSpaceRef,
+					_TargetSpaceRef,
+					_map_function,
+					_derivative,
+					_isAdjoint));
+	static_cast<NonLinearMapping *>(mapping.get())->setSelfRef(mapping);
 	return mapping;
 }
 

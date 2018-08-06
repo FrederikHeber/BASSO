@@ -19,6 +19,8 @@
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
+struct MappingFactory;
+
 /** NonLinearMapping implements a non-linear mapping in the context of inverse
  * problems.
  *
@@ -29,6 +31,8 @@
  */
 class NonLinearMapping : public Mapping
 {
+	//!> allow Factory access to private constructors
+	friend struct MappingFactory;
 public:
 	//!> typedef for the signature of the mapping function
 	typedef boost::function<Eigen::VectorXd (const Eigen::VectorXd &)> non_linear_map_t;
