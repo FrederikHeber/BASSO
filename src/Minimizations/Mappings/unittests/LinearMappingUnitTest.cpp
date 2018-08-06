@@ -39,7 +39,8 @@
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
+
+#include "../MappingFactory.hpp"
 #include "Minimizations/Norms/NormExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
@@ -98,7 +99,7 @@ void LinearMappingUnitTest::operatorTest()
 				matrix.innerSize(), "lp", args);
 	}
 	{
-		Mapping_ptr_t A = LinearMappingFactory::createInstance(SpaceX, SpaceY, matrix, false);
+		Mapping_ptr_t A = MappingFactory::createInstance(SpaceX, SpaceY, matrix, false);
 		Eigen::VectorXd vector(10);
 		vector << 0.223629,-0.802647,0.072957,0.424295,0.047306,-0.303829,-0.832450,0.722259,-0.066522,-0.552865;
 		const SpaceElement_ptr_t x =

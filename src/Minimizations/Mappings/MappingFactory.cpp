@@ -22,16 +22,16 @@
  */
 
 /*
- * LinearMappingFactory.cpp
+ * MappingFactory.cpp
  *
  *  Created on: Dec 12, 2014
  *      Author: heber
  */
 
 
-#include "BassoConfig.h"
+#include "MappingFactory.hpp"
 
-#include "LinearMappingFactory.hpp"
+#include "BassoConfig.h"
 
 #include <fstream>
 
@@ -40,7 +40,7 @@
 #include "Minimizations/Mappings/TwoFactorLinearMapping.hpp"
 
 const Mapping_ptr_t
-LinearMappingFactory::createInstance(
+MappingFactory::createInstance(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const Eigen::MatrixXd & _matrix,
@@ -57,7 +57,7 @@ LinearMappingFactory::createInstance(
 }
 
 const Mapping_ptr_t
-LinearMappingFactory::createTwoFactorInstance(
+MappingFactory::createTwoFactorInstance(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const Eigen::MatrixXd & _first_factor,
@@ -76,7 +76,7 @@ LinearMappingFactory::createTwoFactorInstance(
 }
 
 const Mapping_ptr_t
-LinearMappingFactory::create(
+MappingFactory::create(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const std::string & _name,

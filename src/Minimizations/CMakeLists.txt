@@ -23,7 +23,7 @@ add_library (Minimizations SHARED
 	Mappings/DualityMappingFactory.cpp
 	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
-	Mappings/LinearMappingFactory.cpp
+	Mappings/MappingFactory.cpp
 	Mappings/NonLinearMapping.cpp
 	Mappings/SingularValueDecomposition.cpp
 	Mappings/SingularValueDecomposition_impl.cpp
@@ -107,7 +107,7 @@ install (FILES InverseProblems/QuickAccessReferences.hpp DESTINATION include)
 install (FILES Mappings/DualityMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
-install (FILES Mappings/LinearMappingFactory.hpp DESTINATION include)
+install (FILES Mappings/MappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/MappingExceptions.hpp DESTINATION include)
 install (FILES Mappings/NonLinearMappingFactory.hpp DESTINATION include)

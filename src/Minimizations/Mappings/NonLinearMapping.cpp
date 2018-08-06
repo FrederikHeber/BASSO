@@ -37,11 +37,11 @@
 #include <Eigen/Dense>
 
 #include "Log/Logging.hpp"
+#include "MappingFactory.hpp"
 
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
 #include "Minimizations/Mappings/SingularValueDecomposition_impl.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"

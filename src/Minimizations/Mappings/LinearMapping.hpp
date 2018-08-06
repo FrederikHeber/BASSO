@@ -18,7 +18,7 @@
 #include "Minimizations/Mappings/SingularValueDecomposition.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
-struct LinearMappingFactory;
+struct MappingFactory;
 class SpaceElement;
 
 /** This class defines matrices transforming elements from one
@@ -30,7 +30,7 @@ class LinearMapping : public Mapping
 	friend class SpaceElement;
 
 	//!> allow Factory access to private constructors
-	friend struct LinearMappingFactory;
+	friend struct MappingFactory;
 private:
 	/** Constructor for LinearMapping.
 	 *

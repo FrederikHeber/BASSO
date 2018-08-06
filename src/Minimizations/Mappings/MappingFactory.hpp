@@ -5,8 +5,8 @@
  *      Author: heber
  */
 
-#ifndef MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_
-#define MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_
+#ifndef MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_
+#define MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_
 
 #include "BassoConfig.h"
 
@@ -22,7 +22,7 @@
  * This is required due to the internal LinearMapping::SelfRef
  * which must be set on creation.
  */
-struct LinearMappingFactory
+struct MappingFactory
 {
 	/** Factory function creating a linear mapping, i.e. a matrix
 	 * associated to a specific space.
@@ -74,4 +74,4 @@ struct LinearMappingFactory
 
 
 
-#endif /* MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_ */
+#endif /* MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_ */

@@ -43,6 +43,7 @@
 
 #include <boost/assign.hpp>
 
+#include "../Minimizations/Mappings/MappingFactory.hpp"
 #include "Log/Logging.hpp"
 
 #include "Database/SQLDatabase.hpp"
@@ -51,7 +52,7 @@
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
+#include "Minimizations/Mappings/MappingFactory.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/types.hpp"
@@ -77,7 +78,7 @@ const Mapping_ptr_t create_LinearMapping(
 		const Eigen::MatrixXd &_matrix,
 		const bool _isAdjoint)
 {
-	return LinearMappingFactory::createInstance(
+	return MappingFactory::createInstance(
 			_SourceSpaceRef, _TargetSpaceRef, _matrix, _isAdjoint);
 }
 

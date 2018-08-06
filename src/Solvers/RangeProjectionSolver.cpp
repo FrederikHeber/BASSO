@@ -35,6 +35,7 @@
 
 #include "RangeProjectionSolver.hpp"
 
+#include "../Minimizations/Mappings/MappingFactory.hpp"
 #include "Database/Database.hpp"
 #include "Log/Logging.hpp"
 #include "Math/Helpers.hpp"
@@ -43,7 +44,6 @@
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
@@ -86,7 +86,7 @@ RangeProjectionSolver::RangeProjectionSolver(
 
 	// prepare LinearMapping
 	Mapping_ptr_t As =
-			LinearMappingFactory::createInstance(
+			MappingFactory::createInstance(
 					Ys,Xs,_matrix.transpose());
 
 	// prepare right-hand side
