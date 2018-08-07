@@ -83,9 +83,9 @@ Eigen::VectorXd linear_map(const Eigen::MatrixXd &_matrix, const Eigen::VectorXd
 	return _matrix * _source;
 }
 
-Eigen::VectorXd linear_map_adjoint(const Eigen::MatrixXd &_matrix, const Eigen::VectorXd &_source)
+Eigen::MatrixXd linear_map_adjoint(const Eigen::MatrixXd &_matrix, const Eigen::VectorXd &_source)
 {
-	return _matrix.transpose() * _source;
+	return _matrix.transpose();
 }
 
 void NonLinearMappingUnitTest::operatorTest()
@@ -114,8 +114,8 @@ void NonLinearMappingUnitTest::operatorTest()
 	{
 		NonLinearMapping::non_linear_map_t map_function =
 				boost::bind<Eigen::VectorXd>(&linear_map, boost::cref(matrix), _1);
-		NonLinearMapping::non_linear_map_t derivative =
-				boost::bind<Eigen::VectorXd>(&linear_map_adjoint, boost::cref(matrix), _1);
+		NonLinearMapping::jacobian_t derivative =
+				boost::bind<Eigen::MatrixXd>(&linear_map_adjoint, boost::cref(matrix), _1);
 		Mapping_ptr_t A = Mapping_ptr_t(
 				new NonLinearMapping(SpaceX, SpaceY,
 						map_function, derivative,

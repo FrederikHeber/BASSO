@@ -36,6 +36,8 @@ class NonLinearMapping : public Mapping
 public:
 	//!> typedef for the signature of the mapping function
 	typedef boost::function<Eigen::VectorXd (const Eigen::VectorXd &)> non_linear_map_t;
+	//!> typedef for the signature of the mapping's derivative function
+	typedef boost::function<Eigen::MatrixXd (const Eigen::VectorXd &)> jacobian_t;
 
 	/** Constructor for a non-linear mapping.
 	 *
@@ -46,7 +48,7 @@ public:
 			const NormedSpace_weakptr_t &_SourceSpaceRef,
 			const NormedSpace_weakptr_t &_TargetSpaceRef,
 			const non_linear_map_t &_map_function,
-			const non_linear_map_t &_derivative,
+			const jacobian_t &_derivative,
 			const bool _isAdjoint
 			);
 
@@ -60,6 +62,17 @@ public:
 	virtual void operator()(
 			const SpaceElement_ptr_t &_sourceelement,
 			SpaceElement_ptr_t &_destelement
+			) const;
+
+	/** Updates the adjoint function with respect to the current \a _element.
+	 *
+	 * In the case of a non-linear mapping, we need to calculate the
+	 * gradient and setup the linear approximation \f$ F'(x)\f$ for the adjoint.
+	 *
+	 * @param _element
+	 */
+	virtual void updateAdjoint(
+			const SpaceElement_ptr_t &_element
 			) const;
 
 	/** Returns the transposed derivative of the non-linear mapping as the
@@ -98,7 +111,7 @@ protected:
 	const non_linear_map_t map_function;
 
 	//!> reference to the derivative of the non-linear map
-	const non_linear_map_t derivative;
+	const jacobian_t derivative;
 
 	/** Similar as to internal ref for NormedSpace, the SpaceElements
 	 * also holds a weak_ptr reference to itself in order to return

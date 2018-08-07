@@ -85,6 +85,18 @@ public:
 			SpaceElement_ptr_t &_destelement
 			) const = 0;
 
+	/** Updates the adjoint function with respect to the current \a _element.
+	 *
+	 * By default this does nothing, e.g. for linear mappings where the
+	 * adjoint is independent of the current \a _element
+	 *
+	 * @param _element
+	 */
+	virtual void updateAdjoint(
+			const SpaceElement_ptr_t &_element
+			) const
+	{}
+
 	/** Creates the adjoint mapping to this mapping.
 	 *
 	 * @return mapping instance with adjoint

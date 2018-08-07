@@ -51,7 +51,10 @@ using namespace boost::python;
 /* specific functions for interface */
 
 /** We need to tell boost::python how to convert the python function
- * into the correct boost::function wrapped function.
+ * into the correct boost::function wrapped function and we need to
+ * force this conversion to occur on the python side (using the
+ * minieigen module through extract<>()) and not on the C++ side that
+ * does not know how to do it.
  *
  * This is taken from https://stackoverflow.com/a/2181710/1967646
  */
@@ -76,6 +79,27 @@ NonLinearMapping::non_linear_map_t createNonLinearMapWrapper( object function )
   return NonLinearMapping::non_linear_map_t( non_linear_map_wrapper_t( function ) );
 }
 
+struct jacobian_wrapper_t
+{
+	jacobian_wrapper_t( object callable ) : _callable( callable ) {}
+
+	Eigen::MatrixXd operator()(const Eigen::VectorXd & _arg)
+    {
+        // These GIL calls make it thread safe, may or may not be needed depending on your use case
+        PyGILState_STATE gstate = PyGILState_Ensure();
+        Eigen::MatrixXd ret = extract<Eigen::MatrixXd>(_callable(_arg));
+        PyGILState_Release( gstate );
+        return ret;
+    }
+
+    object _callable;
+};
+
+NonLinearMapping::jacobian_t createJacobianWrapper( object function )
+{
+  return NonLinearMapping::jacobian_t( jacobian_wrapper_t( function ) );
+}
+
 // make sure that numpy -> Eigen conversion is happening in python code
 const Mapping_ptr_t create_NonLinearMapping(
 		NormedSpace_ptr_t &_SourceSpaceRef,
@@ -88,7 +112,7 @@ const Mapping_ptr_t create_NonLinearMapping(
 			_SourceSpaceRef,
 			_TargetSpaceRef,
 			createNonLinearMapWrapper(_map_function),
-			createNonLinearMapWrapper(_derivative),
+			createJacobianWrapper(_derivative),
 			_isAdjoint);
 }
 
@@ -267,5 +291,4 @@ BOOST_PYTHON_MODULE(pyBasso)
     def("create_LpSpace", &create_LpSpace);
     def("create_LinearMapping", &create_LinearMapping);
     def("create_NonLinearMapping", &create_NonLinearMapping);
-    def("createNonLinearMapWrapper", &createNonLinearMapWrapper);
 }

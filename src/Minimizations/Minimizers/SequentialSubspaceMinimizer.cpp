@@ -432,6 +432,9 @@ SequentialSubspaceMinimizer::operator()(
 	unsigned int inner_iterations = 0;
 	double stepwidth_norm = 0.;
 	while (!StopCriterion) {
+		/// Update adjoint (if non-linear
+		refs.A.updateAdjoint(istate.m_solution);
+
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
 		searchdir.update(refs, istate.m_residual);

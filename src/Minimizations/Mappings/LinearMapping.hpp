@@ -19,6 +19,7 @@
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 struct MappingFactory;
+class NonLinearMapping;
 class SpaceElement;
 
 /** This class defines matrices transforming elements from one
@@ -28,6 +29,9 @@ class LinearMapping : public Mapping
 {
 	//!> allow SpaceElement access to matrix
 	friend class SpaceElement;
+
+	//!> allow NonLinear Mapping access to private constructors
+	friend class NonLinearMapping;
 
 	//!> allow Factory access to private constructors
 	friend struct MappingFactory;

@@ -42,15 +42,14 @@
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
-#include "Minimizations/Mappings/SingularValueDecomposition.hpp"
-#include "Minimizations/Mappings/SingularValueDecomposition_impl.hpp"
+#include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Spaces/NormedSpace.hpp"
 
 NonLinearMapping::NonLinearMapping(
 		const NormedSpace_weakptr_t &_SourceSpaceRef,
 		const NormedSpace_weakptr_t &_TargetSpaceRef,
 		const non_linear_map_t &_map_function,
-		const non_linear_map_t &_derivative,
+		const jacobian_t &_derivative,
 		const bool _isAdjoint
 		) :
 	Mapping(_SourceSpaceRef,_TargetSpaceRef),
@@ -59,6 +58,8 @@ NonLinearMapping::NonLinearMapping(
 	isAdjoint(_isAdjoint),
 	MatrixVectorProductCounts(0)
 {
+	// the adjoint of a non-linear mapping is a (approximate) linear mapping
+	assert( !isAdjoint );
 }
 
 void NonLinearMapping::operator()(
@@ -72,11 +73,9 @@ void NonLinearMapping::operator()(
 	const boost::chrono::high_resolution_clock::time_point timing_start =
 			boost::chrono::high_resolution_clock::now();
 
-	Eigen::VectorXd tempvector;
-	if (!isAdjoint)
-		tempvector = map_function( RepresentationAdvocate::get(_sourceelement) );
-	else
-		tempvector = derivative( RepresentationAdvocate::get(_sourceelement) );
+	const Eigen::VectorXd &sourcevector = RepresentationAdvocate::get(_sourceelement);
+	const Eigen::VectorXd tempvector =
+			map_function( sourcevector );
 
 	const boost::chrono::high_resolution_clock::time_point timing_end =
 			boost::chrono::high_resolution_clock::now();
@@ -85,26 +84,47 @@ void NonLinearMapping::operator()(
 	RepresentationAdvocate::set(_destelement, tempvector);
 }
 
+void NonLinearMapping::updateAdjoint(
+		const SpaceElement_ptr_t &_element
+		) const
+{
+	// calculate gradient
+	if (!AdjointLinearMapping.expired()) {
+		Mapping_ptr_t adjoint = Mapping_ptr_t(AdjointLinearMapping);
+		const Eigen::MatrixXd jacobian = derivative(
+				RepresentationAdvocate::get(_element) );
+		static_cast<LinearMapping *>(adjoint.get())->matrix = jacobian;
+	}
+}
+
 const Mapping_ptr_t NonLinearMapping::getAdjointMapping() const
 {
 	if (AdjointLinearMapping.expired()) {
-		// create adjoint instance properly
+		// use zero as initial jacobian
+		const Eigen::MatrixXd jacobian(
+				getSourceSpace()->getDualSpace()->getDimension(),
+				getTargetSpace()->getDualSpace()->getDimension()
+				);
+		// create adjoint instance as LinearMapping with the jacobian
 		Mapping_ptr_t derivative_as_adjoint = Mapping_ptr_t(
-				new NonLinearMapping(
+				new LinearMapping(
 						getTargetSpace()->getDualSpace(),
 						getSourceSpace()->getDualSpace(),
-						map_function,
-						derivative,
-						!isAdjoint));
-		static_cast<NonLinearMapping *>(derivative_as_adjoint.get())->
+						jacobian,
+						false /* this just sets the transpose */));
+		static_cast<LinearMapping *>(derivative_as_adjoint.get())->
 				setSelfRef(derivative_as_adjoint);
 
 		const_cast<NonLinearMapping *>(this)->
 				setAdjointMapping(derivative_as_adjoint);
-		const_cast<NonLinearMapping *>(
-				static_cast<NonLinearMapping *>(
+		const_cast<LinearMapping *>(
+				static_cast<LinearMapping *>(
 						derivative_as_adjoint.get())
 						)->setAdjointMapping(SelfRef);
+
+		// update adjoint
+		updateAdjoint(getSourceSpace()->createElement());
+
 		return derivative_as_adjoint;
 	} else {
 		// this throws if AdjointLinearMapping is expired

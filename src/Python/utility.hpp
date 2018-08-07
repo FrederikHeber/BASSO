@@ -33,7 +33,7 @@ const Mapping_ptr_t create_NonLinearMapping_full(
 		NormedSpace_ptr_t &_SourceSpaceRef,
 		NormedSpace_ptr_t &_TargetSpaceRef,
 		const NonLinearMapping::non_linear_map_t &_map_function,
-		const NonLinearMapping::non_linear_map_t &_derivative,
+		const NonLinearMapping::jacobian_t &_derivative,
 		const bool _isAdjoint);
 
 double SpaceElement_getitem(const SpaceElement_ptr_t &_element, const int _index);

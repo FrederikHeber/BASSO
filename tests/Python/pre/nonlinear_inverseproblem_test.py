@@ -13,10 +13,10 @@ np.random.seed(426)
 X = pyBasso.create_LpSpace(10, 2., 2.)
 Y = pyBasso.create_LpSpace(10, 2., 2.)
 
-matrix = np.asarray(np.random.uniform(low=-1., high=1., size=(10,10)))
+matrix = np.asarray(np.random.uniform(low=-1., high=1., size=(Y.dim,X.dim)))
 M = minieigen.MatrixX(matrix)
 
-righthandside = np.asarray(np.random.uniform(low=-1., high=1., size=(10)))
+righthandside = np.asarray(np.random.uniform(low=-1., high=1., size=(Y.dim)))
 rhs = minieigen.VectorX(righthandside)
 
 #A = pyBasso.create_LinearMapping(X,Y, matrix, False)
@@ -27,7 +27,7 @@ def mapping(_argument):
 
 def derivative(_argument):
 	#print("adjoint: "+str(_argument))
-	return M.transpose() * _argument
+	return M.transpose()
 
 A = pyBasso.create_NonLinearMapping(X,Y, mapping, derivative, False)
 

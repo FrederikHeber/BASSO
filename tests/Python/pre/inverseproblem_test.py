@@ -21,7 +21,7 @@ matrix = np.asarray(np.random.uniform(low=-1., high=1., size=(10,10)))
 righthandside = np.asarray(np.random.uniform(low=-1., high=1., size=(10)))
 
 M = minieigen.MatrixX(matrix)
-print(M)
+#print(M)
 A = pyBasso.create_LinearMapping(X,Y, M, False)
 
 rhs = minieigen.VectorX(righthandside)
