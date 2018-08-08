@@ -116,6 +116,12 @@ const Mapping_ptr_t create_NonLinearMapping(
 			_isAdjoint);
 }
 
+void setVerbosity(CommandLineOptions &opts, unsigned int verbose)
+{
+	opts.verbose = verbose;
+	opts.setVerbosity();
+}
+
 /* Wrapper class for interface class with virtual functions */
 
 struct NormWrap : Norm, wrapper<Norm> {
@@ -265,12 +271,11 @@ BOOST_PYTHON_MODULE(pyBasso)
         .def_readwrite("tolerance_spacex", &CommandLineOptions::tolerance_spacex)
         .def_readwrite("tuple_parameters", &CommandLineOptions::tuple_parameters)
         .def_readwrite("updatetype", &CommandLineOptions::updatetype)
-        .def_readwrite("verbose", &CommandLineOptions::verbose)
         .def_readwrite("wolfe_constants", &CommandLineOptions::wolfe_constants)
         .def("__repr__", &CommandLineOptions_toString)
         .def("setValues", &CommandLineOptions::setSecondaryValues)
         .def("checkSensibility", &CommandLineOptions::checkSensibility)
-        .def("setVerbosity", &CommandLineOptions::setVerbosity)
+        .def("setVerbosity", &setVerbosity)
         ;
 
     class_<InverseProblem, InverseProblem_ptr_t>("InverseProblem", init<

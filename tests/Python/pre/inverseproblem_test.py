@@ -50,9 +50,8 @@ opts.C = 1
 opts.maxiter = 1000
 opts.stopping_criteria = "RelativeResiduum || MaxIterationCount"
 opts.orthogonalization_type = 1 # MetricProjection
-opts.verbose=2
-opts.setVerbosity()
 opts.setValues()
+opts.setVerbosity(1)
 
 # create zero start value and solve
 xstart = X.createElement()
