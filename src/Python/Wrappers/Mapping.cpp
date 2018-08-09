@@ -145,32 +145,56 @@ struct PowerTypeDualityMappingWrap : PowerTypeDualityMapping, wrapper<PowerTypeD
 
 void export_mapping()
 {
-	class_<MappingWrap, Mapping_ptr_t, boost::noncopyable>("Mapping", no_init)
-        .def_readonly("sourcespace", &Mapping::getSourceSpace)
-        .def_readonly("targetspace", &Mapping::getTargetSpace)
-        .def("__call__", &Mapping_operator)
-        .def_readonly("adjoint", &Mapping::getAdjointMapping)
-        .def_readonly("power", &Mapping::getPower)
-        .def("getCount", &Mapping::getCount)
-        .def("getTiming", &Mapping_getTiming)
+	class_<MappingWrap, Mapping_ptr_t, boost::noncopyable>(
+			"Mapping",
+			"Class defining linear and non-linear Mappings between a source and a target space",
+			no_init)
+        .def_readonly("sourcespace", &Mapping::getSourceSpace,
+        		"source space of the mapping")
+        .def_readonly("targetspace", &Mapping::getTargetSpace,
+        		"target space of the mapping")
+        .def("__call__", &Mapping_operator,
+        		"Function to map an element from source to target space")
+        .def_readonly("adjoint", &Mapping::getAdjointMapping,
+        		"Getter for the adjoint mapping")
+        .def_readonly("power", &Mapping::getPower,
+        		"Power type of this mapping in case of a duality mapping")
+        .def("getCount", &Mapping::getCount,
+        		"Get the number of times an element was mapped using this mapping")
+        .def("getTiming", &Mapping_getTiming,
+        		"Get the total runtime spent on mappings")
         ;
     class_<
         DualityMappingWrap,
         boost::shared_ptr<DualityMappingWrap>,
-        boost::noncopyable>("DualityMapping", no_init)
+        boost::noncopyable>(
+        		"DualityMapping",
+				"Mapping between a (Banach) space and its dual",
+        		no_init)
         ;
     class_<
         PowerTypeDualityMappingWrap,
         boost::shared_ptr<PowerTypeDualityMappingWrap>,
-        boost::noncopyable>("PowerTypeDualityMapping", no_init)
+        boost::noncopyable>(
+        		"PowerTypeDualityMapping",
+				"Duality Mapping with a certain power type, e.g. between Lp spaces",
+				no_init)
         ;
 
-    class_<LinearMapping, bases<Mapping> >("LinearMapping", no_init)
+    class_<LinearMapping, bases<Mapping> >(
+    		"LinearMapping",
+			"Linear Mappings that can be represented by a matrix",
+			no_init)
         .def(self_ns::self * SpaceElement_ptr_t())
     ;
-    class_<NonLinearMapping, bases<Mapping> >("NonLinearMapping", no_init)
+    class_<NonLinearMapping, bases<Mapping> >(
+    		"NonLinearMapping",
+			"Class for a general mapping depending on two functions, mapping and derivative",
+			no_init)
     ;
 
-    def("create_LinearMapping", &create_LinearMapping);
-    def("create_NonLinearMapping", &create_NonLinearMapping);
+    def("create_LinearMapping", &create_LinearMapping,
+    		"Creator for a linear mapping using an Eigen::MatrixXd (minieigen) instance");
+    def("create_NonLinearMapping", &create_NonLinearMapping,
+    		"Creator for a non-linear mapping using two python functions, mapping and derivative.\nMapping needs to return a numpy vector.\nDerivative needs to return a numpy matrix, the Jacobian.");
 }

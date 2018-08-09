@@ -44,10 +44,20 @@ struct NormWrap : Norm, wrapper<Norm> {
 
 void export_norm()
 {
-    class_<NormWrap, Norm_ptr_t, boost::noncopyable>("Norm", no_init)
-        .def_readonly("p", &Norm::getPvalue)
-        .def_readonly("space", &Norm::getSpace)
-        .def("__call__", &Norm::operator())
+    class_<NormWrap, Norm_ptr_t, boost::noncopyable>(
+    		"Norm",
+    		"Norm instance to measure distances, inherently bound to a NormedSpace.\nUse create_LpSpace() to create Norm and Space together.",
+			no_init)
+        .def_readonly("p", &Norm::getPvalue,
+        		"p value of the norm")
+        .def_readonly("space", &Norm::getSpace,
+        		"reference to the associated NormedSpace of this norm")
+        .def("__call__", &Norm::operator(),
+        		"Calculating the norm of the SpaceElement x",
+				args("self", "x"))
         ;
-    class_<LpNorm, bases<Norm> >("LpNorm", no_init);
+    class_<LpNorm, bases<Norm> >(
+    		"LpNorm",
+			"Lp norm for spaces of sequences",
+			no_init);
 }

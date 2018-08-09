@@ -38,16 +38,26 @@ using namespace boost::python;
 
 void export_normedspace()
 {
-    class_<NormedSpace, NormedSpace_ptr_t >("NormedSpace", no_init)
+    class_<NormedSpace, NormedSpace_ptr_t >(
+    		"NormedSpace",
+			"Normed space instance that is inherently connected with a Norm instance",
+			no_init)
     /* does not work: .def_readonly("norm", &NormedSpace_getNorm) */
-        .def("getNorm", &NormedSpace_getNorm, return_internal_reference<1>())
-        .def_readonly("space", &NormedSpace::getSpace)
-        .def_readonly("dualspace", &NormedSpace::getDualSpace)
-        .def("getDualityMapping", &NormedSpace::getDualityMapping)
-        .def_readonly("dim", &NormedSpace::getDimension)
-        .def("createElement", &NormedSpace::createElement)
+        .def("getNorm", &NormedSpace_getNorm, return_internal_reference<1>(),
+        		"getter for the internal norm object")
+        .def_readonly("space", &NormedSpace::getSpace,
+        		"getter for the space instance")
+        .def_readonly("dualspace", &NormedSpace::getDualSpace,
+        		"getter for the dual space")
+        .def("getDualityMapping", &NormedSpace::getDualityMapping,
+        		"getter for the internal duality mapping between this space and its dual")
+        .def_readonly("dim", &NormedSpace::getDimension,
+        		"Getter for the finite dimension of this vector space")
+        .def("createElement", &NormedSpace::createElement,
+        		"Creates a SpaceElement instance associated with this NormedSpace")
     ;
 
-    def("create_LpSpace", &create_LpSpace);
+    def("create_LpSpace", &create_LpSpace,
+    		"Creator for an Lp space instance with an Lp Norm");
 }
 

@@ -2,7 +2,7 @@
 
 import pyBasso
 
-opts = pyBasso.CommandLineOptions()
+opts = pyBasso.Options()
 opts.algorithm_name = "Landweber"
 print(opts.algorithm_name)
 print("N="+str(opts.N))

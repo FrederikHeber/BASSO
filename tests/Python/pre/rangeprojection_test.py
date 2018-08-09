@@ -33,7 +33,7 @@ print(y)
 inverse_problem = pyBasso.InverseProblem(A, X, Y, y);
 
 # create opts
-opts = pyBasso.CommandLineOptions()
+opts = pyBasso.Options()
 opts.algorithm_name = "SESOP"
 opts.delta = 0.001
 opts.C = 1
