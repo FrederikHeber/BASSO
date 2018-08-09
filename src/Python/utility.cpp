@@ -58,6 +58,7 @@
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/types.hpp"
 #include "Solvers/InverseProblemSolver.hpp"
+#include "Solvers/RangeProjectionSolver.hpp"
 
 using namespace boost::assign;
 
@@ -159,3 +160,19 @@ void InverseProblem_solve(
 
 	solver(_startvalue);
 }
+
+void RangeProjection_solve(
+		InverseProblem_ptr_t &_ip,
+		const CommandLineOptions &_opts,
+		const SpaceElement_ptr_t &_startvalue
+		)
+{
+	Database_ptr_t db(new Database_mock());
+
+	RangeProjectionSolver solver(_ip->A, _ip->y, db, _opts);
+
+	const GeneralMinimizer::ReturnValues result = solver(_startvalue);
+
+	const_cast<SpaceElement_ptr_t &>(_ip->y) = result.m_dual_solution;
+}
+

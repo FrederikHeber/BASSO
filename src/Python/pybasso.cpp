@@ -290,6 +290,7 @@ BOOST_PYTHON_MODULE(pyBasso)
         .def_readwrite("x", &InverseProblem::x)
         .def_readonly("y", &InverseProblem::y)
         .def("solve", &InverseProblem_solve)
+        .def("project", &RangeProjection_solve)
     ;
 
     // factory methods

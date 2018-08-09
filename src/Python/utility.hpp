@@ -68,5 +68,10 @@ void InverseProblem_solve(
 		const SpaceElement_ptr_t &_startvalue
 		);
 
+void RangeProjection_solve(
+		InverseProblem_ptr_t &_ip,
+		const CommandLineOptions &_opts,
+		const SpaceElement_ptr_t &_startvalue
+		);
 
 #endif /* PYTHON_UTILITY_HPP_ */

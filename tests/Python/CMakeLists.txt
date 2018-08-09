@@ -67,3 +67,13 @@ set_tests_properties (pyBassoNonLinearInverseProblem
 set_tests_properties (pyBassoNonLinearInverseProblem PROPERTIES
     ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/src/Python)
 
+# can we instantiate RangeProjection problem and solve it
+add_test(
+	NAME pyBassoRangeProjectionProblem 
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/pre/rangeprojection_test.py 
+	WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
+set_tests_properties (pyBassoRangeProjectionProblem
+	PROPERTIES WILL_FAIL false)	# return code 0
+set_tests_properties (pyBassoRangeProjectionProblem PROPERTIES
+    ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/src/Python)
+
