@@ -52,6 +52,24 @@
 
 using namespace boost::assign;
 
+static NormedSpace_ptr_t constructNormedSpace(
+		const unsigned int _dim)
+{
+	// prepare spaces
+	NormedSpace_ptr_t Y;
+	//NormedSpace_ptr_t Ys;
+	{
+		// we require only the minimum norm distance
+		NormedSpaceFactory::args_t args;
+		args += boost::any(2.), boost::any(2.);
+		Y = NormedSpaceFactory::create(
+				_dim, "lp", args);
+		//Ys = Y->getDualSpace();
+	}
+
+	return Y;
+}
+
 RangeProjectionSolver::RangeProjectionSolver(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs,
@@ -62,32 +80,12 @@ RangeProjectionSolver::RangeProjectionSolver(
 		opts(_opts),
 		name("RangeProjection")
 {
-	// prepare spaces
-	NormedSpace_ptr_t Y;
-	NormedSpace_ptr_t Ys;
-	{
-		// we require only the minimum norm distance
-		NormedSpaceFactory::args_t args;
-		args += boost::any(2.), boost::any(2.);
-		Y = NormedSpaceFactory::create(
-				_matrix.innerSize(), "lp", args);
-		Ys = Y->getDualSpace();
-	}
-	NormedSpace_ptr_t X;
-	NormedSpace_ptr_t Xs;
-	{
-		// we require only the minimum norm distance
-		NormedSpaceFactory::args_t args;
-		args += boost::any(2.), boost::any(2.);
-		X = NormedSpaceFactory::create(
-				_matrix.outerSize(), "lp", args);
-		Xs = X->getDualSpace();
-	}
-
 	// prepare LinearMapping
-	Mapping_ptr_t As =
+	NormedSpace_ptr_t X = constructNormedSpace(_matrix.outerSize());
+	NormedSpace_ptr_t Y = constructNormedSpace(_matrix.innerSize());
+	const Mapping_ptr_t As =
 			MappingFactory::createInstance(
-					Ys,Xs,_matrix.transpose());
+					Y->getDualSpace(),X->getDualSpace(),_matrix.transpose());
 
 	// prepare right-hand side
 	rhs = ElementCreator::create(Y, _rhs);
@@ -96,13 +94,41 @@ RangeProjectionSolver::RangeProjectionSolver(
 
 	// prepare inverse problem: Y^\ast \rightarrow X^\ast
 	inverseproblem.reset(
-			new InverseProblem(As,Ys,Xs,dualmappedrhs));
+			new InverseProblem(
+					As,As->getSourceSpace(),As->getTargetSpace(),dualmappedrhs));
 
 	// prepare minimizer
 	minimizer = SolverFactory::createMinimizer(
 					opts, inverseproblem, database);
 }
 
+RangeProjectionSolver::RangeProjectionSolver(
+		const Mapping_ptr_t &_A,
+		const SpaceElement_ptr_t &_rhs,
+		Database_ptr_t &_database,
+		const CommandLineOptions &_opts
+		) :
+		database(_database),
+		opts(_opts),
+		rhs(_rhs),
+		name("RangeProjection")
+{
+	// prepare right-hand side
+	const Mapping_ptr_t As = _A->getAdjointMapping();
+	const NormedSpace_ptr_t Y = As->getSourceSpace()->getDualSpace();
+	dualrhs = (*Y->getDualityMapping())((-1.)*rhs);
+	SpaceElement_ptr_t dualmappedrhs = (-1.)*((*As)(dualrhs));
+
+	// prepare inverse problem: Y^\ast \rightarrow X^\ast
+	inverseproblem.reset(
+			new InverseProblem(
+					As, As->getSourceSpace(), As->getTargetSpace(), dualmappedrhs));
+
+	// prepare minimizer
+	minimizer = SolverFactory::createMinimizer(
+					opts, inverseproblem, database);
+
+}
 
 GeneralMinimizer::ReturnValues RangeProjectionSolver::operator()(
 		const SpaceElement_ptr_t &_startingvalue,

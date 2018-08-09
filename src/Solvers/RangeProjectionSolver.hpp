@@ -38,6 +38,20 @@ struct RangeProjectionSolver : public FeasibilityProblem
 			const CommandLineOptions &_opts
 			);
 
+	/** Constructor for class RangeProjectionSolver.
+	 *
+	 * @param _mapping mapping whose adjoint to use for projection
+	 * @param _rhs element to project
+	 * @param _database ref to database
+	 * @param _opts options defining manner of inverse problem solving
+	 */
+	RangeProjectionSolver(
+			const Mapping_ptr_t &_mapping,
+			const SpaceElement_ptr_t &_rhs,
+			Database_ptr_t &_database,
+			const CommandLineOptions &_opts
+			);
+
 	virtual ~RangeProjectionSolver() {}
 
 	/** Operator to solve this specific feasibility problem.
