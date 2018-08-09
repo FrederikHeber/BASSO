@@ -21,30 +21,33 @@
  *
  */
 
-/* pybasso.cpp
+/*
+ * NormedSpace.cpp
  *
- *  Created on: Jul 16, 2018
+ *  Created on: Aug 9, 2018
  *      Author: heber
  */
 
 #include <boost/python.hpp>
 
-void export_commandlineoptions();
-void export_inverseproblem();
-void export_mapping();
-void export_norm();
-void export_normedspace();
-void export_spaceelement();
+#include "Minimizations/Spaces/NormedSpace.hpp"
 
-BOOST_PYTHON_MODULE(pyBasso)
+#include "Python/utility.hpp"
+
+using namespace boost::python;
+
+void export_normedspace()
 {
-    /*** classes with virtual functions ***/
-	export_norm();
-	export_mapping();
+    class_<NormedSpace, NormedSpace_ptr_t >("NormedSpace", no_init)
+    /* does not work: .def_readonly("norm", &NormedSpace_getNorm) */
+        .def("getNorm", &NormedSpace_getNorm, return_internal_reference<1>())
+        .def_readonly("space", &NormedSpace::getSpace)
+        .def_readonly("dualspace", &NormedSpace::getDualSpace)
+        .def("getDualityMapping", &NormedSpace::getDualityMapping)
+        .def_readonly("dim", &NormedSpace::getDimension)
+        .def("createElement", &NormedSpace::createElement)
+    ;
 
-    /*** classes ***/
-	export_normedspace();
-	export_spaceelement();
-	export_inverseproblem();
-	export_commandlineoptions();
+    def("create_LpSpace", &create_LpSpace);
 }
+

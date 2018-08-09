@@ -8,7 +8,14 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (pyBasso SHARED 
 	pybasso.cpp
-	utility.cpp)
+	utility.cpp
+	Wrappers/CommandLineOptions.cpp
+	Wrappers/InverseProblem.cpp
+	Wrappers/Mapping.cpp
+	Wrappers/Norm.cpp
+	Wrappers/NormedSpace.cpp
+	Wrappers/SpaceElement.cpp
+	)
 
 target_link_libraries(pyBasso 
 	Solvers

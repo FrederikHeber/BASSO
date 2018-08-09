@@ -21,30 +21,33 @@
  *
  */
 
-/* pybasso.cpp
+/*
+ * Norm.cpp
  *
- *  Created on: Jul 16, 2018
+ *  Created on: Aug 9, 2018
  *      Author: heber
  */
 
 #include <boost/python.hpp>
 
-void export_commandlineoptions();
-void export_inverseproblem();
-void export_mapping();
-void export_norm();
-void export_normedspace();
-void export_spaceelement();
+#include "Minimizations/Norms/LpNorm.hpp"
+#include "Minimizations/Norms/Norm.hpp"
 
-BOOST_PYTHON_MODULE(pyBasso)
+using namespace boost::python;
+
+struct NormWrap : Norm, wrapper<Norm> {
+    virtual bool isSmooth() const
+    { return this->get_override("isSmooth")(); }
+    virtual const double internal_operator(const SpaceElement_ptr_t &_element) const
+    { return this->get_override("internal_operator")(); }
+};
+
+void export_norm()
 {
-    /*** classes with virtual functions ***/
-	export_norm();
-	export_mapping();
-
-    /*** classes ***/
-	export_normedspace();
-	export_spaceelement();
-	export_inverseproblem();
-	export_commandlineoptions();
+    class_<NormWrap, Norm_ptr_t, boost::noncopyable>("Norm", no_init)
+        .def_readonly("p", &Norm::getPvalue)
+        .def_readonly("space", &Norm::getSpace)
+        .def("__call__", &Norm::operator())
+        ;
+    class_<LpNorm, bases<Norm> >("LpNorm", no_init);
 }
