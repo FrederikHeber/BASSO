@@ -42,6 +42,26 @@ void setVerbosity(CommandLineOptions &opts, unsigned int verbose)
 	opts.setVerbosity();
 }
 
+void CommandLineOptions_tuple_parameters_set(CommandLineOptions &opts, list &_list)
+{
+	for (int i = 0; i < len(_list); ++i)
+		opts.tuple_parameters.push_back(extract<std::string>(_list[i]));
+}
+
+boost::python::list CommandLineOptions_tuple_parameters_get(CommandLineOptions &opts)
+{
+	boost::python::list result;
+	// call original function
+	std::vector<std::string> v = opts.tuple_parameters;
+	// put all the strings inside the python list
+	std::vector<std::string>::iterator it;
+	for (it = v.begin(); it != v.end(); ++it){
+	   result.append(*it);
+	}
+	return result;
+}
+
+
 void export_commandlineoptions()
 {
     class_<CommandLineOptions>(
@@ -97,7 +117,9 @@ void export_commandlineoptions()
         		"Tolerance threshold to use for stopping linesearch")
         .def_readwrite("tolerance_spacex", &CommandLineOptions::tolerance_spacex,
         		"Tolerance threshold to use for duality mapping between spaces")
-        .def_readwrite("tuple_parameters", &CommandLineOptions::tuple_parameters,
+        .add_property("tuple_parameters",
+        		&CommandLineOptions::tuple_parameters,
+				&CommandLineOptions_tuple_parameters_set,
         		"Tuple of parameters to add to the table written to the iteration_file")
         .def_readwrite("updatetype", &CommandLineOptions::updatetype,
         		"How to iterate through the set of search directions: RoundRobin(0), MostParallel(1), MostOrthogonal(2)")
