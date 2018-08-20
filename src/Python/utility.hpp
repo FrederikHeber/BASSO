@@ -61,6 +61,8 @@ struct pyBasso_SpaceElement_access {
 std::string CommandLineOptions_toString(const CommandLineOptions&opts);
 int CommandLineOptions_orthogonalization_type_get(CommandLineOptions &opts);
 void CommandLineOptions_orthogonalization_type_set(CommandLineOptions &opts, int _choice);
+std::string CommandLineOptions_iteration_file_get(CommandLineOptions &opts);
+void CommandLineOptions_iteration_file_set(CommandLineOptions &opts, const std::string &filename);
 
 void InverseProblem_solve(
 		InverseProblem_ptr_t &_ip,

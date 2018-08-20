@@ -84,7 +84,9 @@ void export_commandlineoptions()
         		"")
         .def_readwrite("inexactLinesearch", &CommandLineOptions::inexactLinesearch,
         		"Whether to use Wolfe criterion for performing an inexact line search")
-        .def_readwrite("iteration_file", &CommandLineOptions::iteration_file,
+        .add_property("iteration_file",
+        		&CommandLineOptions_iteration_file_get,
+				&CommandLineOptions_iteration_file_set,
         		"SQLite file containing information on the iteration after optimization")
         .def_readwrite("maxinneriter", &CommandLineOptions::maxinneriter,
         		"Maximum number of inner iterations in split feasibility problems")
@@ -100,7 +102,8 @@ void export_commandlineoptions()
         		"Number of search directions")
         .add_property("orthogonalization_type",
                       &CommandLineOptions_orthogonalization_type_get, // getter
-                      &CommandLineOptions_orthogonalization_type_set) // setter
+                      &CommandLineOptions_orthogonalization_type_set,
+					  "Getter and setter for the orthogonalization type") // setter
         .def_readwrite("outputsteps", &CommandLineOptions::outputsteps,
         		"")
         .def_readwrite("regularization_parameter", &CommandLineOptions::regularization_parameter,

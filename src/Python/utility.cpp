@@ -146,6 +146,11 @@ int CommandLineOptions_orthogonalization_type_get(CommandLineOptions &opts)
 void CommandLineOptions_orthogonalization_type_set(CommandLineOptions &opts, int _choice)
 { opts.orthogonalization_type = static_cast<LastNSearchDirections::OrthogonalizationType>(_choice); }
 
+std::string CommandLineOptions_iteration_file_get(CommandLineOptions &opts)
+{ return opts.iteration_file.string(); }
+void CommandLineOptions_iteration_file_set(CommandLineOptions &opts, const std::string &filename)
+{ opts.iteration_file = filename; }
+
 void InverseProblem_solve(
 		InverseProblem_ptr_t &_ip,
 		const CommandLineOptions &_opts,
