@@ -449,7 +449,7 @@ SequentialSubspaceMinimizer::operator()(
 		// alpha=Jw'*y
 		const double alpha =
 				searchdir.Jw * refs.y;
-		LOG(trace, "alpha is " << alpha);
+		LOG(debug, "alpha is " << alpha);
 
 		// add u to U and alpha to alphas
 		updateSearchspace(_truesolution, searchdir.u, alpha);
