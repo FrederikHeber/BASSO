@@ -45,6 +45,8 @@
 
 #include "Log/Logging.hpp"
 
+#include "Database/SQLDatabase.hpp"
+#include "Database/Database_mock.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
 #include "Minimizations/Elements/RepresentationAdvocate.hpp"
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
@@ -53,6 +55,7 @@
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/types.hpp"
+#include "Solvers/InverseProblemSolver.hpp"
 
 using namespace boost::assign;
 
@@ -131,7 +134,9 @@ void InverseProblem_solve(
 		const SpaceElement_ptr_t &_startvalue
 		)
 {
-	Database_ptr_t db(new Database_mock());
+	Database_ptr_t db(new SQLDatabase());
+	if (!_opts.iteration_file.string().empty())
+		db->setDatabaseFile(_opts.iteration_file.string());
 
 	InverseProblemSolver solver(_ip, db, _opts, false);
 

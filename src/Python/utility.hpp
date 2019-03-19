@@ -14,6 +14,7 @@
 #include <Eigen/Dense>
 
 #include "Minimizations/types.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 NormedSpace_ptr_t create_LpSpace(
 		const int _dimension,
@@ -52,6 +53,12 @@ struct pyBasso_SpaceElement_access {
 std::string CommandLineOptions_toString(const CommandLineOptions&opts);
 int CommandLineOptions_orthogonalization_type_get(CommandLineOptions &opts);
 void CommandLineOptions_orthogonalization_type_set(CommandLineOptions &opts, int _choice);
+
+void InverseProblem_solve(
+		InverseProblem_ptr_t &_ip,
+		const CommandLineOptions &_opts,
+		const SpaceElement_ptr_t &_startvalue
+		);
 
 
 #endif /* PYTHON_UTILITY_HPP_ */
