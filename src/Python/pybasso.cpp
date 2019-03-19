@@ -33,6 +33,7 @@
 #include <string>
 
 #include "Minimizations/Elements/SpaceElement.hpp"
+#include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
@@ -162,6 +163,19 @@ BOOST_PYTHON_MODULE(pyBasso)
     ;
     class_<LinearMapping, bases<Mapping> >("LinearMapping", no_init)
         .def(self_ns::self * SpaceElement_ptr_t())
+    ;
+
+    class_<InverseProblem, InverseProblem_ptr_t>("InverseProblem", init<
+                const Mapping_ptr_t, const NormedSpace_ptr_t,
+                const NormedSpace_ptr_t, const SpaceElement_ptr_t>())
+        .def_readonly("sourcespace", &InverseProblem::SourceSpace)
+        .def_readonly("targetspace", &InverseProblem::TargetSpace)
+        .def_readonly("dualsourcespace", &InverseProblem::DualSourceSpace)
+        .def_readonly("dualtargetspace", &InverseProblem::DualTargetSpace)
+        .def_readonly("A", &InverseProblem::A)
+        .def_readonly("At", &InverseProblem::A_t)
+        .def_readwrite("x", &InverseProblem::x)
+        .def_readonly("y", &InverseProblem::y)
     ;
 
     // factory methods
