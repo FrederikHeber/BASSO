@@ -131,29 +131,29 @@ find_package (Librt)
 
 # find boost
 ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
-set ( Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.55" "1.55.0" )
+set ( Boost_ADDITIONAL_VERSIONS "1.61" "1.61.0" )
 set ( Boost_USE_STATIC_LIBS OFF )
 if (MPI_FOUND)
-	find_package ( Boost 1.54 COMPONENTS
+	find_package ( Boost 1.61 COMPONENTS
 		chrono
 		log_setup 
 		log 
 		filesystem
 		mpi
 		program_options
-		python
+		python3
 		serialization 
 		system 
 		thread
 		REQUIRED )
 else (MPI_FOUND)
-	find_package ( Boost 1.54 COMPONENTS
+	find_package ( Boost 1.61 COMPONENTS
 		chrono
 		log_setup 
 		log 
 		filesystem
 		program_options
-		python
+		python3
 		serialization 
 		system 
 		thread

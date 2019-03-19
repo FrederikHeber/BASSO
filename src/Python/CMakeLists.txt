@@ -1,5 +1,5 @@
 # python libs
-find_package(PythonLibs 2.7 REQUIRED)
+find_package(PythonLibs 3 REQUIRED)
 include_directories( ${PYTHON_INCLUDE_DIRS} )
 
 # add the binary tree to the search path for
@@ -14,7 +14,7 @@ target_link_libraries(pyBasso
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${Boost_LIBRARIES}
-	${Python_LIBRARIES} 
+	${PYTHON_LIBRARY} 
 )
 
 # Copy the __init__.py file
