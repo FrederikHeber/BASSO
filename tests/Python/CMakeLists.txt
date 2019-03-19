@@ -57,3 +57,13 @@ set_tests_properties (pyBassoInverseProblem
 set_tests_properties (pyBassoInverseProblem PROPERTIES
     ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/src/Python)
 
+# can we instantiate InverseProblem and set up a (non-)linear operator toy problem
+add_test(
+	NAME pyBassoNonLinearInverseProblem 
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/pre/nonlinear_inverseproblem_test.py 
+	WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
+set_tests_properties (pyBassoNonLinearInverseProblem
+	PROPERTIES WILL_FAIL false)	# return code 0
+set_tests_properties (pyBassoNonLinearInverseProblem PROPERTIES
+    ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/src/Python)
+

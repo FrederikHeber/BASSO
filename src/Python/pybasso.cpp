@@ -37,6 +37,7 @@
 #include "Minimizations/Mappings/DualityMapping.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
+#include "Minimizations/Mappings/NonLinearMapping.hpp"
 #include "Minimizations/Mappings/PowerTypeDualityMapping.hpp"
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
@@ -49,6 +50,47 @@ using namespace boost::python;
 
 /* specific functions for interface */
 
+/** We need to tell boost::python how to convert the python function
+ * into the correct boost::function wrapped function.
+ *
+ * This is taken from https://stackoverflow.com/a/2181710/1967646
+ */
+struct non_linear_map_wrapper_t
+{
+	non_linear_map_wrapper_t( object callable ) : _callable( callable ) {}
+
+	Eigen::VectorXd operator()(const Eigen::VectorXd & _arg)
+    {
+        // These GIL calls make it thread safe, may or may not be needed depending on your use case
+        PyGILState_STATE gstate = PyGILState_Ensure();
+        Eigen::VectorXd ret = extract<Eigen::VectorXd>(_callable(_arg));
+        PyGILState_Release( gstate );
+        return ret;
+    }
+
+    object _callable;
+};
+
+NonLinearMapping::non_linear_map_t createNonLinearMapWrapper( object function )
+{
+  return NonLinearMapping::non_linear_map_t( non_linear_map_wrapper_t( function ) );
+}
+
+// make sure that numpy -> Eigen conversion is happening in python code
+const Mapping_ptr_t create_NonLinearMapping(
+		NormedSpace_ptr_t &_SourceSpaceRef,
+		NormedSpace_ptr_t &_TargetSpaceRef,
+		const object &_map_function,
+		const object &_derivative,
+		const bool _isAdjoint)
+{
+	return create_NonLinearMapping_full(
+			_SourceSpaceRef,
+			_TargetSpaceRef,
+			createNonLinearMapWrapper(_map_function),
+			createNonLinearMapWrapper(_derivative),
+			_isAdjoint);
+}
 
 /* Wrapper class for interface class with virtual functions */
 
@@ -168,6 +210,8 @@ BOOST_PYTHON_MODULE(pyBasso)
     class_<LinearMapping, bases<Mapping> >("LinearMapping", no_init)
         .def(self_ns::self * SpaceElement_ptr_t())
     ;
+    class_<NonLinearMapping, bases<Mapping> >("NonLinearMapping", no_init)
+    ;
     class_<CommandLineOptions>("CommandLineOptions", init<>())
         .def_readwrite("algorithm_name", &CommandLineOptions::algorithm_name)
         .def_readwrite("auxiliary_constraints", &CommandLineOptions::auxiliary_constraints)
@@ -222,4 +266,6 @@ BOOST_PYTHON_MODULE(pyBasso)
     // factory methods
     def("create_LpSpace", &create_LpSpace);
     def("create_LinearMapping", &create_LinearMapping);
+    def("create_NonLinearMapping", &create_NonLinearMapping);
+    def("createNonLinearMapWrapper", &createNonLinearMapWrapper);
 }

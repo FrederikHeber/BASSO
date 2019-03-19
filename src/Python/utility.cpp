@@ -53,6 +53,7 @@
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Mappings/MappingFactory.hpp"
+#include "Minimizations/Mappings/NonLinearMapping.hpp"
 #include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/types.hpp"
@@ -80,6 +81,21 @@ const Mapping_ptr_t create_LinearMapping(
 {
 	return MappingFactory::createInstance(
 			_SourceSpaceRef, _TargetSpaceRef, _matrix, _isAdjoint);
+}
+
+const Mapping_ptr_t create_NonLinearMapping_full(
+		NormedSpace_ptr_t &_SourceSpaceRef,
+		NormedSpace_ptr_t &_TargetSpaceRef,
+		const NonLinearMapping::non_linear_map_t &_map_function,
+		const NonLinearMapping::non_linear_map_t &_derivative,
+		const bool _isAdjoint)
+{
+	return MappingFactory::createNonlinearInstance(
+			_SourceSpaceRef,
+			_TargetSpaceRef,
+			_map_function,
+			_derivative,
+			_isAdjoint);
 }
 
 double SpaceElement_getitem(const SpaceElement_ptr_t &_element, const int _index)
