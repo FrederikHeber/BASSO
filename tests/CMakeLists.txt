@@ -39,3 +39,6 @@ endif (USE_NDIFF)
 
 # tests for MatrixToPNG program
 add_subdirectory (MatrixToPNG)
+
+# tests for Python interface
+add_subdirectory (Python)
