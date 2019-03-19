@@ -49,5 +49,9 @@ struct pyBasso_SpaceElement_access {
 	static const Eigen::VectorXd get(SpaceElement_ptr_t &element);
 };
 
+std::string CommandLineOptions_toString(const CommandLineOptions&opts);
+int CommandLineOptions_orthogonalization_type_get(CommandLineOptions &opts);
+void CommandLineOptions_orthogonalization_type_set(CommandLineOptions &opts, int _choice);
+
 
 #endif /* PYTHON_UTILITY_HPP_ */

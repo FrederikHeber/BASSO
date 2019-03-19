@@ -41,6 +41,7 @@
 #include "Minimizations/Norms/LpNorm.hpp"
 #include "Minimizations/Norms/Norm.hpp"
 #include "Minimizations/types.hpp"
+#include "Options/CommandLineOptions.hpp"
 
 #include "Python/utility.hpp"
 
@@ -134,6 +135,9 @@ BOOST_PYTHON_MODULE(pyBasso)
 
     const bool (SpaceElement::*SpaceElement_isZero_tolerance)(const double) const =
             &SpaceElement::isZero;
+    SpaceElement_ptr_t (*double_times_SpaceElement)(
+            const double _alpha,
+            const SpaceElement_ptr_t &_element) = &operator*;
     class_<SpaceElement, SpaceElement_ptr_t >("SpaceElement", no_init)
         .def("isInSpace", &SpaceElement::isInSpace)
         .def("isZero", SpaceElement_isZero)
@@ -164,6 +168,42 @@ BOOST_PYTHON_MODULE(pyBasso)
     class_<LinearMapping, bases<Mapping> >("LinearMapping", no_init)
         .def(self_ns::self * SpaceElement_ptr_t())
     ;
+    class_<CommandLineOptions>("CommandLineOptions", init<>())
+        .def_readwrite("algorithm_name", &CommandLineOptions::algorithm_name)
+        .def_readwrite("auxiliary_constraints", &CommandLineOptions::auxiliary_constraints)
+        .def_readwrite("C", &CommandLineOptions::C)
+        .def_readwrite("calculateAngles", &CommandLineOptions::calculateAngles)
+        .def_readwrite("delta", &CommandLineOptions::delta)
+        .def_readwrite("enforceRandomMapping", &CommandLineOptions::enforceRandomMapping)
+        .def_readwrite("everynthtuple", &CommandLineOptions::everynthtuple)
+        .def_readwrite("inexactLinesearch", &CommandLineOptions::inexactLinesearch)
+        .def_readwrite("iteration_file", &CommandLineOptions::iteration_file)
+        .def_readwrite("maxinneriter", &CommandLineOptions::maxinneriter)
+        .def_readwrite("maxiter", &CommandLineOptions::maxiter)
+        .def_readwrite("max_sfp_loops", &CommandLineOptions::max_sfp_loops)
+        .def_readwrite("maxwalltime", &CommandLineOptions::maxwalltime)
+        .def_readwrite("minlib", &CommandLineOptions::minlib)
+        .def_readwrite("N", &CommandLineOptions::N)
+        .add_property("orthogonalization_type",
+                      &CommandLineOptions_orthogonalization_type_get, // getter
+                      &CommandLineOptions_orthogonalization_type_set) // setter
+        .def_readwrite("outputsteps", &CommandLineOptions::outputsteps)
+        .def_readwrite("regularization_parameter", &CommandLineOptions::regularization_parameter)
+        .def_readwrite("searchspace_type", &CommandLineOptions::searchspace_type)
+        .def_readwrite("stepwidth_type", &CommandLineOptions::stepwidth_type)
+        .def_readwrite("stopping_criteria", &CommandLineOptions::stopping_criteria)
+        .def_readwrite("tau", &CommandLineOptions::tau)
+        .def_readwrite("tolerance_linesearch", &CommandLineOptions::tolerance_linesearch)
+        .def_readwrite("tolerance_spacex", &CommandLineOptions::tolerance_spacex)
+        .def_readwrite("tuple_parameters", &CommandLineOptions::tuple_parameters)
+        .def_readwrite("updatetype", &CommandLineOptions::updatetype)
+        .def_readwrite("verbose", &CommandLineOptions::verbose)
+        .def_readwrite("wolfe_constants", &CommandLineOptions::wolfe_constants)
+        .def("__repr__", &CommandLineOptions_toString)
+        .def("setValues", &CommandLineOptions::setSecondaryValues)
+        .def("checkSensibility", &CommandLineOptions::checkSensibility)
+        .def("setVerbosity", &CommandLineOptions::setVerbosity)
+        ;
 
     class_<InverseProblem, InverseProblem_ptr_t>("InverseProblem", init<
                 const Mapping_ptr_t, const NormedSpace_ptr_t,
@@ -176,6 +216,7 @@ BOOST_PYTHON_MODULE(pyBasso)
         .def_readonly("At", &InverseProblem::A_t)
         .def_readwrite("x", &InverseProblem::x)
         .def_readonly("y", &InverseProblem::y)
+        .def("solve", &InverseProblem_solve)
     ;
 
     // factory methods

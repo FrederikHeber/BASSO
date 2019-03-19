@@ -38,6 +38,9 @@
 
 #include "utility.hpp"
 
+#include <sstream>
+#include <string>
+
 #include <boost/assign.hpp>
 
 #include "Log/Logging.hpp"
@@ -47,6 +50,7 @@
 #include "Minimizations/InverseProblems/InverseProblemFactory.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
 #include "Minimizations/Mappings/LinearMappingFactory.hpp"
+#include "Minimizations/Minimizers/Searchspace/LastNSearchDirections.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 #include "Minimizations/types.hpp"
 
@@ -107,4 +111,29 @@ const Eigen::VectorXd pyBasso_SpaceElement_access::get(SpaceElement_ptr_t &eleme
 void pyBasso_SpaceElement_access::set(SpaceElement_ptr_t &element, const Eigen::VectorXd &vector)
 {
 	RepresentationAdvocate::set(element, vector);
+}
+
+std::string CommandLineOptions_toString(const CommandLineOptions&opts)
+{
+	std::stringstream output;
+	opts.store(output);
+	return output.str();
+}
+
+int CommandLineOptions_orthogonalization_type_get(CommandLineOptions &opts)
+{ return static_cast<int>(opts.orthogonalization_type); }
+void CommandLineOptions_orthogonalization_type_set(CommandLineOptions &opts, int _choice)
+{ opts.orthogonalization_type = static_cast<LastNSearchDirections::OrthogonalizationType>(_choice); }
+
+void InverseProblem_solve(
+		InverseProblem_ptr_t &_ip,
+		const CommandLineOptions &_opts,
+		const SpaceElement_ptr_t &_startvalue
+		)
+{
+	Database_ptr_t db(new Database_mock());
+
+	InverseProblemSolver solver(_ip, db, _opts, false);
+
+	solver(_startvalue);
 }
