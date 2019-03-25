@@ -15,16 +15,22 @@ set (BASSO_A2H ${ASCIIDOC_EXECUTABLE} -b html5 -a latexmath -a stylesheeet=${BAS
 macro (add_libbasso_pdf NAME)
 add_custom_command (
     OUTPUT ${NAME}.pdf
-    COMMAND ${BASSO_A2X} -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml ${BASSO_DOCDIR}/${NAME}.adoc
-    COMMAND ${BASSO_X2D} -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.pdf ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml
-    DEPENDS ${BASSO_DOCDIR}/${NAME}.adoc
+    COMMAND ${BASSO_A2X} -b docbook -arevdate=$(revdate) -aversion-label=@PACKAGE@ -arevnumber=$(version) -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml ${BASSO_DOCDIR}/${NAME}.txt
+    COMMAND ${BASSO_X2D} --param=doc.lot.show=figure,table --param=latex.output.revhistory=0 --param=doc.layout="coverpage mainmatter" --param=doc.collab.show=0 --param=paper.type=a4paper -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.pdf ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml
+    DEPENDS ${BASSO_DOCDIR}/${NAME}*.txt
+    DEPENDS ${BASSO_DOCDIR}/examples/*.sh
+    DEPENDS ${BASSO_DOCDIR}/listings/*.[ch]pp
+    DEPENDS ${BASSO_DOCDIR}/images/*.png
     VERBATIM
 )
 
 add_custom_command (
     OUTPUT ${NAME}.html
-    COMMAND ${BASSO_A2H} -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.html ${BASSO_DOCDIR}/${NAME}.adoc
-    DEPENDS ${BASSO_DOCDIR}/${NAME}.adoc
+    COMMAND ${BASSO_A2H} -b html5 -a toc2 -a latexmath -a numbered -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.html ${BASSO_DOCDIR}/${NAME}.txt
+    DEPENDS ${BASSO_DOCDIR}/${NAME}*.txt
+    DEPENDS ${BASSO_DOCDIR}/examples/*.sh
+    DEPENDS ${BASSO_DOCDIR}/listings/*.[ch]pp
+    DEPENDS ${BASSO_DOCDIR}/images/*.png
     DEPENDS ${BASSO_STYLESHEET}
     VERBATIM
 )

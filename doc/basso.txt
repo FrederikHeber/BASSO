@@ -1,0 +1,83 @@
+////
+#  Project: BASSO - BAnach Sequential Subspace Optimizer
+#  Description: C++ library for solving optimization problems in Banach spaces
+#  Copyright (C)  2014-2016 University of Saarland. All rights reserved.
+#
+#
+#    This file is part of the BASSO library.
+#
+#     BASSO is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 2 of the License, or
+#     (at your option) any later version.
+#
+#     BASSO is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with BASSO.  If not, see <http://www.gnu.org/licenses/>.
+#
+////
+
+BAnach Sequential Subspace Optimizer (BASSO)
+============================================
+// Web page meta data
+:Author:        Frederik Heber
+:Email:         frederik.heber@gmail.com
+:keywords:      BASSO, Banach space, minimization, regularization, Tikhonov +
+                functional
+:description:   BASSO is a library written in cpp for solving under- +
+                determined or overdetermined linear systems of equations Ax=y.
+:Date:          {revdate}
+:Revision:      BASSO {revnumber}
+:toc:
+//:toc-placement: preamble
+:doctype:       book
+//:numbered:
+:imagesdir:     {imagedir}
+:language:      {basebackend@docbook:C++:cpp}
+:Website:       https://github.com/FrederikHeber/BASSO
+
+.{revdate} {version-label}: {revnumber}
+***************************************
+BASSO is a pass:[C++]-library solving over-determined or under-determined linear
+systems of equations in general Banach spaces. Its interface mimicks the same
+concepts in terms of classes and functions that are also needed for the
+mathematical proof of convergence, namely spaces, norms, vectors, and (duality)
+mappings. In other words, vectors are uniquely associated to a specific space
+instance and calculating a scalar product of vectors from different spaces will
+fail. This allowed a very robust method of implementing the sequential subspace
+optimization methods that can be considered a generalization of the the
+Conjugate Gradient Minimal Error method from Hilbert spaces to Banach spaces.
+Overall, this provides a very efficient library to solve linear systems of
+equations with general l_p regularization. Moreover, it also allows to
+calculate low-rank matrix factorizations.
+
+BASSO received funding from the German Ministry for Research and Education
+(BMBF) through the project HYPERMATH.
+
+'Frederik Heber'
+***************************************
+
+include::basso_introduction.txt[]
+
+include::basso_background.txt[]
+
+include::basso_overview.txt[]
+
+include::basso_examples.txt[]
+
+include::basso_reference.txt[]
+
+include::basso_todo.txt[]
+
+:numbered!:
+
+Acknowledgements
+----------------
+
+Thanks to all the users of the library!
+
+include::basso_bibliography.txt[]

@@ -1,0 +1,69 @@
+[[background]]
+Background
+----------
+
+One of the most ubiquitous tasks in computing is solving linear systems of equations, where a matrix latexmath:[$A$] and a right-hand side vector latexmath:[$y$] are given and we are looking for the solution vector latexmath:[$x$].
+Because of the omnipresence of this problem, many different solution methods exist, whose applicability depends on the properties of the matrix: E.g., when the matrix is symmetric, one might use Cholesky factorization. If the matrix is symmetric and positive definite and especially if it is very large, Conjugate Gradient schemes are typically employed.
+
+From a more mathematical perspective,
+
+If the matrix is however more generic, e.g., it is not symmetric, then more general schemes are necessary. Then, we do not have a single space, latexmath:[${\cal X}$], but two spaces, latexmath:[${\cal X}$] and latexmath:[${\cal Y}$]. The solution lives in the former space, the right-hand side in the latter space and the matrix maps in between.
+
+The system of equation is then typically underdetermined or overdetermined and the solution latexmath:[$x$] is no longer unique. Therefore, an additional criterion is needed that picks the most sensible solution among the admissible ones. This is called regularization.
+
+Typically, (Tikhonov-)regularization is formulated as a minimization problem by adding a penalty term as follows:
+
+[latexmath]
++++++++++++
+min_x ( || Ax-y ||^2 + \lambda ||x||^2)
++++++++++++
+
+This minimization problems contains two terms: the first is called the data fidelity term that minimizes the residual, i.e. the metric distance to the sets of admissible solutions. The second term is the regularization term that enforces a minimum-norm solution.
+
+Depending on the employed norms in this minimization problem the solutions no longer live in a Hilbert space but in a more general Banach space, e.g., the N-dimensional vector space latexmath:[$\mathrm{R}^N$] equipped with the norm latexmath:[\ell_{1.1}] norm.  Convergence theoretical results are well-established for Hilbert spaces. For Banach spaces the situation is more difficult:
+In a Banach space the space and its dual do not in general coincide, namely they are not in general isometric isomorphic to each other.
+
+This in turn causes us to deal not with two spaces, latexmath:[${\cal X}$] and latexmath:[${\cal Y}$], but with possibly up to four spaces, latexmath:[${\cal X}$], latexmath:[${\cal X}^\ast$], latexmath:[${\cal Y}$], and latexmath:[${\cal Y}^\ast$].
+
+What is the relation between those spaces? Let us give a figure of the mappings.
+
+image::images/FourSpaces.png[Figure of the four involved Banach spaces and mappings between them]
+
+The matrix latexmath:[$A$] and its dual mapping latexmath:[$A^\ast$], which in finite dimensions is simply the complex conjugate, are obvious. However, what are latexmath:[J_p] and so forth?
+
+The residual latexmath:[Ax-y] gives us the natural direction of error as the only information we have about the true solution latexmath:[$x$] is given in the mapped form as the right-hand side latexmath:[$y$]. Therefore, we need a mapping that preserves angles and lengths with respect to the norm of the respective space. This role is fulfilled by the so-called duality mappings
+
+[latexmath]
++++++++++++
+J_p = { x^\ast \in {\cal X}^\ast | <x^\ast, x> = ||x||^p_{\cal X}, ||x^\ast|| = ||x||^{p-1} },
++++++++++++
+
+where p is associated with the gauge function latexmath:[t \rightarrow t^{p-1}].footnote:[In lp-spaces these two p coincide.]
+
+These are connected to the (sub-)gradient of the norm through the famous theorem of Asplund, latexmath:[J_p(x) = \frac{\partial}{\partial x} ( \tfrac 1 p ||x||^p)]
+
+A sub-gradient is a generalization of the gradient where the space is no longer smooth and therefore the gradient is no longer unique.
+
+As one last ingredient we need a new distance measure, replacing the metric distance that has failed so far in allowing a proof of convergence. We use the Bregman distance,
+
+[latexmath]
++++++++++++
+\Delta(x,y) = \tfrac 1 {p^\ast} ||x||^p - < J_p (x), y > + \tfrac 1 p || y ||^p
++++++++++++
+
+All of this can be found in the following nice-to-read academical papers:
+
+- link:#Schoepfer2006[[Schoepfer2006]]
++
+First paper on a non-linear Landweber method using Duality Mappings for general smooth, convex Banach spaces. Proof of strong convergence in noise-free case.
+- link:#Schoepfer2008[[Schoepfer2008]]
++
+Paper on the underlying relation between Metric and Bregman projections that form the essential basis for the Sequential Subspace Methods. Multiple search directions. Proof of weak convergence.
+- link:#Schoepfer2009[[Schoepfer2009]]
++
+Extension to perturbed right-hand sides. Proof of strong convergence for specific set of multiple search directions. Fast method when using two search directions by projection onto hyperplanes.
+- link:#Heber2019[[Heber2019]] (also available as arXiv preprint link:#Heber2016[[Heber2016]]).
++
+Acceleration of the Sequential Subspace Methods by using metric projections to orthogonalize search directions. Connection to Conjugate Gradient Minimal Error method.
+
+If you want to constrain yourself to a single paper, then we recommend the last one as it formed the basis for this library.
