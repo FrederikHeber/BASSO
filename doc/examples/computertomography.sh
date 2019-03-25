@@ -1,0 +1,14 @@
+ComputerTomography \
+  --type-space-x "lp" \
+  --px 2 \
+  --type-space-y "lp" \
+  --py 2 \
+  --powery 2 \
+  --delta 0.01 \
+  --maxiter 50 \
+  --num-angles 60 \
+  --num-offsets 61 \
+  --num-pixels-x 21 \
+  --num-pixels-y 21 \
+  --solution solution.mat \
+  --sinogram pre/sinogram.mat

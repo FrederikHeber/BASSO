@@ -272,6 +272,7 @@ with a line search such as using Brent's method it is not competitive with the
 other SESOP Minimizers. One advantage is naturally that it does not need any
 derivative information, i.e. it works even when the space X is not smooth such
 as in case of the latexmath:[\ell_1]-norm.
++
 - `SequentialSubspaceMinimizer`
 +
 The Sequential Subspace Method (SESOP) is the main workhorse in BASSO. It can
@@ -279,6 +280,7 @@ employ multiple search directions that can even be made (g-)orthogonal in the
 context of Banach space to speed up convergence. Note that SESOP is constrained
 to uniformly smooth and convex Banach spaces, i.e. latexmath:[p \in (1,\infty)].
 Current work is underway to extend to the uniformly convex Banach spaces.
++
 - `SequentialSubspaceMinimizerNoise`
 +
 This is variant of SESOP with additional regularization. In other words, it may
@@ -384,7 +386,7 @@ basically simply a functor, i.e. having a single `operator()` function that
 executes the solving.
 
 There are some convenience functions such as `getName()` which returns a human
-readable name for ouput purposes. `clear()` and `finish()` are used when doing
+readable name for output purposes. `clear()` and `finish()` are used when doing
 split feasibility problems with multiple iterations.
 
 Then we have several specific solvers which we discuss each in turn:
@@ -398,7 +400,7 @@ iteration-specific information to that. This allows to check on the quality of
 the iteration process lateron.
 
 The parameters that control the manner of the solving, e.g., the minimizer
-method and its options, are given using a `CommandLineOptions` instance.q
+method and its options, are given using a `CommandLineOptions` instance.
 
 [[RangeProjectionSolver]]
 ==== RangeProjectionSolver
@@ -406,7 +408,7 @@ method and its options, are given using a `CommandLineOptions` instance.q
 The `RangeProjectionSolver` class directly takes a matrix and a right-hand side
 and constructs internal spaces for the projection depending on the given
 options in the `CommandLineOptions` class. It is very similar to an
-`InverseProblem`.
+`InverseProblemSolver`.
 
 [[AuxiliaryConstraints]]
 ==== AuxiliaryConstraints

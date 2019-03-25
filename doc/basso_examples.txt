@@ -25,7 +25,7 @@ NOTE: BASSO uses the _MatLab/Octave file format_ with its typical '.m' suffix in
 include::examples/basso.sh[]
 -------------
 
-In this call of 'Basso' we use the Landweber with latexmath:[{\cal X}] and latexmath:[{\cal Y}] being latexmath:[\ell_2]-spaces. We terminate when the residual is less than 1e-4 and use at most 50 iterations. All information on the iterations is written to an SQLite database file 'Landweber1.db'. The solution, i.e. the point closest to the origin on the line described by latexmath:[A] is written to 'straightline1.m'.
+In this call of 'Basso' we use the Landweber with latexmath:[${\cal X}$] and latexmath:[${\cal Y}$] being latexmath:[\ell_2]-spaces. We terminate when the residual is less than 1e-4 and use at most 50 iterations. All information on the iterations is written to an SQLite database file 'Landweber1.db'. The solution, i.e. the point closest to the origin on the line described by latexmath:[$A$] is written to 'straightline1.m'.
 
 === Gravity
 
@@ -56,7 +56,7 @@ This equation for the kernel results from knowing that the magnitude of the grav
 
 [source,bash]
 -------------
-include::[]
+include::examples/gravity.sh[]
 -------------
 
 === ComputerTomography
@@ -64,23 +64,23 @@ include::[]
 In computerized tomography the inverse problem is the reconstruction of the
 inside of an object from projections. Measurements are for example obtained by
 passing radiation through a body, whereby their intensity is diminished,
-proportional to the passed length and density f(x) of the body:
-latexmath:[[0,1]^2 \rightarrow \reel^+_0]. This decrease is measured over a
-latexmath:[a] angles and latexmath:[s] shifts of radiation source and detectors.
+proportional to the passed length and density latexmath:[$f(x)$] of the body:
+latexmath:[$[0,1]^2 \rightarrow R^+_0$]. This decrease is measured over a
+latexmath:[$a$] angles and latexmath:[$s$] shifts of radiation source and detectors.
 This measurement matrix is usually called *sinogram*. Again, we follow
 link:#Hansen2010[[Hansen2010, §7.7]].
 
 In (2D) tomography much depends on how the measurement is obtained. Rays might
-passe through the body in parallel or in fan-like formation. This depends on
+pass through the body in parallel or in fan-like formation. This depends on
 the setup of the detectors. If there is just a single, point-like detector
 that is rotated in conjunction with the radiation source. The detector might
 also be spread out, detecting along several small line segments.
 
 In our case we assume single rays, these are suitable parametrized. When the
 radiation passes through an object, the effect on its intensity is described
-by the Lambert-Beer law, latexmath:[dI = I_0 \exp{ f(x) dx}]. Given some
-initial intensity latexmath:[I_0] it is diminished when travelling dx through
-the body f(x) by dI.
+by the Lambert-Beer law, latexmath:[$dI = I_0 \exp{ f(x) dx}$]. Given some
+initial intensity latexmath:[$I_0$] it is diminished when travelling
+latexmath:[$dx$] through the body latexmath:[$f(x)$] by latexmath:[$dI$].
 
 This can be written as the famous *Radon transform*,
 
@@ -89,22 +89,34 @@ This can be written as the famous *Radon transform*,
 b_i = \int_{-\infty}^{\infty} f(t^i(\tau)) d\tau,
 +++++++++++
 
-where i enumerates all rays passed through the body and latexmath:[t^i] is the
-respective parametrization in 2D, latexmath:[t^i = t^{i,0} + \tau d^i] with
-the direction of the ray d and latexmath:[i=s \cdot a] rays in total.
+where i enumerates all rays passed through the body and latexmath:[$t^i$] is the
+respective parametrization in 2D, latexmath:[$t^i = t^{i,0} + \tau d^i$] with
+the direction of the ray d and latexmath:[$i=s \cdot a$] rays in total.
 
 The problem is typically discretized in a pixel basis and for setting up the
 Radon matrix we need to count the length of the ray passing through each of
 the pixels.
 
 NOTE: The pixels in 2D are vectorized and the matrix is over all pixels and
-over all grid points of the body's density f(x).
+over all grid points of the body's density latexmath:[$f(x)$].
 
-Eventually, we obtain a matrix equation: latexmath:[b_i = \sum_j a_{ij} x_j].
+Eventually, we obtain a matrix equation: latexmath:[$b_i = \sum_j a_{ij} x_j$].
 
 Again, this is the inverse problem that we need to solve.
 
 The example program contained with BASSO is called 'ComputerTomography'.
+
+[source,bash]
+-------------
+include::examples/computertomography.sh[]
+-------------
+
+For a problem with a noisy right-hand side we have the following example.
+
+[source,bash]
+-------------
+include::examples/computertomography_with_noise.sh[]
+-------------
 
 === MatrixFactorizer
 
@@ -113,7 +125,7 @@ of the BMBF funded project link:https://www.math.uni-sb.de/hypermath/[HYPERMATH]
 is to matrix factorization as two alternating inverse problems.
 
 In HYPERMATH we looked at hyperspectral images. These are images that contain
-now only three colors but thousands of different channels. These images were
+not only three colors but thousands of different channels. These images were
 taken by many different measurement methods: Near-Infrared Spectroscopy (NIR),
 Matrix Assisted Laser Deposition and Imaging (MALDI), Raman spectroscopy or
 Spark Optical Emission Spectroscopy (OES). The channels were either truly
@@ -135,16 +147,16 @@ are caused by the molecules that make up the tissue.
 (Non-negative) Matrix factorization will then decouple the superimposed effects
 of all these endmembers. It splits the measurement matrix A into two factors
 K and X, where K contains relations from channels to endmembers and X from
-endmembers to pixels, latexmath:[A = K \cdot X].
+endmembers to pixels, latexmath:[$A = K \cdot X$].
 
 If the number of reconstructed endmembers is much smaller than the number of
 pixels or channels, then the storage requirement of both K and X is much
 smaller than of the original matrix A.
 
 This problem can be written as two different inverse problems: First, consider
-each row in X and each row in A. We obtain latexmath:[A_i = K X_i], where K is
+each row in X and each row in A. We obtain latexmath:[$A_i = K X_i$], where K is
 the matrix to formally invert. The other way round, looking at rows, we obtain
-latexmath:[A_j = K_j X]. Now, X is the matrix to invert.
+latexmath:[$A_j = K_j X$]. Now, X is the matrix to invert.
 
 Next, we perform an alternating least squares minimization, where each inverse
 problem is solved in turn for a few iterations. This will converge to the
@@ -157,6 +169,11 @@ unity or similar.
 
 In the example program 'MatrixFactorizer' this method is implemented.
 
+[source,bash]
+-------------
+include::examples/matrixfactorizer.sh[]
+-------------
+
 Helper programs
 ---------------
 
@@ -167,11 +184,21 @@ perturbing right hand sides or projecting onto the range of the given matrix.
 
 'NoiseAdder' adds a specific amount of white noise to a given vector.
 
+[source,bash]
+-------------
+include::examples/noiseadder.sh[]
+-------------
+
 === RangeProjector
 
 'RangeProjector' projects onto the range of a matrix. This is again an inverse
 problem. The program however sets it up as a split feasibility problem to allow
 additional constraints to be fulfilled in the projection, e.g. non-negativity.
+
+[source,bash]
+-------------
+include::examples/rangeprojector.sh[]
+-------------
 
 === MatrixToPNG
 
@@ -183,8 +210,18 @@ It supports an arbitrary color table, e.g., *blackwhite* or *bluegreenred*.
 
 The image can be automatically flipped or mirrored.
 
+[source,bash]
+-------------
+include::examples/matrixtopng.sh[]
+-------------
+
 === RadonMatrixWriter
 
 'RadonMatrixWriter' writes the Radon transform discretized in a pixel basis to
 a file such that it forms the matrix in the inverse problem of 2D computerized
 tomography.
+
+[source,bash]
+-------------
+include::examples/radonmatrixwriter.sh[]
+-------------

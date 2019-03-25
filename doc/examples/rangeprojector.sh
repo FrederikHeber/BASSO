@@ -1,0 +1,11 @@
+RangeProjectorConfigurator \
+  --verbose 2 \
+  --type-space-x "lp"  \
+  --px 2  \
+  --type-space-y "lp"  \
+  --py 2  \
+  --powery 2  \
+  --delta 1e-8  \
+  --matrix pre/rp_matrix.m  \
+  --rhs pre/rp_vector.m \
+  --solution solution.mat
