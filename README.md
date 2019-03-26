@@ -33,6 +33,8 @@ It is advised to compile the source in a distinct build directory, e.g. in a sub
 These *options* might be one of the following. Take caution to prepend them
 before the path containing the **CMakeLists.txt** file!
 
+Typically, the installation path needs to be adapted: `... -DCMAKE_INSTALL_PREFIX:PATH=<path to install to>`
+
 ### using boost
 
 
