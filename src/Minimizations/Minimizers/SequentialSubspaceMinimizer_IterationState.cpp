@@ -2,6 +2,7 @@
  * Project: BASSO - BAnach Sequential Subspace Optimizer
  * Description: C++ library for solving optimization problems in Banach spaces
  * Copyright (C)  2014-2016 University of Saarland. All rights reserved.
+ * Copyright (C)  2016-2019 Frederik Heber. All rights reserved.
  *
  *
  *   This file is part of the BASSO library.
