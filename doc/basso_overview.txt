@@ -62,8 +62,8 @@ longer held.
 All things associated to an object, e.g., the norm of a space, can be queried
 from an instance using *getters*, e.g.,  `NomedSpace.getNorm()` for the norm,
 `NormedSpace.getDimension()` for the number of degrees of freedom of this space,
-or `NormedSpace.getDualSpace()` for its dual space. See <<NormedSpace>> for
-details.
+or `NormedSpace.getDualSpace()` for its dual space. See <<reference.NormedSpace>>
+for details.
 
 [[overview.inverse_problem_solving]]
 === Rough sketch of inverse problem solving
@@ -109,7 +109,7 @@ To this end, there is the abstract `FeasibilityProblem` class, the
 these. Finally, there is the high-level class `SplitFeasibilitySolver` that
 solves inverse problems with these additional auxiliary constraints. These
 constraints are simply `register()`ed with this class. See
-<<SplitFeasibilitySolver>> for details.
+<<reference.solvers.SplitFeasibilitySolver>> for details.
 
 Let us now  look at an example where we solve the random matrix toy problem.
 We create a random matrix and a random right-hand side. We make sure that the

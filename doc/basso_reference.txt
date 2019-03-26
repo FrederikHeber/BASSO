@@ -1,7 +1,10 @@
+[[reference]]
 Reference
 ---------
 
-[[NormedSpace]]
+In this reference we explain how the major interface classes are used.
+
+[[reference.NormedSpace]]
 === NormedSpace and NormedSpaceFactory
 
 A finite-dimensional (Banach) space is instantiated using the `NormedSpace`
@@ -9,8 +12,8 @@ class by giving its constructor the dimension of the space and a norm object,
 `NormedSpace X(200, norm);``
 
 However, a norm cannot be constructed without a space. Both are tightly
-interlinked in BASSO. Hence, the typical way of setting up a space is by
-using the `NormedSpaceFactory`:
+interlinked in BASSO (through `boost::shared_ptr`). Hence, the typical way of
+setting up a space is by using the `NormedSpaceFactory`:
 
 [source,{basebackend@docbook:C++:cpp}]
 ------------
@@ -22,29 +25,30 @@ args_SpaceX += boost::any(1.1), boost::any(2.);
 NormedSpace__ptr_t X = NormedSpaceFactory::create(200, "lp", args_SpaceX);
 ------------
 
-Here, we have need to specify not only the dimension but also the properties
-of the norm. We set the type of the norm to be "lp" (or "regularized_l1"), see
-the static function `NormFactory::getMap()` for all options.
+Here, we need to specify not only the dimension but also the properties of the
+norm. We set the type of the norm to be "lp" (or "regularized_l1"), see the
+static function `NormFactory::getMap()` for all options.
 
-Moreover, we need to give the spaces parameters. An lp-space needs the value of
+Moreover, we need to give the space's parameters. An lp-space needs the value of
 p and also the power type to create the associated duality mapping. As the
 number of parameters differ over the different available norms, they are given
 as a vector of `boost::any` arguments. Here, we set p to 1.1 and the power type
 to 2.
 
 Finally, the `NormedSpaceFactory::create()` function returns the constructed
-instance of the `NormedSpace` class. Note that it is wrapped on a
+instance of the `NormedSpace` class. Note that it is wrapped in a
 `boost:shared_ptr` and is deconstructed automatically when it is no longer used.
-In other words, don't worry about it, just use it like a static instance.
-The type has kept the `.._ptr_t` ending to remind you that you need to access
-its members like `X->getNorm()`, i.e. like a normal pointer.
+In other words, don't worry about it, just use it like a static instance except
+you need to dereference it using the `*` operator on use. Hence, the type has
+been kept the `.._ptr_t` ending to remind you that you need to access its
+members like `X->getNorm()`, i.e. like a normal pointer.
 
-[[SpaceElement]]
+[[reference.SpaceElement]]
 === SpaceElement
 
 The `SpaceElement` class wraps a `Eigen::VectorXd` and associates it directly
-with a certain space. All typical linear algebra routines such as vector
-product, scalar product, addition, ... can be found in this class.
+with a certain space, see `getSpace()`. All typical linear algebra routines such
+as vector product, scalar product, addition, ... can be found in this class.
 
 Let us give a few example calls that should be self-explanatory.
 
@@ -77,11 +81,12 @@ std::cout <<
 The association with the space prevents use in other spaces even if they share
 the number of degrees of freedom.
 
-[[Norm]]
+[[reference.Norm]]
 === Norm
 
 A norm basically has the single function to return the "norm" of a given
-element. The `Norm` associated with a space makes it a `NormedSpace`.
+element. The `Norm` associated with a space makes it a `NormedSpace`, see
+`getSpace()`.
 
 Note that certain norms cause spaces to be smooth or not. Hence, the norm can
 be queried for `isSmooth()`.
@@ -92,12 +97,16 @@ be queried for `isSmooth()`.
 Norms throw an `NormIllegalValue_exception` when they are called with a
 parameter outside expected intervals, e.g. an illegal p value such as -1.
 
-[[Mapping]]
+[[reference.Mapping]]
 === Mapping
 
 Similar to `Norm`, `Mapping` defines the general interface of a function that
-maps an element from one `NormedSpace` onto another `NormedSpace` instance.
+maps an element from one `NormedSpace` onto another `NormedSpace` instance,
+see `getSourceSpace()` and `getTargetSpace()`.
 Therefore, its constructor requires a source and a target space instance.
+
+An example of such a mapping is the `LinearMapping`. This is a specialization
+that implements a multiplication with a matrix associated with the mapping.
 
 [source,{basebackend@docbook:C++:cpp}]
 ------------
@@ -114,11 +123,11 @@ SpaceElement_ptr_t y = (*A)(x);
 ------------
 
 Its `operator()` then performs the actual mapping, taking a `SpaceElement` from
-the source space, performing alterations on the element's components, and
-returning a `SpaceElement` in the target space.
+the source space `X`, performing alterations on the element's components, and
+returning a `SpaceElement` in the target space `Y`.
 
-A more complicated example is as follows where we have two matrix factory
-whose product forms the actual linear mapping.
+A more complicated example for using the factory is as follows where we have two
+matrices whose product forms the actual linear mapping.
 
 [source,{basebackend@docbook:C++:cpp}]
 ------------
@@ -139,17 +148,17 @@ LinearMapping_ptr_ A = LinearMappingFactory:createTwoFactorInstance(
 SpaceElement_ptr_t y = (*A)(x);
 ------------
 
-WARNING: Take care that the matrix dimensions match. Otherwise, an assertion is thrown.
+WARNING: Take care that the matrix dimensions match. Otherwise, an assertion is
+thrown.
 
-TIP: A linear mapping can be decomposed into an singular value decomposition, see `LinearMapping::getSVD()` and `SingularValueDecomposition`.
+TIP: A linear mapping can be decomposed into an singular value decomposition,
+see `LinearMapping::getSVD()` and `SingularValueDecomposition`.
 
-An example of such a mapping is the `LinearMapping`. This is a specialization
-that implements a multiplication with a matrix associated with the mapping.
-
-Moreover, `DualityMapping` is another example. There, the constructor only needs
-a single space as each space knows about its dual space and this mapping always
-maps into the dual space. In the folder 'Mappings/Specifics' specific
-implementations of duality mapping, such as the one in lp-spaces, are contained.
+Moreover, `DualityMapping` is another example of a `Mapping`. There, the
+constructor only needs a single space as each space knows about its dual space
+and this mapping always maps into the dual space. In the folder
+'Mappings/Specifics' specific implementations of duality mapping, such as the
+one in lp-spaces, are contained.
 
 Both these classes have specific factory classes, namely `LinearMappingFactory`
 and `DualityMappingFactory` to create the respective instance types. These
@@ -160,17 +169,23 @@ To this end, these accept "weak" `NormedSpace` ptr instances.
 Finally, each mapping is inherently associated with an adjoint mapping. For
 `LinearMapping` this would be the transposed of a (real-value) matrix.
 
-[[Functions]]
+[[reference.Functions]]
 === Functions
 
 Functions are similar to `Mappings` and to `Norms`. They take one or two
 arguments being `SpaceElement` instances and produce a real value.
 
-- `BregmanDistance`
-- `ResidualFunctional`
-- `SmoothnessFunctional`
-- `SmoothnessModulus`
-- `VectorProjection`
+- `BregmanDistance`: calculates the Bregman distance between two elements of the
+same space.
+
+- `ResidualFunctional`: calculates the residual latexmath:[$|Ax-y|$].
+
+- `SmoothnessFunctional`: calculates the modulus of smoothnes with a specific
+lambda.
+
+- `SmoothnessModulus`: calculates the modulus of smoothness.
+
+- `VectorProjection`: calculates the projection of one element onto another.
 
 Let us give an example using the `BregmanDistance`.
 
@@ -190,16 +205,22 @@ const double bregman_distance = delta(x,y);
 ------------
 
 Some functions are used solely internally, namely for minimization.
+
 - `BregmanProjectionFunctional`
+
 - `MetricProjectionFunctional`
+
 - `VectorProjection_BregmanDistanceToLine`
 
-[[MatrixIO]]
+[[reference.MatrixIO]]
 === MatrixIO
 
 `MatrixIO` is a namespace wherein several helper functions are gathered that
 read or write matrix from or to files. Moreover, there are helper functions to
 print matrices to output streams.
+
+NOTE: We use the Matlab/Octave text format to read and write matrices. This
+can be easily extended to also parse binary formats.
 
 [source,{basebackend@docbook:C++:cpp}]
 ------------
@@ -238,7 +259,7 @@ std::ofstream ost("solutionm.m");
 SpaceElementWriter::output(ost, solution);
 ------------
 
-[[InverseProblem]]
+[[reference.InverseProblem]]
 === InverseProblem
 
 The `InverseProblem` class takes a mapping, two space instances, and a
@@ -247,7 +268,7 @@ references at hand, namely it constructs internal shorthand references to all
 items required for the minimizations methods such as the dual spaces, the
 adjoint mapping. Moreover, it contains the solution element to be found.
 
-[[Minimizers]]
+[[reference.Minimizers]]
 === Minimizers
 
 Minimizers form the core of BASSO. They solve the minimizations problems that
@@ -307,7 +328,11 @@ The SESOP Minimizers determine the step width automatically through a line
 search. However, this line search may be tuned to be only inexact by setting
 appropriate Wolfe conditions.
 
-[[CommandLineOptions]]
+All Minimizers write information about the iteration to tables of a database.
+The `DatabaseManager` controls what values are written and how the tables are
+set up.
+
+[[reference.CommandLineOptions]]
 === CommandLineOptions
 
 Many parameters that control how for example the minimization is performed
@@ -348,7 +373,7 @@ po::notify(vm);
 Finally, `CommandLineOptions` has functions to check the validity of each
 parameter.
 
-[[StoppingCriterion]]
+[[reference.StoppingCriterion]]
 === StoppingCriterion
 
 A `StoppingCriterion` takes several values related to the iteration, namely
@@ -371,14 +396,18 @@ StoppingArguments args;
 args.setMaxIterations(100);
 
 StoppingCriterion::ptr_t criterion = StoppingCriteriaFactory::create(
-  "StoppingArguments || StoppingArguments"
+  "MaxIterationCount || DivergentResiduum",
+  args
   )
 ------------
+
+This will stop either after 100 iterations or when the residuum diverges more
+than three times (i.e. increases instead of decreases).
 
 See the `StoppingCriteriaFactory::StoppingCriteriaFactory()` for a list of all
 known criterion and boolean operators (they are the familar ones from cpp).
 
-[[Solvers]]
+[[reference.Solvers]]
 === Solvers
 
 The general interface to all solvers is defined in `FeasibilityProblem`. It is
@@ -391,7 +420,7 @@ split feasibility problems with multiple iterations.
 
 Then we have several specific solvers which we discuss each in turn:
 
-[[InverseProblemSolver]]
+[[reference.solvers.InverseProblemSolver]]
 ==== InverseProblemSolver
 
 The `InverseProblemSolver` class takes an inverse problem and applies a
@@ -402,7 +431,7 @@ the iteration process lateron.
 The parameters that control the manner of the solving, e.g., the minimizer
 method and its options, are given using a `CommandLineOptions` instance.
 
-[[RangeProjectionSolver]]
+[[reference.solvers.RangeProjectionSolver]]
 ==== RangeProjectionSolver
 
 The `RangeProjectionSolver` class directly takes a matrix and a right-hand side
@@ -410,11 +439,11 @@ and constructs internal spaces for the projection depending on the given
 options in the `CommandLineOptions` class. It is very similar to an
 `InverseProblemSolver`.
 
-[[AuxiliaryConstraints]]
+[[reference.solvers.AuxiliaryConstraints]]
 ==== AuxiliaryConstraints
 
 An `AuxiliaryConstraints` is a functor using a `SpaceElement` that enforces a
-certain restriction directly on the element. E.g. `NonnegativeConstraint` will
+certain restriction directly on the element. E.g., `NonnegativeConstraint` will
 project the vector onto the positive orthant, i.e. all negative components
 become zero.
 
@@ -444,7 +473,7 @@ AuxiliaryConstraintsFactory::createCombination(
 
 TIP: This can be done directly from a string "Nonnegative && Unity" using `AuxiliaryConstraintsFactory::create()`.
 
-[[SplitFeasibilitySolver]]
+[[reference.solvers.SplitFeasibilitySolver]]
 ==== SplitFeasibilitySolver
 
 A `SplitFeasibilitySolver` is a queue for a number of `FeasibilityProblem` or
