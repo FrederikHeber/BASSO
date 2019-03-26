@@ -69,7 +69,13 @@ To generate the doxygen documenation, you use
 
     make doc
 
-and the generated html pages can the be found under src/Documentation/doc/html.
+The generated API html can the be found under **src/Documentation/doc/html/index.html**.
+
+Moreover,
+
+   cd doc; make
+
+generates the userguide in **doc/basso.pdf** and **doc/basso.html**.
 
 Timing Measurements
 -------------------

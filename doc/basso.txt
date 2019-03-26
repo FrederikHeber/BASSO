@@ -43,7 +43,7 @@ BAnach Sequential Subspace Optimizer (BASSO)
 .{revdate} {version-label}: {revnumber}
 ***************************************
 BASSO is a pass:[C++]-library solving over-determined or under-determined linear
-systems of equations in general Banach spaces. Its interface mimicks the same
+systems of equations in general Banach spaces. Its interface mimics the same
 concepts in terms of classes and functions that are also needed for the
 mathematical proof of convergence, namely spaces, norms, vectors, and (duality)
 mappings. In other words, vectors are uniquely associated to a specific space
