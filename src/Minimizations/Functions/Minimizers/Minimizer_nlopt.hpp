@@ -36,6 +36,8 @@ public:
 	 */
 	Minimizer(const unsigned int _N);
 
+	virtual ~Minimizer() {}
+
 	typedef boost::function<double (
 			const std::vector<double> &,	/* x */
 			std::vector<double> &, 	/* grad */

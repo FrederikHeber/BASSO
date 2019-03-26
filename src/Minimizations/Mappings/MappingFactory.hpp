@@ -5,8 +5,8 @@
  *      Author: heber
  */
 
-#ifndef MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_
-#define MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_
+#ifndef MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_
+#define MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_
 
 #include "BassoConfig.h"
 
@@ -16,13 +16,15 @@
 
 #include "Minimizations/types.hpp"
 
+#include "Minimizations/Mappings/NonLinearMapping.hpp"
+
 /** This factory makes sure that LinearMappings are correctly
  * instantiated.
  *
  * This is required due to the internal LinearMapping::SelfRef
  * which must be set on creation.
  */
-struct LinearMappingFactory
+struct MappingFactory
 {
 	/** Factory function creating a linear mapping, i.e. a matrix
 	 * associated to a specific space.
@@ -37,6 +39,23 @@ struct LinearMappingFactory
 			const NormedSpace_weakptr_t _SourceSpaceRef,
 			const NormedSpace_weakptr_t _TargetSpaceRef,
 			const Eigen::MatrixXd & _matrix,
+			const bool _isAdjoint = false);
+
+	/** Factory function creating a non-linear mapping, i.e. a matrix
+	 * associated to a specific space.
+	 *
+	 * @param _SourceSpaceRef reference to source space
+	 * @param _TargetSpaceRef reference to target space
+	 * @param _map_functiqon non-linear function
+	 * @param _derivative derivative of non-linear function
+	 * @param _isAdjoint states whether matrix is to be applied as transposed or not
+	 * @return
+	 */
+	static const Mapping_ptr_t createNonlinearInstance(
+			const NormedSpace_weakptr_t _SourceSpaceRef,
+			const NormedSpace_weakptr_t _TargetSpaceRef,
+			const NonLinearMapping::non_linear_map_t &_map_function,
+			const NonLinearMapping::jacobian_t &_derivative,
 			const bool _isAdjoint = false);
 
 	/** Factory function creating a linear mapping consisting of two matrix
@@ -74,4 +93,4 @@ struct LinearMappingFactory
 
 
 
-#endif /* MINIMIZATIONS_MAPPINGS_LINEARMAPPINGFACTORY_HPP_ */
+#endif /* MINIMIZATIONS_MAPPINGS_MAPPINGFACTORY_HPP_ */

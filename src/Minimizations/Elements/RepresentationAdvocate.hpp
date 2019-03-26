@@ -28,6 +28,7 @@ struct LinearDependencyChecker;
 class LinearMapping;
 class LInfinityDualityMapping;
 class LInfinityNorm;
+class NonLinearMapping;
 class NonnegativeConstraint;
 class NonpositiveConstraint;
 class RangeProjectionSolver;
@@ -37,6 +38,8 @@ struct SpaceElementWriter;
 struct SpaceElementReader;
 class SplitFeasibilitySolver;
 class TwoFactorLinearMapping;
+
+struct pyBasso_SpaceElement_access;
 
 /** The sole purpose of this class is to regulate the access to the
  * private representation of SpaceElement.
@@ -61,6 +64,7 @@ private:
 	friend class LinearMapping;
 	friend class LInfinityDualityMapping;
 	friend class LInfinityNorm;
+	friend class NonLinearMapping;
 	friend class NonnegativeConstraint;
 	friend class NonpositiveConstraint;
 	friend class RangeProjectionSolver;
@@ -71,6 +75,9 @@ private:
 	friend class SplitFeasibilitySolver;
 	friend class TwoFactorLinearMapping;
 	friend struct VectorSetter;
+
+	friend struct pyBasso_SpaceElement_access;
+
 	static const Eigen::VectorXd& get(
 			const SpaceElement_ptr_t & _element)
 	{ return _element->getVectorRepresentation(); }

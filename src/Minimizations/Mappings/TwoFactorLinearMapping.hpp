@@ -34,7 +34,7 @@ class TwoFactorLinearMapping : public Mapping
 	friend class SpaceElement;
 
 	//!> allow Factory access to private constructors
-	friend struct LinearMappingFactory;
+	friend struct MappingFactory;
 private:
 	/** Constructor for TwoFactorLinearMapping.
 	 *
@@ -53,6 +53,8 @@ private:
 			);
 
 public:
+
+	virtual ~TwoFactorLinearMapping() {}
 
 	/** Matrix multiplication from the right.
 	 *

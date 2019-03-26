@@ -35,9 +35,9 @@
 
 #include <boost/bind.hpp>
 
+#include "../Mappings/MappingFactory.hpp"
 #include "Minimizations/Elements/ElementCreator.hpp"
 #include "Minimizations/Elements/SpaceElement.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Spaces/NormedSpaceFactory.hpp"
 
@@ -78,7 +78,7 @@ InverseProblem_ptr_t InverseProblemFactory::create(
 		const Eigen::MatrixXd &_matrix,
 		const Eigen::VectorXd &_rhs)
 {
-	const MappingCreator_t creator = boost::bind(&LinearMappingFactory::createInstance,
+	const MappingCreator_t creator = boost::bind(&MappingFactory::createInstance,
 			_1, _2, boost::cref(_matrix), false);
 	return create_internal(
 			_type_SpaceX, _args_SpaceX,
@@ -97,7 +97,7 @@ InverseProblem_ptr_t InverseProblemFactory::createFromTwoFactors(
 		const Eigen::MatrixXd &_matrix_second_factor,
 		const Eigen::VectorXd &_rhs)
 {
-	const MappingCreator_t creator = boost::bind(&LinearMappingFactory::createTwoFactorInstance,
+	const MappingCreator_t creator = boost::bind(&MappingFactory::createTwoFactorInstance,
 			_1, _2, boost::cref(_matrix_first_factor), boost::cref(_matrix_second_factor), false);
 	return create_internal(
 			_type_SpaceX, _args_SpaceX,

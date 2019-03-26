@@ -29,8 +29,13 @@
 	{ if (Verbose::verbosity(boost::log::trivial:: level)) \
 		BOOST_LOG_TRIVIAL(level) << msg; }
 
+/*
+ * In case of static linking this needs to read v2s_mt_posix
+ * Here, we use dynamic linking (to allow building a boost
+ * python module from a shared library), hence, we have v2_mt_posix
+ */
 //!> typedef for the long formatting_ostream of boost::log
-typedef boost::log::v2s_mt_posix::formatting_ostream boost_log_ostream;
+typedef boost::log::v2_mt_posix::formatting_ostream boost_log_ostream;
 
 void startLogging();
 void stopLogging();

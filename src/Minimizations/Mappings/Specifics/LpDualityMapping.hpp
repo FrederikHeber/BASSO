@@ -35,6 +35,8 @@ public:
 			const NormedSpace_weakptr_t &_NormedSpaceRef,
 			const double _power);
 
+	virtual ~LpDualityMapping() {}
+
 	//!> expose overloaded operator method from base class
 	using Mapping::operator();
 

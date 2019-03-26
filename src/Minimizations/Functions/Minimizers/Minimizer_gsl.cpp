@@ -144,7 +144,7 @@ Minimizer<gsl_vector>::minimize(
 				}
 			}
 		}
-		LOG(trace, "Current iterate #" << iter << ":" << " " << gsl_multimin_fdfminimizer_x(s));
+		//LOG(trace, "Current iterate #" << iter << ":" << " " << gsl_multimin_fdfminimizer_x(s));
 
 		if (gsl_status == GSL_ENOPROG) {
 			doWarnIterate();

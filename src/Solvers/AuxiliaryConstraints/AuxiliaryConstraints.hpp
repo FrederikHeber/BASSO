@@ -20,6 +20,8 @@
  */
 struct AuxiliaryConstraints
 {
+	virtual ~AuxiliaryConstraints() {}
+
 	//!> typedef for shared ptr containing AuxiliaryConstraints
 	typedef boost::shared_ptr<AuxiliaryConstraint_impl> ptr_t;
 

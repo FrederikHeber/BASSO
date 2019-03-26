@@ -95,6 +95,8 @@ public:
 			const double _constant_positivity = 1e-4,
 			const double _constant_interpolation = 1.);
 
+	virtual ~FunctionalMinimizer_deprecated() {}
+
 	//!> typedef for the function to check when to stop the iteration
 	typedef boost::function<
 			enum FunctionMinimizer::GradientStatus (const double) > check_function_t;

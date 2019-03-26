@@ -31,7 +31,7 @@
 #include "Minimizations/Elements/SpaceElementIO.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
 #include "Minimizations/Mappings/Mapping.hpp"
-#include "Minimizations/Mappings/LinearMappingFactory.hpp"
+#include "Minimizations/Mappings/MappingFactory.hpp"
 #include "Minimizations/Minimizers/GeneralMinimizer.hpp"
 #include "Minimizations/Minimizers/MinimizationExceptions.hpp"
 #include "Minimizations/Minimizers/MinimizerFactory.hpp"
@@ -169,7 +169,7 @@ int main (int argc, char *argv[])
 						"data matrix", radon))
 					return 255;
 				// and create a LinearMapping through the factory
-				A = LinearMappingFactory::createInstance(
+				A = MappingFactory::createInstance(
 						X, Y, radon, false);
 				A_t = A->getAdjointMapping();
 			}
@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
 						"second factor of matrix", second_factor))
 					return 255;
 				// and create a TwoFactorLinearMapping through the factory
-				A = LinearMappingFactory::createTwoFactorInstance(
+				A = MappingFactory::createTwoFactorInstance(
 						X, Y, first_factor, second_factor, false);
 				A_t = A->getAdjointMapping();
 			}

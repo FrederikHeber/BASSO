@@ -22,25 +22,26 @@
  */
 
 /*
- * LinearMappingFactory.cpp
+ * MappingFactory.cpp
  *
  *  Created on: Dec 12, 2014
  *      Author: heber
  */
 
 
-#include "BassoConfig.h"
+#include "MappingFactory.hpp"
 
-#include "LinearMappingFactory.hpp"
+#include "BassoConfig.h"
 
 #include <fstream>
 
 #include "MatrixIO/MatrixIO.hpp"
 #include "Minimizations/Mappings/LinearMapping.hpp"
+#include "Minimizations/Mappings/NonLinearMapping.hpp"
 #include "Minimizations/Mappings/TwoFactorLinearMapping.hpp"
 
 const Mapping_ptr_t
-LinearMappingFactory::createInstance(
+MappingFactory::createInstance(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const Eigen::MatrixXd & _matrix,
@@ -57,7 +58,26 @@ LinearMappingFactory::createInstance(
 }
 
 const Mapping_ptr_t
-LinearMappingFactory::createTwoFactorInstance(
+MappingFactory::createNonlinearInstance(
+		const NormedSpace_weakptr_t _SourceSpaceRef,
+		const NormedSpace_weakptr_t _TargetSpaceRef,
+		const NonLinearMapping::non_linear_map_t &_map_function,
+		const NonLinearMapping::jacobian_t &_derivative,
+		const bool _isAdjoint)
+{
+	Mapping_ptr_t mapping(
+			new NonLinearMapping(
+					_SourceSpaceRef,
+					_TargetSpaceRef,
+					_map_function,
+					_derivative,
+					_isAdjoint));
+	static_cast<NonLinearMapping *>(mapping.get())->setSelfRef(mapping);
+	return mapping;
+}
+
+const Mapping_ptr_t
+MappingFactory::createTwoFactorInstance(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const Eigen::MatrixXd & _first_factor,
@@ -76,7 +96,7 @@ LinearMappingFactory::createTwoFactorInstance(
 }
 
 const Mapping_ptr_t
-LinearMappingFactory::create(
+MappingFactory::create(
 		const NormedSpace_weakptr_t _SourceSpaceRef,
 		const NormedSpace_weakptr_t _TargetSpaceRef,
 		const std::string & _name,

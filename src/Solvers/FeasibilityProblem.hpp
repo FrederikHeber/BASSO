@@ -20,6 +20,8 @@
  */
 struct FeasibilityProblem
 {
+	virtual ~FeasibilityProblem() {}
+
 	//!> shared ptr typedef to safely wrap a problem instance
 	typedef boost::shared_ptr<FeasibilityProblem> ptr_t;
 

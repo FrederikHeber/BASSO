@@ -34,6 +34,8 @@ public:
 				NormedSpace_ptr_t(_NormedSpaceRef)->getDualSpace())
 	{}
 
+	virtual ~DualityMapping() {}
+
 	//!> expose overloaded operator method from base class
 	using Mapping::operator();
 

@@ -24,6 +24,8 @@ struct LandweberFixedStepWidth : public DetermineStepWidth
 			const InverseProblem_ptr_t &_problem,
 			const double _C);
 
+	virtual ~LandweberFixedStepWidth() {}
+
 	const double operator()(
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,

@@ -27,6 +27,8 @@ struct ResidualMinimizingStepwidth : public DetermineStepWidth
 		residualizer(_residualizer)
 	{}
 
+	virtual ~ResidualMinimizingStepwidth() {}
+
 	const double operator()(
 			const SpaceElement_ptr_t &_dualx,
 			const SpaceElement_ptr_t &_u,

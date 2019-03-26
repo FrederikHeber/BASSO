@@ -47,6 +47,8 @@ public:
 			FunctionMinimizer::ptr_t &_minimizer,
 			S &_value);
 
+	virtual ~FunctionalMinimizer_inexactLinesearch() {}
+
 	/** Minimizes the given \a functional.
 	 *
 	 * @param _N dimension of the vector

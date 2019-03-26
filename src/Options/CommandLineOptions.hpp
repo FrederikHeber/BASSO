@@ -146,7 +146,6 @@ public:
 	double tolerance_spacex;
 	std::vector<std::string> tuple_parameters;
 	enum LastNSearchDirections::UpdateAlgorithmType updatetype;
-	unsigned int verbose;
 	std::vector<double> wolfe_constants;
 
 	// secondary options: set by other options

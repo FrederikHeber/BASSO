@@ -2,7 +2,7 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Minimizations 
+add_library (Minimizations SHARED
 	Elements/ElementCreator.cpp
 	Elements/LinearDependencyChecker.cpp
 	Elements/SpaceElement.cpp
@@ -23,7 +23,8 @@ add_library (Minimizations
 	Mappings/DualityMappingFactory.cpp
 	Mappings/IllegalDualityMapping.cpp
 	Mappings/LinearMapping.cpp
-	Mappings/LinearMappingFactory.cpp
+	Mappings/MappingFactory.cpp
+	Mappings/NonLinearMapping.cpp
 	Mappings/SingularValueDecomposition.cpp
 	Mappings/SingularValueDecomposition_impl.cpp
 	Mappings/Specifics/L1DualityMapping.cpp
@@ -54,7 +55,13 @@ add_library (Minimizations
 	Spaces/NormedSpace.cpp
 	)
 	
-target_link_libraries(Minimizations ${NLOPT_LIBRARIES})
+target_link_libraries(Minimizations
+	Math
+	Log
+	${GSL_LIBRARY} 
+	${NLOPT_LIBRARIES}
+	${Boost_LIBRARIES}
+)
 
 install (TARGETS Minimizations DESTINATION bin)
 
@@ -100,9 +107,10 @@ install (FILES InverseProblems/QuickAccessReferences.hpp DESTINATION include)
 install (FILES Mappings/DualityMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/IllegalDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/LinearMapping.hpp DESTINATION include)
-install (FILES Mappings/LinearMappingFactory.hpp DESTINATION include)
+install (FILES Mappings/MappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/MappingExceptions.hpp DESTINATION include)
+install (FILES Mappings/NonLinearMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/SingularValueDecomposition.hpp DESTINATION include)
 install (FILES Mappings/SingularValueDecomposition_impl.hpp DESTINATION include)

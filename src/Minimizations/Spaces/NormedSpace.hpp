@@ -93,6 +93,8 @@ public:
 			const unsigned int _dimension,
 			const Norm_ptr_t &_norm);
 
+	virtual ~NormedSpace() {}
+
 	/** Getter for the this space.
 	 *
 	 * @return shared_ptr for this Space (correctly connected to the only
@@ -119,7 +121,7 @@ public:
 	 *
 	 * @return const reference to duality mapping
 	 */
-	const Mapping_ptr_t& getDualityMapping() const;
+	const Mapping_ptr_t getDualityMapping() const;
 
 	/** Const getter for the dimension of the representations in this space.
 	 *

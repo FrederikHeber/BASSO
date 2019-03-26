@@ -140,6 +140,9 @@ SequentialSubspaceMinimizerNoise::operator()(
 	double stepwidth_norm = 0.;
 	unsigned int inner_iterations = 0;
 	while (!StopCriterion) {
+		/// Update adjoint (if non-linear
+		refs.A.updateAdjoint(istate.m_solution);
+
 		/// Calculation of search direction
 		searchdir.update(refs, istate.m_residual);
 

@@ -20,6 +20,8 @@
  */
 struct StoppingCriterion
 {
+	virtual ~StoppingCriterion() {}
+
 	//!> typedef for shared ptr containing StoppingCriterion
 	typedef boost::shared_ptr<StoppingCriterion_impl> ptr_t;
 

@@ -2,10 +2,14 @@
 # include files
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-add_library (Options 
+add_library (Options SHARED
 	CommandLineOptions.cpp
 	Options.cpp
 	)
+
+target_link_libraries(Options
+	Minimizations
+)
 
 install (FILES CommandLineOptions.hpp DESTINATION include)
 install (FILES filesystem_path_serialization.hpp DESTINATION include)

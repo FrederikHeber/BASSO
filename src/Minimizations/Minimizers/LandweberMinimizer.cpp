@@ -191,6 +191,9 @@ LandweberMinimizer::operator()(
 	unsigned int tuple_counter = 1;
 	double alpha = 0.;
 	while (!StopCriterion) {
+		/// Update adjoint (if non-linear
+		refs.A.updateAdjoint(returnvalues.m_solution);
+
 		/// Calculation of search direction
 		searchdir.update(refs, returnvalues.m_residual);
 

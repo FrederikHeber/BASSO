@@ -41,6 +41,8 @@
 #include <numeric>
 #include <sstream>
 
+#include "Log/Logging.hpp"
+
 #include "Database/Database.hpp"
 #include "Database/Table.hpp"
 #include "Minimizations/InverseProblems/InverseProblem.hpp"
@@ -266,7 +268,7 @@ const unsigned int SequentialSubspaceMinimizer::calculateStepWidth(
 	unsigned int inner_iterations = (*functionminimizer)(
 		Ndirs, TolFun, tmin);
 
-	LOG(debug, "tmin " << tmin << " found in " << inner_iterations << " iterations.");
+	LOG(debug, "tmin " << tmin[0] << " found in " << inner_iterations << " iterations.");
 
 	return inner_iterations;
 }
@@ -430,6 +432,9 @@ SequentialSubspaceMinimizer::operator()(
 	unsigned int inner_iterations = 0;
 	double stepwidth_norm = 0.;
 	while (!StopCriterion) {
+		/// Update adjoint (if non-linear
+		refs.A.updateAdjoint(istate.m_solution);
+
 		/// Calculation of search direction
 		// Jw=DualityMapping(w,NormY,PowerY,TolX);
 		searchdir.update(refs, istate.m_residual);
@@ -447,7 +452,7 @@ SequentialSubspaceMinimizer::operator()(
 		// alpha=Jw'*y
 		const double alpha =
 				searchdir.Jw * refs.y;
-		LOG(trace, "alpha is " << alpha);
+		LOG(debug, "alpha is " << alpha);
 
 		// add u to U and alpha to alphas
 		updateSearchspace(_truesolution, searchdir.u, alpha);

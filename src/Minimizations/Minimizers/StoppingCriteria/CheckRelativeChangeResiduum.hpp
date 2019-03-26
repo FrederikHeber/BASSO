@@ -21,6 +21,8 @@ struct CheckRelativeChangeResiduum : public StoppingCriterion_impl
 		oldresidual(0.)
 	{}
 
+	virtual ~CheckRelativeChangeResiduum() {}
+
 	bool operator()(
 			const boost::chrono::duration<double> &,
 			const int,
