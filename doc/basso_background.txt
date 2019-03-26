@@ -4,12 +4,7 @@ Background
 
 One of the most ubiquitous tasks in computing is solving linear systems of
 equations,
-
-[latexmath]
-+++++++++++
-A x = y
-+++++++++++
-
+latexmath:[$A x = y$]
 where a matrix latexmath:[$A$] and a right-hand side vector latexmath:[$y$] are
 given and we are looking for the solution vector latexmath:[$x$]. Because of the
 omnipresence of this problem, many different solution methods exist, whose
@@ -22,9 +17,9 @@ If the matrix is generic, e.g., it is not symmetric, then more general schemes
 are necessary.
 
 From a more mathematical perspective, latexmath:[$x$] is the element of a vector
-space latexmath:[${\mathrm X}$]. Moreover, the matrix is a linear operator
-mapping between this space latexmath:[${\mathrm X}$] and and itself or maybe
-even another space latexmath:[${\mathrm Y}$] that contains the given right-hand
+space latexmath:[$\mathrm{X}$]. Moreover, the matrix is a linear operator
+mapping between this space latexmath:[$\mathrm{X}$] and and itself or maybe
+even another space latexmath:[$\mathrm{Y}$] that contains the given right-hand
 side latexmath:[$y$].
 
 We are looking at the more interesting cases, where there is either no solution
@@ -36,7 +31,7 @@ induce a metric. Therefore, the vector spaces are normed vector spaces.
 When the row and column dimensions are not the same, then we certainly do not
 have a single space, but two spaces. This is also the case when different norms
 apply to source and target space. Moreover, when the norm is not an
-latexmath:[$\ell_2$]-norm, then latexmath:[${\mathrm X}$] is not even a Hilbert
+latexmath:[$\ell_2$]-norm, then latexmath:[$\mathrm{X}$] is not even a Hilbert
 space.
 
 With an under-determined or over-determined system of equation the linear
@@ -51,10 +46,7 @@ latexmath:[$\delta y$].
 Typically, (Tikhonov-)regularization is formulated as a minimization problem of
 a functional latexmath:[$F(x)$] by adding a penalty term as follows:
 
-[latexmath]
-+++++++++++
-min_x ( || Ax-y ||^2 + \lambda ||x||^2) =: min_x F(x).
-+++++++++++
+latexmath:[$min_x ( || Ax-y ||^2 + \lambda ||x||^2) =: min_x F(x)$].
 
 This minimization problems contains two terms: the first is called the data
 fidelity term that minimizes the residual, i.e. the metric distance to the sets
@@ -73,10 +65,10 @@ results are well-established for Hilbert spaces. For Banach spaces the situation
 is more difficult: In a Banach space the space and its dual do not in general
 coincide, namely they are not in general isometric isomorphic to each other.
 
-This in turn causes us to deal not with two spaces, latexmath:[${\mathrm X}$]
-and latexmath:[${\mathrm Y}$], but with possibly up to four spaces,
-latexmath:[${\mathrm X}$], latexmath:[${\mathrm X}^\ast$], latexmath:[${\mathrm Y}$],
-and latexmath:[${\mathrm Y}^\ast$].
+This in turn causes us to deal not with two spaces, latexmath:[$\mathrm{X}$]
+and latexmath:[$\mathrm{Y}$], but with possibly up to four spaces,
+latexmath:[$\mathrm{X}$], latexmath:[$\mathrm{X}^\ast$], latexmath:[$\mathrm{Y}$],
+and latexmath:[$\mathrm{Y}^\ast$].
 
 What is the relation between those spaces? Let us give a figure of the mappings.
 
@@ -84,24 +76,20 @@ image::images/FourSpaces.png[alt="Figure of the four involved Banach spaces and 
 
 The matrix latexmath:[$A$] and its dual mapping latexmath:[$A^\ast$], which in
 finite dimensions is simply the complex conjugate, are obvious. However, what
-are latexmath:[J_p] and so forth?
+are latexmath:[$J_p$] and so forth?
 
-The residual latexmath:[Ax-y] gives us the natural direction of error as the
+The residual latexmath:[$Ax-y$] gives us the natural direction of error as the
 only information we have about the true solution latexmath:[$x$] is given in the
 mapped form as the right-hand side latexmath:[$y$]. Therefore, we need a mapping
 that preserves angles and lengths with respect to the norm of the respective
 space. This role is fulfilled by the so-called duality mappings
 
-[latexmath]
-+++++++++++
-J_p = { x^\ast \in {\mathrm X}^\ast | <x^\ast, x> = ||x||^p_{\mathrm X}, ||x^\ast|| = ||x||^{p-1} },
-+++++++++++
+latexmath:[$J_p = { x^\ast \in \mathrm{X}^\ast | <x^\ast, x> = ||x||^p_{\mathrm{X}}, ||x^\ast|| = ||x||^{p-1} }$],
 
-where p is associated with the gauge function latexmath:[t \rightarrow
-t^{p-1}].footnote:[In lp-spaces these two p coincide.]
+where p is associated with the gauge function latexmath:[$t \rightarrow t^{p-1}$].footnote:[In lp-spaces these two p coincide.]
 
 These are connected to the (sub-)gradient of the norm through the famous theorem
-of Asplund, latexmath:[J_p(x) = \frac{\partial}{\partial x} ( \tfrac 1 p ||x||^p)]
+of Asplund, latexmath:[$J_p(x) = \frac{\partial}{\partial x} ( \frac 1 p ||x||^p)$]
 
 A sub-gradient is a generalization of the gradient where the space is no longer
 smooth and therefore the gradient is no longer unique.
@@ -110,10 +98,7 @@ As last but one ingredient we need a new distance measure, replacing the metric
 distance that has failed so far in allowing a proof of convergence. We use the
 Bregman distance,
 
-[latexmath]
-+++++++++++
-\Delta(x,y) = \tfrac 1 {p^\ast} ||x||^p - < J_p (x), y > + \tfrac 1 p || y ||^p
-+++++++++++
+latexmath:[$\Delta(x,y) = \tfrac 1 {p^\ast} ||x||^p - < J_p (x), y > + \frac 1 p || y ||^p$]
 
 Finally, we seek for iterative solutions for the above minimization functional,
 i.e., we have a procedure latexmath:[$x_{n+1} = x_n + f(x_n, \Delta F(x_n))$],

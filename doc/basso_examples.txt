@@ -53,8 +53,8 @@ link:#MatrixIO[].
 include::examples/basso.sh[]
 -------------
 
-In this call of 'Basso' we use the Landweber with latexmath:[${\mathrm X}$] and
-latexmath:[${\mathrm Y}$] being latexmath:[\ell_2]-spaces. We terminate when the
+In this call of 'Basso' we use the Landweber with latexmath:[$\mathrm{X}$] and
+latexmath:[$\mathrm{Y}$] being latexmath:[\ell_2]-spaces. We terminate when the
 residual is less than 1e-4 and use at most 50 iterations. All information on the
 iterations is written to an SQLite database file 'Landweber1.db'. This database
 contains tables `data_per_iteration` and `data_overall` tables along with
@@ -88,20 +88,14 @@ inverse problem: We have the cause. Now we want to know what's the source of it.
 
 What we need is a equation that relates the two: This is known by the name of Fredholm integral equation of the first kind, see link:#Hansen2010[[Hansen2010]].
 
-[latexmath]
-+++++++++++
-\int_0^1 K(s,t)  f(t) dt = g(s), \quad 0 \leq s \leq 1,
-+++++++++++
+latexmath:[$\int_0^1 K(s,t)  f(t) dt = g(s), \quad 0 \leq s \leq 1$],
 
 latexmath:[$K(s,t)$] here is called the "kernel". If the kernel is linear and we
 discretize the x axis by using a set of equidistant points along it, we obtain a
 matrix and the equation becomes the typical inverse problems that we know
 already: latexmath:[$Ax=y$].
 
-[latexmath]
-+++++++++++
-K(s,t) = \frac{d} {\bigl (d^2+(s-t)^2 \bigr)^{\tfrac 3 2}}.
-+++++++++++
+latexmath:[$K(s,t) = \frac{d} {\bigl (d^2+(s-t)^2 \bigr)^{\tfrac 3 2}}$].
 
 This equation for the kernel results from knowing that the magnitude of the
 gravity field along s behaves as latexmath:[$f(t)dt/r^2$], where latexmath:[$r =\sqrt{d^2 + (s-t)^2}$]
@@ -123,7 +117,7 @@ In computerized tomography the inverse problem is the reconstruction of the
 inside of an object from projections. Measurements are for example obtained by
 passing radiation through a body, whereby their intensity is diminished,
 proportional to the passed length and density latexmath:[$f(x)$] of the body:
-[0,1] latexmath:[$^2 \rightarrow R^+_0$]. This decrease is measured over a
+[0,1] latexmath:[$^2 \rightarrow R^{+}_{0}$]. This decrease is measured over a
 latexmath:[$a$] angles and latexmath:[$s$] shifts of radiation source and detectors.
 This measurement matrix is usually called *sinogram*. Again, we follow
 link:#Hansen2010[[Hansen2010, §7.7]].
@@ -143,10 +137,7 @@ latexmath:[$dx$] through the body latexmath:[$f(x)$] by latexmath:[$dI$].
 
 This can be written as the famous *Radon transform*,
 
-[latexmath]
-+++++++++++
-b_i = \int_{-\infty}^{\infty} f(t^i(\tau)) d\tau,
-+++++++++++
+latexmath:[$b_i = \int_{-\infty}^{\infty} f(t^i(\tau)) d\tau$],
 
 where i enumerates all rays passed through the body and latexmath:[$t^i$] is the
 respective parametrization in 2D, latexmath:[$t^i = t^{i,0} + \tau d^i$] with
@@ -296,7 +287,7 @@ include::examples/rangeprojector.sh[]
 -------------
 
 The projected vector that is closest in the sense of the employed norm of
-latexmath:[${\mathrm Y}$] to the original right-hand side is written to the file
+latexmath:[$\mathrm{Y}$] to the original right-hand side is written to the file
 **solution.mat**.
 
 [[examples.helpers.matrix_to_png]]
