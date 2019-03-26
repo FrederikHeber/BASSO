@@ -12,4 +12,4 @@ ComputerTomography \
   --num-pixels-x 41 \
   --num-pixels-y 41 \
   --solution solution.mat \
-  --phantom ${CMAKE_CURRENT_SOURCE_DIR}/pre/phantom.mat
+  --phantom pre/phantom.mat
