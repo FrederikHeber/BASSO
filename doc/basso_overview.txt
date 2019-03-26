@@ -5,6 +5,10 @@ Overview
 This mathematical introduction is necessary to understand the following elements
 contained in this library and put them to the best possible use.
 
+Note that although the primary interface is written in pass:[C++], there is also
+a Python 3 interface. However, in this section we only go over the primary
+interface classes. The python interface is discussed in a separate <<python>>.
+
 [[overview.basic_elements]]
 === The Basic Elements
 

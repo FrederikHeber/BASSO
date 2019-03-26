@@ -1,0 +1,302 @@
+[[python]]
+Python
+------
+
+A Python 3 interface has been added to BASSO that allows to use the library
+from a python program without any pass:[C++] knowledge.
+
+This is mainly accomplished through the `minieigen` package that allows to
+construct compatible `Eigen::MatrixXd` and `Eigen::VectorXd` instances in python
+from suitable `numpy` arrays.
+
+IMPORTANT: `minieigen` has to be imported **before** the `pyBasso`
+interface.
+
+The principle paradigm for creating the Python interface (using `boost::python`)
+was to convert the major pass:[C++] interface classes into Python classes  and
+export `Factory::create()` by static functions. All getter functions have been
+exported by simply making them (read-only) properties.
+
+In this part, assuming familiarity with the basic elements, we explain how to
+use the Python interface.
+
+[NOTE]
+====
+Naturally, there is extensive python *docstring* information available in the form
+
+[source, python]
+----
+import pyBasso
+help(pyBasso)
+----
+
+that will produce a list of converted classes with their properties and member
+functions and also the list of static functions. Each is accompanied with an
+brief explanation.
+====
+
+[[python.vectorspace]]
+=== Vectors and spaces
+
+Let us create a vector space and a vector x that is zero initially.
+
+[source, python]
+----
+import pyBasso
+import numpy as np
+
+X = pyBasso.create_LpSpace(10, 2., 2.)
+
+x = X.createElement()
+x.setZero()
+----
+
+The vector will have *10* components and we are using the *latexmath:[$\ell_2$]-norm*
+with a power type of *2*.
+
+The norm object can be accessed through `x.norm`, its space by `x.space` and
+the dimension can then be obtained by `x.space.dim`. As mentioned, getters
+simply are properties. The norm object can be used directly to obtain the norm
+of *x*.
+
+[source, python]
+----
+norm = X.getNorm() # implementing X.norm did not work
+print(norm(x))
+----
+
+Predicates such as `SpaceElement::isZero()` are available as member functions
+of the class, i.e., `x.isZero()`.
+
+[[python.mappings]]
+=== Mappings
+
+For creating a LinearMapping, we need two spaces and a matrix.
+
+[source, python]
+----
+# import minieigen before pyBasso!
+import minieigen
+import pyBasso
+import numpy as np
+
+# create source and target space
+X = pyBasso.create_LpSpace(10, 2., 2.)
+Y = pyBasso.create_LpSpace(12, 2., 2.)
+
+# create the matrix in some way
+matrix = np.asarray(np.zeros((12,10)))
+# convert the matrix to the Eigen format using minieigen
+M = minieigen.MatrixX(matrix)
+
+# instantiate the LinearMapping
+A = pyBasso.create_LinearMapping(X,Y, M, False)
+----
+
+The *matrix* needs to be converted from a numpy array to a `Eigen::MatrixXd`
+using `minieigen`. Finally, we create *A*, the linear mapping.
+
+As a test, let us map an element of space *X* to space *Y*.
+
+[source, python]
+----
+x = X.createElement()
+x[0] = 1.
+print(X.space.dim)
+
+Ax = A*x
+print(Ax)
+print(Ax.space.dim)
+----
+
+We see that *x* has the dimension of *X*, while the mapped element *Ax* has
+the dimension of *Y* (and is also associated with it). Naturally, the mapping
+is boring as the matrix is identical to zero in every component. However, we
+could have used any other numpy array.
+
+[[python.options]]
+=== (Command-line) Options
+
+The `Options` class contains all parameters that steer how the iterative solvers
+work. It is the general parameter storage.
+
+[source, python]
+----
+import pyBasso
+
+opts = pyBasso.Options()
+opts.algorithm_name = "Landweber"
+----
+
+In this case, we instantiate an `Options` class and set its property `algorithm_name`
+to *Landweber*. This is the name of the iterative solver, here we want to use
+the Landweber method for solving inverse problems.
+
+For a list of all properties we refer to the respective *docstring* using
+`help(pyBasso.Options)`.
+
+[[python.inverse_problem]]
+=== Inverse problems
+
+Let us now set up an inverse problem. For this, we create a random numpy array
+that will become our (random) linear operator *A*. Moreover, we create a random
+right-hand side *y*. As before, we need to instantiate two normed vector spaces
+in order to create a linear mapping using the random matrix.
+
+Again, matrices and vectors are converted from numpy arrays to the Eigen format
+using `minieigen` routines.
+
+[source, python]
+----
+# IMPORTANT: minieigen before pyBasso!!
+import minieigen
+import pyBasso
+import numpy as np
+
+# make random arrays reproducible
+np.random.seed(426)
+
+# create spaces
+X = pyBasso.create_LpSpace(10, 2., 2.)
+Y = pyBasso.create_LpSpace(10, 2., 2.)
+
+# create A and y
+matrix = np.asarray(np.random.uniform(low=-1., high=1., size=(10,10)))
+righthandside = np.asarray(np.random.uniform(low=-1., high=1., size=(10)))
+
+# convert matrix and vector to Eigen format
+M = minieigen.MatrixX(matrix)
+rhs = minieigen.VectorX(righthandside)
+
+# create linear mapping
+A = pyBasso.create_LinearMapping(X,Y, M, False)
+
+# create right-hand side as proper element of space Y
+y = Y.dualspace.createElement()
+y.set(rhs)
+----
+
+Now, the random vector is not generally in the range of our random matrix.
+Therefore, we use a little procedure to have it in its range.
+
+[source, python]
+----
+def projectOntoRange(A, y):
+  """ Projects given \a y onto the range of \a A and returns it.
+
+  See [Schuster, Schöpfer, 2006] for details.
+
+  Args:
+    A: mapping
+    y: space element to project onto range of mapping \a A
+
+  Returns:
+    space element in range of operator/mapping
+  """
+  X = A.sourcespace
+  J_p = X.dualspace.getDualityMapping()
+  Asys = A.adjoint(y)
+  precursor = J_p(Asys)
+  xmin = precursor*(1./precursor.norm)
+  return A*xmin
+----
+
+In our case *J_p* does nothing as we use latexmath:[$\ell_2$]-spaces, however
+in case *p* is not 2, then we need it.
+
+Finally, we instantiate the inverse problem, set up the options to prepare the
+solvers and then we solve it.
+
+[source, python]
+----
+y = projectOntoRange(A,y)
+inverse_problem = pyBasso.InverseProblem(A, X, Y, y);
+
+# create opts: algorithm, stopping_criteria and parameters
+opts = pyBasso.Options()
+opts.algorithm_name = "SESOP"
+opts.delta = 0.001
+opts.C = 1
+opts.maxiter = 1000
+opts.stopping_criteria = "RelativeResiduum || MaxIterationCount"
+opts.orthogonalization_type = 1 # MetricProjection
+opts.setValues()
+opts.setVerbosity(1)
+
+# create zero start value and solve
+xstart = X.createElement()
+inverse_problem.solve(opts, xstart)
+
+# print solution
+print("Expected solution: "+str(xmin))
+print("Approximate solution: "+str(inverse_problem.x))
+print("Norm of difference: "+str((inverse_problem.x-xmin).norm))
+----
+
+This will use *orthoSESOP* to solve for the minimum-norm solution in these
+Hilbert spaces for up to 1000 steps or if the residuum has a relative change
+less than latexmath:[$10^{-4}$].
+
+[[python.inverse_problem.range_projection]]
+==== Range projection
+
+One often encountered intermediate problem is to project the right-hand side
+first onto the range of the mapping before solving the inverse problem without
+requiring regularization.
+
+This work in just the same way as the solving of a normal inverse problem.
+The only difference lies in calling `project()` in place of `solve()`.
+
+[source, python]
+----
+# create zero start value and project onto range
+xstart = Y.dualspace.createElement()
+inverse_problem.project(opts, xstart)
+
+print("Projected rhs: "+str(inverse_problem.y))
+print("Norm difference: "+str((inverse_problem.y-y).norm))
+----
+
+[[python.inverse_problem.general]]
+==== More general inverse problems
+
+We can do even more: We can solve not only linear inverse problems but also
+general inverse problems.
+
+All we need to do is specify a Python *mapping* and a *derivative* function.
+For this example, we will use the same matrix as before (i.e., it is still a
+linear mapping) but an arbitrary function could be used.
+
+[source, python]
+----
+def mapping(_argument):
+  return M * _argument
+
+def derivative(_argument):
+  return M.transpose()
+----
+
+Here, *M* is the converted random matrix. Note that `mapping()` returns a
+`minieigen::Vector` and `derivative()` returns a `minieigen:Matrix`, the
+Jacobian.
+
+Next, the only difference to the above is that we create the `Mapping` class
+as follows.
+
+[source, python]
+----
+A = pyBasso.create_NonLinearMapping(X,Y, mapping, derivative, False)
+----
+
+The last argument `False` states the mapping is not in the adjoint form already.
+
+All else proceeds just in the same way as in the example with the linear
+mapping before.
+
+[[python.conclusion]]
+=== Conclusion
+
+This concludes the discussion of the Python interface of BASSO. All remaining
+section will now focus again on the pass:[C++] parts. However, it should have
+become clear that this interface lends itself well to solve inverse problems
+in a straight-forward fashion taking full advantage of BASSO.

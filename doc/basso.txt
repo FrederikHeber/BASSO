@@ -67,6 +67,8 @@ include::basso_background.txt[]
 
 include::basso_overview.txt[]
 
+include::basso_python.txt[]
+
 include::basso_examples.txt[]
 
 include::basso_reference.txt[]
