@@ -1,3 +1,4 @@
+[[examples]]
 Examples
 --------
 
@@ -5,6 +6,7 @@ We have implemented a number of typical inverse problems using BASSO. These are 
 
 Note that basically all examples come with an additional program `...Configurator` that writes command-line options into a file. This is to allow reproducible runs where all employed options can be inspected at any time for a given result. At any later point in time you can easily see what options produced the respective output files by looking at this file.
 
+[[examples.basso]]
 === BASSO
 
 The main program which solves any kind of inverse problem given in the form of two files containing the matrix and the right-hand sie vector has the same name as the library itself, namely *BASSO*.
