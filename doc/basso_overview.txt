@@ -1,0 +1,162 @@
+[[overview]]
+Overview
+--------
+
+This mathematical introduction is necessary to understand the following elements
+contained in this library and put them to the best possible use.
+
+[[overview.basic_elements]]
+=== The Basic Elements
+
+BASSO mimics all of these objects we have introduced before in its class
+structure:
+
+- (normed) vector space classes `NormedSpace` and `NormedDualSpace`,
+
+- norm class `L1Norm`, `LpNorm`, and `LInfinityNorm`,
+
+- vector class `SpaceElement`,
+
+- mapping classes `DualityMapping` -- with specializations `LpDualityMapping`, `L1DualityMapping`, `LInfinityDualityMapping` -- `LinearMapping` (for matrices), and
+`TwoFactorLinearMapping` (for product of two matrices used in factorization
+problems),
+
+- function(al) classes/functors such as `BregmanDistance`, `ResidualFunctional`, `SmoothnessFunctional`.
+
+These can be considered the basic elements.
+
+[NOTE]
+====
+BASSO is based on the well-known link:http://eigen.tuxfamily.org/[Eigen] library
+for all linear algebra-relates routines. Therefore it uses the Eigen classes
+`Eigen::MatrixXd` and `Eigen::VectorXd` for representing vectors and matrices.
+====
+
+[[overview.inverse_problem]]
+=== Inverse problem and Solver classes
+
+Moreover, it contains some more complex classes that comprise the linear system
+of equations to be solved or the overall problem structure, `InverseProblem`.
+
+In order to solve this inverse problem of latexmath:[Ax=y] we need solvers.
+Their classes are called `LandweberMinimizer`, `SequentialSubspaceMinimizer` or
+`SequentialSubspaceMinimizerNoise` (with additional noise in the right-hand side
+taken into account).
+
+[[overview.general_usage]]
+=== General usage concepts
+
+Specific instances of these classes, e.g., the `NormedSpace` class, are created
+using the so-called *Factory* pattern by classes that typically share the same
+name just with an added Factory, e.g., `NormedSpaceFactory`. These contain a
+function `create()` that is called with certain parameters and returns a pointer
+to the created instance.
+
+[IMPORTANT]
+====
+All these pointers are wrapped into `boost::shared_ptr` to prevent memory loss,
+i.e. they deallocate automatically when the last reference to the pointer is no
+longer held.
+====
+
+All things associated to an object, e.g., the norm of a space, can be queried
+from an instance using *getters*, e.g.,  `NomedSpace.getNorm()` for the norm,
+`NormedSpace.getDimension()` for the number of degrees of freedom of this space,
+or `NormedSpace.getDualSpace()` for its dual space. See <<reference.NormedSpace>>
+for details.
+
+[[overview.inverse_problem_solving]]
+=== Rough sketch of inverse problem solving
+
+The following should give you a rough idea of how to solve an inverse problem
+
+1. Create the two Banach spaces as `NormedSpace` by supplying the respective lp
+norm parameter. Their dual spaces are created automatically and so are in turn
+the required duality mappings.
+2. Create the right-hand side latexmath:[y] as a `SpaceElement` by using `NormedSpace.createElement()` or `ElementCreator.create()` giving the
+associated space and the link:http://eigen.tuxfamiliy.org[Eigen] vector.
+3. Create the linear mapping latexmath:[A] using `LinearMappingFactory.createInstance()` giving the two spaces and the link:http://eigen.tuxfamiliy.org[Eigen] matrix.
+4. Create the inverse problem `InverseProblem` giving the mapping, the two
+spaces and the right-hand side.
+5. Create sensible starting values in the solution space and its dual. Note
+that zero is always an admissible starting value.
+6. Finally, instantiate a solver such as `SequentialSubspaceMinimizer` give it
+the inverse problem, starting value and dual starting value and a true solution
+if known.
+
+The result will be a structure wherein the approximate solution and a few other
+instances such as the residual or the number of iterations and the status are contained.
+
+The first four steps can be combined using `InverseProblemFactory` that takes
+certain string arguments describing the spaces and the right-hand side and the
+matrix in link:http://eigen.tuxfamily.org[Eigen]-format.
+
+This is the approach used in the `Basso` tool that ships with this library,
+see <<examples.basso>>
+
+[[overview_auxiliary_constraints]]
+=== Inverse Problems with auxiliary constraints
+
+For more complex problems a *split feasibility* ansatz is used where each
+constraint is fulfilled in turn in an iterative fashion. In other words, there
+are two iterations: An inner loop where the inverse problem is solved and an
+outer loop where the different parts of the split feasibility problem -- the
+inverse problem is one of them -- are minimized in turn.
+
+To this end, there is the abstract `FeasibilityProblem` class, the
+`AuxiliaryConstraintsProblem` which combines it with an arbitrary combination of
+`AuxiliaryConstraints` such as unity, non-negativity or a logical combination of
+these. Finally, there is the high-level class `SplitFeasibilitySolver` that
+solves inverse problems with these additional auxiliary constraints. These
+constraints are simply `register()`ed with this class. See
+<<reference.solvers.SplitFeasibilitySolver>> for details.
+
+Let us now  look at an example where we solve the random matrix toy problem.
+We create a random matrix and a random right-hand side. We make sure that the
+right-hand side is actually in the range of the matrix. We construct all
+instances necessary for the solver and finally solve the inverse problem.
+
+We look at two versions: First, we inspect the "long" version where most of
+the ingredients are set up by hand. There you will see all of the basic elements
+that we talked about before. In the second "short" version we will use
+a lot of convenience objects.
+
+[NOTE]
+====
+We hide away all includes and two static functions for creating a random vector
+and a random matrix in the include files *random_matrix_inverseproblem_?.hpp*
+====
+
+.Inverse Problem: Random matrix, longer version
+[source,{basebackend@docbook:C++:cpp}]
+----
+include::listings/random_matrix_inverseproblem_1.cpp[]
+----
+
+As you probably notice, BASSO is at the moment focused on providing small
+executables that solve specific (inverse) problems: We have set the options in
+quite a crude fashion. It is much more elegant to query them from the user and
+parse them from `(argc, argv)`. Above we have tried to rely on them as little as
+possible.
+
+Let us look again at the above example. This time we create a
+`CommandLineOptions` at the start and use all the convenience objects there are.
+
+.Inverse Problem: Random matrix, short version
+[source,{basebackend@docbook:C++:cpp}]
+----
+include::listings/random_matrix_inverseproblem_2.cpp[]
+----
+
+You see that all of the basic elements such as setting up of vector spaces and
+mappings have disappeared. We can still access them through the getters of
+any of their vectors, see the `InverseProblem` instance.
+
+These two listings give the basic structure of all example programs in this
+library. In some cases we combine two minimizations, e.g., we might first
+project onto the range of the matrix/operator, and then solve the inverse
+problem without regularization.
+
+In the next section we look at some example programs that have been implemented
+using the library. We will only discuss the general problem and how the
+executable is called. Much of it is actually along the same lines as before.

@@ -32,7 +32,7 @@ add_subdirectory (NonnegativeMatrixFactors)
 # tests for RadonMatrixWriter program
 add_subdirectory (RadonMatrixWriter)
 
-# test n${DIFFCMD} ${NDIFF_OPTIONS}only when desired
+# test ndiff only when desired
 if (USE_NDIFF)
 	add_subdirectory (ndiff)
 endif (USE_NDIFF)
@@ -42,3 +42,6 @@ add_subdirectory (MatrixToPNG)
 
 # tests for Python interface
 add_subdirectory (Python)
+
+# tests for Userguide examples
+add_subdirectory (Userguide)

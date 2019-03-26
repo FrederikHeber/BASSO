@@ -1,0 +1,15 @@
+Basso \
+  --algorithm Landweber \
+  --type-space-x "lp" \
+  --px 2 \
+  --powerx 2 \
+  --type-space-y "lp" \
+  --py 2 \
+  --powery 2 \
+  --delta 0.0001 \
+  --C 1 \
+  --maxiter 50 \
+  --iteration-file Landweber1.db \
+  --matrix matrix.m \
+  --rhs vector.m \
+  --solution straightline1.m

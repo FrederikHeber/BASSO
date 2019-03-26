@@ -1,0 +1,15 @@
+To Do
+-----
+
+- `GeneralMinimizer`'s takes the `InverseProblem` only out of convenience but it
+is hard to understand why it needs it again in `operator()`. Cstor might get
+away with just getting a space?
+- `FeasibilityProblem::clear()` and `::finish()` can possibly be made protected
+as user access is not needed.
+- Remove the extra two space arguments in the cstor of `InverseProblem`. They
+can be deduced from the Mapping.
+- Split `Parameters` of `CommandLineOptions` to disassociate from
+command-line context. The former only contains Serialization. Note that there
+is already an `Options` class that does the storing.
+- `Options` should have a convenience function `parse()` similar to `store()`, see
+`Options::parse()` in "config" branch.

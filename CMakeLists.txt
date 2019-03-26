@@ -14,6 +14,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -DNDEBUG")
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 10)
 
+set (ISSUE_REPORT_MSG "Please consider opening an issue at https://github.com/FrederikHeber/BASSO with anything that is helpful.")
+
 # should we count and measure the time of all operations?
 option (USE_TIMINGS 
 	"Use counter and timings on all vector space operations" OFF)
@@ -306,6 +308,9 @@ add_subdirectory (Examples/ComputerTomography/DiscretizedRadon/unittests)
 
 add_subdirectory (src/Documentation)
 
+### Userguide
+
+add_subdirectory (doc)
 
 ##################### PACKING INSTRUCTIONS ###############################
 
