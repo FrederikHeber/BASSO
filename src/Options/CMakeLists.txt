@@ -11,6 +11,8 @@ target_link_libraries(Options
 	Minimizations
 )
 
+install (TARGETS Options DESTINATION lib)
+
 install (FILES CommandLineOptions.hpp DESTINATION include)
 install (FILES filesystem_path_serialization.hpp DESTINATION include)
 install (FILES Options.hpp DESTINATION include)

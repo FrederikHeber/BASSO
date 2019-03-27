@@ -17,7 +17,7 @@ target_link_libraries ( RadonMatrixWriter
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS RadonMatrixWriter DESTINATION bin)
@@ -31,7 +31,7 @@ target_link_libraries ( RadonMatrixWriterConfigurator
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS RadonMatrixWriterConfigurator DESTINATION bin)

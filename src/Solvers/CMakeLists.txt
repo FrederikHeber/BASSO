@@ -16,6 +16,8 @@ target_link_libraries(Solvers
 	Log
 )
 
+install (TARGETS Solvers DESTINATION lib)
+
 install (FILES AuxiliaryConstraints/AuxiliaryConstraints.hpp DESTINATION include)
 install (FILES AuxiliaryConstraints/AuxiliaryConstraint_impl.hpp DESTINATION include)
 install (FILES AuxiliaryConstraints/AuxiliaryConstraints_AND.hpp DESTINATION include)

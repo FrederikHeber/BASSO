@@ -6,7 +6,7 @@ add_executable (DualityMappingFactoryUnitTest
 	DualityMappingFactoryUnitTest.cpp) 
 target_link_libraries (DualityMappingFactoryUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -19,7 +19,7 @@ add_executable (IllegalDualityMappingUnitTest
 	IllegalDualityMappingUnitTest.cpp) 
 target_link_libraries (IllegalDualityMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -32,7 +32,7 @@ add_executable (LpDualityMappingUnitTest
 	LpDualityMappingUnitTest.cpp) 
 target_link_libraries (LpDualityMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -45,7 +45,7 @@ add_executable (L1DualityMappingUnitTest
 	L1DualityMappingUnitTest.cpp) 
 target_link_libraries (L1DualityMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -58,7 +58,7 @@ add_executable (LInfinityDualityMappingUnitTest
 	LInfinityDualityMappingUnitTest.cpp) 
 target_link_libraries (LInfinityDualityMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -71,7 +71,7 @@ add_executable (RelativeShrinkageMappingUnitTest
 	RelativeShrinkageMappingUnitTest.cpp) 
 target_link_libraries (RelativeShrinkageMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -84,7 +84,7 @@ add_executable (LinearMappingUnitTest
 	LinearMappingUnitTest.cpp) 
 target_link_libraries (LinearMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -97,7 +97,7 @@ add_executable (NonLinearMappingUnitTest
 	NonLinearMappingUnitTest.cpp) 
 target_link_libraries (NonLinearMappingUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 

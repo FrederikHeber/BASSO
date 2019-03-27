@@ -60,10 +60,10 @@ target_link_libraries(Minimizations
 	Log
 	${GSL_LIBRARY} 
 	${NLOPT_LIBRARIES}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 )
 
-install (TARGETS Minimizations DESTINATION bin)
+install (TARGETS Minimizations DESTINATION lib)
 
 install (FILES Elements/Eigen_matrix_serialization.hpp DESTINATION include)
 install (FILES Elements/ElementCreator.hpp DESTINATION include)
@@ -110,7 +110,6 @@ install (FILES Mappings/LinearMapping.hpp DESTINATION include)
 install (FILES Mappings/MappingFactory.hpp DESTINATION include)
 install (FILES Mappings/Mapping.hpp DESTINATION include)
 install (FILES Mappings/MappingExceptions.hpp DESTINATION include)
-install (FILES Mappings/NonLinearMappingFactory.hpp DESTINATION include)
 install (FILES Mappings/PowerTypeDualityMapping.hpp DESTINATION include)
 install (FILES Mappings/SingularValueDecomposition.hpp DESTINATION include)
 install (FILES Mappings/SingularValueDecomposition_impl.hpp DESTINATION include)

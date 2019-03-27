@@ -15,11 +15,10 @@ Basso depends on the following packages:
  * GSL - GNU Scientific library for function minimization
  * NLopt - (optional) alternative (to GSL) function minimization library
  * Eigen - C++ library for linear algebra
- * ARPack - library for linear algebra routines
+ * ARPack - linear algebra library used for truncated SVD
  * CppUnit - C++ library for unit testing
  * boost - almost standard library (we require 1.54 due to logging)
- * poco - poco is used (optionally) to write iteration information to
-   a sqlite3 database
+ * poco - poco is used to write iteration information to a sqlite3 database
  * libpng - library for writing png files (used by a helper program)
 
 ... on Ubuntu

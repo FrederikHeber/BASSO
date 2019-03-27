@@ -7,7 +7,7 @@ add_executable (AuxiliaryConstraintsFactoryUnitTest
 target_link_libraries (AuxiliaryConstraintsFactoryUnitTest 
 	MatrixFactorizerBase
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 

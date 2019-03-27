@@ -17,7 +17,7 @@ target_link_libraries ( Gravity
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}
 	${MPI_LIBRARIES})
@@ -31,7 +31,7 @@ target_link_libraries ( GravityConfigurator
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS GravityConfigurator DESTINATION bin)

@@ -17,7 +17,8 @@ target_link_libraries ( MatrixToPNG
 	Options
 	Log
 	${PNG_LIBRARIES}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
+	${BOOST_THREAD_LIBRARY}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS MatrixToPNG DESTINATION bin)

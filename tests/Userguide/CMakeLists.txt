@@ -10,7 +10,7 @@ target_link_libraries ( random_matrix_inverseproblem_1
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 
@@ -26,7 +26,7 @@ target_link_libraries ( random_matrix_inverseproblem_2
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 

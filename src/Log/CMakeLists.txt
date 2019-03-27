@@ -7,10 +7,12 @@ add_library (Log SHARED
 	Verbose.cpp)
 
 target_link_libraries(Log
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 )
 
 ADD_DEPENDENCIES(Log version)
+
+install (TARGETS Log DESTINATION lib)
 
 install (FILES Logging.hpp DESTINATION include)
 install (FILES Verbose.hpp DESTINATION include)

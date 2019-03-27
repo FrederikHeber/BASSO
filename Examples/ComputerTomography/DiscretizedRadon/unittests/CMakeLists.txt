@@ -7,7 +7,7 @@ add_executable (BackprojectionMatrixUnitTest
 target_link_libraries (BackprojectionMatrixUnitTest 
 	DiscretizedRadonBase
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 
@@ -22,7 +22,7 @@ add_executable (DiscretizedRadonMatrixUnitTest
 target_link_libraries (DiscretizedRadonMatrixUnitTest 
 	DiscretizedRadonBase
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 
@@ -37,7 +37,7 @@ add_executable (point_tUnitTest
 target_link_libraries (point_tUnitTest 
 	DiscretizedRadonBase
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 

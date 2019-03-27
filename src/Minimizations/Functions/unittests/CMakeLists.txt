@@ -6,7 +6,7 @@ add_executable (BregmanDistanceUnitTest
 	BregmanDistanceUnitTest.cpp) 
 target_link_libraries (BregmanDistanceUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 
@@ -20,7 +20,7 @@ add_executable (BregmanProjectionFunctionalUnitTest
 	BregmanProjectionFunctionalUnitTest.cpp) 
 target_link_libraries (BregmanProjectionFunctionalUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -33,7 +33,7 @@ add_executable (MetricProjectionFunctionalUnitTest
 	MetricProjectionFunctionalUnitTest.cpp) 
 target_link_libraries (MetricProjectionFunctionalUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES})
 
@@ -58,7 +58,7 @@ add_executable (VectorProjectionUnitTest
 target_link_libraries (VectorProjectionUnitTest 
 	${EXTRA_LIBS}
 	${GSL_LIBRARY} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 

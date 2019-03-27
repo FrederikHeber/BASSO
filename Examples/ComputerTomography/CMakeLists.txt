@@ -32,7 +32,7 @@ target_link_libraries ( ComputerTomography
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS ComputerTomography DESTINATION bin)
@@ -46,7 +46,7 @@ target_link_libraries ( ComputerTomographyConfigurator
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS ComputerTomographyConfigurator DESTINATION bin)

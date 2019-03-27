@@ -18,7 +18,7 @@ target_link_libraries ( Basso
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS Basso DESTINATION bin)
@@ -31,7 +31,7 @@ target_link_libraries ( BassoConfigurator
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
 	${CMAKE_THREAD_LIBS_INIT} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	${LIBRT_LIBRARIES}) 
 install (TARGETS BassoConfigurator DESTINATION bin)

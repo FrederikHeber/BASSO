@@ -6,7 +6,7 @@ add_executable (LinearDependencyCheckerUnitTest
 	LinearDependencyCheckerUnitTest.cpp) 
 target_link_libraries (LinearDependencyCheckerUnitTest 
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 	"${CPPUNIT_LIBRARY}"
 	${LIBRT_LIBRARIES}) 

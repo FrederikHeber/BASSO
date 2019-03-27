@@ -6,7 +6,7 @@ add_executable (DatabaseUnitTest
 	DatabaseUnitTest.cpp) 
 target_link_libraries (DatabaseUnitTest
 	${EXTRA_LIBS}
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
 	${POCO_SQL_LIBRARIES}
 	"${CPPUNIT_LIBRARY}")
 

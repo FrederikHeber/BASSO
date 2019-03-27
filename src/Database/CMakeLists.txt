@@ -14,6 +14,8 @@ target_link_libraries(Database
 	${POCO_SQL_LIBRARIES}
 )
 
+install (TARGETS Database DESTINATION lib)
+
 install (FILES Database.hpp DESTINATION include)
 install (FILES DatabaseExceptions.hpp DESTINATION include)
 install (FILES Database_impl.hpp DESTINATION include)

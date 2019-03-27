@@ -103,6 +103,9 @@ set(Poco_LIBRARY_DIRS )
 foreach(lib
 	Crypto
 	Data
+	DataMySQL
+	DataODBC
+	DataSQLite
 	Foundation
 	MySQL
 	Net

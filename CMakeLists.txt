@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -DNDEBUG")
 # The version number.
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 10)
+set (Basso_VERSION_PATCH 1)
 
 set (ISSUE_REPORT_MSG "Please consider opening an issue at https://github.com/FrederikHeber/BASSO with anything that is helpful.")
 
@@ -125,11 +126,11 @@ if (NLOPT_FOUND)
 endif (NLOPT_FOUND)
 
 # find (p)thread
-find_package (Threads)
+find_package (Threads REQUIRED)
 
 # find librt (required by boost_thread)
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-find_package (Librt)
+find_package (Librt REQUIRED)
 
 # find boost
 ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
@@ -161,18 +162,32 @@ else (MPI_FOUND)
 		thread
 		REQUIRED )
 endif (MPI_FOUND)
+set (BOOST_CORE_LIBRARIES
+	${Boost_CHRONO_LIBRARY}
+	${Boost_LOG_LIBRARY}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_PROGRAM_OPTIONS_LIBRARY}
+	${Boost_SYSTEM_LIBRARY})
 include_directories( ${Boost_INCLUDE_DIR} )
 
 # find pocosqlite
 set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
-find_package (Poco)
+find_package (Poco REQUIRED)
 include_directories(${Poco_INCLUDE_DIRS})
 link_directories(${Poco_LIBRARY_DIR})
-set (POCO_SQL_LIBRARIES
-	${Poco_Data_LIBRARY_RELEASE}
-	${Poco_SQLite_LIBRARY_RELEASE}
-	${Poco_Foundation_LIBRARY_RELEASE}
-	)
+if (Poco_SQLite_LIBRARY_RELEASE)
+	set (POCO_SQL_LIBRARIES
+		${Poco_Data_LIBRARY_RELEASE}
+		${Poco_SQLite_LIBRARY_RELEASE}
+		${Poco_Foundation_LIBRARY_RELEASE}
+		)
+else(Poco_SQLite_LIBRARY_RELEASE)
+	set (POCO_SQL_LIBRARIES
+		${Poco_Data_LIBRARY_RELEASE}
+		${Poco_DataSQLite_LIBRARY_RELEASE}
+		${Poco_Foundation_LIBRARY_RELEASE}
+		)
+endif(Poco_SQLite_LIBRARY_RELEASE)
 
 # find libpng
 find_package(PNG)
@@ -312,14 +327,66 @@ add_subdirectory (src/Documentation)
 
 add_subdirectory (doc)
 
+######################## RPATH settings ##################################
+#
+# see https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling
+#
+##########################################################################
+
+# use, i.e. don't skip the full RPATH for the build tree
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
+# the RPATH to be used when installing, but only if it's not a system directory
+LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+IF("${isSystemDir}" STREQUAL "-1")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF("${isSystemDir}" STREQUAL "-1")
+
 ##################### PACKING INSTRUCTIONS ###############################
 
 # build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
 set (CPACK_RESOURCE_FILE_LICENSE
 	"${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+
+SET(CPACK_SET_DESTDIR "on")
+SET(CPACK_PACKAGING_INSTALL_PREFIX "/tmp")
+set(CPACK_GENERATOR "DEB")
+
+SET(CPACK_PACKAGE_DESCRIPTION "Library for non-linear optimization in Banach spaces")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Solve (non-)linear system of equations in arbitrary lp-spaces")
+SET(CPACK_PACKAGE_VENDOR "Frederik Heber")
+SET(CPACK_PACKAGE_CONTACT "frederik.heber@gmail.com")
 set (CPACK_PACKAGE_VERSION_MAJOR "${Basso_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR "${Basso_VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${Basso_VERSION_PATCH}")
+SET(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Basso_VERSION_MAJOR}.${Basso_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Basso_VERSION_MAJOR}.${Basso_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Frederik Heber")
+SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "science")
+SET(CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
+
+#set (CPACK_DEBIAN_PACKAGE_DEPENDS 
+#	"libboost-chrono (>=1.61), 
+#	libboost-log (>=1.61),
+#	libboost-filesystem (>=1.61),
+#	libboost-program_options (>=1.61),
+#	libboost-system (>=1.61)"
+#	)
+
 include (CPack)
 
 ##########################################################################

@@ -24,7 +24,8 @@ target_link_libraries(pyBasso
 	Minimizations
 	${NLOPT_LIBRARIES}
 	${GSL_LIBRARY} 
-	${Boost_LIBRARIES}
+	${BOOST_CORE_LIBRARIES}
+	${Boost_PYTHON3_LIBRARY}
 	${PYTHON_LIBRARY} 
 )
 
@@ -34,4 +35,4 @@ configure_file(__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py COPYONLY)
 # Suppress prefix "lib" because Python does not allow this prefix
 set_target_properties(pyBasso PROPERTIES PREFIX "")
 
-#install(TARGETS pyBasso DESTINATION "${PYTHON_INSTALL_PATH}")
+install(TARGETS pyBasso DESTINATION lib)
