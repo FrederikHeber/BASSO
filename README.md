@@ -5,7 +5,7 @@ Basso is a library to minimize a constrained functional in a Banach space
 setting. It is an extension of the sequential subspace optimization
 method by Narkiss by multiple search directions.
 
-For more details we refer to the extensive userguide.
+For more details we refer to the extensive [userguide](https://frederikheber.github.io/BASSO/).
 
 Installation instructions:
 --------------------------
@@ -20,6 +20,16 @@ Basso depends on the following packages:
  * boost - almost standard library (we require 1.54 due to logging)
  * poco - poco is used to write iteration information to a sqlite3 database
  * libpng - library for writing png files (used by a helper program)
+
+... using docker
+----------------
+
+For an tutorial to the python interface of BASSO, there is a [docker image](https://hub.docker.com/r/frederikheber/basso)
+using jupyter notebook available. It is run via
+````
+docker run -p 8888:8888 --name basso frederikheber/basso:latest
+````
+and afterwards you need direct your browser to the URL shown.
 
 ... on Ubuntu
 -------------
