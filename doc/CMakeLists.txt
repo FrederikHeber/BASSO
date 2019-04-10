@@ -5,17 +5,18 @@ set ( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/  )
 find_package (AsciiDoc)
 find_package (DBLATEX)
 
+string(TIMESTAMP TODAY "%Y/%m/%d")
 set (BASSO_DOCDIR ${CMAKE_CURRENT_SOURCE_DIR})
-set (BASSO_TITLE ${PROJECT_NAME} ${BASSO_PACKAGE_VERSION})
+set (BASSO_TITLE ${PROJECT_NAME} ${Basso_PACKAGE_VERSION})
 set (BASSO_STYLESHEET ${BASSO_DOCDIR}/stylesheet.css)
-set (BASSO_A2X ${ASCIIDOC_EXECUTABLE} -b docbook -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
+set (BASSO_A2X ${ASCIIDOC_EXECUTABLE} -b docbook -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${Basso_PACKAGE_VERSION} -arevdate=${TODAY})
 set (BASSO_X2D ${DBLATEX_COMMAND})
-set (BASSO_A2H ${ASCIIDOC_EXECUTABLE} -b html5 -a latexmath -a stylesheeet=${BASSO_STYLESHEET} -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${BASSO_PACKAGE_VERSION})
+set (BASSO_A2H ${ASCIIDOC_EXECUTABLE} -b html5 -a latexmath -a stylesheeet=${BASSO_STYLESHEET} -aimagesdir=${CMAKE_CURRENT_SOURCE_DIR} -aversion-label=${PROJECT_NAME} -arevnumber=${Basso_PACKAGE_VERSION} -arevdate=${TODAY})
 
 macro (add_libbasso_pdf NAME)
 add_custom_command (
     OUTPUT ${NAME}.pdf
-    COMMAND ${BASSO_A2X} -b docbook -arevdate=$(revdate) -aversion-label=@PACKAGE@ -arevnumber=$(version) -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml ${BASSO_DOCDIR}/${NAME}.txt
+    COMMAND ${BASSO_A2X} -b docbook -arevdate=${TODAY} -aversion-label=${PROJECT_NAME} -arevnumber=${Basso_PACKAGE_VERSION} -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml ${BASSO_DOCDIR}/${NAME}.txt
     COMMAND ${BASSO_X2D} --param=doc.lot.show=figure,table --param=latex.output.revhistory=0 --param=doc.layout="coverpage mainmatter" --param=doc.collab.show=0 --param=paper.type=a4paper -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.pdf ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.xml
     DEPENDS ${BASSO_DOCDIR}/${NAME}*.txt
     DEPENDS ${BASSO_DOCDIR}/examples/*.sh

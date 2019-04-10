@@ -11,9 +11,20 @@ set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -DNDEBUG")
 
 # The version number.
+#EXECUTE_PROCESS(
+#     COMMAND ${GIT_EXECUTABLE} describe --dirty --always
+#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#     OUTPUT_VARIABLE VERSION
+#     OUTPUT_STRIP_TRAILING_WHITESPACE
+#)
+#string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" Basso_VERSION_MAJOR "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" Basso_VERSION_MINOR "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" Basso_VERSION_PATCH "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" Basso_VERSION_SHA1 "${VERSION}")
 set (Basso_VERSION_MAJOR 1)
 set (Basso_VERSION_MINOR 11)
 set (Basso_VERSION_PATCH 1)
+set(Basso_PACKAGE_VERSION "${Basso_VERSION_MAJOR}.${Basso_VERSION_MINOR}.${Basso_VERSION_PATCH}")
 
 set (ISSUE_REPORT_MSG "Please consider opening an issue at https://github.com/FrederikHeber/BASSO with anything that is helpful.")
 
@@ -50,6 +61,7 @@ FILE(WRITE ${CMAKE_BINARY_DIR}/version.h.in
 FILE(WRITE ${CMAKE_BINARY_DIR}/version.cmake
 "EXECUTE_PROCESS(
      COMMAND ${GIT_EXECUTABLE} describe --dirty --always
+     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
      OUTPUT_VARIABLE VERSION
      OUTPUT_STRIP_TRAILING_WHITESPACE
  )
