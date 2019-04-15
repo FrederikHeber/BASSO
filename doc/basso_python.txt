@@ -43,6 +43,37 @@ exported by simply making them (read-only) properties.
 In this part, assuming familiarity with the basic elements, we explain how to
 use the Python interface.
 
+[[python.debug_output]]
+=== Debugging output in jupyter notebooks
+
+There is one pitfall when using pyBasso inside jupyter notebooks: Basso will
+print its debugging output to *stdout* and *stderr*. These are not seen inside
+the jupyter cells. The output will get printed to the console where the 
+notebook process was started.
+
+An answer on link:https://stackoverflow.com/questions/35745541/how-to-get-printed-output-from-ctypes-c-functions-into-jupyter-ipython-notebook[stackoverflow] 
+provided the answer: a context manager and a small module exposing certain libc
+functions.
+
+This solution has been added to pyBasso in order to aid debugging inside 
+jupyter notebooks. However, it needs to be used in the following way.
+
+[source, python]
+----
+from capture_c_contextmanager import capture_std_out_err
+
+with capture_std_out_err():
+   # ... have here calls to pyBasso whose debug output needs to be relayed
+   # to the jupyter cells ...
+----
+
+In other words, pyBasso calls such as `project()` or `solve()` should be 
+wrapped as shown above in the context manager `capture_c_stdout` in order
+to have their debugging output made visible inside the jupyter cells.
+
+[[python.help]]
+=== Getting help
+
 [NOTE]
 ====
 Naturally, there is extensive python *docstring* information available in the form

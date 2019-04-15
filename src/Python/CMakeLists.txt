@@ -33,11 +33,22 @@ target_link_libraries(pyBasso
 	${PYTHON_LIBRARY} 
 )
 
+add_library (basso_capture SHARED 
+	helper_c_capture.cpp
+	)
+
+target_link_libraries(basso_capture 
+	${BOOST_CORE_LIBRARIES}
+	${Boost_PYTHON3_LIBRARY}
+	${PYTHON_LIBRARY} 
+)
+
 # Copy the __init__.py file
 configure_file(__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py COPYONLY)
 
 # Suppress prefix "lib" because Python does not allow this prefix
 set_target_properties(pyBasso PROPERTIES PREFIX "")
+set_target_properties(basso_capture PROPERTIES PREFIX "")
 
 #install(TARGETS pyBasso DESTINATION lib)
 #install(CODE "execute_process(COMMAND python setup.py install of --prefix=$${CMAKE_INSTALL_PREFIX} WORKING_DIRECTORY ./)")
@@ -59,9 +70,12 @@ string ( REGEX REPLACE "^${PYTHON_PREFIX}/" ""
    PYTHON_SITE_DIR "${PYTHON_SITE_DIR}"
 )
 
-install ( TARGETS pyBasso
+install ( TARGETS pyBasso basso_capture
    LIBRARY
      DESTINATION ${PYTHON_SITE_DIR}
      COMPONENT library
 )
-
+install ( FILES ${CMAKE_SOURCE_DIR}/src/Python/capture_c_contextmanager.py
+     DESTINATION ${PYTHON_SITE_DIR}
+     COMPONENT library
+)

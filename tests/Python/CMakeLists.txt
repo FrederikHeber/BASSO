@@ -57,6 +57,17 @@ set_tests_properties (pyBassoInverseProblem
 set_tests_properties (pyBassoInverseProblem PROPERTIES
     ENVIRONMENT PYTHONPATH=${CMAKE_BINARY_DIR}/src/Python)
 
+# can we instantiate InverseProblem and solve it with stdout capture
+add_test(
+	NAME pyBassoInverseProblem_stdout_capture
+	#COMMAND ${CMAKE_COMMAND} -E env PYTHON_PATH=${CMAKE_SOURCE_DIR}/src/Python 
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/pre/inverseproblem_stdout_capture_test.py 
+	WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
+set_tests_properties (pyBassoInverseProblem_stdout_capture
+	PROPERTIES WILL_FAIL false)	# return code 0
+set_tests_properties (pyBassoInverseProblem_stdout_capture
+	PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_SOURCE_DIR}/src/Python:${CMAKE_BINARY_DIR}/src/Python")
+
 # can we instantiate InverseProblem and set up a (non-)linear operator toy problem
 add_test(
 	NAME pyBassoNonLinearInverseProblem 
